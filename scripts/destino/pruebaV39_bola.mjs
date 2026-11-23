@@ -134,7 +134,8 @@ try {
   debe(p.pasaporteAntes === true || p.pasaporteAntes === null, 'perfil', 'la bola está debajo del pasaporte')
   const roma = p.pines.find((x) => x.id === 'roma')
   debe(roma?.estuvo === true && roma.viaje === true, 'pin', 'Roma, donde ya ha estado y con un viaje próximo: el pin con su ✓ dorado y destacado')
-  debe(p.etiquetas.some(([d, k, t]) => d === 'roma' && /^Tu viaje · \d+–\d+ [a-z]{3}/.test(t)), 'lista', `y en la lista dice lo suyo (${p.etiquetas.map((x) => `${x[0]}: ${x[2]}`).join(' | ')})`)
+  // (V42 §4) Ya no hay lista de destinos en este bloque (está en el globo grande): quedan el título y el globo pequeño.
+  debe(p.etiquetas.length === 0, 'lista', 'el bloque ya no lleva la lista de destinos')
   // Los textos de cada recuadro de la lista quedan DENTRO de su recuadro y con margen (Eric: «que se entiendan bien»): nada se sale ni toca el borde.
   const fuera = JSON.parse(await a.evaluar(`JSON.stringify([...document.querySelectorAll('[data-destino-lista]')].flatMap((b) => { const r = b.getBoundingClientRect(); return [...b.querySelectorAll('span')].filter((s) => s.children.length === 0 && (s.textContent || '').trim()).filter((s) => { const q = s.getBoundingClientRect(); return q.left < r.left + 5 || q.right > r.right - 5 || q.top < r.top + 3 || q.bottom > r.bottom - 3 || s.scrollWidth > s.clientWidth + 1 }).map((s) => b.getAttribute('data-destino-lista') + ': ' + s.textContent.trim()) }))`))
   debe(fuera.length === 0, 'margen', `todos los textos de la lista quedan dentro de su recuadro, con margen (${fuera.join(' | ') || 'todos dentro'})`)
@@ -142,7 +143,7 @@ try {
   await a.esp(500)
   await a.captura(`${CAP}/bola_en_el_perfil_con_viajes.jpg`)
   // Tocar Roma: «Lo que llevas».
-  await toque('[data-destino-lista="roma"]')
+  await a.evaluar("import('/src/lib/primeraVez.ts').then((m) => m.usePrimeraVezUi.getState().abrirTarjeta('roma')); true")
   await esperar("Boolean(document.querySelector('[data-tarjeta-destino=\"roma\"]'))", 40)
   await a.esp(800)
   const t = JSON.parse(await a.evaluar(`JSON.stringify((() => { const c = document.querySelector('[data-tarjeta-destino="roma"]'); return { titulo: c?.querySelector('[data-titulo-llevas]')?.textContent ?? '', numeros: [...(c?.querySelectorAll('[data-llevas-numero]') ?? [])].map((x) => x.textContent + ' ' + x.getAttribute('data-llevas-numero')), verLogros: c?.querySelector('[data-ver-mis-logros]')?.textContent?.trim() ?? null, abrirViaje: Boolean(c?.querySelector('[data-abrir-mi-viaje]')), crear: c?.querySelector('[data-crear-viaje-destino]')?.textContent?.trim() ?? null, tuViaje: c?.querySelector('[data-tu-viaje]')?.textContent ?? null } })())`))
@@ -153,9 +154,9 @@ try {
   // Un «Próximamente»: gris y con [Avísame].
   await a.evaluar("document.querySelector('[data-tarjeta-destino] > div')?.click(); true")
   await a.esp(400)
-  const pronto = await a.evaluar("document.querySelector('[data-destino-lista][data-listo=\"0\"]')?.getAttribute('data-destino-lista') ?? null")
+  const pronto = await a.evaluar("document.querySelector('[data-pin][data-listo=\"0\"]')?.getAttribute('data-pin') ?? null")
   if (pronto) {
-    await toque(`[data-destino-lista="${pronto}"]`)
+    await a.evaluar(`import('/src/lib/primeraVez.ts').then((m) => m.usePrimeraVezUi.getState().abrirTarjeta('${pronto}')); true`)
     await esperar(`Boolean(document.querySelector('[data-tarjeta-destino="${pronto}"] [data-avisame]'))`, 40)
     debe(await a.evaluar(`Boolean(document.querySelector('[data-tarjeta-destino="${pronto}"] [data-avisame]'))`), 'pronto', `un «Próximamente» (${pronto}) sigue con su [Avísame]`)
   } else debe(false, 'pronto', 'no hay ningún «Próximamente» en la lista')

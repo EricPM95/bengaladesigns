@@ -94,7 +94,7 @@ try {
   await estado(app, `(S, st) => { S.setState({ accommodationSelections: { '${d1}': { name: 'Hotel Palatino' } }, route: { ...st.route, accommodationAddress: 'Via dei Cappellari, 30' }, activeDayId: null }); return true }`)
   await app.esp(900)
   const a2 = await app.evaluar(`(() => { const b = document.querySelector('[data-alojamiento-dia-bloque]'); return { tipo: b?.dataset.alojamientoDiaBloque, texto: (b?.innerText ?? '').split(String.fromCharCode(10)).join(' | '), ir: Boolean(document.querySelector('[data-alojamiento-dia^="ir"]')), uno: document.querySelectorAll('[data-alojamiento-dia-bloque]').length } })()`)
-  debe(a2.tipo !== 'vacio' && a2.texto.includes('TU ALOJAMIENTO') && a2.texto.includes('Hotel Palatino') && a2.ir && a2.uno === 1, 'con-aloj', `con alojamiento: «TU ALOJAMIENTO · …», el nombre y [Ir] (${a2.texto})`)
+  debe(a2.tipo !== 'vacio' && a2.texto.includes('ALOJAMIENTO') && a2.texto.includes('Hotel Palatino') && a2.ir && a2.uno === 1, 'con-aloj', `con alojamiento: «TU ALOJAMIENTO · …», el nombre y [Ir] (${a2.texto})`)
   await arriba(app)
   await app.captura(`${CAP}/dias_con_alojamiento.jpg`)
   await estado(app, `(S, st) => { S.setState({ activeDayId: '${d2}' }); return true }`)

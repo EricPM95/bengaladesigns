@@ -1,5 +1,4 @@
 import { useEffect, useSyncExternalStore } from 'react'
-import { useRouteStore } from '../../store/useRouteStore'
 
 /**
  * LOS BOTONES FLOTANTES (Tanda 10N4 §0b): el lápiz de la propuesta y el botón de los logros se ven en TODAS las pantallas del viaje (RUTA, DÍAS, EXPLORAR también
@@ -73,8 +72,7 @@ function visible(e: Element): boolean {
 function medir(): void {
   if (typeof document === 'undefined') return
   const debajo = Array.from(document.querySelectorAll(HOJAS)).some(visible)
-  const modo = useRouteStore.getState().mode
-  const base = modo === 'today' ? 120 : 88
+  const base = 88 // (V42) la misma altura en todas las pestañas (HOY ya no sube la columna)
   const vh = window.innerHeight
   const sonda = document.createElement('div')
   sonda.style.cssText = 'position:fixed;visibility:hidden;pointer-events:none;padding-bottom:env(safe-area-inset-bottom,0px)'
@@ -86,7 +84,7 @@ function medir(): void {
     .filter(visible)
     .map((e) => e.getBoundingClientRect())
     .filter((r) => r.width > 0 && r.height > 0)
-  const lado = LADO + (hayLapiz || hayReorganizar ? SOBRE_LOS_LOGROS : 0)
+  const lado = LADO // (V42 §6) los botones de la columna izquierda ya no apilan encima: la columna de la derecha no crece por ellos
   let bottom = base + safe
   const inicio = bottom
   for (let i = 0; i < 3; i++) {
@@ -165,4 +163,39 @@ export function useReorganizarALaVista(visibleAhora: boolean): void {
       pedir()
     }
   }, [visibleAhora])
+}
+
+// ── (V42 §6, Eric 23-nov) LA COLUMNA DE LA IZQUIERDA DE LOS BOTONES FLOTANTES ──────────────────────────────────────────────────────────────────────────────────────────────────
+// REGLA PARA TODA LA APP (también en CLAUDE.md): la columna de la derecha es FIJA (Avisos, Cámara y Logros). Cualquier otro botón flotante (Reorganizar, el lápiz de la propuesta y los que vengan) va DEL MISMO TAMAÑO (44 px), EN UNA COLUMNA A SU IZQUIERDA:
+// el primero a la izquierda de Logros, el segundo a la de la Cámara, el tercero a la de Avisos. Nunca uno encima de otro. El color no cambia (azul oscuro con dorado). Cada botón nuevo se apunta aquí en `ORDEN_IZQUIERDA` y usa `useColumnaIzquierda`.
+/** El orden de los botones de la columna izquierda (el primero que esté a la vista ocupa el sitio de la izquierda de Logros). */
+const ORDEN_IZQUIERDA = ['reorganizar', 'propuesta']
+const izquierda = new Set<string>()
+let versionIzquierda = 0
+/** Lo que se aparta a la izquierda de la columna de la derecha: 44 de botón + 12 de aire entre columnas. */
+export const DERECHA_DE_LA_COLUMNA_IZQUIERDA = 21 + LADO + 12
+
+/**
+ * Un botón flotante de la columna izquierda: dice si está a la vista y recibe su FILA (0 = a la izquierda de Logros, 1 = de la Cámara, 2 = de Avisos). Con `modo` y `alto` (de `useFlotantes`) sale el `bottom` (`bottomDeLaFila`).
+ */
+export function useColumnaIzquierda(clave: string, visibleAhora: boolean): number {
+  useEffect(() => {
+    if (!visibleAhora) return undefined
+    izquierda.add(clave)
+    versionIzquierda++
+    avisar()
+    return () => {
+      izquierda.delete(clave)
+      versionIzquierda++
+      avisar()
+    }
+  }, [clave, visibleAhora])
+  useSyncExternalStore(suscribir, () => versionIzquierda, () => versionIzquierda)
+  const fila = ORDEN_IZQUIERDA.filter((c) => izquierda.has(c) || (c === clave && visibleAhora)).indexOf(clave)
+  return Math.max(0, fila)
+}
+
+/** El `bottom` (CSS) de la fila `fila` de la columna: la misma altura que su vecino de la derecha (Logros en la fila 0, la Cámara en la 1, Avisos en la 2). */
+export function bottomDeLaFila(fila: number, alto: number | null, _modo?: string): string {
+  return alto !== null ? `${alto + fila * SOBRE_LOS_LOGROS}px` : `calc(env(safe-area-inset-bottom,0px) + ${88 + fila * SOBRE_LOS_LOGROS}px)`
 }

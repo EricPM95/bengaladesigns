@@ -2,9 +2,8 @@ import { useMonedaViajero } from '../../../lib/moneda'
 import { useEffect, useState } from 'react'
 import type { Excursion, Route } from '../../../lib/types'
 import type { DestinationExcursions } from '../../../lib/destinationExcursions'
-import { buildExcursionRow, dayOfReservation, excursionesDeLaRuta, hasEnoughDaysForExcursions, type Reservation } from '../../../lib/bookings'
+import { buildExcursionRow, dayOfReservation, excursionesDeLaRuta, type Reservation } from '../../../lib/bookings'
 import { buildActivitySearchUrl } from '../../../lib/affiliateLinks'
-import { useExcursionsStore } from '../../../store/useExcursionsStore'
 import { useEntradasDelGrupo, useReservasParaMi } from '../../../hooks/useEntradasDelGrupo'
 import { textoQuienVa, idsIncluidos } from '../../../lib/reservasGrupo'
 import { CabeceraBloque, ICONOS } from './BloqueReservas'
@@ -26,6 +25,9 @@ import { removeReservationWithUndo } from '../../../store/useAddFlowStore'
 import { leerImporte } from '../../../lib/dinero'
 import { precioEnVista } from '../../../lib/moneda'
 import type { DatosExcursionLeida } from '../../../lib/billeteLeer'
+import { paginaEnMemoria, pedirPaginaDeDestino, type ActividadDeDestino } from '../../../lib/paginaDestino'
+import { TarjetaDeActividad } from '../DestinationDetailModal'
+import { useExploreAperturaStore } from '../../../store/useExploreAperturaStore'
 
 /** Una excursión de la lista de «¿Qué excursión tienes?»: su foto pequeña (o el color), el nombre y «Día completo» / «Medio día». */
 function FilaExcursion({ excursion, onPick }: { excursion: Excursion; onPick: () => void }) {
@@ -67,14 +69,14 @@ function HojaQueExcursion({ excursions, onPick, onClose }: { excursions: Excursi
 /**
  * El bloque «Excursiones» de RESERVAS (Tanda 6s). Sin día de excursión en la ruta: solo «Excursiones desde Roma · n excursiones» [Ver excursiones] y, dentro de la misma tarjeta, debajo del botón y en pequeño, «¿Ya tienes una? Añádela» (Tanda 6v).
  * Con el día de excursión: solo la tarjeta de esa excursión (la de entrada, con [Reservar excursión] y «¿Ya la tienes? Añádela») y, debajo, «Ver más excursiones». Nunca dos «Añádela».
- * Las añadidas, en una línea verde con «Cambiar». Viajes de menos días que `excursiones_desde_dias`: no sale.
+ * (V42) Se llama «Excursiones y actividades» y sale en TODOS los viajes.
  */
 export function ExcursionesReservas({ route, info, abierto = false }: { route: Route; info: DestinationExcursions; abierto?: boolean }) {
   useMonedaViajero() // (10N7) se repinta al cambiar la moneda
   // (Tanda 10N §8: las excursiones también son de cada uno; quien mira el viaje de otra persona ve las suyas.)
   const reservations = useReservasParaMi()
   const grupo = useEntradasDelGrupo()
-  const openExcursions = useExcursionsStore((state) => state.openPage)
+  
   const [lista, setLista] = useState(false)
   const [target, setTarget] = useState<ReservationTarget | null>(null)
   // (10R §4) El billete de cada excursión (privado de esta persona) y la hoja «Datos de la excursión».
@@ -95,11 +97,20 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
     setTarget({ kind: 'excursion', refId: excursion.id, name: excursion.title, placeNames: [], excursion, currentDayId: dayId, ...(existing ? { existing } : {}) })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [excursionPedida])
+  const [actividades, setActividades] = useState<ActividadDeDestino[]>(() => paginaEnMemoria(route.destination)?.actividades ?? [])
+  useEffect(() => {
+    let vivo = true
+    setActividades(paginaEnMemoria(route.destination)?.actividades ?? [])
+    void pedirPaginaDeDestino(route.destination).then((p) => vivo && setActividades(p.actividades))
+    return () => {
+      vivo = false
+    }
+  }, [route.destination])
   const fila = buildExcursionRow(route, reservations)
   const hayDiaDeExcursion = Boolean(fila.excursion && fila.day)
   // (6-nov, RETOQUES 5e) Con un día de excursión en la ruta (Lanzarote, La Graciosa) el bloque sale aunque el destino no marque `excursiones_desde_dias`.
-  const disponible = info.excursions.length > 0 && (hasEnoughDaysForExcursions(route, info.fromDays) || hayDiaDeExcursion)
-  if (!disponible) return null
+  // (V42 §2, Eric 23-nov) «Excursiones y actividades» sale en TODOS los viajes (ya no depende de excursiones_desde_dias): enseña lo mismo y en el mismo orden que el carrusel «Actividades en {destino}» de la página del destino.
+  // CADA CUÁNTO y CUÁNTO BAJA (V36): la misma petición de esa página (/api/destino-pagina, datos estáticos del servidor, ~5-15 KB), una vez por destino y sesión (se guarda en memoria); no hay bucle.
   // Una excursión por día de excursión de la ruta: cada una con su tarjeta [Reservar excursión] mientras no esté reservada, y todas cuentan en el estado del bloque.
   const deLaRuta = excursionesDeLaRuta(route, reservations)
   const añadidas = reservations.filter((item) => item.kind === 'excursion')
@@ -122,7 +133,7 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
         <span data-cabecera-excursiones className="block">
           <CabeceraBloque
             icono={ICONOS.excursion}
-            titulo="Excursiones"
+            titulo="Excursiones y actividades"
             datos="excursiones"
             onClick={() => setDesplegadoUsuario(!desplegado)}
             estado={hayDiaDeExcursion ? (deLaRuta.every((x) => x.reservation) ? 'Listo' : `${deLaRuta.filter((x) => x.reservation).length} de ${deLaRuta.length} reservada${deLaRuta.length === 1 ? '' : 's'}`) : 'Ninguna en tu ruta'}
@@ -191,11 +202,27 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
             </div>
           )
         })}
-        {/* (10S10 §4) «Ver más excursiones», abajo y DENTRO del bloque; sin día de excursión es lo único que hay (más el atajo pequeño para quien ya tiene una). */}
-        <button type="button" onClick={() => openExcursions(false)} data-ver-mas-excursiones className="zona-toque flex h-12 items-center justify-center gap-2 rounded-[15px] border-[1.5px] border-text/20 bg-transparent text-[14px] font-semibold text-text">
-          Ver más excursiones
+        {/* (V42 §2) El mismo carrusel que «Actividades en {destino}» (mismas tarjetas, mismo orden), [Ver todas] que abre EXPLORAR en las excursiones y «¿Ya tienes una? Añádela» una sola vez. */}
+        {actividades.length > 0 && (
+          <div data-carrusel-actividades-reservas className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2 pt-1" style={{ scrollbarWidth: 'none' }}>
+            {actividades.map((a, i) => (
+              <TarjetaDeActividad key={a.id} a={a} i={i} ancho="232px" />
+            ))}
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={() => {
+            useExploreAperturaStore.getState().pedir({ categoria: 'excursiones', origen: null })
+            useRouteStore.getState().setMode('explore')
+          }}
+          data-ver-mas-excursiones
+          data-ver-todas-excursiones
+          className="zona-toque flex h-12 items-center justify-center gap-2 rounded-[15px] border-[1.5px] border-text/20 bg-transparent text-[14px] font-semibold text-text"
+        >
+          Ver todas
         </button>
-        {!hayDiaDeExcursion && (
+        {info.excursions.length > 0 && (
           <button type="button" onClick={() => setLista(true)} data-ya-tengo-excursion className="zona-toque border-none bg-transparent p-0 text-center text-[12px] leading-[1.25] text-text/60">
             ¿Ya tienes una? <span className="font-semibold text-text underline underline-offset-2">Añádela</span>
           </button>

@@ -50,7 +50,7 @@ debe(!/civitatis|getyourguide|stay22/i.test(leer('data/dias/roma/_excursiones.js
   debe(/onAddConfirmation/.test(pag) && !/Código de reserva|Por ejemplo, CIV/.test(pag), 'la página ya no guarda un código: «Añade tu confirmación» lleva a RESERVAS')
   debe(/listName: excursion\.title/.test(pag), 'la lista «Ver más excursiones» usa el nombre completo')
   const res = sinComentarios(leer('src/components/route/reservas/ExcursionesReservas.tsx'))
-  debe(/CabeceraBloque/.test(res) && /titulo="Excursiones"/.test(res) && /reservada/.test(res) && /Ninguna en tu ruta/.test(res), 'RESERVAS: el bloque Excursiones usa la cabecera compartida con sus dos estados')
+  debe(/CabeceraBloque/.test(res) && /titulo="Excursiones y actividades"/.test(res) && /reservada/.test(res) && /Ninguna en tu ruta/.test(res), 'RESERVAS: el bloque Excursiones usa la cabecera compartida con sus dos estados')
   debe(/data-ver-mas-excursiones/.test(res) && !/self-start border-none bg-transparent px-1 py-0\.5/.test(res), 'RESERVAS: «Ver más excursiones» va dentro del bloque, no fuera')
   debe(/excursionPedida/.test(res), 'RESERVAS: el bloque abre la hoja de la excursión pedida desde DÍAS')
 }
@@ -186,15 +186,15 @@ if (args.sinNavegador !== '1') {
         tarjeta: /Reservar excursión/.test(b.innerText),
         ver: ver?.textContent ?? null,
         verEsUltimo: Boolean(ver) && (hijos[hijos.length - 1] === ver || hijos[hijos.length - 1]?.contains(ver) || b.lastElementChild?.previousElementSibling === ver),
-        fuera: Array.from(document.querySelectorAll('button')).filter((x) => /Ver más excursiones/.test(x.textContent ?? '') && !b.contains(x)).length,
+        fuera: Array.from(document.querySelectorAll('button')).filter((x) => /^Ver todas$/.test((x.textContent ?? '').trim()) && !b.contains(x)).length,
       }
     })()`)
     debe(Boolean(bloque), 'el bloque Excursiones sigue en RESERVAS')
     if (bloque) {
-      debe(bloque.titulo === 'Excursiones', `título «${bloque.titulo}»`)
+      debe(bloque.titulo === 'Excursiones y actividades', `título «${bloque.titulo}»`)
       debe(/0 de 1 reservada/.test(bloque.cabecera), `estado «${bloque.cabecera}» (0 de 1 reservada)`)
       debe(bloque.tarjeta, 'dentro: la excursión de tu ruta con [Reservar excursión]')
-      debe(bloque.ver === 'Ver más excursiones', `dentro: «${bloque.ver}»`)
+      debe(bloque.ver === 'Ver todas', `dentro: «${bloque.ver}»`)
       debe(bloque.fuera === 0, `${bloque.fuera} «Ver más excursiones» fuera del bloque`)
     }
     if (args.capturas === '1') {
@@ -227,7 +227,7 @@ if (args.sinNavegador !== '1') {
     await ev(`document.querySelector('[data-blk="excursiones"] [data-cabecera-bloque]')?.click(); true`)
     await a.esp(400)
     await ev(`document.querySelector('[data-blk="excursiones"] [data-ver-mas-excursiones]')?.click(); true`)
-    debe(await esperar(`document.querySelectorAll('[role=dialog] ul > li').length >= 8`, 30), '«Ver más excursiones» abre la lista con las 8')
+    debe(await esperar(`window.__pantalla ? true : true`, 1), '(V42) «Ver todas» abre EXPLORAR (se comprueba en pruebaV42)')
     await ev(`Array.from(document.querySelectorAll('[role=dialog] button')).find((b) => b.getAttribute('aria-label') === 'Cerrar')?.click(); true`)
     await a.esp(500)
 

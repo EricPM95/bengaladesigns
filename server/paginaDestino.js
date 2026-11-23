@@ -52,6 +52,19 @@ export function elegirActividades(brutas, { notaMinima = NOTA_MINIMA, maximo = M
   return salida
 }
 
+/**
+ * (V42 §2) El orden propio de un destino: una lista de ids (orden_actividades, dentro de excursions del JSON del destino o en su _civitatis.json). Las que estén en la lista van primero y en ese orden; el resto, detrás, como estaban.
+ * Sin lista, no cambia nada (Roma y Lanzarote, como hoy). Madrid lo usará (MADRID_EXPLORAR.md). Pura.
+ */
+export function ordenarActividades(lista, orden) {
+  if (!Array.isArray(orden) || orden.length === 0) return lista
+  const pos = (a) => {
+    const i = orden.indexOf(a.id)
+    return i < 0 ? Number.MAX_SAFE_INTEGER : i
+  }
+  return lista.map((a, i) => ({ a, i })).sort((x, y) => pos(x.a) - pos(y.a) || x.i - y.i).map((x) => x.a)
+}
+
 const leer = (f) => (existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : null)
 
 /** Las actividades en bruto de un destino (Civitatis del destino si lo tiene; si no, las excursiones de su JSON). */
@@ -91,7 +104,8 @@ export function hotelesDeLaPagina(archivo) {
 export function paginaDelDestino({ raiz, destination, datosDestino }) {
   const clave = String(destination ?? '').trim().toLowerCase()
   const dir = join(raiz, 'data', 'dias', clave)
-  const actividades = elegirActividades(actividadesEnBruto({ civitatis: leer(join(dir, '_civitatis.json')), datosDestino }))
+  const civitatis = leer(join(dir, '_civitatis.json'))
+  const actividades = ordenarActividades(elegirActividades(actividadesEnBruto({ civitatis, datosDestino })), civitatis?.orden_actividades ?? datosDestino?.excursions?.orden_actividades)
   const hoteles = hotelesDeLaPagina(leer(join(dir, '_hoteles.json')))
   return { ok: true, destino: destination, actividades, hoteles }
 }

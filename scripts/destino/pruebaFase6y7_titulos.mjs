@@ -245,7 +245,7 @@ for (const v of [{ dias: 3, ft: true, inicio: '2027-03-10' }, { dias: 2, ft: fal
   const ruta = useRouteStore.getState().route
   const html = pinta(DayList, { route: ruta, activeDayId: null, onSelectDay() {}, showAllDaysOnMap: false }, ruta, { version: 'completa' })
   const pintados = titulosPintados(html)
-  igual(pintados.join(' | '), 'Día libre | Centro histórico | Vaticano | Mi día de descanso', 'ruta a mano en DÍAS')
+  igual(pintados.join(' | '), 'Día de viaje | Centro histórico | Vaticano | Mi día de descanso', 'ruta a mano en DÍAS (V42: el de llegada sin paradas, «Día de viaje»)')
   igual(tituloSimpleDelDia(ruta, ruta.days[1]), 'Centro histórico', 'ruta a mano, título simple')
   debe(!/Ponle nombre/.test(aTexto(html)), '4 ruta a mano', 'en la ruta a mano sigue saliendo «Ponle nombre» en vez del título')
   igual(nombrePropioDelDia(ruta.days[3]), 'Mi día de descanso', 'el nombre propio para «Cambiar el nombre»')

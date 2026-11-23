@@ -1397,7 +1397,7 @@ export function DayDetailPanel({
                   Elegir mis sitios
                 </button>
               ) : (
-                <ManualDayOptions onSearchPlaces={() => setInsertAt(0)} onSearchExcursions={() => convertDay('excursion')} />
+                <ManualDayOptions destination={route?.destination ?? day.city} onSearchPlaces={() => setInsertAt(0)} onSearchExcursions={() => convertDay('excursion')} />
               )}
             </div>
           )}
@@ -1573,7 +1573,8 @@ export function DayDetailPanel({
               onExplorarMonumentos={() => abrirExplorar({ categoria: 'atracciones', origen: null, cerca: tarjetaHoyVuelves.explorar.cerca_de_mi })}
             />
           )}
-          {dayType === 'manual' && !isManualRoute(route) && !(tarjetaUltimoDia && day.stops.length === 0) && (
+          {/* (V42 §5.2) Sin [+ Añadir lugares] en el día en blanco: hace lo mismo que [Buscar lugares] (arriba). */}
+          {dayType === 'manual' && !isManualRoute(route) && !(tarjetaUltimoDia && day.stops.length === 0) && !(stops.length === 0 && !halfDayExcursion && !day.userAdded) && (
               <button
                 type="button"
                 onClick={() => openAddFlow(day.id)}

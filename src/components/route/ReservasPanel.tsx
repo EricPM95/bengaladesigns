@@ -9,7 +9,7 @@ import { useDatesCalendarStore } from '../../store/useDatesCalendarStore'
 import type { EnCambioDeVuelo } from '../../lib/cambioDeVuelo'
 import { alCambiarElVuelo } from '../../lib/adaptarVuelos'
 import { buildDestinationSegments } from '../../lib/destinationSegments'
-import { buildEntradasBloque, excursionesDeLaRuta, hasEnoughDaysForExcursions, nombreCortoDeExcursion } from '../../lib/bookings'
+import { buildEntradasBloque, excursionesDeLaRuta, nombreCortoDeExcursion } from '../../lib/bookings'
 import { useDestinationExcursions } from '../../lib/destinationExcursions'
 import { useArrivalInfo } from '../../lib/arrivalReturn'
 import { legsOf, type LegKind } from '../../lib/reservasLegs'
@@ -87,10 +87,9 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const info = useDestinationExcursions(route.destination)
-  // Las excursiones solo salen en los viajes de los días que marca el destino (`excursiones_desde_dias`): si no, ni el hueco.
-  // (6-nov, RETOQUES 5e) Con un día de excursión en la ruta (Lanzarote, La Graciosa) el bloque sale aunque el destino no marque `excursiones_desde_dias`.
   const excursionesDeRuta = excursionesDeLaRuta(route, reservations)
-  const hayExcursiones = info.excursions.length > 0 && (hasEnoughDaysForExcursions(route, info.fromDays) || excursionesDeRuta.length > 0)
+  // (V42 §2) «Excursiones y actividades» sale en todos los viajes: ya no depende de `excursiones_desde_dias`.
+  const hayExcursiones = true
   const arrivalInfo = useArrivalInfo(route.destination, route.days[0]?.city ?? route.destination, route.origin)
   const segments = buildDestinationSegments(route.days)
   const unDestino = segments.length <= 1

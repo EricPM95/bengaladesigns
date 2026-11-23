@@ -35,7 +35,7 @@ const J = async (a, js) => {
   const r = await a.evaluar(js)
   return typeof r === 'string' ? JSON.parse(r) : r
 }
-const clic = (a, sel) => a.evaluar(`(() => { const e = document.querySelector('${sel}'); if (!e) return false; e.click(); return true })()`)
+const clic = (a, sel) => a.evaluar(`(() => { const e = document.querySelector('${sel}'); if (!e) return false; if (e.click) e.click(); else e.dispatchEvent(new MouseEvent('click', { bubbles: true })); return true })()`)
 
 /* ───────── 1. La primera vez: cortina, bienvenida, preguntas, Perfil ───────── */
 console.log('1. Una cuenta nueva nunca ve ORIGEN/DESTINO antes de las preguntas ni antes del Perfil; sale la bienvenida')
@@ -183,7 +183,7 @@ for (const [ancho, alto] of [[390, 844], [320, 568], [430, 932]]) {
     await esperar(a, "document.querySelectorAll('[data-pin]').length >= 3")
     await a.esp(1500) // el mapa ya pidió los números por adelantado
     const t = (await J(a, `(async () => {
-      document.querySelector('[data-destino-lista="roma"]').click()
+      document.querySelector('[data-pin="roma"]').dispatchEvent(new MouseEvent('click', { bubbles: true }))
       await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
       const n = document.querySelector('[data-llevar-numeros]')
       return { texto: n ? n.innerText.replace(/\\s+/g, ' ') : null }
@@ -236,7 +236,7 @@ for (const [ancho, alto] of [[390, 844], [320, 568], [430, 932]]) {
   const a = await abrirApp(APP, { ruta: RUTA, ancho: 390, alto: 844, antes: `try{localStorage.setItem('trazo:demo:primera_vez_nueva','si');localStorage.setItem('trazo:demo:primera_vez_hecha','si')}catch(e){}${CURADOS}` })
   try {
     await esperar(a, "document.querySelectorAll('[data-pin]').length >= 3")
-    await clic(a, '[data-destino-lista="roma"]')
+    await clic(a, '[data-pin="roma"]')
     await esperar(a, "Boolean(document.querySelector('[data-ver-destino]'))")
     await clic(a, '[data-ver-destino]')
     await esperar(a, "Boolean(document.querySelector('[data-pagina-destino] [data-lo-que-te-puedes-llevar]'))")

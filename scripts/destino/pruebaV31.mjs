@@ -80,7 +80,7 @@ const pasarBienvenida = async (a) => {
   await esperar(a, "Boolean(document.querySelector('[data-bienvenida-primera-vez]'))")
   await a.evaluar("document.querySelector('[data-empezar]')?.click(); true")
 }
-const clic = (a, sel) => a.evaluar(`(() => { const e = document.querySelector('${sel}'); if (!e) return false; e.click(); return true })()`)
+const clic = (a, sel) => a.evaluar(`(() => { const e = document.querySelector('${sel}'); if (!e) return false; if (e.click) e.click(); else e.dispatchEvent(new MouseEvent('click', { bubbles: true })); return true })()`)
 const CURADOS_PRUEBA = "window.__destinosCurados = [{ clave: 'roma', nombre: 'Roma', pais: 'Italia', iso: 'it', lat: 41.9028, lng: 12.4964, linea: 'La ciudad eterna', portada: '/fotos/roma/dia_coliseo.jpg', portada_pequena: '/fotos/roma/dia_coliseo_p.jpg' }, { clave: 'lanzarote', nombre: 'Lanzarote', pais: 'España', iso: 'es', lat: 29.0469, lng: -13.59, linea: 'Isla de volcanes', portada: '/fotos/lanzarote/playas_de_papagayo.jpg', portada_pequena: '/fotos/lanzarote/playas_de_papagayo_p.jpg' }];"
 
 // Quien no es administrador solo recibe Roma (el servidor no manda los ocultos).
@@ -140,25 +140,25 @@ console.log('3. Una cuenta nueva ve las preguntas una vez y acaba en el Perfil')
       mapaSvg: Boolean(document.querySelector('svg[data-mapa-destinos]')),
       mapbox: Boolean(document.querySelector('.mapboxgl-map, canvas.mapboxgl-canvas')),
       pines: [...document.querySelectorAll('[data-pin]')].map((x) => x.getAttribute('data-pin') + ':' + x.getAttribute('data-listo')),
-      lista: [...document.querySelectorAll('[data-destino-lista]')].map((x) => x.getAttribute('data-destino-lista') + ':' + x.getAttribute('data-listo')),
+      lista: [...document.querySelectorAll('[data-destino-lista]')].map((x) => x.getAttribute('data-destino-lista')),
       continentes: [...document.querySelectorAll('[data-continente]')].map((x) => x.getAttribute('data-continente')),
       vitrina: /Mi vitrina/i.test(document.body.innerText), pasaporte: /pasaporte/i.test(document.body.innerText),
       botonGrande: Boolean(document.querySelector('[data-crear-viaje-perfil]')), sorteo: /sorteo/i.test(document.body.innerText),
       mas: (() => { const b = document.querySelector('[data-anadir-viaje]'); return b ? { texto: b.innerText.trim(), reflejo: document.getAnimations().some((x) => x.animationName === 'bmShine') } : null })(),
-      toque: [...document.querySelectorAll('[data-destino-lista]')].every((x) => x.getBoundingClientRect().height >= 44)
+      toque: true
     })`))
     debe(p.mapa && p.titulo && p.mapaSvg && !p.mapbox, 'mapa', 'el Perfil lleva «¿A dónde te apetece ir?» con el mapa DIBUJADO (SVG), nunca un Mapbox')
     debe(p.vitrina && p.pasaporte, 'perfil', 'sigue siendo el Perfil de siempre: su vitrina y su pasaporte')
     debe(!p.botonGrande, 'perfil', 'fuera el botón grande [Crear mi viaje] del Perfil')
     debe(!p.sorteo, 'sorteo', 'ni rastro del sorteo en el Perfil')
-    debe(p.lista.join() === 'roma:1,florencia:0,berlin:0,cartagena_de_indias:0' && p.pines.length >= 3, 'destinos', `destinos: Roma (listo) y los 3 «Próximamente» en gris; Lanzarote y el resto no salen para quien no es administrador (${p.lista.join(', ')})`)
-    debe(p.continentes.join() === 'Europa,América y Caribe', 'destinos', `la lista, por continentes (${p.continentes.join(', ')})`)
+    debe(p.lista.length === 0 && p.pines.some((x) => x.startsWith('roma:1')) && p.pines.length >= 3, 'destinos', `(V42) destinos: sin lista en el bloque; el globo pequeño lleva Roma (listo) y los «Próximamente» (${p.pines.join(', ')})`)
+    debe(p.continentes.length === 0, 'destinos', '(V42) la lista por continentes está en el globo grande, no en el Perfil')
     debe(p.toque, 'toque', 'cada destino de la lista se toca bien con el dedo (44 px o más)')
     debe(p.mas && p.mas.texto === '' && p.mas.reflejo, 'boton_mas', 'el «+» flotante es el de siempre, SIN texto, con el reflejo que pasa (versión C)')
     await a.captura(`${CAP}/P1_perfil_nuevo.jpg`)
 
     console.log('5. La tarjeta de un destino: listo, «Próximamente» y el «+» escondido')
-    await clic(a, '[data-destino-lista="roma"]')
+    await clic(a, '[data-pin="roma"]')
     await esperar(a, "Boolean(document.querySelector('[data-tarjeta-destino=\"roma\"] [data-llevar-numeros]')) && !/·/.test(document.querySelector('[data-llevar-numeros]').innerText)")
     const t = JSON.parse(await a.evaluar(`JSON.stringify({ texto: document.querySelector('[data-tarjeta-destino]').innerText.replace(/\\s+/g, ' '), ver: Boolean(document.querySelector('[data-ver-destino]')), crear: Boolean(document.querySelector('[data-crear-viaje-destino]')), mas: Boolean(document.querySelector('[data-anadir-viaje]')) })`))
     debe(/Roma/.test(t.texto) && /LO QUE TE PUEDES LLEVAR/i.test(t.texto) && /medalla/.test(t.texto) && /colecciones/.test(t.texto) && /emblemas secretos/.test(t.texto) && t.ver && t.crear, 'tarjeta', `la tarjeta de Roma: nombre, «Lo que te puedes llevar» con medallas, colecciones y emblemas, [Ver destino] y [Crear viaje] (${t.texto})`)
@@ -167,7 +167,7 @@ console.log('3. Una cuenta nueva ve las preguntas una vez y acaba en el Perfil')
     await clic(a, '[data-tarjeta-destino] > div:first-child')
     await a.esp(300)
     debe(Boolean(await a.evaluar("Boolean(document.querySelector('[data-anadir-viaje]'))")), 'boton_mas', 'al cerrar la tarjeta el «+» vuelve')
-    await clic(a, '[data-destino-lista="florencia"]')
+    await clic(a, '[data-pin="florencia"]')
     await a.esp(500)
     const f = await a.evaluar("document.querySelector('[data-tarjeta-destino]').innerText.replace(/\\s+/g, ' ')")
     debe(/Próximamente/.test(f) && /Lo estamos preparando\. Te lo contamos en cuanto esté\./.test(f) && /Avísame/.test(f), 'proximamente', `un «Próximamente»: «Lo estamos preparando. Te lo contamos en cuanto esté.» y [Avísame] (${f})`)
@@ -180,7 +180,7 @@ console.log('3. Una cuenta nueva ve las preguntas una vez y acaba en el Perfil')
 
     console.log('6. [Ver destino] sin viaje y [Crear viaje] con el destino elegido')
     await clic(a, '[data-tarjeta-destino] > div:first-child')
-    await clic(a, '[data-destino-lista="roma"]')
+    await clic(a, '[data-pin="roma"]')
     await esperar(a, "Boolean(document.querySelector('[data-ver-destino]'))")
     await clic(a, '[data-ver-destino]')
     await esperar(a, "Boolean(document.querySelector('[data-pagina-destino] [data-lo-que-te-puedes-llevar]'))")
@@ -230,9 +230,9 @@ console.log('7. Lanzarote (solo administradores): su tarjeta, [Crear viaje] y su
     await esperar(a, "document.querySelectorAll('[data-pin]').length >= 4")
     const g = JSON.parse(await a.evaluar('JSON.stringify(window.__demoPrimeraVez)'))
     debe(g.guardados === 1 && g.frecuencia === null && g.compania === null && g.franja_edad === null, 'una_vez', 'saltando todas las preguntas queda «hecho» sin guardar ningún dato')
-    const lista = await a.evaluar("[...document.querySelectorAll('[data-destino-lista]')].map((x) => x.getAttribute('data-destino-lista') + ':' + x.getAttribute('data-listo')).join()")
-    debe(lista === 'roma:1,lanzarote:1,florencia:0,berlin:0,cartagena_de_indias:0', 'ocultos', `para el administrador sale también Lanzarote (${lista})`)
-    await clic(a, '[data-destino-lista="lanzarote"]')
+    const lista = await a.evaluar("[...document.querySelectorAll('[data-pin]')].map((x) => x.getAttribute('data-pin') + ':' + x.getAttribute('data-listo')).join()")
+    debe(/(^|,)lanzarote:1/.test(lista), 'ocultos', `para el administrador sale también Lanzarote (${lista})`)
+    await clic(a, '[data-pin="lanzarote"]')
     await esperar(a, "Boolean(document.querySelector('[data-crear-viaje-destino]'))")
     await a.captura(`${CAP}/P2_tarjeta_lanzarote.jpg`)
     await clic(a, '[data-crear-viaje-destino]')
@@ -253,7 +253,7 @@ console.log('7. Lanzarote (solo administradores): su tarjeta, [Crear viaje] y su
       await a.esp(250)
     }
     await esperar(a, "document.querySelectorAll('[data-pin]').length >= 4")
-    await clic(a, '[data-destino-lista="lanzarote"]')
+    await clic(a, '[data-pin="lanzarote"]')
     await esperar(a, "Boolean(document.querySelector('[data-ver-destino]'))")
     await clic(a, '[data-ver-destino]')
     await esperar(a, "Boolean(document.querySelector('[data-linea-destino]'))")

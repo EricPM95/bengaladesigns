@@ -110,6 +110,8 @@ interface StopsMapViewProps {
   flyTo?: { coordinates: Coordinates; key: number } | null
   /** Ver persistedMaps: los mapas con la misma clave comparten el mismo mapa de Mapbox. */
   persistKey?: string
+  /** (V42) Recoge en burbujas con número los pines con icono que se montan unos sobre otros (ver reagrupar). Solo EXPLORAR. */
+  agrupar?: boolean
 }
 
 /**
@@ -122,12 +124,14 @@ interface StopsMapViewProps {
 /** Margen del encuadre: arriba deja sitio a la pastilla del destino y abajo al panel que monta sobre el mapa. */
 const FIT_PADDING = { top: 96, bottom: 48, left: 40, right: 40 }
 
-export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, flyToActiveStop = false, hiddenMarkerIds, center, fitToMarkerIds, focusCenter = null, focusZoom = 15, encuadre = FIT_PADDING, ringIds, userPosition = null, recenterKey = 0, offsets, flyTo = null, persistKey }: StopsMapViewProps) {
+export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, flyToActiveStop = false, hiddenMarkerIds, center, fitToMarkerIds, focusCenter = null, focusZoom = 15, encuadre = FIT_PADDING, ringIds, userPosition = null, recenterKey = 0, offsets, flyTo = null, persistKey, agrupar = false }: StopsMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const innerElsRef = useRef<Map<string, HTMLElement>>(new Map())
   const rootElsRef = useRef<Map<string, HTMLElement>>(new Map())
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const syncPinsRef = useRef<() => void>(() => {})
+  const burbujasRef = useRef<mapboxgl.Marker[]>([])
+  const burbujasFirmaRef = useRef('')
   // Prompt 3 (bug 1): deliberadamente FUERA de markersKey. Cambiar qué pines se ven no puede
   // reconstruir el mapa — ver el comentario de hiddenMarkerIds en las props.
   const ringKey = (ringIds ?? []).join('|')
@@ -377,9 +381,70 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
 
   // Un único efecto manda sobre el aspecto del pin — si el "activo" y el "oculto" escribieran cada
   // uno su propio transform sobre el mismo elemento, el último en correr borraría al otro.
+  /**
+   * (V42 §1, Eric 23-nov) AGRUPAR. Con varios filtros encendidos y el mapa lejos (Excursiones aleja la cámara hasta Italia; baños y fuentes son más de mil puntos), los pines se montaban unos sobre otros en una sola mancha
+   * y los de los primeros filtros «desaparecían». Con `agrupar`, los pines con icono que quedan a menos de 44 px unos de otros se recogen en una burbuja con su número (que al tocarla acerca el mapa a ellos); ninguno se pierde:
+   * los sueltos + la suma de las burbujas = todos los que se ven. Los pines numerados del día, el activo y los de «en tu ruta» no se agrupan. Es cálculo del mapa: no hace ninguna petición.
+   */
+  const reagrupar = (): Set<string> => {
+    const map = mapRef.current
+    const vacio = new Set<string>()
+    if (!agrupar || !map) {
+      if (burbujasRef.current.length > 0) {
+        burbujasRef.current.forEach((b) => b.remove())
+        burbujasRef.current = []
+        burbujasFirmaRef.current = ''
+      }
+      return vacio
+    }
+    const anillos = new Set((ringKey ? ringKey.split('|') : []).filter(Boolean))
+    const celdas = new Map<string, { id: string; c: Coordinates }[]>()
+    if (map.getZoom() < 16.5) {
+      for (const marker of markers) {
+        if (hidden.has(marker.id) || !marker.iconPath || marker.id === activeStopId || anillos.has(marker.id) || !innerElsRef.current.has(marker.id)) continue
+        const p = map.project([marker.coordinates.lng, marker.coordinates.lat])
+        const clave = `${Math.floor(p.x / 44)}:${Math.floor(p.y / 44)}`
+        const lista = celdas.get(clave)
+        if (lista) lista.push({ id: marker.id, c: marker.coordinates })
+        else celdas.set(clave, [{ id: marker.id, c: marker.coordinates }])
+      }
+    }
+    const grupos = [...celdas.values()].filter((g) => g.length >= 2)
+    const agrupados = new Set(grupos.flatMap((g) => g.map((m) => m.id)))
+    const firma = grupos.map((g) => g.map((m) => m.id).sort().join(',')).sort().join('|')
+    if (firma !== burbujasFirmaRef.current) {
+      burbujasFirmaRef.current = firma
+      burbujasRef.current.forEach((b) => b.remove())
+      burbujasRef.current = grupos.map((g) => {
+        const lng = g.reduce((s, m) => s + m.c.lng, 0) / g.length
+        const lat = g.reduce((s, m) => s + m.c.lat, 0) / g.length
+        const root = document.createElement('div')
+        const inner = document.createElement('div')
+        inner.className = 'flex cursor-pointer items-center justify-center rounded-full text-white'
+        inner.style.cssText = 'min-width:36px;height:36px;padding:0 8px;box-sizing:border-box;background:rgb(var(--text));border:2.5px solid rgb(var(--accent));box-shadow:0 6px 14px -4px rgba(28,34,48,.5);font:600 13px Geist,system-ui,sans-serif'
+        inner.textContent = String(g.length)
+        root.setAttribute('data-cluster', String(g.length))
+        root.setAttribute('data-cluster-ids', g.map((m) => m.id).join('|'))
+        root.appendChild(inner)
+        root.addEventListener('click', (event) => {
+          event.stopPropagation()
+          const caja = new mapboxgl.LngLatBounds()
+          g.forEach((m) => caja.extend([m.c.lng, m.c.lat]))
+          const mapa = mapRef.current
+          if (!mapa) return
+          // Si caen todos casi en el mismo sitio, fitBounds no acerca: se sube el zoom a mano.
+          if (g.every((m) => Math.abs(m.c.lng - lng) < 0.0004 && Math.abs(m.c.lat - lat) < 0.0004)) mapa.easeTo({ center: [lng, lat], zoom: Math.min(mapa.getZoom() + 2.5, 17.5), duration: 500 })
+          else mapa.fitBounds(caja, { padding: 70, maxZoom: 17, duration: 500 })
+        })
+        return new mapboxgl.Marker({ element: root }).setLngLat([lng, lat]).addTo(map)
+      })
+    }
+    return agrupados
+  }
   const syncPins = () => {
+    const agrupados = reagrupar()
     for (const [stopId, el] of innerElsRef.current) {
-      const isHidden = hidden.has(stopId)
+      const isHidden = hidden.has(stopId) || agrupados.has(stopId)
       const marker = markers.find((candidate) => candidate.id === stopId)
       el.style.opacity = isHidden ? '0' : String(marker?.opacity ?? 1)
       const shift = offsets?.[stopId]
@@ -392,7 +457,7 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
     // El pointer-events sí va en el raíz (Mapbox no lo toca): un pin invisible no debe seguir
     // capturando clicks ni abriendo su popup.
     for (const [stopId, root] of rootElsRef.current) {
-      root.style.pointerEvents = hidden.has(stopId) ? 'none' : ''
+      root.style.pointerEvents = (hidden.has(stopId) || agrupados.has(stopId)) ? 'none' : ''
     }
   }
   // Siempre la última versión, para que el pintado de los pines (que puede llegar más tarde, al cargar el mapa) aplique ya los aros y los separados.
@@ -400,7 +465,21 @@ export function StopsMapView({ markers, lines = [], activeStopId, onSelectStop, 
   useEffect(() => {
     syncPins()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeStopId, hidden, markersKey, ringKey, offsetsKey])
+  }, [activeStopId, hidden, markersKey, ringKey, offsetsKey, agrupar])
+
+  // (V42) Al mover o acercar el mapa se vuelven a agrupar los pines; al reconstruir o salir se quitan las burbujas.
+  useEffect(() => {
+    const map = mapRef.current
+    if (!agrupar || !map) return
+    const alMover = () => syncPinsRef.current()
+    map.on('moveend', alMover)
+    return () => {
+      map.off('moveend', alMover)
+      burbujasRef.current.forEach((b) => b.remove())
+      burbujasRef.current = []
+      burbujasFirmaRef.current = ''
+    }
+  }, [agrupar, markersKey, linesKey, centerKey])
 
   // El vuelo hasta un baño o una fuente (lo pide la lista de abajo).
   useEffect(() => {

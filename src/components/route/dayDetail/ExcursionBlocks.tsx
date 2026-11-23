@@ -270,14 +270,15 @@ export function CuratedAlternativeBanner({ alternative, onRestore }: { alternati
 }
 
 /** Día LIBRE: dos salidas grandes y nada más. El día está en blanco a propósito. */
-export function ManualDayOptions({ onSearchPlaces, onSearchExcursions }: { onSearchPlaces: () => void; onSearchExcursions: () => void }) {
+/** (V42 §5.2) Con el destino en los textos («explora Lanzarote…», «Desde Lanzarote»): Lanzarote no es una ciudad. */
+export function ManualDayOptions({ onSearchPlaces, onSearchExcursions, destination }: { onSearchPlaces: () => void; onSearchExcursions: () => void; destination?: string }) {
   return (
     <div className="space-y-3">
-      <p className="px-1 text-small text-text-soft">Monta tu día a medida: explora la ciudad o haz una excursión.</p>
+      <p className="px-1 text-small text-text-soft">Monta tu día a medida: explora {destination ?? 'la ciudad'} o haz una excursión.</p>
       <div className="grid grid-cols-2 gap-3">
         {[
           { icon: <MapIcon />, label: 'Buscar lugares', hint: 'Mapa, filtros y buscador', onClick: onSearchPlaces },
-          { icon: <BusIcon />, label: 'Buscar excursiones', hint: 'Salir de la ciudad', onClick: onSearchExcursions },
+          { icon: <BusIcon />, label: 'Buscar excursiones', hint: destination ? `Desde ${destination}` : 'Salir de la ciudad', onClick: onSearchExcursions },
         ].map((option) => (
           <button
             key={option.label}

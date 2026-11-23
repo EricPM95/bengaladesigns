@@ -68,3 +68,9 @@ El plan gratis de Supabase tiene 5 GB de «egress» al mes; la app llegó a 10 G
 
 ## Las obras no se señalan (Eric, 23-nov, V41)
 **En la app no se avisa de obras: cada sitio con su horario normal.** En los textos que ve el viajero (datos de los destinos, fichas, avisos, excursiones…) no se pone «en obras», «en restauración», «andamios», «remodelación» ni «cerrado por obras». Las notas internas (como la de la Domus Aurea en `data/dias/roma/_webs_oficiales_entradas.json`) se quedan. `pruebaV41` falla si un texto del viajero lo menciona. (Caso real: Barcelona › Camp Nou, «En obras de remodelación — consulta disponibilidad antes de ir».)
+
+## Los botones flotantes: la derecha es fija, los demás van a su izquierda (Eric, 23-nov, V42)
+- **La columna de la derecha es fija: Avisos, Cámara y Logros.**
+- **Cualquier otro botón flotante** (Reorganizar, el lápiz de la propuesta y los que vengan) va **del mismo tamaño (44 px), en una columna a su izquierda**: el primero, a la izquierda de Logros; el segundo, a la de la Cámara; el tercero, a la de Avisos. **Nunca uno encima de otro.**
+- **El color no cambia:** azul oscuro con dorado.
+- En el código: `src/components/flotantes/flotantes.ts` (`useColumnaIzquierda`, `bottomDeLaFila`, `DERECHA_DE_LA_COLUMNA_IZQUIERDA`, `ORDEN_IZQUIERDA`); el botón nuevo se apunta ahí, lleva `data-flotante` y `data-flotante-izq`. `pruebaV42` falla si dos botones flotantes se pisan.

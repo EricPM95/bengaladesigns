@@ -92,9 +92,9 @@ try {
   await a.esp(1200)
   const rect = await a.evaluar("(() => { const r = document.querySelector('[data-boton-reorganizar]')?.getBoundingClientRect(); const l = document.querySelector('[data-boton-logros]')?.getBoundingClientRect(); return JSON.stringify({ r: r && { t: r.top, b: r.bottom, l: r.left, w: r.width }, l: l && { t: l.top, b: l.bottom, l: l.left, w: l.width }, ancho: innerWidth }) })()").then(JSON.parse)
   if (rect.r && rect.l) {
-    debe(rect.l && rect.r.b <= rect.l.t + 0.5, `el botón no va encima del de logros (${JSON.stringify(rect)})`)
-    debe(Math.abs(rect.r.w - 56) < 1, `el botón no mide 56 px (${rect.r.w})`)
-    debe(Math.abs((rect.r.l + rect.r.w / 2) - (rect.l.l + rect.l.w / 2)) < 3, 'el botón no está en columna con el de logros')
+    debe(rect.l && rect.r.l + rect.r.w <= rect.l.l + 0.5 && Math.abs(rect.r.b - rect.l.b) < 1.5, `(V42) el botón no va a la izquierda del de logros (${JSON.stringify(rect)})`)
+    debe(Math.abs(rect.r.w - 44) < 1, `(V42) el botón no mide 44 px (${rect.r.w})`)
+    debe(true, '(V42) ya no va en columna con el de logros: va a su izquierda')
   }
   await a.captura(path.join(SALIDA, '10s7_reorganizar_R1_boton.jpg'))
 

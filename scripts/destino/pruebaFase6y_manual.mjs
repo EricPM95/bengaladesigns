@@ -107,7 +107,7 @@ for (const dias of [2, 3, 4, 5]) {
           // (El primero y el último llevan además su trayecto de viaje, que manda en el título; los de en medio salen con el nombre del día.)
           // (6y2: su fecha ya está en el cuadrito y no se repite en el título. 6y7: el día vacío sin nombre dice «Día libre», ya no «Ponle nombre».)
           if (day.dayNumber > 1 && day.dayNumber < dias) {
-            debe(t.includes('Día libre') && !t.includes('Ponle nombre'), '4 nombres', `${nombre} día ${day.dayNumber}: la tarjeta no dice «Día libre»`)
+            debe(t.includes('Día por organizar') && t.includes('Añade tus sitios') && !t.includes('Ponle nombre'), '4 nombres', `${nombre} día ${day.dayNumber}: la tarjeta no dice «Día por organizar» con «Añade tus sitios» (V42)`)
             if (fechas) debe(!t.includes(esperado), '4 nombres', `${nombre} día ${day.dayNumber}: la tarjeta repite la fecha «${esperado}» en el título`)
           }
         }

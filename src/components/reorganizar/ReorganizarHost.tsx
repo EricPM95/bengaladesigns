@@ -7,7 +7,7 @@ import { useRouteStore } from '../../store/useRouteStore'
 import { useReorganizarStore } from '../../store/useReorganizarStore'
 import { useResumenVueloStore } from '../../store/useResumenVueloStore'
 import { adaptarLosDias } from '../../lib/adaptarVuelos'
-import { useFlotantes, SOBRE_LOS_LOGROS, useReorganizarALaVista } from '../flotantes/flotantes'
+import { useFlotantes, useColumnaIzquierda, bottomDeLaFila, DERECHA_DE_LA_COLUMNA_IZQUIERDA } from '../flotantes/flotantes'
 import { Icono } from '../ui/Icono'
 import { useBotonReorganizarVisible } from './useBotonReorganizarVisible'
 import { usePermisosDelViaje } from '../../hooks/usePermisosDelViaje'
@@ -59,7 +59,7 @@ export function ReorganizarHost(): ReactNode {
   const modo = useRouteStore((s) => s.mode)
   const { puedeEditar } = usePermisosDelViaje()
   const mostrar = visible && primero
-  useReorganizarALaVista(mostrar)
+  const fila = useColumnaIzquierda('reorganizar', mostrar)
 
   // La vigilancia de los cambios (solo el primero montado, solo con pase y solo si se puede editar).
   useEffect(() => {
@@ -155,16 +155,17 @@ export function ReorganizarHost(): ReactNode {
           onClick={() => useReorganizarStore.getState().abrirAlerta()}
           className="hoja-pop"
           data-flotante="1"
+      data-flotante-izq="1"
           style={{
             position: 'fixed',
-            right: 15,
-            bottom: alto !== null ? `${alto + SOBRE_LOS_LOGROS}px` : `calc(env(safe-area-inset-bottom,0px) + ${(modo === 'today' ? 120 : 88) + SOBRE_LOS_LOGROS}px)`,
-            width: 56,
-            height: 56,
+            right: DERECHA_DE_LA_COLUMNA_IZQUIERDA,
+            bottom: bottomDeLaFila(fila, alto, modo),
+            width: 44,
+            height: 44,
             padding: 0,
             borderRadius: '50%',
             background: '#1C2230',
-            border: '2px solid #B58A2E',
+            border: '1.5px solid #B58A2E',
             boxShadow: '0 10px 20px -8px rgba(0,0,0,.55)',
             display: 'flex',
             alignItems: 'center',
@@ -173,7 +174,7 @@ export function ReorganizarHost(): ReactNode {
             zIndex: debajo ? 31 : 100,
           }}
         >
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F3D88F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#F3D88F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M4 8h10l3-3 3 3M20 16H10l-3 3-3-3M17 5v6M7 13v6" />
           </svg>
         </button>

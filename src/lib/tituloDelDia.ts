@@ -48,6 +48,15 @@ export interface NombreDelDia {
 export const DIA_DE_VIAJE = 'Día de viaje'
 /** El título del día de vuelta sin paradas (Tanda 10B): el mismo nombre que la tarjeta de ese día; debajo va «Roma → Barcelona · Día de viaje». */
 export const DIA_DE_VUELTA = 'Hoy vuelves a casa'
+/** (V42 §5.1) El título de un día sin paradas de un viaje hecho a mano («lo hago yo»): con «Añade tus sitios» debajo. El de llegada y el de vuelta sin paradas se llaman «Día de viaje». */
+export const DIA_POR_ORGANIZAR = 'Día por organizar'
+/** La línea pequeña de debajo de «Día por organizar». */
+export const AÑADE_TUS_SITIOS = 'Añade tus sitios'
+
+/** (V42 §5.1) ¿Es un día de un viaje a mano que aún no tiene ninguna parada (ni nombre propio, ni excursión, ni día añadido a mano)? */
+function diaPorOrganizar(route: Route, day: DayPlan): boolean {
+  return (isManualRoute(route) || (day.porOrganizar === true && day.dayType === 'manual')) && !day.nameByUser && !day.userAdded && day.dayType !== 'excursion' && day.interruptor?.mode !== 'excursion' && !day.halfDayExcursion && paradasParaElTitulo(day).length === 0
+}
 
 /** La marca pequeña junto al trayecto de un día de viaje: «Día de viaje · Madrid → Roma»; si el título ya dice «Día de viaje», vacía y solo queda «Madrid → Roma». */
 export function etiquetaDeViaje(titulo: string): string {
@@ -154,6 +163,12 @@ export function nombreDelDia(route: Route, diaGuardado: DayPlan, grupos: GruposD
   // (V18) Un nombre que es de OTRO día («Dia 2 Lunes» en el jueves 12) no se enseña: el día se nombra como si no tuviera nombre propio. Los que el viajero escribió no se tocan.
   const day: DayPlan = esNombreDeOtroDia(route, diaGuardado) ? { ...diaGuardado, curatedTitle: undefined, title: diaGuardado.ownDay ? `Tu día en ${diaGuardado.city || route.destination}` : diaGuardado.userAdded ? FREE_DAY_DEFAULT_NAME : diaGuardado.city } : diaGuardado
   if (esNombreDeLaExcursionDeOtroDia(route, diaGuardado)) return { titulo: `Excursión desde ${diaGuardado.city}`, viaje: grupos ? viajeDelDia(route, diaGuardado) : null, ponleNombre: false }
+  // (V42 §5.1) Viaje a mano sin paradas en ese día: «Día por organizar»; el de llegada y el de vuelta, «Día de viaje» (con su trayecto).
+  if (diaPorOrganizar(route, day)) {
+    const trayecto = viajeDelDia(route, day)
+    const esViaje = Boolean(trayecto) || day.isReturnLeg === true || esDiaDeLlegada(route, day)
+    return { titulo: esViaje ? DIA_DE_VIAJE : DIA_POR_ORGANIZAR, viaje: esViaje ? trayecto : null, ponleNombre: false }
+  }
   if (!grupos) {
     const antiguo = nombreDeSiempre(route, day, true)
     return { titulo: antiguo.titulo, viaje: null, ponleNombre: antiguo.ponleNombre }

@@ -1006,6 +1006,7 @@ export function PlaceExplorerScreen({
           {visibleMarkerCount > 0 || markers.length > 0 ? (
             <StopsMapView
               markers={markers}
+              agrupar
               lines={dayLines}
               hiddenMarkerIds={hiddenMarkerIds}
               ringIds={inRouteIds}

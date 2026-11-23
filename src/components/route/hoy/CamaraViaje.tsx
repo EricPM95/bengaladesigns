@@ -16,9 +16,6 @@ import { EstilosDelVisto } from '../../logros/visto/Hojas'
 import { AvisoSobreLaBarra } from '../../ui/AvisoSobreLaBarra'
 import { BotonGuardarEnGaleria } from '../fotos/BotonGuardarEnGaleria'
 import { ESTILO_FLOTANTE, SOBRE_LOS_LOGROS, useFlotantes } from '../../flotantes/flotantes'
-import { useBotonReorganizarVisible } from '../../reorganizar/useBotonReorganizarVisible'
-import { useLapizVisible } from '../../propuesta/BotonDePropuesta'
-import { useRouteStore } from '../../../store/useRouteStore'
 
 /**
  * LA CÁMARA DE VIAJE EN HOY (Tanda HOY1, K1 a K4; Design «Hoy Estados», apartado 04). El botón redondo de la cabecera de HOY se ve SIEMPRE (antes, durante y después del viaje, con y sin pase);
@@ -208,11 +205,8 @@ export interface PropsBotonCamara {
 export function BotonCamaraViaje({ route, fase, conAcceso, day }: PropsBotonCamara) {
   // (V2) FLOTANTE: la cámara de viaje es uno de los DOS botones flotantes de HOY (el otro es el de los logros, debajo). Va encima del de los logros (y de «Reorganizar» o el lápiz, si salen).
   const { debajo, alto } = useFlotantes()
-  const modoApp = useRouteStore((s) => s.mode)
-  const hayReorganizar = useBotonReorganizarVisible()
-  const hayLapiz = useLapizVisible().visible
-  const hayOtroFlotante = hayReorganizar || hayLapiz
-  const sueloLogros = alto !== null ? `${alto}px` : `calc(env(safe-area-inset-bottom,0px) + ${modoApp === 'today' ? 120 : 88}px)`
+  // (V42 §6) Reorganizar y el lápiz van en la columna de la izquierda: la cámara ya no sube por ellos.
+  const sueloLogros = alto !== null ? `${alto}px` : `calc(env(safe-area-inset-bottom,0px) + 88px)`
   const tripId = useSyncStore((s) => s.activeTripId) ?? route.id
   const [hoja, setHoja] = useState<ModoDeCamara | null>(null)
   const [camara, setCamara] = useState<PedidoDeFoto | null>(null)
@@ -325,7 +319,7 @@ export function BotonCamaraViaje({ route, fase, conAcceso, day }: PropsBotonCama
         data-modo={modo}
         aria-label="Tu cámara de viaje"
         className="zona-toque flex items-center justify-center transition-transform active:scale-95"
-        style={{ ...ESTILO_FLOTANTE, position: 'fixed', right: 21, bottom: `calc(${sueloLogros} + ${SOBRE_LOS_LOGROS + (hayOtroFlotante ? SOBRE_LOS_LOGROS : 0)}px)`, zIndex: debajo ? 40 : 85 }}
+        style={{ ...ESTILO_FLOTANTE, position: 'fixed', right: 21, bottom: `calc(${sueloLogros} + ${SOBRE_LOS_LOGROS}px)`, zIndex: debajo ? 40 : 85 }}
       >
         <Trazo d={CAMARA} tam={20} color="#7A5A1E" grosor={1.8} />
       </button>

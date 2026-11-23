@@ -23,7 +23,7 @@ import { AddDayChooser } from './freeDay/AddDayChooser'
 import { useDestinationExcursions } from '../../lib/destinationExcursions'
 import { useExcursionsStore } from '../../store/useExcursionsStore'
 import { isDayPinned } from '../../lib/bookings'
-import { etiquetaDeViaje, nombrePropioDelDia, useNombreDeDias } from '../../lib/tituloDelDia'
+import { AÑADE_TUS_SITIOS, DIA_POR_ORGANIZAR, etiquetaDeViaje, nombrePropioDelDia, useNombreDeDias } from '../../lib/tituloDelDia'
 import { SaleCards } from './reservas/SaleCards'
 import { diaCorto, diaProsa, elDia, fichaDelDia } from '../../lib/nombreDeDia'
 import { canAddDay, canMoveDay, isFreeDay } from '../../lib/freeDays'
@@ -303,7 +303,12 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                 {!ficha && (
                   <p className="flex items-center gap-2 font-mono text-[10px] font-medium uppercase tracking-[.14em] text-text/50">{diaCorto(route, day.dayNumber)}</p>
                 )}
-                {sinNombre ? (
+                {title === DIA_POR_ORGANIZAR ? (
+                  <>
+                    <p data-titulo-del-dia="1" className="min-h-[20px] font-display text-[18px] leading-[1.1] text-text [overflow-wrap:anywhere]">{title}</p>
+                    <p data-anade-tus-sitios="1" className="text-[12.5px] leading-snug text-text/55">{AÑADE_TUS_SITIOS}</p>
+                  </>
+                ) : sinNombre ? (
                   <button
                     type="button"
                     data-ponle-nombre="1"

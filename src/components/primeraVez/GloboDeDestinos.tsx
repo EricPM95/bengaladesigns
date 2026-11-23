@@ -222,25 +222,45 @@ export default function GloboDeDestinos({ destinos, estados, onCerrar, onMas }: 
 
   const grupos = useMemo(() => porContinente(destinos), [destinos])
   const alternar = () => setHoja((h) => (h === 'baja' ? 'sube' : 'baja'))
-  // El asa de la hoja: tocar la alterna; arrastrar hacia arriba la sube y hacia abajo la baja. Se sigue el dedo en toda la ventana (sin depender de la captura del puntero, que no todos los navegadores dan al ratón).
+  // (V42 §4, Eric) El TIRADOR de la hoja, a prueba de iPhone: la hoja SIGUE AL DEDO mientras se arrastra (sin esperar a pasar un umbral) y al soltar se queda en una de sus dos posiciones (según hacia dónde iba y por dónde pasaba);
+  // tocarlo (sin mover) también la cambia. Se coge el puntero con setPointerCapture (así el movimiento no pasa al globo ni a nada de debajo) y todo el encabezado de la hoja (asa y título) es tirador. La lista de abajo se desplaza sola (pan-y) y no mueve la hoja.
+  const [arrastre, setArrastre] = useState<number | null>(null)
   const empezarArrastre = (e: PE<HTMLDivElement>) => {
-    const inicio = { y: e.clientY, hecho: false }
+    e.stopPropagation()
+    const alt = alto()
+    const topDe = (h: Hoja) => (h === 'baja' ? TOP_BAJA : TOP_SUBE) * alt
+    const arriba = TOP_SUBE * alt
+    const abajoDelTodo = TOP_BAJA * alt
+    const inicio = { y: e.clientY, top: topDe(hojaRef.current), t: performance.now(), movido: false, ultimoY: e.clientY, ultimoT: performance.now(), v: 0 }
+    try {
+      e.currentTarget.setPointerCapture?.(e.pointerId)
+    } catch {
+      /* sin captura: se sigue con la ventana */
+    }
     const mover = (ev: PointerEvent) => {
-      if (inicio.hecho) return
       const dy = ev.clientY - inicio.y
-      if (dy < -24) {
-        inicio.hecho = true
-        setHoja('sube')
-      } else if (dy > 24) {
-        inicio.hecho = true
-        setHoja('baja')
-      }
+      if (!inicio.movido && Math.abs(dy) < 5) return
+      inicio.movido = true
+      const ahora = performance.now()
+      if (ahora > inicio.ultimoT) inicio.v = (ev.clientY - inicio.ultimoY) / (ahora - inicio.ultimoT)
+      inicio.ultimoY = ev.clientY
+      inicio.ultimoT = ahora
+      setArrastre(Math.max(arriba, Math.min(abajoDelTodo, inicio.top + dy)))
     }
     const soltar = (ev: PointerEvent) => {
       window.removeEventListener('pointermove', mover)
       window.removeEventListener('pointerup', soltar)
       window.removeEventListener('pointercancel', soltar)
-      if (!inicio.hecho && ev.type === 'pointerup') alternar()
+      if (!inicio.movido) {
+        if (ev.type === 'pointerup') alternar()
+        return
+      }
+      // Un empujón rápido manda; si no, una arrastrada de más de un 12 % del recorrido sigue hacia donde iba el dedo; una menor la devuelve a donde estaba.
+      const dy = ev.clientY - inicio.y
+      const recorrido = abajoDelTodo - arriba
+      const destino: Hoja = Math.abs(inicio.v) > 0.45 ? (inicio.v < 0 ? 'sube' : 'baja') : Math.abs(dy) > recorrido * 0.12 ? (dy < 0 ? 'sube' : 'baja') : hojaRef.current
+      setArrastre(null)
+      setHoja(destino)
     }
     window.addEventListener('pointermove', mover)
     window.addEventListener('pointerup', soltar)
@@ -275,11 +295,11 @@ export default function GloboDeDestinos({ destinos, estados, onCerrar, onMas }: 
         </svg>
       </button>
       {/* La hoja: bajada se ve casi todo el globo; subida, la lista por continentes. */}
-      <div data-globo-hoja style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: `${(hoja === 'baja' ? TOP_BAJA : TOP_SUBE) * 100}%`, borderRadius: '30px 30px 0 0', background: '#FFFDF8', boxShadow: '0 -18px 40px -18px rgba(28,34,48,.5)', display: 'flex', flexDirection: 'column', transition: reducirMovimiento() ? 'none' : 'top .35s ease' }}>
-        <div data-globo-asa {...asa} role="button" tabIndex={0} aria-label={hoja === 'baja' ? 'Subir la lista' : 'Bajar la lista'} onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && alternar()} style={{ flex: 'none', padding: '10px 0 6px', cursor: 'pointer', display: 'flex', justifyContent: 'center', touchAction: 'none' }}>
+      <div data-globo-hoja style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: arrastre != null ? arrastre : `${(hoja === 'baja' ? TOP_BAJA : TOP_SUBE) * 100}%`, borderRadius: '30px 30px 0 0', background: '#FFFDF8', boxShadow: '0 -18px 40px -18px rgba(28,34,48,.5)', display: 'flex', flexDirection: 'column', transition: reducirMovimiento() || arrastre != null ? 'none' : 'top .35s ease' }} onPointerDown={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()}>
+        <div data-globo-asa {...asa} role="button" tabIndex={0} aria-label={hoja === 'baja' ? 'Subir la lista' : 'Bajar la lista'} onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && alternar()} style={{ flex: 'none', padding: '12px 0 8px', minHeight: 44, boxSizing: 'border-box', cursor: 'grab', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none' }}>
           <span style={{ width: 42, height: 5, borderRadius: 5, background: 'rgba(28,34,48,.2)' }} />
         </div>
-        <div style={{ flex: 'none', padding: '2px 20px 10px' }}>
+        <div data-globo-titulo {...asa} style={{ flex: 'none', padding: '2px 20px 10px', touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none' }}>
           <span style={{ font: `400 30px/1.02 ${SERIE}` }}>
             ¿A dónde te <em style={{ color: '#8A6A2C' }}>apetece ir?</em>
           </span>

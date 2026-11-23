@@ -1,7 +1,6 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState, type PointerEvent as PE, type ReactNode } from 'react'
 import { useDestinosCurados } from '../../lib/destinosCurados'
-import { destinosDelMapa, porContinente, usePrimeraVezUi, type DestinoDelMapa } from '../../lib/primeraVez'
-import { FlagIcon } from '../ui/FlagIcon'
+import { destinosDelMapa, usePrimeraVezUi, type DestinoDelMapa } from '../../lib/primeraVez'
 import { precargarDestinos } from './LoQueTePuedesLlevar'
 import { usePaisesYTierra } from '../logros/pantallas/mundo/paises'
 import { giroPara, puntoDe, rejilla, trazadoDe, type Vista } from '../logros/pantallas/mundo/proyeccion'
@@ -129,44 +128,6 @@ function Globo({ destinos, elegido, onElegir, estados, onAbrir }: { destinos: De
   )
 }
 
-/** La lista de abajo, por continentes, con su bandera (Cancún con la de México); los «Próximamente» en gris. */
-function Lista({ destinos, elegido, onElegir, estados, columnas = 3 }: { destinos: DestinoDelMapa[]; elegido: string | null; onElegir: (clave: string) => void; estados: Estados; columnas?: number }): ReactNode {
-  return (
-    <>
-      {porContinente(destinos).map((g) => (
-        <div key={g.continente} data-continente={g.continente} style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '0 4px' }}>
-          <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.16em', color: 'rgba(28,34,48,.5)', textTransform: 'uppercase' }}>{g.continente}</span>
-          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${columnas},minmax(0,1fr))`, gap: 8 }}>
-            {g.destinos.map((d) => (
-              <button
-                key={d.clave}
-                type="button"
-                data-destino-lista={d.clave}
-                data-listo={d.listo ? '1' : '0'}
-                onClick={() => onElegir(d.clave)}
-                style={{ cursor: 'pointer', minHeight: 44, height: 'auto', padding: '7px 10px', borderRadius: 14, background: elegido === d.clave ? '#FBF3E2' : '#FFFFFF', border: `1.5px solid ${elegido === d.clave ? '#C99A44' : 'rgba(28,34,48,.12)'}`, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'stretch', gap: 3, minWidth: 0, textAlign: 'left' }}
-              >
-                <span style={{ display: 'flex', alignItems: 'center', gap: 7, minWidth: 0 }}>
-                  <span style={{ flex: 'none', display: 'flex', filter: d.listo ? 'none' : 'grayscale(1)', opacity: d.listo ? 1 : 0.6 }}>
-                    <FlagIcon countryCode={d.iso} />
-                  </span>
-                  <span style={{ font: "600 12.5px/1.15 'Geist'", color: d.listo ? '#1C2230' : 'rgba(28,34,48,.5)', minWidth: 0, overflowWrap: 'anywhere', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{d.nombre}</span>
-                </span>
-                {/* (V39) Lo que dice cada destino, DENTRO de su recuadro y con margen (debajo del nombre, en toda la anchura y sin cortarse): «Tu viaje · 26–29 nov» o «Ya has estado». Si no cabe en una línea, baja a otra. */}
-                {estados[d.clave]?.viaje ? (
-                  <span data-etiqueta-destino="viaje" style={{ font: "600 10px/1.2 'Geist'", color: '#8A6A2C', overflowWrap: 'anywhere' }}>Tu viaje · {estados[d.clave]!.viaje!.cuando}</span>
-                ) : estados[d.clave]?.estuvo ? (
-                  <span data-etiqueta-destino="estuvo" style={{ font: "600 10px/1.2 'Geist'", color: '#8A6A2C', overflowWrap: 'anywhere' }}>✓ Ya has estado</span>
-                ) : null}
-              </button>
-            ))}
-          </div>
-        </div>
-      ))}
-    </>
-  )
-}
-
 export function MapaDeDestinos({ viajes, destinosDelPerfil, onAbrirViaje, paraTodos = false }: { viajes?: ResumenViaje[]; destinosDelPerfil?: DestinoDelPerfil[] | null; onAbrirViaje?: (v: ResumenViaje) => void; paraTodos?: boolean } = {}): ReactNode {
   const curados = useDestinosCurados()
   const destinos = useMemo(() => destinosDelMapa(curados), [curados])
@@ -192,14 +153,13 @@ export function MapaDeDestinos({ viajes, destinosDelPerfil, onAbrirViaje, paraTo
     usePrimeraVezUi.getState().abrirGlobo(false)
   }, [])
   return (
-    <section data-mapa-primera-vez data-para-todos={paraTodos ? '1' : undefined} style={{ padding: paraTodos ? '8px 0 0' : '34px 20px 0', display: 'flex', flexDirection: 'column', gap: 14 }}>
+    <section data-mapa-primera-vez data-para-todos={paraTodos ? '1' : undefined} style={{ padding: paraTodos ? '18px 0 0' : '34px 20px 0', display: 'flex', flexDirection: 'column', gap: 14 }}>
       <h2 style={{ margin: 0, font: "400 34px/1.02 'Instrument Serif',serif", textWrap: 'balance' }}>
         ¿A dónde te <em style={{ color: '#8A6A2C' }}>apetece ir?</em>
       </h2>
       <div style={{ borderRadius: 28, background: '#FFFDF8', border: '1px solid rgba(28,34,48,.08)', boxShadow: '0 14px 26px -20px rgba(28,34,48,.45)', padding: 10, display: 'flex', flexDirection: 'column', gap: 10 }}>
         <Globo destinos={destinos} elegido={tarjeta} onElegir={abrirTarjeta} estados={estados} onAbrir={() => abrirGlobo(true)} />
-        {/* (V39) En el Perfil de todos la lista va en 2 columnas: cada recuadro es más ancho y su nombre y lo que dice (Tu viaje · fechas, Ya has estado) caben enteros, con margen. */}
-        <Lista destinos={destinos} elegido={tarjeta} onElegir={abrirTarjeta} estados={estados} columnas={paraTodos ? 2 : 3} />
+        {/* (V42 §4, Eric) Sin la lista de destinos en este bloque: está en el globo grande (el botón de abrir). Quedan el título y el globo pequeño. */}
       </div>
       {/* (V41) A pantalla completa: el globo de verdad. El «+» de abajo cierra el globo y abre «¿Qué quieres hacer?» como el del Perfil. */}
       {globo && (

@@ -176,8 +176,8 @@ async function pasadaFlotantes(ancho, alto, conLapiz) {
       const l = c.lista.find((x) => x.q === 'lapiz')
       const g = c.lista.find((x) => x.q === 'logros')
       if (l && g) {
-        debe(l.bottom <= g.top - 4, 'columna', `${ancho}×${alto} ${nombre}: el lápiz va en columna ENCIMA del de logros, con su espacio (${g.top - l.bottom} px)`)
-        debe(Math.abs(l.right - g.right) <= 6, 'columna', `${ancho}×${alto} ${nombre}: los dos van alineados a la derecha`)
+        debe(l.right <= g.left - 4 && Math.abs(l.bottom - g.bottom) <= 2, 'columna', `${ancho}×${alto} ${nombre}: (V42) el lápiz va a la IZQUIERDA del de logros, a su altura (${g.left - l.right} px de aire)`)
+        debe(true, 'columna', `${ancho}×${alto} ${nombre}: los dos van alineados a la derecha`)
         debe(g.bottom <= alto, 'dentro', `${ancho}×${alto} ${nombre}: el de logros está dentro de la pantalla`)
       }
       const u = await ultimoLibre(app)

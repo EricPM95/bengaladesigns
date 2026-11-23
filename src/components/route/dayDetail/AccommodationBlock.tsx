@@ -16,7 +16,11 @@ interface AccommodationBlockProps {
 }
 
 const DORADO_REDONDO = 'linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440)'
-const FILA = { fontFamily: "'Geist Mono',monospace", fontSize: 8.5, fontWeight: 600, letterSpacing: '.14em', color: '#8E6820', whiteSpace: 'nowrap' as const }
+// (V42 §5.4, Design «02 · Días · con alojamiento») Con el alojamiento puesto, todo en verde: borde, cama, ✓ en la esquina del icono y la etiqueta.
+const VERDE = 'oklch(0.5 0.1 150)'
+const FILA = { fontFamily: "'Geist Mono',monospace", fontSize: 8.5, fontWeight: 600, letterSpacing: '.14em', color: VERDE, whiteSpace: 'nowrap' as const, overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }
+/** El nombre corto de la zona: «Centro (Panteón, Trevi, Navona)» → «Centro». */
+export const zonaCorta = (zona: string): string => zona.replace(/\s*[([].*$/, '').trim() || zona
 
 /**
  * EL BLOQUE DEL ALOJAMIENTO, ARRIBA DE LOS DÍAS (V24; Design `Alojamiento Aviso` A1, A2, B1 y B2). Antes vivía dentro del día 1 (tanda 10N11); ahora va fuera, encima del primer día de cada destino, y no se repite dentro de los días.
@@ -37,7 +41,7 @@ export function AccommodationBlock({ city, segmentDayId, onAnadir }: Accommodati
   const zona = pago && esLaPrimera ? viaje.zonaNombre : null
   const direccion = pago && esLaPrimera ? viaje.direccion : null
   const enlace = pago && esLaPrimera ? enlaceComoLlegarAlojamiento(viaje.direccion) : null
-  const etiqueta = `TU ALOJAMIENTO · ${(zona ?? city).toUpperCase()}`
+  const etiqueta = `ALOJAMIENTO · ${zonaCorta(zona ?? city).toUpperCase()}`
 
   const cama = (color: string, tamano: number) => (
     <svg width={tamano} height={tamano} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -45,11 +49,10 @@ export function AccommodationBlock({ city, segmentDayId, onAnadir }: Accommodati
     </svg>
   )
   const svgIr = (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F3D88F" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F6EFE0" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M3 11l18-8-8 18-2-8z" />
     </svg>
   )
-  const botonIr = { height: 36, padding: '0 16px', borderRadius: 12, background: '#1C2230', boxShadow: 'inset 0 0 0 1.5px rgba(243,213,154,.55)', color: '#F3D88F', display: 'flex', alignItems: 'center', gap: 6, font: "700 13px 'Geist',sans-serif", flex: 'none', cursor: 'pointer', textDecoration: 'none', border: 0 } as const
 
   // A1: sin alojamiento.
   if (!nombre) {
@@ -80,7 +83,15 @@ export function AccommodationBlock({ city, segmentDayId, onAnadir }: Accommodati
     )
   }
 
-  // A2: con alojamiento. Con el pase, [Ir] lleva a la dirección (si no hay dirección, no sale: al tocar la tarjeta se abre «Tu alojamiento» para ponerla); sin el pase, [Ir] con el candado.
+  // A2 (V42 §5.4, Design «02 · Días · con alojamiento»): con alojamiento, todo en verde (borde, cama y ✓ en la esquina del icono); arriba «ALOJAMIENTO · ZONA» (corta, con «…» antes del botón si no cabe), debajo el nombre y la dirección tal como la puso el viajero, con su pin; y a la derecha el botón REDONDO oscuro con la flecha (sin la palabra «Ir»), solo si hay dirección.
+  // Con el pase, la flecha lleva a la dirección (solo si hay dirección); sin el pase, la flecha con el candado (al tocarla, el aviso del pase: es la invitación al Pase).
+  const botonRedondo = { width: 38, height: 38, borderRadius: '50%', background: '#1C2230', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.28)', color: '#F6EFE0', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none', cursor: 'pointer', border: 0, padding: 0, textDecoration: 'none' } as const
+  const pinChico = (
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flex: 'none' }}>
+      <path d="M12 21s-7-6.2-7-11.2A7 7 0 0 1 19 9.8C19 14.8 12 21 12 21z" />
+      <circle cx="12" cy="9.8" r="2.4" />
+    </svg>
+  )
   return (
     <div
       data-alojamiento-dia-bloque={pago ? 'con-pase' : 'sin-pase'}
@@ -91,24 +102,34 @@ export function AccommodationBlock({ city, segmentDayId, onAnadir }: Accommodati
         if (e.key === 'Enter') abrirTuAlojamiento(segmentDayId)
       }}
       aria-label={`Ver o cambiar tu alojamiento: ${nombre}`}
-      style={{ minHeight: 60, display: 'flex', alignItems: 'center', gap: 10, padding: '7px 8px', borderRadius: 18, background: '#FFFDF8', border: '1px solid rgba(181,138,46,.5)', boxShadow: '0 12px 22px -16px rgba(110,80,24,.55)', boxSizing: 'border-box', cursor: 'pointer' }}
+      style={{ minHeight: 60, display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px 8px 8px', borderRadius: 18, background: '#FFFDF8', border: '1.2px solid rgba(63,125,88,.55)', boxShadow: '0 12px 22px -16px rgba(40,90,60,.35)', boxSizing: 'border-box', cursor: 'pointer' }}
     >
-      <span aria-hidden="true" style={{ width: 42, height: 42, flex: 'none', borderRadius: 12, background: 'linear-gradient(135deg,#FBF1CF,#E8CC8C)', border: '1.5px solid #C9A45A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{cama('#7A5A1E', 20)}</span>
+      <span aria-hidden="true" data-alojamiento-cama style={{ position: 'relative', width: 42, height: 42, flex: 'none', borderRadius: 12, background: 'rgba(63,125,88,.16)', border: `1.2px solid ${VERDE}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {cama(VERDE, 20)}
+        <span data-alojamiento-visto style={{ position: 'absolute', top: -6, right: -6, width: 17, height: 17, borderRadius: '50%', background: VERDE, border: '2px solid #FFFDF8', display: 'flex', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box' }}>
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+        </span>
+      </span>
       <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <span style={FILA}>{etiqueta}</span>
-        <span style={{ font: "400 18px/1.1 'Instrument Serif',serif", whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nombre}</span>
-        {direccion && <span style={{ fontSize: 11, color: 'rgba(28,34,48,.55)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{direccion}</span>}
+        <span data-alojamiento-etiqueta style={FILA}>{etiqueta}</span>
+        <span data-alojamiento-nombre style={{ font: "400 18px/1.1 'Instrument Serif',serif", whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nombre}</span>
+        {direccion && (
+          <span data-alojamiento-direccion style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'rgba(28,34,48,.55)', minWidth: 0 }}>
+            {pinChico}
+            <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>{direccion}</span>
+          </span>
+        )}
       </span>
       {pago ? (
         enlace && (
-          <a className="zona-toque" href={enlace} target="_blank" rel="noopener noreferrer" data-alojamiento-dia="ir" aria-label="Ir al alojamiento" style={botonIr} onClick={(e) => e.stopPropagation()}>
-            {svgIr}Ir
+          <a className="zona-toque" href={enlace} target="_blank" rel="noopener noreferrer" data-alojamiento-dia="ir" aria-label="Ir al alojamiento" style={botonRedondo} onClick={(e) => e.stopPropagation()}>
+            {svgIr}
           </a>
         )
       ) : (
         <span style={{ position: 'relative', flex: 'none', display: 'flex' }}>
-          <button type="button" className="zona-toque" data-alojamiento-dia="ir-candado" aria-label="Ir al alojamiento (con el Pase)" style={botonIr} onClick={(e) => { e.stopPropagation(); abrirAvisoPase('alojamiento') }}>
-            {svgIr}Ir
+          <button type="button" className="zona-toque" data-alojamiento-dia="ir-candado" aria-label="Ir al alojamiento (con el Pase)" style={botonRedondo} onClick={(e) => { e.stopPropagation(); abrirAvisoPase('alojamiento') }}>
+            {svgIr}
           </button>
           <CandadoRedondo tamano="pequeno" esquina datos="alojamiento-ir" />
         </span>

@@ -91,7 +91,7 @@ function Boton({ soloEn }: { soloEn: string[] | null }): ReactNode {
       aria-label={`${estado?.ciudad ? `Tus logros en ${estado.ciudad}` : 'Tus logros'}${puntito ? ' (hay algo nuevo)' : ''}`}
       onClick={() => useMomentosUI.getState().abrirHojaLogros()}
       className="mo"
-      style={{ right: 21, bottom: alto !== null ? `${alto}px` : `calc(env(safe-area-inset-bottom,0px) + ${modo === 'today' ? 120 : 88}px)`, ...ESTILO_FLOTANTE, position: 'fixed', cursor: 'pointer', zIndex: debajo ? 30 : 99 }}
+      style={{ right: 21, bottom: alto !== null ? `${alto}px` : `calc(env(safe-area-inset-bottom,0px) + 88px)`, ...ESTILO_FLOTANTE, position: 'fixed', cursor: 'pointer', zIndex: debajo ? 30 : 99 }}
     >
       <BotonVisual sello={sello?.id ?? 'roma'} grado={grado} fraccion={fraccion} puntito={puntito} />
     </button>

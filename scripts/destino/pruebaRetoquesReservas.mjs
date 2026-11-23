@@ -58,7 +58,7 @@ debe(/coche === 'alquiler' && !rentalBooking && \(\s*<span\s+data-coche-super-re
 const store = leer('src/store/useReservasFocusStore.ts')
 debe(/'excursiones' \| 'coche'/.test(store), '2h', 'la ficha puede pedir el bloque del coche')
 const exc = leer('src/components/route/reservas/ExcursionesReservas.tsx')
-debe(/excursionesDeLaRuta\(route, reservations\)/.test(exc) && /hasEnoughDaysForExcursions\(route, info\.fromDays\) \|\| hayDiaDeExcursion/.test(exc), '2i', 'el bloque «Excursiones» sale con un día de excursión aunque el destino no marque `excursiones_desde_dias` (Lanzarote)')
+debe(/excursionesDeLaRuta\(route, reservations\)/.test(exc) && /Excursiones y actividades/.test(exc), '2i', 'el bloque «Excursiones» sale con un día de excursión aunque el destino no marque `excursiones_desde_dias` (Lanzarote)')
 const ready = leer('src/hooks/useTripReadiness.ts')
 debe(/filaExcursion\.excursion/.test(ready), '2j', 'el % de viaje listo también cuenta la excursión de Lanzarote')
 

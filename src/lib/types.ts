@@ -910,6 +910,8 @@ export interface DayPlan {
   excursionSocialProof?: string | null
   /** El viajero dijo que no a la excursión de este día: no se le vuelve a proponer sola. */
   excursionDeclined?: boolean
+  /** (V42 §5.2) El viajero pasó un día de excursión a «Crear mi propio día»: sin paradas se llama «Día por organizar» (no sigue llamándose como la excursión). */
+  porOrganizar?: boolean
   /**
    * Por qué este día empieza antes de su hora ("Hoy empezamos a las 07:30 para que te dé tiempo a
    * ver X"). Null en el resto.

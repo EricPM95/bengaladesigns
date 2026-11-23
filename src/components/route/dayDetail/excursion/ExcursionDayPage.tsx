@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { fotoGrande } from '../../../../lib/fotoCivitatis'
 import { precioTiendaEnVista } from '../../../../lib/moneda'
 import type { Excursion } from '../../../../lib/types'
 import { hoursLabel } from './hoursLabel'
@@ -193,7 +194,7 @@ export function ExcursionDayPage({
 
       <div className="overflow-hidden rounded-[22px] border border-text/[.08] bg-bg-card shadow-[0_14px_30px_-24px_rgba(28,34,48,.45)]">
         <div className="relative h-44" style={{ backgroundColor: view.color }}>
-          {view.photoUrl && <img src={view.photoUrl} alt={view.fullName} className="absolute inset-0 h-full w-full object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />}
+          {view.photoUrl && <img src={fotoGrande(view.photoUrl) ?? view.photoUrl} alt={view.fullName} loading="lazy" decoding="async" data-foto-grande className="absolute inset-0 h-full w-full object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />}
           <span className="absolute left-3 top-3 flex h-[30px] items-center gap-[7px] rounded-full bg-bg-card/90 px-3 font-mono text-[10.5px] font-semibold uppercase tracking-[.12em] text-text">
             <Icono nombre="casa" size={13} className="shrink-0" />
             Excursión del día

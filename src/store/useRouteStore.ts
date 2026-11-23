@@ -1340,6 +1340,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
             dayType,
             stops: keepsStops ? (day.stops.length > 0 ? day.stops : (snapshot ?? [])) : [],
             stopsBeforeConversion: snapshot,
+            // (V42 §5.2) De un día de excursión a «Crear mi propio día»: deja de llamarse como la excursión («La Graciosa (excursión)») y pasa a «Día por organizar».
+            ...(dayType === 'manual' && day.dayType === 'excursion' ? { porOrganizar: true, curatedTitle: undefined, title: day.city } : {}),
             // Al dejar de ser excursión, la elección deja de tener sentido.
             selectedExcursionId: dayType === 'excursion' ? (day.selectedExcursionId ?? null) : null,
             // Salir de un día de excursión hacia una ruta de ciudad es RECHAZARLA: se anota para no

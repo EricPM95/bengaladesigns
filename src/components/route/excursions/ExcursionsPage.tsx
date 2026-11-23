@@ -1,4 +1,5 @@
 import { precioTiendaEnVista, useMonedaViajero } from '../../../lib/moneda'
+import { fotoGrande } from '../../../lib/fotoCivitatis'
 import { useEffect, useState } from 'react'
 import { useHuecoAlFinal } from '../../propuesta/BotonDePropuesta'
 import { createPortal } from 'react-dom'
@@ -43,10 +44,13 @@ function ExcursionPhoto({ excursion, destination }: { excursion: Excursion; dest
       alive = false
     }
   }, [excursion.photoName, excursion.title, excursion.photoUrl, destination])
-  const url = excursion.photoUrl ?? photo?.small ?? null
+  // (V42 §3) La foto GRANDE de la misma foto de Civitatis, perezosa (esta tarjeta es ancha: la pequeña se veía pixelada).
+  const url = fotoGrande(excursion.photoUrlBig ?? excursion.photoUrl) ?? photo?.small ?? null
   return (
     <div className="relative">
-      <div className="h-40 w-full bg-bg-hover" style={url ? { backgroundImage: `url(${url})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined} role="img" aria-label={excursion.title} />
+      <div className="relative h-40 w-full overflow-hidden bg-bg-hover" role="img" aria-label={excursion.title}>
+        {url && <img src={url} alt="" loading="lazy" decoding="async" data-foto-grande className="h-full w-full object-cover" />}
+      </div>
       {!excursion.photoUrl && hayCreditoDeFoto(photo) && (
         <FotoCredito
           photo={photo}

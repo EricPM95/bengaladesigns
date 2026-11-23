@@ -112,7 +112,7 @@ const inv = await abrir({ invitado: true })
     const v = await vistos(app)
     debe(v.lapiz?.encima === true, 'lápiz', `${nombre}: se ve el lápiz (${JSON.stringify(v.lapiz)})`)
     debe(v.logros?.encima === true, 'logros', `${nombre}: se ve el botón de los logros (${JSON.stringify(v.logros)})`)
-    if (v.lapiz && v.logros) debe(v.lapiz.bottom <= v.logros.top, 'solape', `${nombre}: el lápiz va encima del botón de los logros, sin pisarlo`)
+    if (v.lapiz && v.logros) debe(v.lapiz.right <= v.logros.left && Math.abs(v.lapiz.bottom - v.logros.bottom) <= 1, 'solape', `${nombre}: (V42) el lápiz va a la izquierda del botón de los logros, sin pisarlo`)
     await app.captura(jpg(id))
   }
 

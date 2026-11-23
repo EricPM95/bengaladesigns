@@ -179,7 +179,7 @@ for (const dias of [1, 2, 3, 4, 5, 6]) {
         // El resumen de arriba (de pago) cuenta lo mismo: «Entradas x/n» con las de «En tu ruta».
         if (bloque.enRuta.length > 0) debe(new RegExp(`Entradas ${bloque.enRuta.filter((x) => x.reservation).length}/${bloque.enRuta.length}`).test(r.texto), '4 entradas', `${etiqueta}: la ficha del resumen no dice «Entradas ${bloque.enRuta.filter((x) => x.reservation).length}/${bloque.enRuta.length}»`)
         // 5. las excursiones: según los días del viaje
-        const deberia = hasEnoughDaysForExcursions(route, desde) && info.excursions.length > 0
+        const deberia = true // (V42 §2) «Excursiones y actividades» sale en TODOS los viajes
         debe(r.bloques.includes('excursiones') === deberia, '5 excursiones', `${etiqueta}: el bloque de excursiones ${r.bloques.includes('excursiones') ? 'sale' : 'no sale'} y con ${dias} días ${deberia ? 'debería' : 'no debería'} (desde ${desde})`)
         if (version === 'completa' && estado === 'todo hecho' && fechas && dias === 5) nota(`- ${etiqueta}: bloques ${r.bloques.join(' · ')}; entradas en la ruta ${bloque.enRuta.length}, de más ${bloque.masEntradas.length}`)
       }
@@ -202,8 +202,8 @@ for (const dias of [4, 5, 6]) {
   }
   debe(/En tu ruta el/.test(a.texto.slice(a.texto.indexOf('XCURSI'))) || /Excursi/.test(a.texto), '5 excursiones', `${dias} días con interruptor: no sale la tarjeta de la excursión del día`)
   // (10S10 §4) antes: sin día de excursión salía suelta la tarjeta «Excursiones desde Roma»; ahora → un bloque «Excursiones» (como «Entradas y Free Tour») CERRADO con «Ninguna en tu ruta» y, con el día de excursión, «0 de 1 reservada». Decisión de Eric (10S10, 1-nov).
-  debe(/Excursiones\s*\n?\s*Ninguna en tu ruta/.test(b.texto), '5 excursiones', `${dias} días sin interruptor: el bloque Excursiones no dice «Ninguna en tu ruta»`)
-  debe(/Excursiones\s*\n?\s*0 de 1 reservada/.test(a.texto), '5 excursiones', `${dias} días con interruptor: el bloque Excursiones no dice «0 de 1 reservada»`)
+  debe(/Excursiones y actividades\s*\n?\s*Ninguna en tu ruta/.test(b.texto), '5 excursiones', `${dias} días sin interruptor: el bloque Excursiones no dice «Ninguna en tu ruta»`)
+  debe(/Excursiones y actividades\s*\n?\s*0 de 1 reservada/.test(a.texto), '5 excursiones', `${dias} días con interruptor: el bloque Excursiones no dice «0 de 1 reservada»`)
   debe(!/Excursiones desde Roma/.test(a.texto), '5 excursiones', `${dias} días con interruptor: sale también «Excursiones desde Roma»`)
   // Nunca dos «Añádela» en el bloque de excursiones.
   for (const [nombre, r] of [['con interruptor', a], ['sin interruptor', b]]) {

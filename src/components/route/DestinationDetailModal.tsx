@@ -69,7 +69,7 @@ function Foto({ url, alto, prioridad = false, children }: { url: string | null; 
   )
 }
 
-function TarjetaDeActividad({ a, i, ancho }: { a: ActividadDeDestino; i: number; ancho: string }) {
+export function TarjetaDeActividad({ a, i, ancho }: { a: ActividadDeDestino; i: number; ancho: string }) {
   const precio = desdeTexto(a)
   return (
     <a href={withCampaign(a.url, null)} target="_blank" rel="noopener noreferrer" data-actividad={a.id} className={tarjeta} style={{ flex: 'none', width: ancho, scrollSnapAlign: 'start' }}>

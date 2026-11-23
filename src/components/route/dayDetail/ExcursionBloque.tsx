@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react'
+import { fotoGrande, fotoPequena } from '../../../lib/fotoCivitatis'
 import { createPortal } from 'react-dom'
 import type { Excursion } from '../../../lib/types'
 import { precioTiendaEnVista } from '../../../lib/moneda'
@@ -22,7 +23,9 @@ import { etiquetasDeExcursion } from '../../../lib/excursionEtiquetas'
 const precio = (e: Excursion): string => e.priceLabel ?? (e.price > 0 ? precioTiendaEnVista(e.price) : '')
 const nota = (e: Excursion): string | null => (e.rating ? e.rating.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : null)
 const opiniones = (e: Excursion): string | null => (e.reviewCount ? `${String(e.reviewCount).replace(/\B(?=(\d{3})+(?!\d))/g, '.')} opiniones` : null)
-const fotoDe = (e: Excursion): string | null => e.photoUrlBig || e.photoUrl || null
+// (V42 §3) La grande para las tarjetas grandes (perezosa) y la pequeña para las listas.
+const fotoDe = (e: Excursion): string | null => fotoGrande(e.photoUrlBig || e.photoUrl || null)
+const fotoDeLista = (e: Excursion): string | null => fotoPequena(e.photoUrl || e.photoUrlBig || null)
 const DEGRADADO = 'linear-gradient(120deg,#6FC0D8 0%,#2E86B0 55%,#1C5A84 100%)'
 
 function Estrella({ t = 13 }: { t?: number }) {
@@ -73,7 +76,9 @@ export function TarjetaDeExcursion({ excursion, dayNumber, reservada }: { excurs
   return (
     <div data-excursion-tarjeta={reservada ? 'reservada' : 'sin-reservar'} style={{ position: 'relative', overflow: 'hidden', borderRadius: 22, background: '#FFFFFF', border: '1px solid rgba(181,138,46,.28)', boxShadow: '0 14px 28px -22px rgba(110,80,24,.55)' }}>
       <div style={{ position: 'relative', height: 132, overflow: 'hidden' }}>
-        <div data-excursion-foto={foto ? 'operador' : 'degradado'} style={{ position: 'absolute', inset: 0, clipPath: 'polygon(0 0,100% 0,100% 100%,0 82%)', background: foto ? `url("${foto}") center/cover, ${DEGRADADO}` : DEGRADADO }} />
+        <div data-excursion-foto={foto ? 'operador' : 'degradado'} style={{ position: 'absolute', inset: 0, clipPath: 'polygon(0 0,100% 0,100% 100%,0 82%)', background: DEGRADADO, overflow: 'hidden' }}>
+          {foto && <img src={foto} alt="" loading="lazy" decoding="async" data-foto-grande style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+        </div>
         <div style={{ position: 'absolute', inset: 0, clipPath: 'polygon(0 0,100% 0,100% 100%,0 82%)', background: 'linear-gradient(180deg,rgba(20,30,50,.3),rgba(20,30,50,0) 45%,rgba(20,30,50,.3))' }} />
         <span style={{ position: 'absolute', left: 12, top: 12, height: 26, padding: '0 11px', borderRadius: 999, background: 'rgba(255,253,248,.94)', display: 'flex', alignItems: 'center', gap: 6, font: "600 10px 'Geist Mono',monospace", letterSpacing: '.1em' }}>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 17l2 3h14l2-3M5 17l1-6h12l1 6M12 11V4l5 3-5 2" /></svg>
@@ -194,7 +199,7 @@ export function HojaMasExcursiones({ opciones, dia, onElegir, onCerrar }: { opci
           </button>
         </div>
         {opciones.map((m) => {
-          const foto = fotoDe(m)
+          const foto = fotoDeLista(m)
           const n = nota(m)
           const o = opiniones(m)
           const p = precio(m)
@@ -271,7 +276,7 @@ export function ExcursionDayBloque({
         <button type="button" data-ver-mas-excursiones onClick={() => setMasAbierto(true)} style={{ display: 'flex', alignItems: 'center', gap: 12, height: 54, padding: '0 14px 0 16px', borderRadius: 18, background: '#FFFDF8', border: '1px solid rgba(28,34,48,.12)', cursor: 'pointer', textAlign: 'left' }}>
           <span style={{ display: 'flex' }} aria-hidden="true">
             {otras.slice(0, 2).map((o, k) => {
-              const foto = fotoDe(o)
+              const foto = fotoDeLista(o)
               return <span key={o.id} style={{ width: 26, height: 26, marginLeft: k ? -8 : 0, borderRadius: '50%', border: '2px solid #FFFDF8', background: foto ? `url("${foto}") center/cover, ${DEGRADADO}` : k ? 'linear-gradient(135deg,#7AD0C0,#1A7A8A)' : 'linear-gradient(135deg,#E8B070,#B8602A)' }} />
             })}
           </span>

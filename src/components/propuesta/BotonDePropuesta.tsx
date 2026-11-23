@@ -4,7 +4,7 @@ import { usePropuestaStore } from '../../store/usePropuestaStore'
 import { logrosActivos } from '../../lib/logros'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useBotonReorganizarVisible } from '../reorganizar/useBotonReorganizarVisible'
-import { AIRE_BAJO_LOS_BOTONES, LADO_DE_LOS_FLOTANTES, SOBRE_LOS_LOGROS as SUBE, useFlotantes, useLapizALaVista } from '../flotantes/flotantes'
+import { AIRE_BAJO_LOS_BOTONES, LADO_DE_LOS_FLOTANTES, SOBRE_LOS_LOGROS as SUBE, useFlotantes, useColumnaIzquierda, bottomDeLaFila, DERECHA_DE_LA_COLUMNA_IZQUIERDA } from '../flotantes/flotantes'
 
 /**
  * EL LÁPIZ FLOTANTE DE LA PROPUESTA (Tanda 10N, apartado 6; «Propuesta Botón · A»): un círculo azul noche con el lápiz y, encima, el numerito de cambios en oro, justo ENCIMA del botón de los logros.
@@ -13,8 +13,9 @@ import { AIRE_BAJO_LOS_BOTONES, LADO_DE_LOS_FLOTANTES, SOBRE_LOS_LOGROS as SUBE,
  *   · Si ya mandó su propuesta y espera respuesta, el lápiz sigue con el numerito en claro (los que esperan) para poder ver lo enviado.
  * No tapa el botón de los logros (va encima) ni la última parada de una lista (DÍAS y EXPLORAR dejan espacio: `EspacioParaElLapiz`).
  */
-export const ALTO_DEL_LAPIZ = 56
-const SOBRE_LOS_LOGROS = SUBE
+// (V42 §6) Del mismo tamaño que los demás botones flotantes (44), en la columna de la izquierda (flotantes.ts).
+export const ALTO_DEL_LAPIZ = LADO_DE_LOS_FLOTANTES
+const SOBRE_LOS_LOGROS = SUBE // (lo que sube una fila: lo usa el hueco del final)
 
 export function useLapizVisible(): { visible: boolean; n: number; enEsperaN: number } {
   const { activa, n, enEsperaN } = useLaPropuesta()
@@ -28,7 +29,7 @@ export function BotonDePropuesta() {
   const abrirHoja = usePropuestaStore((s) => s.abrirHoja)
   // (Tanda 10N4 §0b) En todas las pantallas; solo debajo de una hoja abierta, y sube con el botón de los logros para no tapar los botones de abajo (flotantes.ts).
   const { debajo, alto } = useFlotantes()
-  useLapizALaVista(visible)
+  const fila = useColumnaIzquierda('propuesta', visible)
   if (!visible) return null
   const cuantos = n > 0 ? n : enEsperaN
   return createPortal(
@@ -40,10 +41,11 @@ export function BotonDePropuesta() {
       onClick={() => abrirHoja({ modo: 'mia' })}
       className="hoja-pop"
       data-flotante="1"
+      data-flotante-izq="1"
       style={{
         position: 'fixed',
-        right: 15,
-        bottom: alto !== null ? `${alto + SOBRE_LOS_LOGROS}px` : `calc(env(safe-area-inset-bottom,0px) + ${(modo === 'today' ? 120 : 88) + SOBRE_LOS_LOGROS}px)`,
+        right: DERECHA_DE_LA_COLUMNA_IZQUIERDA,
+        bottom: bottomDeLaFila(fila, alto, modo),
         width: ALTO_DEL_LAPIZ,
         height: ALTO_DEL_LAPIZ,
         padding: 0,
@@ -58,7 +60,7 @@ export function BotonDePropuesta() {
         zIndex: debajo ? 31 : 100,
       }}
     >
-      <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#FBF3E2" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#FBF3E2" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M4 20h4L19 9l-4-4L4 16zM13 7l4 4" />
       </svg>
       <span
@@ -92,15 +94,12 @@ export function BotonDePropuesta() {
  * 150 con el botón de los logros y 220 si además está el lápiz. Las pantallas que no son DÍAS/EXPLORAR/RESERVAS lo usan como `paddingBottom`.
  */
 export function useHuecoAlFinal(minimo = 40): number {
-  const { visible: lapiz } = useLapizVisible()
-  // (10S7) El botón «Reorganizar» del pase ocupa el mismo sitio que el lápiz.
-  const reorganizar = useBotonReorganizarVisible()
-  const visible = lapiz || reorganizar
+  // (V42 §6) Reorganizar y el lápiz van en la columna de la izquierda: ya no suben la columna de la derecha y el hueco del final no cuenta ninguna fila de más.
   // (10S5) El hueco sale de DÓNDE están de verdad los botones (con la barra de abajo del móvil, que sube el botón de los logros): su borde de arriba más un poco de aire.
   const { suelo } = useFlotantes()
   // (V5) La cámara de viaje va ahora en TODAS las pantallas, encima del botón de los logros: el hueco cuenta los dos botones (52 + 12 de aire cada uno) y, si está, el lápiz.
   void logrosActivos
-  return Math.max(minimo, suelo + (visible ? SOBRE_LOS_LOGROS + ALTO_DEL_LAPIZ : 0) + SOBRE_LOS_LOGROS + LADO_DE_LOS_FLOTANTES + AIRE_BAJO_LOS_BOTONES)
+  return Math.max(minimo, suelo + SOBRE_LOS_LOGROS + LADO_DE_LOS_FLOTANTES + AIRE_BAJO_LOS_BOTONES)
 }
 
 /** El hueco que se deja al final de DÍAS y EXPLORAR cuando el lápiz está a la vista, para que no tape la última parada ni la última tarjeta. */
