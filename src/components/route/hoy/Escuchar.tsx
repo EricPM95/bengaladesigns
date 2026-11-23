@@ -51,13 +51,13 @@ export function Escuchar({ texto, clave, oscuro = false, barra = false, abajo = 
           type="button"
           onClick={alTocarCerrado}
           aria-label={`Escuchar historia, incluido con el ${nombreDelPaseDelSitio}`}
-          className="flex h-[62px] w-full items-center gap-3 rounded-[22px] bg-[#1C2230] pl-2 pr-3 text-left text-[#FFFDF8] shadow-[0_16px_30px_-14px_rgba(28,34,48,.7)]"
+          className="flex h-[62px] w-full items-center gap-3 rounded-full bg-[#1C2230] pl-2 pr-3 text-left text-[#FFFDF8] shadow-[0_16px_30px_-14px_rgba(28,34,48,.7)]"
         >
-          <span className="flex h-[46px] w-[46px] flex-none items-center justify-center rounded-full text-[#17120a]" style={{ background: 'oklch(0.8 0.14 70)' }}>
+          <span className="flex h-[46px] w-[46px] flex-none items-center justify-center rounded-full text-[#4A3510]" style={{ background: 'linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440)' }}>
             <Icono nombre="seguir" size={17} grosor={2} relleno />
           </span>
           <span className="flex min-w-0 flex-1 flex-col gap-[5px]">
-            <span className="font-display text-[17px] leading-none">Escuchar historia</span>
+            <span className="font-display text-[21px] leading-none">Escuchar historia</span>
             {pidioPago ? (
               <span data-escuchar-incluido className="font-mono text-[11px] font-medium leading-none">
                 Incluido con el <Marca oscuro>{nombreDelPaseDelSitio}</Marca>
@@ -104,7 +104,7 @@ export function Escuchar({ texto, clave, oscuro = false, barra = false, abajo = 
       <div
         data-escuchar={estado}
         data-escuchar-barra
-        className={`pointer-events-auto absolute inset-x-3 z-[6] flex h-[62px] items-center gap-3 rounded-[22px] bg-[#1C2230] pl-2 pr-3 text-[#FFFDF8] shadow-[0_16px_30px_-14px_rgba(28,34,48,.7)] ${abajo ? 'bottom-[76px]' : 'bottom-[max(1rem,env(safe-area-inset-bottom))]'}`}
+        className={`pointer-events-auto absolute inset-x-3 z-[6] flex h-[64px] items-center gap-3.5 rounded-[22px] bg-[#1C2230] pl-2 pr-3 text-[#FFFDF8] shadow-[0_16px_30px_-14px_rgba(28,34,48,.7)] ${abajo ? 'bottom-[76px]' : 'bottom-[max(1rem,env(safe-area-inset-bottom))]'}`}
       >
         <button type="button" onClick={alPulsar} aria-label={etiqueta} className="flex h-[46px] w-[46px] flex-none items-center justify-center rounded-full text-[#17120a]" style={{ background: 'oklch(0.8 0.14 70)' }}>
           <Icono nombre={estado === 'hablando' ? 'pausa' : 'seguir'} size={estado === 'hablando' ? 18 : 17} grosor={estado === 'hablando' ? 2.4 : 2} relleno={estado !== 'hablando'} />
@@ -119,10 +119,15 @@ export function Escuchar({ texto, clave, oscuro = false, barra = false, abajo = 
               <span style={{ color: ORO_PALIDO, fontWeight: 600 }}>Gratis</span>, tu historia de prueba · 0/1
             </span>
           ) : (
-            <span className="h-[3px] overflow-hidden rounded-[3px]" style={{ background: 'rgba(255,253,248,.18)' }}>
-              <span className="block h-full transition-[width] duration-[900ms] ease-linear" style={{ width: `${Math.round(progreso * 100)}%`, background: 'oklch(0.8 0.14 70)' }} />
-            </span>
+            // (V40D, Design «Entradas Ficha Pestaña») Sin barra de progreso: a la derecha, las ondas doradas (se mueven mientras lee).
+            <span hidden data-progreso={Math.round(progreso * 100)} />
           )}
+        </span>
+        <span data-escuchar-ondas aria-hidden="true" className="flex h-7 flex-none items-center gap-[3px] pr-2.5">
+          <style>{'@keyframes escOnda{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}@media (prefers-reduced-motion:reduce){[data-escuchar-ondas] span{animation:none!important}}'}</style>
+          {[10, 18, 26, 14, 22, 12, 20, 8, 16].map((h, i) => (
+            <span key={i} style={{ width: 3, height: h, borderRadius: 3, background: '#F3D88F', opacity: 0.85, transformOrigin: 'center', animation: estado === 'hablando' ? `escOnda ${(1.1 + i * 0.13).toFixed(2)}s ease-in-out infinite` : 'none' }} />
+          ))}
         </span>
         {estado !== 'parado' && (
           <button type="button" onClick={parar} aria-label="Parar" className="zona-toque flex h-9 w-9 flex-none items-center justify-center rounded-full text-[#FFFDF8]/80 hover:bg-[#FFFDF8]/10">

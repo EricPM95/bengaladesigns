@@ -101,9 +101,9 @@ export function StopEntradasTab({ stop, sinEntrada = null }: { stop: { id: strin
         </div>
       ) : (
         data.inTrip && !delGrupo && (
-          <p className="text-center text-small text-text-soft">
+          <p className="text-center" style={{ font: "400 14px 'Geist'", color: 'rgba(28,34,48,.6)' }}>
             ¿Ya la tienes?{' '}
-            <button type="button" onClick={() => setSheet(true)} className="zona-toque font-semibold text-text underline underline-offset-2">
+            <button type="button" onClick={() => setSheet(true)} className="zona-toque" style={{ fontWeight: 700, color: '#8A6A2C', textDecoration: 'underline', textUnderlineOffset: 3 }}>
               Añádela
             </button>
           </p>
