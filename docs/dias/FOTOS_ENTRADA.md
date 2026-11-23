@@ -1,22 +1,23 @@
-# Fotos del mosaico de la pantalla de entrada (V39C)
+# Fotos del mosaico de la pantalla de entrada (V39C, V40C)
 
-WebP de 240 x 300 px en `public/fotos/entrada/<clave>.webp`; datos en `data/entrada/fotos.json`. Todas de Wikimedia Commons, con licencia CC0 (no exige cita) o CC BY (autor en «Créditos», entrada `fotos_entrada` de `src/lib/creditos.ts`). Roma y Lanzarote usan su portada propia.
+WebP de 240 x 300 px en `public/fotos/entrada/<clave>.webp`; datos en `data/entrada/fotos.json`. Desde la V40C, Londres, Madrid, Lisboa, Nueva York, Shanghái, Islandia, Japón, Maldivas, Estambul y Capadocia son fotos de Eric, bajadas de Unsplash (licencia de Unsplash: uso libre, también comercial, sin obligación de citar). París, Barcelona y Ámsterdam siguen siendo de Wikimedia Commons (CC0).
+Recortadas a 4:5 mirando lo importante (el Big Ben y el autobús; la Perla de Oriente; el Fuji y la pagoda; la aurora; la barca y el agua; el Chrysler; la bandera y las torres; los minaretes y la cúpula; el globo grande con su llama) y sin ninguna cara reconocible en grande. Script: `scripts/entrada/prepararFotosV40C.mjs`.
 
-| Destino | Que se ve | Autor | Licencia | Fuente | KB |
+| Destino | Clave | Autor | Licencia | Fuente | KB |
 |---|---|---|---|---|---|
-| París | Torre Eiffel desde el Sena | Jebulon | CC0 | [ficha](https://commons.wikimedia.org/wiki/File:Tour_Eiffel_depuis_un_bateau_sur_la_Seine.jpg) | 10.7 |
-| Londres | Big Ben y Westminster al atardecer (silueta) | Rucksack Magazine rucksackmag | CC0 | [ficha](https://commons.wikimedia.org/wiki/File:Big_Ben,_London,_United_Kingdom_(Unsplash_p8cUip6Tlwg).jpg) | 2.9 |
-| Madrid | Palacio Real | Zarateman | CC0 | [ficha](https://commons.wikimedia.org/wiki/File:Madrid_-_Palacio_Real_07.jpg) | 12.2 |
-| Barcelona | Sagrada Familia | Ragsssss | CC0 | [ficha](https://commons.wikimedia.org/wiki/File:La_Sagrada_Familia_in_barcelona.jpg) | 11.6 |
-| Lisboa | Tranvia 28 en Alfama | Jakub Hałun | CC BY 4.0 | [ficha](https://commons.wikimedia.org/wiki/File:Tram_28_at_Largo_de_Santa_Luzia_in_Lisbon,_20250606_1957_0417.jpg) | 14.9 |
-| Ámsterdam | Casas junto al canal | Kaci Baum kacibaum | CC0 | [ficha](https://commons.wikimedia.org/wiki/File:Amsterdam_Canal_Houses_(Unsplash).jpg) | 16.0 |
-| Praga | Puente de Carlos y el Castillo al atardecer | Pierre Blaché from Paris, France | CC0 | [ficha](https://commons.wikimedia.org/wiki/File:Charles_Bridge_at_Sunset,_Prague_(50489016846).jpg) | 10.9 |
-| Nueva York | Puente de Brooklyn de noche y skyline | MartinThoma | CC0 | [ficha](https://commons.wikimedia.org/wiki/File:Brooklyn-Bridge-10.jpg) | 11.2 |
-| Cancún | Playa y zona hotelera | Autor desconocido (CC0) | CC0 | [ficha](https://commons.wikimedia.org/wiki/File:Canc%C3%BAn,_Q.R.,_MX.jpg) | 8.6 |
-| Florencia | Fachada de la Catedral (Duomo) | Jebulon | CC0 | [ficha](https://commons.wikimedia.org/wiki/File:Fa%C3%A7ade_cath%C3%A9drale_Florence.jpg) | 17.2 |
-| Berlín | Puerta de Brandeburgo | Gary Todd from Xinzheng, China | CC0 | [ficha](https://commons.wikimedia.org/wiki/File:Berlin_Brandenburg_Gate_(28150532233).jpg) | 9.3 |
-| Cartagena de Indias | Calle colonial colorida | Pedro Szekely from Los Angeles, USA | CC BY 2.0 | [ficha](https://commons.wikimedia.org/wiki/File:Cartagena,_Colombia_(5043733874).jpg) | 17.5 |
+| Roma | La portada que ya tiene el destino en la app (Coliseo) | propia | — | — | 14.4 |
+| París · Francia | `paris` | Jebulon | CC0 | [ficha](https://commons.wikimedia.org/wiki/File:Tour_Eiffel_depuis_un_bateau_sur_la_Seine.jpg) | 10.7 |
+| Londres · Reino Unido | `londres` | Unsplash | Unsplash License | Unsplash (licencia Unsplash), elegida por Eric | 10.1 |
+| Madrid · España | `madrid` | Unsplash | Unsplash License | Unsplash (licencia Unsplash), elegida por Eric | 15.2 |
+| Barcelona · España | `barcelona` | Ragsssss | CC0 | [ficha](https://commons.wikimedia.org/wiki/File:La_Sagrada_Familia_in_barcelona.jpg) | 11.6 |
+| Lisboa · Portugal | `lisboa` | Unsplash | Unsplash License | Unsplash (licencia Unsplash), elegida por Eric | 17.4 |
+| Ámsterdam · Países Bajos | `amsterdam` | Kaci Baum kacibaum | CC0 | Unsplash (licencia Unsplash), elegida por Eric | 16.0 |
+| Nueva York · Estados Unidos | `nueva_york` | Unsplash | Unsplash License | Unsplash (licencia Unsplash), elegida por Eric | 13.8 |
+| Maldivas | `maldivas` | Unsplash | Unsplash License | Unsplash (licencia Unsplash), elegida por Eric | 17.1 |
+| Shanghái · China | `shanghai` | Unsplash | Unsplash License | Unsplash (licencia Unsplash), elegida por Eric | 6.6 |
+| Islandia | `islandia` | Unsplash | Unsplash License | Unsplash (licencia Unsplash), elegida por Eric | 3.2 |
+| Japón | `japon` | Unsplash | Unsplash License | Unsplash (licencia Unsplash), elegida por Eric | 9.2 |
+| Estambul · Turquía | `estambul` | Unsplash | Unsplash License | Unsplash (licencia Unsplash), elegida por Eric | 8.9 |
+| Capadocia · Turquía | `capadocia` | Unsplash | Unsplash License | Unsplash (licencia Unsplash), elegida por Eric | 9.6 |
 
-Peso total: 143.1 KB.
-
-Notas: la de Londres es una silueta oscura sobre cielo rojo (CC0, publicada tambien en Unsplash); la de Cancun figura con autor desconocido pero con CC0 en su ficha de Commons.
+Peso total del mosaico: 163.8 KB (14 fotos).

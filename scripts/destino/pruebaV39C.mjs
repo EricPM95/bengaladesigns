@@ -20,13 +20,16 @@ const APP = process.env.APP_URL ?? 'http://localhost:5173'
 const mosaico = leer('src/components/cuenta/MosaicoDeDestinos.tsx')
 const fotos = JSON.parse(leer('data/entrada/fotos.json'))
 const claves = [...mosaico.matchAll(/T\('([a-z_]+)'/g)].map((m) => m[1])
-const NUESTROS = ['roma', 'paris', 'londres', 'madrid', 'barcelona', 'lisboa', 'amsterdam', 'praga', 'nueva_york', 'cancun', 'lanzarote', 'florencia', 'berlin', 'cartagena_de_indias']
-debe(claves.length >= 11, 'mosaico', `el mosaico tiene ${claves.length} destinos (al menos los 11 de salida)`)
-debe(claves.every((c) => NUESTROS.includes(c)), 'mosaico', 'todos los destinos del mosaico son nuestros (11 de salida + 3 de Próximamente)')
+// (V40C) El mosaico de Eric: estos 14. Fuera: Florencia, Lanzarote, Cancún, Cartagena de Indias, Berlín y Praga.
+const NUESTROS = ['roma', 'paris', 'londres', 'madrid', 'barcelona', 'lisboa', 'amsterdam', 'nueva_york', 'maldivas', 'shanghai', 'islandia', 'japon', 'estambul', 'capadocia']
+const QUITADOS = ['florencia', 'lanzarote', 'cancun', 'cartagena_de_indias', 'berlin', 'praga']
+debe(claves.length >= 11, 'mosaico', `el mosaico tiene ${claves.length} destinos`)
+debe(claves.every((c) => NUESTROS.includes(c)), 'mosaico', 'todos los destinos del mosaico son los elegidos (V40C)')
 debe(!/tokio|tokyo/i.test(mosaico) && !/tokio|tokyo/i.test(JSON.stringify(fotos)), 'mosaico', 'ningún Tokio (era de ejemplo de Design)')
-for (const d of ['roma', 'paris', 'londres', 'madrid', 'barcelona', 'lisboa', 'amsterdam', 'praga', 'nueva_york', 'cancun', 'lanzarote']) debe(claves.includes(d), 'mosaico', `sale ${d}`)
+for (const d of NUESTROS) debe(claves.includes(d), 'mosaico', `sale ${d}`)
+for (const d of QUITADOS) debe(!claves.includes(d) && !fs.existsSync(`public/fotos/entrada/${d}.webp`) && !fotos[d], 'mosaico', `ya no sale ${d} (ni su foto)`)
 let peso = 0
-const propias = { roma: '/fotos/entrada/roma.webp', lanzarote: '/fotos/entrada/lanzarote.webp' }
+const propias = { roma: '/fotos/entrada/roma.webp' }
 for (const c of [...new Set(claves)]) {
   const archivo = (fotos[c]?.archivo ?? propias[c]) || ''
   const ruta = 'public' + archivo
@@ -44,7 +47,9 @@ for (const c of [...new Set(claves)]) {
 console.log(`  Peso total de las fotos del mosaico: ${(peso / 1024).toFixed(1)} KB (${[...new Set(claves)].length} fotos)`)
 debe(peso < 450 * 1024, 'fotos', `las fotos pesan poco en total (${(peso / 1024).toFixed(0)} KB < 450 KB)`)
 const docs = fs.existsSync('docs/dias/FOTOS_ENTRADA.md') ? leer('docs/dias/FOTOS_ENTRADA.md') : ''
-debe(docs.length > 200 && [...new Set(claves)].filter((c) => !['roma', 'lanzarote'].includes(c)).every((c) => new RegExp(c.replace(/_/g, '[ _]'), 'i').test(docs)), 'fotos', 'docs/dias/FOTOS_ENTRADA.md apunta de dónde sale cada foto y su licencia')
+const DE_ERIC = ['londres', 'madrid', 'lisboa', 'nueva_york', 'maldivas', 'shanghai', 'islandia', 'japon', 'estambul', 'capadocia']
+debe(DE_ERIC.every((c) => fotos[c]?.tipo === 'unsplash' && fotos[c]?.licencia === 'Unsplash License') && docs.split('Unsplash (licencia Unsplash), elegida por Eric').length - 1 >= 10, 'fotos', 'las 10 fotos de Eric dicen «Unsplash (licencia Unsplash), elegida por Eric» en FOTOS_ENTRADA.md')
+debe(docs.length > 200 && [...new Set(claves)].filter((c) => c !== 'roma').every((c) => new RegExp(c.replace(/_/g, '[ _]'), 'i').test(docs)), 'fotos', 'docs/dias/FOTOS_ENTRADA.md apunta de dónde sale cada foto y su licencia')
 debe(/Cr[eé]ditos/.test(leer('src/components/perfil/Creditos.tsx')) || fs.existsSync('src/components/perfil/Creditos.tsx'), 'fotos', 'existe la pantalla de Créditos')
 debe(/loading="lazy"/.test(mosaico) && /decoding="async"/.test(mosaico) && /prefers-reduced-motion:reduce/.test(mosaico), 'mosaico', 'fotos con carga perezosa y regla de «Reducir movimiento» en el propio CSS')
 

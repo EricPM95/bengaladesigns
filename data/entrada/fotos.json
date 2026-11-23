@@ -13,21 +13,23 @@
     "archivo": "/fotos/entrada/londres.webp",
     "nombre": "Londres",
     "pais": "Reino Unido",
-    "autor": "Rucksack Magazine rucksackmag",
-    "licencia": "CC0",
-    "url_fuente": "https://commons.wikimedia.org/wiki/File:Big_Ben,_London,_United_Kingdom_(Unsplash_p8cUip6Tlwg).jpg",
-    "url_licencia": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
-    "tipo": "unsplash"
+    "autor": "Unsplash",
+    "licencia": "Unsplash License",
+    "url_fuente": "https://unsplash.com/",
+    "url_licencia": "https://unsplash.com/license",
+    "tipo": "unsplash",
+    "nota": "Unsplash (licencia Unsplash), elegida por Eric"
   },
   "madrid": {
     "archivo": "/fotos/entrada/madrid.webp",
     "nombre": "Madrid",
     "pais": "España",
-    "autor": "Zarateman",
-    "licencia": "CC0",
-    "url_fuente": "https://commons.wikimedia.org/wiki/File:Madrid_-_Palacio_Real_07.jpg",
-    "url_licencia": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
-    "tipo": "wikimedia"
+    "autor": "Unsplash",
+    "licencia": "Unsplash License",
+    "url_fuente": "https://unsplash.com/",
+    "url_licencia": "https://unsplash.com/license",
+    "tipo": "unsplash",
+    "nota": "Unsplash (licencia Unsplash), elegida por Eric"
   },
   "barcelona": {
     "archivo": "/fotos/entrada/barcelona.webp",
@@ -43,11 +45,12 @@
     "archivo": "/fotos/entrada/lisboa.webp",
     "nombre": "Lisboa",
     "pais": "Portugal",
-    "autor": "Jakub Hałun",
-    "licencia": "CC BY 4.0",
-    "url_fuente": "https://commons.wikimedia.org/wiki/File:Tram_28_at_Largo_de_Santa_Luzia_in_Lisbon,_20250606_1957_0417.jpg",
-    "url_licencia": "https://creativecommons.org/licenses/by/4.0",
-    "tipo": "wikimedia"
+    "autor": "Unsplash",
+    "licencia": "Unsplash License",
+    "url_fuente": "https://unsplash.com/",
+    "url_licencia": "https://unsplash.com/license",
+    "tipo": "unsplash",
+    "nota": "Unsplash (licencia Unsplash), elegida por Eric"
   },
   "amsterdam": {
     "archivo": "/fotos/entrada/amsterdam.webp",
@@ -59,64 +62,81 @@
     "url_licencia": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
     "tipo": "unsplash"
   },
-  "praga": {
-    "archivo": "/fotos/entrada/praga.webp",
-    "nombre": "Praga",
-    "pais": "Chequia",
-    "autor": "Pierre Blaché from Paris, France",
-    "licencia": "CC0",
-    "url_fuente": "https://commons.wikimedia.org/wiki/File:Charles_Bridge_at_Sunset,_Prague_(50489016846).jpg",
-    "url_licencia": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
-    "tipo": "wikimedia"
-  },
   "nueva_york": {
     "archivo": "/fotos/entrada/nueva_york.webp",
     "nombre": "Nueva York",
     "pais": "Estados Unidos",
-    "autor": "MartinThoma",
-    "licencia": "CC0",
-    "url_fuente": "https://commons.wikimedia.org/wiki/File:Brooklyn-Bridge-10.jpg",
-    "url_licencia": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
-    "tipo": "wikimedia"
+    "autor": "Unsplash",
+    "licencia": "Unsplash License",
+    "url_fuente": "https://unsplash.com/",
+    "url_licencia": "https://unsplash.com/license",
+    "tipo": "unsplash",
+    "nota": "Unsplash (licencia Unsplash), elegida por Eric"
   },
-  "cancun": {
-    "archivo": "/fotos/entrada/cancun.webp",
-    "nombre": "Cancún",
-    "pais": "México",
-    "autor": "Autor desconocido (CC0)",
-    "licencia": "CC0",
-    "url_fuente": "https://commons.wikimedia.org/wiki/File:Canc%C3%BAn,_Q.R.,_MX.jpg",
-    "url_licencia": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
-    "tipo": "wikimedia"
+  "maldivas": {
+    "archivo": "/fotos/entrada/maldivas.webp",
+    "nombre": "Maldivas",
+    "pais": "Maldivas",
+    "autor": "Unsplash",
+    "licencia": "Unsplash License",
+    "url_fuente": "https://unsplash.com/",
+    "url_licencia": "https://unsplash.com/license",
+    "tipo": "unsplash",
+    "nota": "Unsplash (licencia Unsplash), elegida por Eric"
   },
-  "florencia": {
-    "archivo": "/fotos/entrada/florencia.webp",
-    "nombre": "Florencia",
-    "pais": "Italia",
-    "autor": "Jebulon",
-    "licencia": "CC0",
-    "url_fuente": "https://commons.wikimedia.org/wiki/File:Fa%C3%A7ade_cath%C3%A9drale_Florence.jpg",
-    "url_licencia": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
-    "tipo": "wikimedia"
+  "shanghai": {
+    "archivo": "/fotos/entrada/shanghai.webp",
+    "nombre": "Shanghái",
+    "pais": "China",
+    "autor": "Unsplash",
+    "licencia": "Unsplash License",
+    "url_fuente": "https://unsplash.com/",
+    "url_licencia": "https://unsplash.com/license",
+    "tipo": "unsplash",
+    "nota": "Unsplash (licencia Unsplash), elegida por Eric"
   },
-  "berlin": {
-    "archivo": "/fotos/entrada/berlin.webp",
-    "nombre": "Berlín",
-    "pais": "Alemania",
-    "autor": "Gary Todd from Xinzheng, China",
-    "licencia": "CC0",
-    "url_fuente": "https://commons.wikimedia.org/wiki/File:Berlin_Brandenburg_Gate_(28150532233).jpg",
-    "url_licencia": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
-    "tipo": "wikimedia"
+  "islandia": {
+    "archivo": "/fotos/entrada/islandia.webp",
+    "nombre": "Islandia",
+    "pais": "Islandia",
+    "autor": "Unsplash",
+    "licencia": "Unsplash License",
+    "url_fuente": "https://unsplash.com/",
+    "url_licencia": "https://unsplash.com/license",
+    "tipo": "unsplash",
+    "nota": "Unsplash (licencia Unsplash), elegida por Eric"
   },
-  "cartagena_de_indias": {
-    "archivo": "/fotos/entrada/cartagena_de_indias.webp",
-    "nombre": "Cartagena de Indias",
-    "pais": "Colombia",
-    "autor": "Pedro Szekely from Los Angeles, USA",
-    "licencia": "CC BY 2.0",
-    "url_fuente": "https://commons.wikimedia.org/wiki/File:Cartagena,_Colombia_(5043733874).jpg",
-    "url_licencia": "https://creativecommons.org/licenses/by/2.0",
-    "tipo": "wikimedia"
+  "japon": {
+    "archivo": "/fotos/entrada/japon.webp",
+    "nombre": "Japón",
+    "pais": "Japón",
+    "autor": "Unsplash",
+    "licencia": "Unsplash License",
+    "url_fuente": "https://unsplash.com/",
+    "url_licencia": "https://unsplash.com/license",
+    "tipo": "unsplash",
+    "nota": "Unsplash (licencia Unsplash), elegida por Eric"
+  },
+  "estambul": {
+    "archivo": "/fotos/entrada/estambul.webp",
+    "nombre": "Estambul",
+    "pais": "Turquía",
+    "autor": "Unsplash",
+    "licencia": "Unsplash License",
+    "url_fuente": "https://unsplash.com/",
+    "url_licencia": "https://unsplash.com/license",
+    "tipo": "unsplash",
+    "nota": "Unsplash (licencia Unsplash), elegida por Eric"
+  },
+  "capadocia": {
+    "archivo": "/fotos/entrada/capadocia.webp",
+    "nombre": "Capadocia",
+    "pais": "Turquía",
+    "autor": "Unsplash",
+    "licencia": "Unsplash License",
+    "url_fuente": "https://unsplash.com/",
+    "url_licencia": "https://unsplash.com/license",
+    "tipo": "unsplash",
+    "nota": "Unsplash (licencia Unsplash), elegida por Eric"
   }
 }

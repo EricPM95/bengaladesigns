@@ -15,7 +15,7 @@ export function ejemploDelResumenDelViaje(): DatosDeEjemploDelResumen {
       ok: true,
       destino: 'roma',
       ciudad: 'Roma',
-      sellos: [{ id: 'roma', nombre: 'Roma', grado: 'plata', nombre_grado: 'Roma te atrapa', linea: 'Cuatro imprescindibles vistos: ya eres de aquí.', n: 4, total: 8, siguiente: { grado: 'oro', faltan: 2, nombre: 'Roma es casi tuya' }, alcanzados: ['bronce', 'plata'] }],
+      sellos: [{ id: 'roma', nombre: 'Roma', grado: 'plata', nombre_grado: 'Roma te atrapa', linea: 'Cuatro imprescindibles vistos: ya eres de aquí.', n: 4, total: 8, siguiente: { grado: 'oro', faltan: 2, nombre: 'Roma en el corazón' }, alcanzados: ['bronce', 'plata'] }],
       colecciones: [
         { id: 'miradores', nombre: 'Los miradores', n: 2, total: 3, completa: false, en_tu_ruta: true, nuevo_hoy: false, sitios: [{ sitio: 'janiculo', visto: true, nombre: 'El Janículo' }, { sitio: 'pincio', visto: true, nombre: 'El Pincio' }, { sitio: 'giardino_degli_aranci', visto: false, nombre: 'El Jardín de los Naranjos' }] },
         { id: 'cuatro_joyas', nombre: 'Las 4 joyas de Roma', n: 4, total: 4, completa: true, en_tu_ruta: true, nuevo_hoy: false, sitios: [{ sitio: 'coliseo', visto: true, nombre: 'El Coliseo' }, { sitio: 'panteon', visto: true, nombre: 'El Panteón' }, { sitio: 'fontana_de_trevi', visto: true, nombre: 'La Fontana de Trevi' }, { sitio: 'plaza_de_espana', visto: true, nombre: 'La Plaza de España' }] },

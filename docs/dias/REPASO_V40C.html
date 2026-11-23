@@ -1,0 +1,32 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>REPASO V40C</title><style>body{font:15px/1.5 system-ui,sans-serif;max-width:900px;margin:0 auto;padding:16px;color:#1C2230}img{max-width:300px;border:1px solid #ddd;border-radius:10px;margin:6px 8px 6px 0}code{background:#f3ecd9;padding:1px 4px;border-radius:4px}.eric{background:#FFF7DC;border:1px solid #D8BE84;border-radius:10px;padding:4px 16px}</style>
+<h1>V40C · Fotos nuevas en la pantalla de entrada y el diamante del Vaticano</h1>
+<h2>El mosaico</h2>
+<ul>
+<li><b>Fuera:</b> Florencia, Lanzarote, Cancún, Cartagena de Indias, Berlín y Praga (tarjetas, fotos del proyecto y datos).</li>
+<li><b>Entran con tu foto:</b> Maldivas, Shanghái · China, Islandia, Japón, Estambul · Turquía (la Mezquita Azul) y Capadocia · Turquía (los globos). En Maldivas e Islandia (que son país) sale solo el nombre, sin repetirlo debajo.</li>
+<li><b>Cambian de foto por las tuyas:</b> Londres (el Big Ben con el autobús rojo), Madrid (Cibeles con la bandera), Lisboa (los tranvías amarillos) y Nueva York (la calle con el Chrysler y el taxi amarillo).</li>
+<li><b>Se quedan:</b> Roma, París, Barcelona y Ámsterdam. En total, 14 tarjetas.</li>
+<li><b>Recortes</b> (4:5, mirando lo importante): Londres con el Big Ben y el autobús y <b>sin la chica</b> de abajo a la derecha; Shanghái con la Perla de Oriente; Japón con el Fuji y la pagoda (el Fuji queda algo pegado al borde: el recorte es estrecho y la pagoda manda); Islandia con la aurora y la persona pequeña; Maldivas con la barca y el agua; Nueva York con el Chrysler y el taxi; Madrid con la bandera y las torres; Estambul con los minaretes y la cúpula; Capadocia con el globo grande y su llama. Ninguna cara reconocible en grande.</li>
+<li><b>Peso:</b> las 10 nuevas suman <b>111 KB</b> (de 3 a 17 KB cada una; WebP de 240 × 300). <b>Todo el mosaico: 163,8 KB</b> (14 fotos), igual que antes (143 KB).</li>
+<li><b>Fuente y licencia:</b> <code>docs/dias/FOTOS_ENTRADA.md</code> dice «Unsplash (licencia Unsplash), elegida por Eric» en cada una de las 10; en «Créditos» (entrada «Fotos de la pantalla de entrada») hay «Fotos de Unsplash» y el enlace a su licencia.</li>
+</ul>
+<p><img src="V40C_capturas/mosaico_iphone.png" alt="El mosaico en tamaño iPhone"></p>
+<h2>El diamante del Vaticano</h2>
+<ul>
+<li>Vuelve a llamarse <b>«El Vaticano es tuyo»</b> (en los datos de logros, las demos, los escaparates y los datos de ejemplo donde lo había cambiado en la V40B).</li>
+<li>La regla de la V40B sigue para los destinos (Roma, Lanzarote, Madrid…): ningún grado se llama «… es tuyo/a». <code>pruebaV40B</code> deja fuera solo al Vaticano y comprueba que su diamante se llama «El Vaticano es tuyo».</li>
+<li><b>Ejemplos:</b> el oro de Roma en el estudio de sonidos y en el ejemplo del resumen del viaje sale ahora como <b>«Roma en el corazón»</b> (el nombre de los datos), no «Roma es casi tuya». Una prueba (<code>pruebaV40B</code>) lo vigila.</li>
+</ul>
+<h2>La prueba</h2>
+<ul>
+<li><code>pruebaV39C</code> (108 comprobaciones): el mosaico tiene los 14 destinos elegidos y ninguno de los quitados (ni sus fotos); cada tarjeta tiene su foto; las 10 de Eric dicen Unsplash; el peso total es pequeño (163,8 KB).</li>
+<li><code>pruebaV40B</code> (39) y <code>pruebaJutrip</code> en 0; también <code>pruebaV36C</code>, <code>pruebaEntrarUnaVez</code> y <code>pruebaCuentas3</code>.</li>
+</ul>
+<h2>Tu lista de comprobación de esta tanda</h2>
+<ul><li>Abre la app sin sesión: en el mosaico salen Londres, Madrid, Lisboa, Nueva York, Shanghái, Islandia, Japón, Maldivas, Estambul y Capadocia con tus fotos; no salen Florencia, Lanzarote, Cancún, Cartagena, Berlín ni Praga.</li>
+<li>Mira que en Londres no se ve la cara de la chica y que en Maldivas e Islandia el nombre no se repite debajo.</li>
+<li>La medalla diamante del Vaticano dice «El Vaticano es tuyo»; la de Roma, «Todos los caminos».</li></ul>
+<div class="eric"><h2>PARA ERIC</h2><ul>
+<li>Si el recorte de alguna foto no te convence (el Fuji en Japón, por ejemplo), dime cuál y lo ajusto: cada foto es un archivo pequeño de <code>public/fotos/entrada/</code> y el recorte de cada una está en una línea de <code>scripts/entrada/prepararFotosV40C.mjs</code>.</li>
+<li>Estambul y Capadocia son dos tarjetas distintas, las dos con «Turquía» debajo.</li>
+<li>Reiniciado el api-server al final. <b>No se ha apagado el PC.</b></li></ul></div></html>

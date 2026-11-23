@@ -108,7 +108,7 @@ try {
   console.log('3. En el marco de iPhone: cada tarjeta enseña lo suyo')
   const textos = {}
   const MARCAS = {
-    medalla_bronce: ['Primeros pasos en Roma', 'bronce'], medalla_plata: ['Roma te atrapa'], medalla_oro: ['Roma es casi tuya'], medalla_diamante: ['Todos los caminos'], coleccion: ['Las 4 joyas de Roma'], pais: ['Italia'],
+    medalla_bronce: ['Primeros pasos en Roma', 'bronce'], medalla_plata: ['Roma te atrapa'], medalla_oro: ['Roma en el corazón'], medalla_diamante: ['Todos los caminos'], coleccion: ['Las 4 joyas de Roma'], pais: ['Italia'],
     pedazo: ['Los miradores'], patrimonio: ['Centro histórico de Roma'], viajero: ['Trotamundos'], maravilla: ['Taj Mahal'],
   }
   for (const f of filas) {

@@ -32,13 +32,17 @@ for (const f of fs.readdirSync('data/logros').filter((n) => n.endsWith('.json'))
   })
 }
 debe(grados.length >= 8, 'medallas', `${grados.length} grados de medalla leídos de los datos`)
-debe(!grados.some((g) => /\bes tuy[oa]\b/i.test(g.nombre)), 'medallas', 'ningún grado de medalla se llama «… es tuyo» ni «… es tuya»')
+// (V40C) La única excepción es el Vaticano: su diamante se llama «El Vaticano es tuyo» (decidido por Eric). Los destinos (Roma, Lanzarote, Madrid…) no.
+const EXCEPCION = 'El Vaticano es tuyo'
+debe(!grados.some((g) => /\bes tuy[oa]\b/i.test(g.nombre) && g.nombre !== EXCEPCION), 'medallas', 'ningún grado de medalla de un destino se llama «… es tuyo» ni «… es tuya» (solo el Vaticano)')
+debe(grados.filter((g) => g.nombre === EXCEPCION).length === 1 && grados.some((g) => g.nombre === EXCEPCION && g.grado === 'diamante'), 'vaticano', 'el diamante del Vaticano se llama «El Vaticano es tuyo»')
 const diamante = (f) => grados.filter((g) => g.f === f && g.grado === 'diamante').map((g) => g.nombre)
 debe(diamante('roma.json').includes('Todos los caminos'), 'roma', 'Roma, diamante: «Todos los caminos»')
 debe(diamante('lanzarote.json').includes('Lanzarote, de punta a punta'), 'lanzarote', 'Lanzarote, diamante: «Lanzarote, de punta a punta»')
 // En el resto de la app (animaciones, estudio, escaparates, demos, pruebas): nada con el nombre viejo.
 const sitios = ['src/components/logros/momentos/demoMomentos.ts', 'src/lib/sonidos/estudio.ts', 'src/lib/logrosDemo_ganados_datos.json', 'docs/destinos/lanzarote/LANZAROTE_LOGROS.md', ...fs.readdirSync('src/dev/escaparates/datos').map((n) => `src/dev/escaparates/datos/${n}`)]
-for (const f of sitios) debe(!/(Roma|Lanzarote|Vaticano) es tuy[oa]\b/.test(leer(f)), 'medallas', `${f}: sin «… es tuyo/a» en las medallas`)
+for (const f of sitios) debe(!/(Roma|Lanzarote) es tuy[oa]\b/.test(leer(f)) && !leer(f).includes('Vaticano entero'), 'medallas', `${f}: sin «Roma/Lanzarote es tuya» ni «Vaticano entero»`)
+debe(!leer('src/lib/sonidos/estudio.ts').includes('Roma es casi tuya') && !leer('src/components/logros/sonidos/ejemploResumenViaje.ts').includes('Roma es casi tuya'), 'ejemplos', 'los ejemplos usan «Roma en el corazón» (el nombre de los datos), no «Roma es casi tuya»')
 
 // ───────── 1. La apertura con sonido ─────────
 const sonidos = leer('src/lib/sonidos.ts')

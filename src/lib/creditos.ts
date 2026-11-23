@@ -61,9 +61,9 @@ export const CREDITOS: Credito[] = [
       .map((f) => `${f.nombre}: ${f.autor}, ${f.licencia}`)
       .join('. ') + '.',
     enlaces: [
+      { texto: 'Fotos de Unsplash', url: 'https://unsplash.com/' },
+      { texto: 'Licencia de Unsplash', url: 'https://unsplash.com/license' },
       { texto: 'Wikimedia Commons', url: 'https://commons.wikimedia.org/' },
-      { texto: 'Licencia CC BY 4.0', url: 'https://creativecommons.org/licenses/by/4.0/' },
-      { texto: 'Licencia CC BY 2.0', url: 'https://creativecommons.org/licenses/by/2.0/' },
     ],
   },
 ]
