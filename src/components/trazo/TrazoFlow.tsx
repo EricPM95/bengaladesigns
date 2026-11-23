@@ -132,9 +132,13 @@ export function TrazoFlow() {
       // La clasificación se queda aquí: el paso de Transporte la necesita (arquetipo) en los dos caminos. Las sugerencias de experiencias y de lugares ya no
       // se lanzan aquí: solo con «¡Sí, hazla por mí!» (Tanda 6y2, choosePlan).
       classifyInBackground(dest.name)
-    } else if (!samePlace(state.answers.originPlace, origin)) {
-      // Mismo destino, otro origen: el transporte hay que volver a decidirlo.
-      state.setTransportOption(null)
+    } else {
+      if (!samePlace(state.answers.originPlace, origin)) {
+        // Mismo destino, otro origen: el transporte hay que volver a decidirlo.
+        state.setTransportOption(null)
+      }
+      // (V41 §5.2) Destino puesto de antemano (globo, hoja del destino, [Crear viaje]): si aún no está clasificado (ni lo está en vuelo, ni falló), se clasifica ahora. Sin esto el transporte no acababa de cargar.
+      if (!state.archetype && !state.archetype_ambiguous && !state.archetype_classification_failed) classifyInBackground(dest.name)
     }
     updateAnswers({ origin: origin.name, originPlace: origin })
     setProg(0)

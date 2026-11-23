@@ -274,7 +274,7 @@ async function main() {
     const sync = fs.readFileSync('src/components/sync/TripSync.tsx', 'utf8')
     debe(/donde\.tipo === 'misViajes'/.test(sync) && /usePerfilUi\.getState\(\)\.abrir\(\)/.test(sync) && /donde\.tipo === 'ruta'/.test(sync) && /todayIso\(\)/.test(sync), 'abre', 'TripSync usa estas reglas (RUTA del que toca, «Mis viajes» si todos pasaron)')
     const mis = fs.readFileSync('src/components/logros/pantallas/perfil/CuerpoConLogros.tsx', 'utf8')
-    debe(/data-crear-viaje-perfil/.test(mis) && /Crear un viaje/.test(mis), 'abre', '(V17) el Perfil lleva «Crear un viaje» a la vista cuando no hay viajes por delante')
+    debe(!/data-crear-viaje-perfil/.test(mis), 'abre', '(V41) el Perfil ya no lleva el botón «Crear un viaje» (están el globo y el +)')
     const apertura = fs.readFileSync('index.html', 'utf8')
     debe(/id="apertura"/.test(apertura), 'abre', 'y antes de todo, la pantalla de inicio (la recarga de justo después de entrar es la única excepción)')
   }

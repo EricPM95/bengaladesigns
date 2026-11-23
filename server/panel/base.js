@@ -40,6 +40,17 @@ async function conRespaldo(admin, tabla, columnasNuevas, columnasViejas, avisos)
   return { filas: columnasViejas ? await todas(admin, tabla, columnasViejas, avisos) : [], nuevo: false }
 }
 
+/**
+ * (V41) Las respuestas de la primera vez para el panel. Primero con la franja de edad (0094) y el país (0091); sin la 0094, con el país y el año de nacimiento (el panel saca la franja del año); sin la 0091, solo lo básico.
+ * `nuevo` sigue diciendo si existe el país (0091). Es la misma lectura de siempre (con la lectura general del panel, guardada 60 s): una consulta, ~100 bytes por persona; solo si falta la 0094 se repite una vez más sin la franja.
+ */
+async function primeraVezDelPanel(admin, avisos) {
+  const sin = []
+  const filas = await todas(admin, 'viajero_primera_vez', 'user_id,frecuencia,compania,anio_nacimiento,franja_edad,hecho_en,pais_vive', sin)
+  if (sin.length === 0) return { filas, nuevo: true }
+  return conRespaldo(admin, 'viajero_primera_vez', 'user_id,frecuencia,compania,anio_nacimiento,hecho_en,pais_vive', 'user_id,frecuencia,compania,anio_nacimiento,hecho_en', avisos)
+}
+
 /** Una tabla que solo existe con la 0091: si no existe, lista vacía y `nuevo: false` (sin avisos: es lo esperado). */
 async function soloSiExiste(admin, tabla, columnas) {
   const sin = []
@@ -111,7 +122,7 @@ async function leerBaseDeVerdad(admin) {
     conRespaldo(admin, 'pagos_registro', 'pago_ref,destino,plan,personas,importe_cent,moneda,estado,proveedor,creado_en,devuelto_en,user_id,comision_cent,devuelto_cent', 'pago_ref,destino,plan,personas,importe_cent,moneda,estado,proveedor,creado_en,devuelto_en', avisos),
     todas(admin, 'achievements', 'user_id,logro,escalon,destino,ganado_en', avisos),
     todas(admin, 'logro_perfil', 'user_id,exp_max', avisos),
-    conRespaldo(admin, 'viajero_primera_vez', 'user_id,frecuencia,compania,anio_nacimiento,hecho_en,pais_vive', 'user_id,frecuencia,compania,anio_nacimiento,hecho_en', avisos),
+    primeraVezDelPanel(admin, avisos),
     todas(admin, 'avisos_destino', 'destino,destino_norm,creado_en,avisado_campana_en,avisado_correo_en', avisos),
     soloSiExiste(admin, 'uso_diario', 'user_id,dia,aparato,instalada'),
     soloSiExiste(admin, 'afiliados_clics', 'dia,destino,tipo,proveedor,clics'),

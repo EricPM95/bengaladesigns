@@ -1298,6 +1298,7 @@ export function DayDetailPanel({
           {excursionEnteraEnBlanco && (
             <BlankDayFullExcursion
               excursion={excursionEnteraEnBlanco}
+              dayNumber={day.dayNumber}
               onRemove={() => {
                 selectDayExcursion(day.id, null)
                 convertDay('manual')
@@ -1369,6 +1370,8 @@ export function DayDetailPanel({
                   // tiene el core day desplazado esperando, así que no queda vacío ni repetido) y
                   // "vacío" lo deja libre para que lo monte él.
                   onDecline={(fill) => convertDay(fill === 'route' ? 'normal' : 'manual')}
+                  // (V41 §5.4) «Organízame este día» solo sale si hay una ruta nuestra para este día (las paradas que el motor dejó, la foto de antes de convertirlo o su ruta alternativa).
+                  hayRuta={day.stops.length > 0 || (day.stopsBeforeConversion?.length ?? 0) > 0 || Boolean(day.curatedAlternative)}
                 />
               ) : (
                 <p className="py-6 text-center text-small text-text-soft">Todavía no tenemos excursiones seleccionadas para {day.city}.</p>

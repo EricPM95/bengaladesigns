@@ -11,6 +11,10 @@ import { clavePanel, esCobroReal, gastadoDe, indiceDe, nombreDe, nombreDePlan, p
 import { desdeDondeViajan, primeraVez } from './calculos.js'
 import { nivelDeExp } from '../logros/exp.js'
 import { dondeViven, paisDeVive, usoDeLaApp } from './calculosPersonas.js'
+import { franjaDeFila } from '../franjaEdad.js'
+
+/** El año de un día «AAAA-MM-DD» (con él se calcula la franja de edad de las respuestas viejas, V41). */
+const anioDe = (hoy) => Number(String(hoy).slice(0, 4))
 
 const n = (v) => Number(v) || 0
 const pct = (x, total) => (total > 0 ? Math.round((x / total) * 100) : 0)
@@ -142,7 +146,7 @@ export function prepararUsuarios(base, { hoy, datos, conocidos }) {
       pases,
       gastado_cent: gastadoDe(pases),
       moneda: pases.find((p) => p.moneda)?.moneda ?? 'eur',
-      primera_vez: pv ? { frecuencia: pv.frecuencia ?? null, compania: pv.compania ?? null, anio_nacimiento: pv.anio_nacimiento ?? null } : null,
+      primera_vez: pv ? { frecuencia: pv.frecuencia ?? null, compania: pv.compania ?? null, franja_edad: franjaDeFila(pv, anioDe(hoy)) } : null,
       logros: logros.get(u.id) ?? [],
       vive: paisDeVive(base, u.id),
     }
@@ -225,7 +229,7 @@ export function filaDe(r, hoy, entre = null) {
     proximo_viaje: proximoViaje(r, hoy, entre),
     gastado_cent: r.gastado_cent,
     moneda: r.moneda,
-    primera_vez: pv ? { frecuencia: pv.frecuencia, compania: pv.compania, anio_nacimiento: pv.anio_nacimiento } : null,
+    primera_vez: pv ? { frecuencia: pv.frecuencia, compania: pv.compania, franja_edad: pv.franja_edad ?? null } : null,
   }
 }
 

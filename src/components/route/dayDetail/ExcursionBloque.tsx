@@ -9,7 +9,7 @@ import { AddReservationSheet, type ReservationTarget } from '../reservas/AddRese
 import { RemoveReservationDialog, useExcursionReservation } from '../reservas/ReservedMarks'
 import { Icono } from '../../ui/Icono'
 import { useExcursionesCompletas } from '../../../lib/excursionesDatos'
-import { etiquetasDeExcursion, textoDeRutaPorDestino } from '../../../lib/excursionEtiquetas'
+import { etiquetasDeExcursion } from '../../../lib/excursionEtiquetas'
 
 /**
  * (V18, Design «Excursion Bloque» E1 a E4) EL BLOQUE DE LA EXCURSIÓN en DÍAS, rehecho:
@@ -239,6 +239,7 @@ export function ExcursionDayBloque({
   dayNumber,
   onSelect,
   onDecline,
+  hayRuta = true,
 }: {
   destination: string
   options: Excursion[]
@@ -247,60 +248,18 @@ export function ExcursionDayBloque({
   dayNumber: number | null
   onSelect: (id: string | null) => void
   onDecline: (fill: 'route' | 'empty') => void
+  /** (V41 §5.4) ¿Hay una ruta NUESTRA para este día? Con ella salen los dos botones («Organízame este día» y «Crear mi propio día»); sin ella, solo «Crear mi propio día». */
+  hayRuta?: boolean
 }): ReactNode {
   // (V27) Un viaje guardado con las excursiones sin su ficha (foto vacía, sin «desde» ni nota) se completa con nuestros datos: nunca el degradado vacío.
   const options = useExcursionesCompletas(opcionesDelViaje)
   const [masAbierto, setMasAbierto] = useState(false)
-  const [preguntando, setPreguntando] = useState(false)
   const destacada = options.find((o) => o.id === selectedId) ?? options[0] ?? null
   const reserva = useExcursionReservation(destacada?.id)
   if (!destacada) return null
   const reservada = Boolean(reserva)
   const otras = reservada ? [] : options.filter((o) => o.id !== destacada.id)
   const dia = diaDelBloque(dayNumber)
-
-  if (preguntando && !reservada) {
-    return (
-      <div data-excursion-que-hacemos style={{ display: 'flex', flexDirection: 'column', gap: 14, padding: '4px 0 2px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '0 4px' }}>
-          <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', color: 'rgba(28,34,48,.5)' }}>SIN EXCURSIÓN</span>
-          <span style={{ font: "400 28px/1.05 'Instrument Serif',serif" }}>
-            ¿Qué hacemos con <em style={{ color: '#8E6820' }}>este día</em>?
-          </span>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-          <button type="button" data-ruta-a-medida onClick={() => onDecline('route')} style={{ position: 'relative', height: 168, borderRadius: 22, overflow: 'hidden', border: 'none', cursor: 'pointer', textAlign: 'left', background: '#1C2230', color: '#F3EEE4', boxShadow: '0 16px 26px -16px rgba(28,34,48,.8),inset 0 0 0 1px rgba(243,216,143,.4)' }}>
-            <svg viewBox="0 0 160 80" preserveAspectRatio="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, width: '100%', height: 80 }} aria-hidden="true">
-              <path d="M14 56 C 40 14, 64 62, 92 32 S 138 18, 148 44" fill="none" stroke="#F3D88F" strokeWidth="1.8" strokeDasharray="2 5" strokeLinecap="round" />
-              <circle cx="14" cy="56" r="4" fill="#F3D88F" />
-              <circle cx="92" cy="32" r="3.2" fill="#F3EEE4" />
-              <circle cx="148" cy="44" r="4" fill="#F3D88F" />
-            </svg>
-            <span style={{ position: 'absolute', left: 12, top: 12, width: 32, height: 32, borderRadius: 11, background: 'linear-gradient(135deg,#F6E8BE,#C9A45A)', color: '#1C2230', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M15.5 8.5l-2 5-5 2 2-5z" /></svg>
-            </span>
-            <span style={{ position: 'absolute', left: 14, right: 12, bottom: 14, display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <span data-texto-ruta style={{ font: "400 20px/1.05 'Instrument Serif',serif" }}>{textoDeRutaPorDestino(destination)}</span>
-            </span>
-          </button>
-          <button type="button" data-lo-organizo-yo onClick={() => onDecline('empty')} style={{ position: 'relative', height: 168, borderRadius: 22, overflow: 'hidden', cursor: 'pointer', textAlign: 'left', background: '#FFFDF8', border: '1px solid rgba(28,34,48,.12)', boxShadow: '0 10px 22px -18px rgba(28,34,48,.4)' }}>
-            <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 80, clipPath: 'polygon(0 0,100% 0,100% 100%,0 72%)', background: '#F1EADC' }} />
-            <span style={{ position: 'absolute', left: 12, top: 12, width: 32, height: 32, borderRadius: 11, background: '#FBF3E2', color: '#6E5018', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 20l1-4L16 5l3 3L8 19zM14 7l3 3" /></svg>
-            </span>
-            <span style={{ position: 'absolute', left: 14, right: 12, bottom: 14, display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <span style={{ font: "400 20px/1.05 'Instrument Serif',serif" }}>Lo organizo yo</span>
-              <span style={{ font: "400 11.5px 'Geist'", color: 'rgba(28,34,48,.55)' }}>Añado yo los sitios</span>
-            </span>
-          </button>
-        </div>
-        <button type="button" onClick={() => setPreguntando(false)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 44, font: "italic 400 17px 'Instrument Serif',serif", color: 'rgba(28,34,48,.7)' }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
-          <u style={{ textUnderlineOffset: 3 }}>Mejor me quedo con la excursión</u>
-        </button>
-      </div>
-    )
-  }
 
   return (
     <div data-excursion-bloque style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -323,10 +282,36 @@ export function ExcursionDayBloque({
         </button>
       )}
       {!reservada && (
-        <button type="button" data-seguir-en-ciudad onClick={() => setPreguntando(true)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 44, padding: '4px 0 2px', font: "italic 400 16px/1.3 'Instrument Serif',serif", color: 'rgba(28,34,48,.7)', textAlign: 'center' }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v10H3zM9 21v-6h6v6" /></svg>
-          <u style={{ textUnderlineOffset: 3 }}>¿Prefieres seguir en {destination}? Te montamos otro día de ruta</u>
-        </button>
+        <div data-sin-excursion style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 4 }}>
+          {/* (V41 §5.4, Eric) «O SIN EXCURSIÓN»: los dos botones de siempre de Roma (ExcursionDayPage), para todos los destinos. «Organízame este día» solo sale si hay una ruta nuestra para ese día. */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ height: 1, flex: 1, background: 'rgba(28,34,48,.14)' }} />
+            <span style={{ font: "500 10px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: 'rgba(28,34,48,.6)' }}>O sin excursión</span>
+            <span style={{ height: 1, flex: 1, background: 'rgba(28,34,48,.14)' }} />
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: hayRuta ? '1fr 1fr' : '1fr', gap: 10 }}>
+            {hayRuta && (
+              <button type="button" data-organizame-dia onClick={() => onDecline('route')} style={{ minHeight: 132, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, borderRadius: 20, border: '1px solid rgba(28,34,48,.1)', background: '#FFFDF8', padding: 14, textAlign: 'left', color: '#1C2230', cursor: 'pointer' }}>
+                <span style={{ width: 34, height: 34, borderRadius: 10, background: '#F1EADC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icono nombre="casa" size={16} />
+                </span>
+                <span style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <span style={{ font: "400 18px/1.12 'Instrument Serif',serif" }}>Organízame este día</span>
+                  <span style={{ font: "400 11.5px/1.35 'Geist'", color: 'rgba(28,34,48,.65)' }}>Te preparamos un día por {destination}</span>
+                </span>
+              </button>
+            )}
+            <button type="button" data-crear-mi-dia onClick={() => onDecline('empty')} style={{ minHeight: hayRuta ? 132 : 96, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, borderRadius: 20, border: 'none', background: '#1C2230', padding: 14, textAlign: 'left', color: '#FFFDF8', cursor: 'pointer' }}>
+              <span style={{ width: 34, height: 34, borderRadius: 10, background: '#E9C77A', color: '#1C2230', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Icono nombre="explorar" size={16} />
+              </span>
+              <span style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <span style={{ font: "400 18px/1.12 'Instrument Serif',serif" }}>Crear mi propio día</span>
+                <span style={{ font: "400 11.5px/1.35 'Geist'", color: 'rgba(255,253,248,.75)' }}>Elige tus sitios en el mapa</span>
+              </span>
+            </button>
+          </div>
+        </div>
       )}
       {masAbierto && (
         <HojaMasExcursiones

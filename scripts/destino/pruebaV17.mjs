@@ -228,7 +228,7 @@ console.log('C. Ningún camino abre la pantalla vieja')
   debe(quedan.length === 0, 'vieja', `ningún archivo de src/ la nombra ni la abre (${quedan.join(', ') || 'ninguno'})`)
   const sync = leer('src/components/sync/TripSync.tsx')
   debe(/donde\.tipo === 'misViajes'[\s\S]{0,700}usePerfilUi\.getState\(\)\.abrir\(\)/.test(sync) && /hydrateTrip\(await viajeEntero\(trips\[0\]\)\)/.test(sync), 'perfil', 'TripSync: con todos los viajes hechos abre el Perfil (sobre el último viaje que tocó)')
-  debe(/data-crear-viaje-perfil/.test(leer('src/components/logros/pantallas/perfil/CuerpoConLogros.tsx')) && /every\(\(v\) => v\.fase === 'hecho'\)/.test(leer('src/components/logros/pantallas/perfil/CuerpoConLogros.tsx')), 'perfil', 'el Perfil lleva «Crear un viaje» cuando no hay ninguno por delante')
+  debe(!/data-crear-viaje-perfil/.test(leer('src/components/logros/pantallas/perfil/CuerpoConLogros.tsx')), 'perfil', '(V41) el Perfil ya NO lleva el botón grande «Crear un viaje» (están el globo y el +)')
   const nube = leer('src/lib/eliminarViajeNube.ts')
   debe(/esInvitado[\s\S]{0,300}salirDelViaje/.test(nube) && /from\('trip_members'\)\.delete\(\)/.test(nube), 'papelera', 'el código de eliminar: si es invitada, solo SALE (trip_members), no borra la fila del viaje')
   debe(/<JuntarViajeHost \/>/.test(leer('src/App.tsx')) && /proponerJuntarSiHaceFalta/.test(leer('src/lib/unirseConCodigo.ts')) && /proponerJuntarSiHaceFalta/.test(sync), 'juntar', 'la pregunta de juntar está montada y sale al unirse (con código y con enlace)')
@@ -256,7 +256,7 @@ if (NAVEGADOR) {
     await app.esp(1500)
     const fuera = await app.evaluar("Boolean(document.querySelector('[data-crear-viaje-perfil]'))")
     await app.captura?.('docs/dias/capturas_jutrip/v17_perfil_todo_hecho.jpg').catch(() => null)
-    debe(fuera === true, 'perfil', 'con todos los viajes hechos el Perfil pone «Crear un viaje» a la vista')
+    debe(fuera === false, 'perfil', '(V41) con todos los viajes hechos el Perfil tampoco pone «Crear un viaje» (están el globo y el +)')
     // La pregunta de juntar.
     await app.evaluar(`(async () => {
       const { useJuntarUi } = await import('/src/lib/juntarViaje.ts')

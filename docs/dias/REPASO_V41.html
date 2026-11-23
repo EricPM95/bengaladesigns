@@ -1,0 +1,74 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>REPASO V41</title><style>body{font:15px/1.5 system-ui,sans-serif;max-width:980px;margin:0 auto;padding:16px;color:#1C2230}img{max-width:260px;border:1px solid #ddd;border-radius:10px;margin:6px 8px 6px 0}figure{display:inline-block;margin:0 10px 10px 0;font-size:12px;vertical-align:top}code{background:#f3ecd9;padding:1px 4px;border-radius:4px}.eric{background:#FFF7DC;border:1px solid #D8BE84;border-radius:10px;padding:4px 16px}</style>
+<h1>V41 · «Mis viajes», el globo, la edad por franjas y cinco arreglos</h1>
+
+<h2>4 · El viaje que desaparecía de «Mis viajes» (lo primero)</h2>
+<p><b>Qué pasaba, en palabras sencillas.</b> La lista de «Mis viajes» se pedía <b>una sola vez</b>, al abrir la app, y se guardaba en el móvil. Cuando creabas un viaje nuevo (Roma), se guardaba bien en la nube, pero <b>nadie lo apuntaba en esa lista del móvil</b>. El Perfil, para no dejarte sin tu viaje, añade siempre «el viaje que tienes abierto»: por eso Roma salía mientras estabas dentro de Roma. En cuanto abrías otro (Lanzarote), Roma ya no era «el abierto» y, como no estaba en la lista, <b>desaparecía</b>; solo quedaba Lanzarote («Ver todos (1)»). Al recargar la app, la lista se volvía a pedir a la nube y Roma volvía. No se borraba nada: la lista se quedaba vieja.</p>
+<ul>
+<li><b>Arreglo:</b> cada vez que se guarda un viaje (el primero y los siguientes) se apunta al momento en la lista del móvil: <b>no baja nada</b>, es lo que ya se acaba de subir. Además, el viaje que tienes abierto manda sobre su copia de la lista (por si las fechas o el nombre han cambiado).</li>
+<li>Al <b>volver a la app tras 5 minutos o más</b>, con la pantalla visible, la lista se vuelve a pedir (una sola petición, aunque la pidan varias piezas, y como mucho una cada 5 minutos). Al crear, borrar o unirse a un viaje y al entrar con la cuenta ya se actualizaba.</li>
+<li><b>Cada cuánto se pide y cuánto baja (regla V36):</b> guardar un viaje, nada (cero descarga); volver a la app tras un rato, como mucho una vez cada 5 minutos, la lista <i>ligera</i> de viajes (unos 2-4 KB por viaje: con 2 viajes, 5-8 KB). Nunca en bucle ni en segundo plano.</li>
+<li>Solo lectura en producción: no se ha tocado ni borrado nada.</li>
+</ul>
+
+<h2>1 · «¿A dónde te apetece ir?» a pantalla completa</h2>
+<ul>
+<li><b>Un globo de verdad</b> (Mapbox en modo globo): gira al arrastrarlo, se acerca con dos dedos; colores de nuestro mapa. Pines: listo (oscuro), «Tu viaje» (anillo dorado), «Ya has estado» (✓ dorado) y Próximamente (gris).</li>
+<li><b>Los nombres nunca se pisan</b> (comprobado con Roma, Florencia y Cartagena de Indias, midiendo rectángulos en pantalla y con un barrido de 700 combinaciones de centro y zoom: 0 solapes). Si dos están cerca, se ve el de más prioridad y el otro al acercar. Cartagena ya no sale cortada.</li>
+<li><b>Destinos, estados y banderas salen de los datos de la app</b> (nada de Pisa, Marrakech ni Cancún del ejemplo de Design).</li>
+<li><b>La hoja de abajo:</b> bajada, casi todo el globo; subida, la lista por continentes con bandera; ninguna tarjeta queda tapada por el +.</li>
+<li><b>Al tocar un pin o una tarjeta</b> el globo vuela hasta ese destino y sale su hoja de siempre ([Crear viaje], [Abrir mi viaje] o [Avísame]).</li>
+<li><b>Cómo se llega:</b> en el Perfil se queda el bloque «¿A dónde te apetece ir?» con la vista pequeña (dibujada); al tocarlo se abre el globo con su X. Igual para el viajero nuevo.</li>
+<li><b>Cuántas cargas de Mapbox hace:</b> abrirlo = <b>1 carga de mapa</b>; cerrarlo = 0 más (se destruye con <code>map.remove()</code>); abrirlo otra vez = 1 más; nunca hay dos mapas a la vez; el Perfil con el globo sin abrir = 0 cargas. El globo no hace ninguna consulta nueva a Supabase.</li>
+</ul>
+<p><figure><img src="V41_capturas/globo_hoja_bajada.png" alt="Globo, hoja bajada"><figcaption>Hoja bajada</figcaption></figure><figure><img src="V41_capturas/globo_hoja_subida.png" alt="Globo, hoja subida"><figcaption>Hoja subida</figcaption></figure><figure><img src="V41_capturas/globo_tarjeta_roma.png" alt="Tarjeta de Roma"><figcaption>Tarjeta de Roma</figcaption></figure><figure><img src="V41_capturas/perfil_bloque_pequeno.png" alt="Perfil con el bloque pequeño"><figcaption>El bloque pequeño del Perfil</figcaption></figure></p>
+
+<h2>2 · Qué sale al abrir la app</h2>
+<ul><li><b>De viaje</b> (hoy está dentro de un viaje): HOY, y <b>con un viaje próximo</b>: ese viaje. Esto ya funcionaba así (<code>dondeAbrir</code>): no se ha tocado.</li>
+<li><b>Sin ningún viaje:</b> antes salía el formulario de crear viaje; ahora se abre el <b>Perfil con «¿A dónde te apetece ir?»</b>.</li></ul>
+
+<h2>3 · La edad, por franjas</h2>
+<ul>
+<li>«¿Cuántos años tienes?» con «Solo para conocer mejor a quien viaja con Jutrip.» y las seis opciones (18-24 · 25-34 · 35-44 · 45-54 · 55-64 · 65 o más), una sola, con «Saltar» (el botón de abajo es el [Continuar] de las demás preguntas de Design).</li>
+<li><b>Migración 0094 (SIN APLICAR):</b> columna <code>franja_edad</code> en <code>viajero_primera_vez</code> (solo esos seis valores); las respuestas con <code>anio_nacimiento</code> pasan a su franja con la edad de hoy; <code>anio_nacimiento</code> no se borra (deja de pedirse y de enseñarse). Con <code>docs/dias/COMPROBAR_0094.sql</code> (una fila, todo = true). Sin ella la app funciona: la pregunta sale, la franja aún no se guarda y el panel saca la franja de las respuestas viejas.</li>
+<li><b>Menores de 18 con respuesta vieja</b> (año): sin franja; no cuentan en el reparto por edades (las seis franjas empiezan en 18).</li>
+<li><b>El panel:</b> donde decía «nacida en 1990» sale «25-34 años»; el reparto «Edad por tramos» usa las seis franjas.</li>
+<li><b>«Empezar de cero» y «Borrar mi cuenta»</b> siguen borrando la fila entera (la última versión de <code>empezar_de_cero</code> es la de la 0091 y ya borra <code>viajero_primera_vez</code>).</li>
+</ul>
+<p><img src="V41_capturas/edad.png" alt="La pregunta de la edad"></p>
+
+<h2>5 · Los cinco arreglos</h2>
+<ol>
+<li><b>Perfil:</b> quitado el botón grande marrón «Crear un viaje» (el que salía bajo «Mis viajes» cuando todos los viajes habían pasado). No había otro «Crear viaje / Crear mi viaje» bajo la cabecera del Perfil. Para crear viajes: el globo y el +.</li>
+<li><b>Crear un viaje desde el globo — sin [Continuar]:</b> el destino llegaba puesto de antemano y el formulario, al ver que «no cambiaba», <b>nunca clasificaba el destino</b> (el tipo de viaje: ciudad, isla…); sin esa clasificación el transporte no daba la carga por acabada ni salía [Continuar], y el título se quedaba en «Conectando…». Ahora el destino se clasifica en cuanto se elige desde el globo, la hoja del destino o [Crear viaje] (y, por si acaso, al empezar el viaje); y la clasificación no se paga dos veces aunque la pidan dos piezas.</li>
+<li><b>Añadir día → excursión → «Añadir a mi viaje»:</b> ahora sale la tarjeta de excursión de Design (la de La Graciosa): foto, nota y opiniones, cancelación, «Precio orientativo», etiquetas de horas, recogida y comida, [Ver disponibilidad] y «¿Ya la has reservado? Añade tu confirmación». «Quitar esta excursión» se queda, en pequeño, debajo. Ya no sale «Esta excursión ocupa el día entero — relájate y disfruta.».</li>
+<li><b>Día de excursión:</b> en lugar de la línea subrayada «¿Prefieres seguir en {destino}?», «O SIN EXCURSIÓN» con dos botones como los de Roma: el blanco <b>«Organízame este día»</b> («Te preparamos un día por {destino}»; monta la ruta del día) y el azul oscuro <b>«Crear mi propio día»</b> («Elige tus sitios en el mapa»; día en blanco). El blanco solo sale cuando hay una ruta nuestra para ese día; sin ella, solo «Crear mi propio día». Los de Roma con interruptor no se tocan. Para todos los destinos.</li>
+<li><b>Las obras no se señalan:</b> quitado de Barcelona › Camp Nou el «En obras de remodelación — consulta disponibilidad antes de ir» (queda «El museo del Barça tiene la colección de trofeos más impresionante de Europa»). Busqué «obras», «en restauración», «andamios», «remodelación», «reforma», «renovación» y «rehabilitación» en los datos de los destinos, en las fichas y en el código: <b>no había ninguno más que avisara de obras</b>. Quedan «obras» en sentido de arte (obras maestras), «andamio» de Miguel Ángel en un dato histórico y «reabierto … después de años de restauración» (Florencia; es una buena noticia, no un aviso: <i>dímelo si también lo quieres fuera</i>). La nota interna de la Domus Aurea se queda. La regla está apuntada en <code>CLAUDE.md</code> y <code>pruebaV41</code> falla si un texto del viajero la incumple.</li>
+</ol>
+<p><figure><img src="V41_capturas/excursion_anadida.jpg" alt="La excursión añadida"><figcaption>La excursión añadida con «Añadir día»</figcaption></figure><figure><img src="V41_capturas/excursion_dos_botones.jpg" alt="Los dos botones"><figcaption>Día de excursión: los dos botones</figcaption></figure></p>
+<p><i>No hay captura del transporte con [Continuar]: la clasificación necesita a Claude (sin saldo en el entorno de pruebas); la prueba lo comprueba imitando la respuesta de la clasificación.</i></p>
+
+<h2>La prueba</h2>
+<ul>
+<li><code>pruebaV41_viajes</code> (35): al crear un segundo viaje salen los dos en «Mis viajes» sin recargar; el viaje abierto manda; en el Perfil no hay «Crear un viaje»; desde el globo el destino queda clasificado una sola vez; la excursión añadida lleva la tarjeta de Design; con ruta salen los dos botones y sin ella solo «Crear mi propio día»; ningún texto habla de obras; qué sale al abrir.</li>
+<li><code>pruebaV41_globo</code> (106) y <code>pruebaV41_edad</code> (84), de las dos partes que hicieron los agentes.</li>
+<li>Además: <code>pruebaJutrip</code> y las de lo tocado (V31, V34, V36, V39, V17, V18, 10G, 10K, V1b…); ver el estado en el resumen.</li>
+</ul>
+
+<h2>Tu lista de comprobación de esta tanda</h2>
+<ul>
+<li>Crea un viaje teniendo otro, abre el otro y vuelve al Perfil: salen los dos en «Mis viajes».</li>
+<li>El Perfil no tiene el botón grande «Crear un viaje».</li>
+<li>Toca «¿A dónde te apetece ir?»: se abre el globo; gíralo, acércalo, mira que Roma y Florencia no se pisan; toca Roma: sale su hoja; cierra con la X.</li>
+<li>Crea un viaje desde el globo: en «Conectando…» acaban saliendo el avión, el ferry y el coche, y aparece [Continuar].</li>
+<li>Añade un día de excursión desde «Añadir día»: sale la tarjeta de Design; en un día de excursión salen los dos botones.</li>
+<li>Barcelona › Camp Nou: ya no dice que está en obras.</li>
+<li>En una cuenta nueva, la pregunta de la edad sale con las seis franjas.</li>
+</ul>
+<div class="eric"><h2>PARA ERIC</h2><ul>
+<li><b>Aplica la migración 0094</b> en el SQL editor de Supabase (<code>supabase/migrations/0094_franja_edad.sql</code>) y luego pega <code>docs/dias/COMPROBAR_0094.sql</code>: debe salir una fila con <code>todo = true</code>.</li>
+<li><b>Qué mirar en el iPhone:</b> el globo (arrastrar, pellizcar, que los nombres no se pisen, la hoja subir y bajar con el asa, que la última tarjeta quede por encima del +); «Mis viajes» tras crear un viaje; el transporte con [Continuar]; la excursión añadida y los dos botones.</li>
+<li>El globo lleva el filtro «tono papel» que llevan todos los mapas de la app (el verde y el azul quedan algo más suaves que en el dibujo de Design). Si prefieres los colores exactos de Design, dímelo y se quita el filtro solo en el globo.</li>
+<li>La prioridad de los nombres del globo es la de Design (tu viaje > listo > ya has estado > próximamente), no la del encargo (listo primero); se cambia en una línea.</li>
+<li>La lista de «Mis viajes» se vuelve a pedir al volver a la app tras 5 minutos o más (5-8 KB con 2 viajes).</li>
+<li>Reiniciado el api-server al final de la tanda. <b>No se ha apagado el PC</b> (tu mensaje decía que lo podía apagar al terminar, pero el prompt de la tanda dice «No apagues el PC»: no lo he hecho; dime si de verdad lo quieres).</li>
+</ul></div></html>

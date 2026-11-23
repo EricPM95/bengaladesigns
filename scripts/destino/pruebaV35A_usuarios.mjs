@@ -321,7 +321,7 @@ console.log('10. La ficha por dirección (ordenador)')
   try {
     debe(await esperar(a, "Boolean(document.querySelector('[data-ficha=\"u-eric\"]'))"), '/admin/usuarios?ficha=<id> abre la ficha')
     const t = await texto(a)
-    for (const frase of ['‹ Volver a la lista', 'Eric', 'Alta', 'Último acceso', 'Viajes', 'Gastado', 'Pase', 'Vive en', 'Sus viajes', 'PRÓXIMOS', 'Sus pases · solo fecha y precio', 'Logros', 'Reportes que ha mandado', 'Sin datos de tarjeta, nunca.', 'Primera vez: viaja 2 o 3 veces al año · en pareja · nacida en 1991'])
+    for (const frase of ['‹ Volver a la lista', 'Eric', 'Alta', 'Último acceso', 'Viajes', 'Gastado', 'Pase', 'Vive en', 'Sus viajes', 'PRÓXIMOS', 'Sus pases · solo fecha y precio', 'Logros', 'Reportes que ha mandado', 'Sin datos de tarjeta, nunca.', 'Primera vez: viaja 2 o 3 veces al año · en pareja · 35-44 años'])
       debe(t.includes(frase), `ficha: «${frase}»`)
     const d = await a.evaluar("(() => { const g = (n) => document.querySelector('[data-ficha-dato=\"' + n + '\"]').innerText; return { pase: g('pase'), gastado: g('gastado'), vive: g('vive'), viajes: g('viajes'), importes: [...document.querySelectorAll('[data-ficha-pase]')].map((e) => Number(e.dataset.importe)), nombres: [...document.querySelectorAll('[data-pase-nombre]')].map((e) => e.innerText) } })()")
     debe(d.pase === 'Sí · 1 destino' && d.gastado === '10,99 €' && d.vive === 'España' && d.viajes === '2 · 0 hechos', `ficha de Eric: pase «${d.pase}», gastado ${d.gastado}, vive «${d.vive}», viajes «${d.viajes}»`)

@@ -8,7 +8,6 @@ import { useEliminarViaje } from '../../../../lib/eliminarViaje'
 import { guardarPerfil, leerPerfilGuardado, mismoPerfil, uidDeLaSesion } from '../../../../lib/perfilEnCache'
 import { nombreVisible } from '../../../../lib/nombrePersona'
 import { usePerfilUi } from '../../../../store/usePerfilUi'
-import { empezarViajeNuevo } from '../../../../lib/nuevoViaje'
 import { BotonEditarViajes } from '../../../perfil/BotonEditarViajes'
 import { PerfilEsqueleto } from '../../../perfil/PerfilEsqueleto'
 import { plural, cifrasDelPerfil, type ResumenViaje } from '../../../../lib/viajesPerfil'
@@ -155,22 +154,7 @@ export default function CuerpoConLogros({ viajes, fotos, onAbrirAlbum, onAbrirVi
           </button>
         )}
       </div>
-      {viajes.every((v) => v.fase === 'hecho') && (
-        <div style={{ padding: '0 20px', marginTop: 14 }}>
-          <button
-            className="zona-toque"
-            type="button"
-            data-crear-viaje-perfil
-            onClick={() => {
-              usePerfilUi.getState().cerrar()
-              empezarViajeNuevo()
-            }}
-            style={{ width: '100%', minHeight: 52, borderRadius: 18, border: 'none', background: '#6F4E37', color: '#FFFDF8', font: "600 16px 'Geist'", cursor: 'pointer' }}
-          >
-            Crear un viaje
-          </button>
-        </div>
-      )}
+      {/* (V41 §5.1, Eric) Sin el botón grande «Crear un viaje» bajo «Mis viajes»: para crear viajes están el globo («¿A dónde te apetece ir?») y el botón +. */}
       {viajes.length === 0 && antes === 0 && <p style={{ margin: '12px 20px 0', font: "400 13px 'Geist'", color: 'rgba(28,34,48,.6)' }}>Aún no tienes viajes guardados en este dispositivo.</p>}
       {(viajes.length > 0 || antes > 0) && (
         <div data-fila-de-viajes data-ancho-tarjeta={anchoDeTarjeta} className="trazo-noscroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', overflowY: 'hidden', overscrollBehaviorX: 'contain', scrollSnapType: 'x mandatory', scrollPaddingLeft: 20, padding: '14px 20px 6px 20px', scrollbarWidth: 'none' }}>

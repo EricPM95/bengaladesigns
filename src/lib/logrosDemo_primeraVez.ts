@@ -2,6 +2,8 @@
  * El servidor de mentira de las preguntas de la primera vez (V31; SOLO desarrollo, `?logrosDemo=1`). Guarda lo mismo que el servidor de verdad (solo frecuencia, con quién y año; el ritmo y los gustos se descartan).
  * `window.__demoPrimeraVez` enseña lo guardado y deja ponerlo a mano (para las pruebas).
  */
+import { franjaDeAnio, franjaValida } from '../../server/franjaEdad.js'
+
 const FRECUENCIAS = ['una_vez_al_anio', 'dos_o_tres', 'cuatro_o_mas']
 const COMPANIAS = ['a_mi_aire', 'pareja', 'familia', 'amigos']
 
@@ -21,11 +23,11 @@ const nueva = (): boolean => {
 }
 
 /** Por defecto el viajero de la demo ya las contestó (así las demás pruebas no las ven); para ver las preguntas: `localStorage['trazo:demo:primera_vez_nueva'] = 'si'` antes de abrir. */
-export const demoPrimeraVez: { hecho: boolean; frecuencia: string | null; compania: string | null; anio_nacimiento: number | null; pais_vive: string | null; sueno: { tipo: string; nombre: string; iso: string } | null; suenos_disponibles: boolean; suenos: unknown[]; guardados: number; ultimo: Record<string, unknown> | null; avisos: { destino: string; email: string }[]; usos: Record<string, unknown>[]; paises: unknown[] } = {
+export const demoPrimeraVez: { hecho: boolean; frecuencia: string | null; compania: string | null; franja_edad: string | null; pais_vive: string | null; sueno: { tipo: string; nombre: string; iso: string } | null; suenos_disponibles: boolean; suenos: unknown[]; guardados: number; ultimo: Record<string, unknown> | null; avisos: { destino: string; email: string }[]; usos: Record<string, unknown>[]; paises: unknown[] } = {
   hecho: typeof window === 'undefined' ? true : !nueva() || yaHecha(),
   frecuencia: null,
   compania: null,
-  anio_nacimiento: null,
+  franja_edad: null,
   pais_vive: null,
   // (V39) El viaje de sus sueños (pregunta 3 y Ajustes). `suenos_disponibles` false = como un servidor sin la migración 0093 (la pregunta no sale): `localStorage['trazo:demo:sin_suenos'] = 'si'`.
   sueno: null,
@@ -51,7 +53,7 @@ const suenoValido = (v: unknown): { tipo: string; nombre: string; iso: string } 
 export function responder(ruta: string, _url: URL, c: Record<string, unknown>, opciones: { metodo?: string; cuerpo?: unknown }): unknown {
   // Sin la marca de «cuenta nueva», el servidor de la demo no tiene nada que decir (como un servidor sin la migración): así las demás pruebas no ven ni las preguntas ni el Perfil con el mapa.
   if (ruta === '/api/primera-vez' && (opciones.metodo ?? 'GET') === 'GET' && !nueva()) return { ok: false }
-  if (ruta === '/api/primera-vez' && (opciones.metodo ?? 'GET') === 'GET') return { ok: true, hecho: demoPrimeraVez.hecho, frecuencia: demoPrimeraVez.frecuencia, compania: demoPrimeraVez.compania, anio_nacimiento: demoPrimeraVez.anio_nacimiento, pais_vive: demoPrimeraVez.pais_vive, suenos_disponibles: demoPrimeraVez.suenos_disponibles, sueno: demoPrimeraVez.sueno }
+  if (ruta === '/api/primera-vez' && (opciones.metodo ?? 'GET') === 'GET') return { ok: true, hecho: demoPrimeraVez.hecho, frecuencia: demoPrimeraVez.frecuencia, compania: demoPrimeraVez.compania, franja_edad: demoPrimeraVez.franja_edad, pais_vive: demoPrimeraVez.pais_vive, suenos_disponibles: demoPrimeraVez.suenos_disponibles, sueno: demoPrimeraVez.sueno }
   if (ruta === '/api/uso') {
     demoPrimeraVez.usos.push({ ...c })
     return { ok: true, guardado: true }
@@ -72,7 +74,6 @@ export function responder(ruta: string, _url: URL, c: Record<string, unknown>, o
     return { ok: true, guardado: true }
   }
   if (ruta === '/api/primera-vez') {
-    const anio = Number(c.anio_nacimiento)
     demoPrimeraVez.hecho = true
     demoPrimeraVez.ultimo = { ...c }
     try {
@@ -83,7 +84,8 @@ export function responder(ruta: string, _url: URL, c: Record<string, unknown>, o
     demoPrimeraVez.guardados += 1
     demoPrimeraVez.frecuencia = FRECUENCIAS.includes(String(c.frecuencia)) ? String(c.frecuencia) : null
     demoPrimeraVez.compania = COMPANIAS.includes(String(c.compania)) ? String(c.compania) : null
-    demoPrimeraVez.anio_nacimiento = Number.isInteger(anio) && anio >= 1920 && anio <= new Date().getFullYear() ? anio : null
+    // (V41) Como el servidor: una de las seis franjas (o la que sale de un año de nacimiento de una app vieja).
+    demoPrimeraVez.franja_edad = franjaValida(c.franja_edad) ?? franjaDeAnio(c.anio_nacimiento)
     demoPrimeraVez.pais_vive = /^[A-Za-z]{2}$/.test(String(c.pais_vive ?? '')) ? String(c.pais_vive).toUpperCase() : null
     if (demoPrimeraVez.suenos_disponibles) demoPrimeraVez.sueno = suenoValido(c.sueno)
     return { ok: true }

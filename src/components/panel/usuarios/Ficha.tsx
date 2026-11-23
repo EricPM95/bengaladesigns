@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react'
-import { ETIQUETA_COMPANIA, euros, type UsuarioFicha } from '../api'
+import { ETIQUETA_COMPANIA, etiquetaFranja, euros, type UsuarioFicha } from '../api'
 import { SERIE } from '../estilo'
 import { Bandera } from '../banderas'
 import { Avatar, MONO, diaCorto, fechaLarga, rangoLargo, ultimoAcceso } from './piezas'
@@ -15,11 +15,11 @@ const pastilla = (texto: string, fondo: string, color: string): ReactNode => <sp
 
 const COLOR_MEDALLA: Record<string, [string, string]> = { oro: ['#FBEFC8', '#8A6210'], bronce: ['#F3E4D4', '#8A4A1C'], plata: ['#ECEEF2', '#4A5160'], diamante: ['#DDEBFA', '#1F5CA8'] }
 
-/** Pura: «viaja 2 o 3 veces al año · en pareja · nacida en 1991» de lo que contestó (o «sin contestar»). */
+/** Pura: «viaja 2 o 3 veces al año · en pareja · 25-34 años» de lo que contestó (o «sin contestar»). */
 export function frasePrimeraVez(p: UsuarioFicha['usuario']['primera_vez']): string {
   if (!p) return 'Primera vez: todavía no ha contestado.'
   const frec: Record<string, string> = { una_vez_al_anio: 'viaja una vez al año', dos_o_tres: 'viaja 2 o 3 veces al año', cuatro_o_mas: 'viaja 4 o más veces al año' }
-  const trozos = [p.frecuencia ? frec[p.frecuencia] : null, p.compania ? (ETIQUETA_COMPANIA[p.compania] ?? '').toLowerCase() : null, p.anio_nacimiento ? `nacida en ${p.anio_nacimiento}` : null].filter(Boolean)
+  const trozos = [p.frecuencia ? frec[p.frecuencia] : null, p.compania ? (ETIQUETA_COMPANIA[p.compania] ?? '').toLowerCase() : null, etiquetaFranja(p.franja_edad) || null].filter(Boolean)
   return trozos.length ? `Primera vez: ${trozos.join(' · ')}` : 'Primera vez: todavía no ha contestado.'
 }
 

@@ -15,6 +15,7 @@ import { esEcoRemoto } from '../../lib/viajeEnDirecto'
 import { cuentasActivas, esFalloDeServidor, hayRespaldoDeSesion } from '../../lib/cuentas'
 import { limpiarPropuestasHuerfanas } from '../../lib/propuestasHuerfanas'
 import { sinCopiaOriginal } from '../../lib/copiaOriginal'
+import { apuntarViajeEnLaLista, refrescarListaDeViajes } from '../../lib/listaDeViajes'
 
 const SAVE_DEBOUNCE_MS = 1500
 
@@ -57,6 +58,8 @@ async function attemptSave(travelerId: string) {
     // Primer guardado de un viaje nuevo (insert) — a partir de ahora los siguientes guardados
     // actualizan esta misma fila en vez de crear una nueva cada vez.
     if (!tripId) useSyncStore.getState().setActiveTripId(savedId)
+    // (V41 §4) El viaje recién guardado (o puesto al día) entra en «Mis viajes» al momento, sin descargar nada: antes solo salía mientras estaba abierto y desaparecía al abrir otro.
+    apuntarViajeEnLaLista(savedId, payload)
     useSyncStore.getState().setStatus('saved')
   } catch (err) {
     useSyncStore.getState().setError(err instanceof Error ? err.message : 'No se pudo guardar el viaje.')
@@ -131,6 +134,20 @@ export function TripSync() {
       /* sin lista guardada */
     }
   }
+
+  // (V41 §4) Al volver a la app tras un rato (5 min o más en segundo plano), con la pantalla visible, la lista de «Mis viajes» se vuelve a pedir (una sola petición ligera, como mucho cada 5 minutos; ver lib/listaDeViajes.ts).
+  useEffect(() => {
+    let oculta: number | null = null
+    const alCambiar = () => {
+      if (document.visibilityState === 'hidden') oculta = Date.now()
+      else if (oculta !== null && Date.now() - oculta >= 5 * 60 * 1000) {
+        oculta = null
+        void refrescarListaDeViajes()
+      }
+    }
+    document.addEventListener('visibilitychange', alCambiar)
+    return () => document.removeEventListener('visibilitychange', alCambiar)
+  }, [])
 
   useEffect(() => {
     // Sin Supabase, o en el modo de pruebas (`?logrosDemo=1`, solo desarrollo): sin guardado en la nube. (Con el Supabase de verdad y sin la migración 0024, leer los viajes falla y salía «Cambios sin guardar» en las capturas.)
@@ -216,12 +233,15 @@ export function TripSync() {
             useRouteStore.getState().setMode(donde.modo)
             useRouteStore.getState().setActiveDayId(null)
           } else if (donde.tipo === 'misViajes') {
-            // (V17) Todos sus viajes ya pasaron: se abre el PERFIL (Mis viajes, con «Crear un viaje» a la vista), sobre el último viaje que tocó.
+            // (V17) Todos sus viajes ya pasaron: se abre el PERFIL (Mis viajes; V41: sin botón de crear, están el globo y el +), sobre el último viaje que tocó.
             // La pantalla vieja «Mis viajes» ya no existe: nadie la ve.
             useSyncStore.getState().setActiveTripId(trips[0].id)
             hydrateTrip(await viajeEntero(trips[0]))
             useRouteStore.getState().setMode('route')
             useRouteStore.getState().setActiveDayId(null)
+            usePerfilUi.getState().abrir()
+          } else if (donde.tipo === 'nada' && cuentasActivas()) {
+            // (V41 §2, Eric) Sin ningún viaje: se abre el PERFIL, con «¿A dónde te apetece ir?» (el globo) en el sitio de «Mis viajes»; antes salía el formulario de crear viaje. Con un viaje de hoy sale HOY y con uno próximo, ese viaje (arriba).
             usePerfilUi.getState().abrir()
           }
         }

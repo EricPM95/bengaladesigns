@@ -4,7 +4,8 @@ import { ExcursionBookArea, ExcursionReservedTop, useExcursionReservation } from
 import type { CuratedAlternative, Excursion } from '../../../lib/types'
 import { Icono } from '../../ui/Icono'
 import { AvisosExcursion } from '../excursions/AvisosExcursion'
-import { ExcursionDayBloque } from './ExcursionBloque'
+import { ExcursionDayBloque, TarjetaDeExcursion } from './ExcursionBloque'
+import { useExcursionesCompletas } from '../../../lib/excursionesDatos'
 
 /**
  * Prompt 4 — las piezas de excursión de la ficha de un día, en un solo sitio porque comparten el
@@ -410,64 +411,19 @@ export function HalfDayExcursionBlock({
  * en blanco precisamente porque el destino ya no da para más contenido nuevo, así que ofrecerlo
  * sería prometer algo que no existe. La salida es quitar la excursión y volver a decidir.
  */
-export function BlankDayFullExcursion({ excursion, onRemove }: { excursion: Excursion; onRemove: () => void }) {
+export function BlankDayFullExcursion({ excursion, dayNumber = null, onRemove }: { excursion: Excursion; dayNumber?: number | null; onRemove: () => void }) {
   const reserved = Boolean(useExcursionReservation(excursion.id))
+  // (V41 §5.3, Eric) La tarjeta de excursión de Design, la MISMA del día de excursión (La Graciosa): foto, nota y opiniones, cancelación, «Precio orientativo», etiquetas (horas, recogida, comida), [Ver disponibilidad] y «¿Ya la has reservado? Añade tu confirmación».
+  // Antes salía la tarjeta vieja beige con «Esta excursión ocupa el día entero — relájate y disfruta.»; esa frase ya no está. «Quitar esta excursión» se queda, en pequeño, debajo.
+  const completas = useExcursionesCompletas([excursion])
   return (
-    <div className="space-y-2 pt-1">
-      <div className="rounded-xl border border-accent bg-accent-soft p-3">
-        <ExcursionReservedTop excursion={excursion} />
-        <div className="flex items-start gap-3">
-          <span className="text-3xl leading-none" aria-hidden="true">
-            <Icono nombre="excursion" size={18} />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="text-body font-semibold text-text">{excursion.title}</p>
-            <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-caption text-text-soft">
-              <span className="whitespace-nowrap">{excursion.durationLabel}</span>
-              {formatPrice(excursion) && (
-                <>
-                  <span aria-hidden="true">·</span>
-                  <span className="whitespace-nowrap">desde {formatPrice(excursion)}</span>
-                </>
-              )}
-              {excursion.rating ? (
-                <>
-                  <span aria-hidden="true">·</span>
-                  <RatingLabel excursion={excursion} />
-                </>
-              ) : null}
-            </p>
-            <AvisosExcursion excursion={excursion} className="mt-1" />
-          </div>
-        </div>
-        {excursion.description && <p className="mt-2 text-caption leading-relaxed text-text-soft">{excursion.description}</p>}
-        {excursion.meetingPoint && !reserved && (
-          <p className="mt-2 text-caption text-text-muted">
-            <span className="font-semibold">Punto de encuentro:</span> {excursion.meetingPoint}
-          </p>
-        )}
-        <ExcursionBookArea excursion={excursion}>
-          {excursion.bookUrl && (
-            <a
-              href={excursion.bookUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-3 block w-full rounded-xl btn-champan py-2.5 text-center text-small font-semibold transition-opacity hover:opacity-90"
-            >
-              Ver disponibilidad
-            </a>
-          )}
-        </ExcursionBookArea>
-      </div>
-
-      <p className="rounded-xl bg-bg-hover px-3 py-2.5 text-small leading-relaxed text-text-soft">
-        Esta excursión ocupa el día entero — relájate y disfruta.
-      </p>
-
+    <div className="space-y-2 pt-1" data-excursion-dia-en-blanco>
+      <TarjetaDeExcursion excursion={completas[0] ?? excursion} dayNumber={dayNumber} reservada={reserved} />
       {!reserved && (
         <button
           type="button"
           onClick={onRemove}
+          data-quitar-excursion
           className="w-full pt-1 text-center text-caption text-text-muted underline transition-colors hover:text-text-soft"
         >
           Quitar esta excursión
@@ -522,6 +478,7 @@ export function ExcursionDayProposal({
   dayNumber = null,
   onSelect,
   onDecline,
+  hayRuta = true,
 }: {
   destination: string
   options: Excursion[]
@@ -531,6 +488,8 @@ export function ExcursionDayProposal({
   dayNumber?: number | null
   onSelect: (id: string | null) => void
   onDecline: (fill: 'route' | 'empty') => void
+  /** (V41 §5.4) Hay una ruta nuestra para este día: salen «Organízame este día» y «Crear mi propio día»; sin ella, solo la segunda. */
+  hayRuta?: boolean
 }) {
-  return <ExcursionDayBloque destination={destination} options={options} selectedId={selectedId} socialProof={socialProof} dayNumber={dayNumber} onSelect={onSelect} onDecline={onDecline} />
+  return <ExcursionDayBloque destination={destination} options={options} selectedId={selectedId} socialProof={socialProof} dayNumber={dayNumber} onSelect={onSelect} onDecline={onDecline} hayRuta={hayRuta} />
 }

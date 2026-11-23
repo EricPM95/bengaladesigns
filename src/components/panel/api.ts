@@ -1,5 +1,6 @@
 import { llamar } from '../../lib/logros'
 import { conFiltroDePruebas, useSinPruebas } from './pruebas'
+import { NOMBRE_FRANJA } from '../../../server/franjaEdad.js'
 
 /**
  * (V33) LO QUE CUENTA EL SERVIDOR AL PANEL DE JUTRIP (`/api/admin/*`, carpeta `server/panel/`). Todo es solo para administradores: el servidor responde 401/403 al que no lo es y aquí eso llega como «sin respuesta».
@@ -49,7 +50,8 @@ export interface Inicio {
 export interface PrimeraVezDeUsuario {
   frecuencia: string | null
   compania: string | null
-  anio_nacimiento: number | null
+  /** (V41) La franja de edad ('25-34'…): la contestada o, en una respuesta vieja, la que sale de su año de nacimiento. null = sin contestar (o menor de 18). */
+  franja_edad: string | null
 }
 export interface FilaDeUsuario {
   id: string
@@ -157,10 +159,13 @@ export const ETIQUETA_FRECUENCIA: Record<string, string> = { una_vez_al_anio: 'U
 export const ETIQUETA_COMPANIA: Record<string, string> = { a_mi_aire: 'A mi aire', pareja: 'En pareja', familia: 'En familia', amigos: 'Con amigos' }
 const CORTA_FRECUENCIA: Record<string, string> = { una_vez_al_anio: 'Una vez al año', dos_o_tres: '2–3 veces/año', cuatro_o_mas: '4 o más' }
 
-/** Pura: lo que contestó, en una línea («2–3 veces/año · pareja · 1991») o «—». */
+/** Pura (V41): la franja de edad como se lee («25-34 años», «65 o más años») o «» si no hay. */
+export const etiquetaFranja = (franja: string | null | undefined): string => (franja && NOMBRE_FRANJA[franja as keyof typeof NOMBRE_FRANJA] ? `${NOMBRE_FRANJA[franja as keyof typeof NOMBRE_FRANJA]} años` : '')
+
+/** Pura: lo que contestó, en una línea («2–3 veces/año · pareja · 25-34 años») o «—». */
 export const lineaDePrimeraVez = (p: PrimeraVezDeUsuario | null): string => {
   if (!p) return '—'
-  const trozos = [p.frecuencia ? CORTA_FRECUENCIA[p.frecuencia] : null, p.compania ? (ETIQUETA_COMPANIA[p.compania] ?? '').toLowerCase() : null, p.anio_nacimiento ? String(p.anio_nacimiento) : null].filter(Boolean)
+  const trozos = [p.frecuencia ? CORTA_FRECUENCIA[p.frecuencia] : null, p.compania ? (ETIQUETA_COMPANIA[p.compania] ?? '').toLowerCase() : null, etiquetaFranja(p.franja_edad) || null].filter(Boolean)
   return trozos.length ? trozos.join(' · ') : '—'
 }
 

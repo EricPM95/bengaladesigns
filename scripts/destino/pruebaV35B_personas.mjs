@@ -30,7 +30,7 @@ console.log('1. El servidor guarda el país (2 letras, mayúsculas), lo ignora s
 {
   debe(limpiarPais('es') === 'ES' && limpiarPais(' mx ') === 'MX' && limpiarPais('ESP') === null && limpiarPais('1.2.3.4') === null && limpiarPais('Madrid') === null && limpiarPais(null) === null && limpiarPais(34) === null, 'pais', 'solo vale un código de 2 letras (se guarda en mayúsculas); una IP, una ciudad o un número, no')
   const l = limpiarRespuestas({ frecuencia: 'dos_o_tres', pais_vive: 'es', ip: '1.2.3.4', ubicacion: { lat: 1, lng: 2 } }, 2026)
-  debe(JSON.stringify(Object.keys(l).sort()) === '["anio_nacimiento","compania","frecuencia","pais_vive"]' && l.pais_vive === 'ES', 'pais', 'lo que se guarda lleva el país y nada de IP ni de ubicación')
+  debe(JSON.stringify(Object.keys(l).sort()) === '["compania","franja_edad","frecuencia","pais_vive"]' && l.pais_vive === 'ES', 'pais', 'lo que se guarda lleva el país y nada de IP ni de ubicación')
   debe(limpiarRespuestas({}, 2026).pais_vive === null, 'pais', 'es opcional: sin país, queda vacío')
 
   // Una base de mentira CON la columna.
@@ -241,7 +241,7 @@ console.log('6. La pregunta del país en la primera vez: sale ya marcada con el 
     await esperar(a, "Boolean(document.querySelector('[data-mapa-primera-vez]'))")
     const g = await J(a, 'JSON.stringify(window.__demoPrimeraVez)')
     debe(g.guardados === 1 && g.pais_vive === 'ES' && g.ultimo.pais_vive === 'ES', 'pais', 'con [Continuar] se guarda el país: ES')
-    debe(JSON.stringify(Object.keys(g.ultimo).sort()) === '["anio_nacimiento","compania","frecuencia","pais_vive","sueno"]', 'sin_ip', `lo enviado lleva solo esas cinco claves (V39: + el viaje soñado): ${Object.keys(g.ultimo)}`)
+    debe(JSON.stringify(Object.keys(g.ultimo).sort()) === '["compania","franja_edad","frecuencia","pais_vive","sueno"]', 'sin_ip', `lo enviado lleva solo esas cinco claves (V39: + el viaje soñado): ${Object.keys(g.ultimo)}`)
   } finally {
     a.cerrar()
   }

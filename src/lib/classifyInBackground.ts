@@ -12,7 +12,12 @@ import { classifyDestination } from './classifyDestination'
  * (`OriginInput`) sin tener que pasarla como prop a través de varios niveles — usa
  * `useRouteStore.getState()` para despachar acciones de forma imperativa.
  */
+// (V41 §5.2) La clasificación de un destino en vuelo no se repite: se puede pedir desde varios sitios (al elegir destino, al empezar el viaje, «Reintentar») sin pagar dos veces la llamada.
+let enCurso: string | null = null
+
 export function classifyInBackground(name: string): void {
+  if (enCurso === name) return
+  enCurso = name
   const { setArchetype, setArchetypeAmbiguous, setArchetypeClassificationFailed } = useRouteStore.getState()
   setArchetypeClassificationFailed(false)
   classifyDestination(name).then((result) => {
@@ -30,5 +35,7 @@ export function classifyInBackground(name: string): void {
     } else {
       setArchetype(result.archetype, result.is_region, result.requiere_coche, result.pase_dominante, result.vehiculo_altamente_recomendado)
     }
+  }).finally(() => {
+    if (enCurso === name) enCurso = null
   })
 }

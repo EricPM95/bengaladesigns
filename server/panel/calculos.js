@@ -9,6 +9,7 @@
 import { cubetasDeRango, diaDe, enRango, rangoDePeriodo, sumarDias, ZONA } from './periodo.js'
 import { clavePanel, esCobroReal, indiceDe, nombreDe, nombreDePlan, pasesDe, viajesDe } from './comunes.js'
 import { dondeViven } from './calculosPersonas.js'
+import { FRANJAS_EDAD, NOMBRE_FRANJA, franjaDeFila } from '../franjaEdad.js'
 
 const n = (v) => Number(v) || 0
 const pct = (x, total) => (total > 0 ? Math.round((x / total) * 100) : 0)
@@ -48,14 +49,13 @@ const NOMBRES = {
   frecuencia: { una_vez_al_anio: 'Una vez al año', dos_o_tres: '2 o 3 veces al año', cuatro_o_mas: '4 o más' },
   compania: { a_mi_aire: 'A mi aire', pareja: 'En pareja', familia: 'En familia', amigos: 'Con amigos' },
 }
-const TRAMOS = [['menos_18', 'Menos de 18'], ['18_29', '18 – 29'], ['30_44', '30 – 44'], ['45_59', '45 – 59'], ['60_mas', '60 o más']]
-const tramoDe = (edad) => (edad < 18 ? 'menos_18' : edad < 30 ? '18_29' : edad < 45 ? '30_44' : edad < 60 ? '45_59' : '60_mas')
 
 /** «Lo que contestaron en la primera vez»: solo cuentas de verdad y SOLO las opciones que alguien ha elegido. */
 export function primeraVez(base, ahora = new Date()) {
   const reales = new Set((base.usuarios ?? []).map((u) => u.id))
-  const filas = (base.primera_vez ?? []).filter((p) => reales.has(p.user_id) && (p.frecuencia || p.compania || p.anio_nacimiento))
   const anio = Number(diaDe(ahora).slice(0, 4))
+  // (V41) La edad es una FRANJA: la guardada o, en una respuesta vieja, la que sale de su año de nacimiento con la edad de hoy. Un menor de 18 no tiene franja.
+  const filas = (base.primera_vez ?? []).filter((p) => reales.has(p.user_id) && (p.frecuencia || p.compania || franjaDeFila(p, anio))).map((p) => ({ ...p, franja: franjaDeFila(p, anio) }))
   const reparto = (valores, nombres) => {
     const total = valores.length
     const cuenta = new Map()
@@ -64,13 +64,13 @@ export function primeraVez(base, ahora = new Date()) {
   }
   const f = filas.map((p) => p.frecuencia).filter(Boolean)
   const c = filas.map((p) => p.compania).filter(Boolean)
-  const e = filas.map((p) => p.anio_nacimiento).filter(Boolean).map((a) => tramoDe(anio - a))
+  const e = filas.map((p) => p.franja).filter(Boolean)
   return {
     contestaron: filas.length,
     bloques: [
       { id: 'frecuencia', titulo: '¿Cada cuánto viajan?', total: f.length, opciones: reparto(f, NOMBRES.frecuencia) },
       { id: 'compania', titulo: '¿Con quién viajan?', total: c.length, opciones: reparto(c, NOMBRES.compania) },
-      { id: 'edad', titulo: 'Edad por tramos', total: e.length, opciones: reparto(e, Object.fromEntries(TRAMOS)) },
+      { id: 'edad', titulo: 'Edad por tramos', total: e.length, opciones: reparto(e, NOMBRE_FRANJA).sort((a, b) => b.n - a.n || FRANJAS_EDAD.indexOf(a.valor) - FRANJAS_EDAD.indexOf(b.valor)) },
     ],
   }
 }

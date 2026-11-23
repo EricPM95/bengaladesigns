@@ -121,7 +121,7 @@ export function responder(ruta: string, url: URL, c: Record<string, unknown>, op
         bloques: [
           { id: 'frecuencia', titulo: '¿Cada cuánto viajan?', total: 3, opciones: [{ valor: 'dos_o_tres', nombre: '2 o 3 veces al año', n: 2, pct: 67 }, { valor: 'cuatro_o_mas', nombre: '4 o más', n: 1, pct: 33 }] },
           { id: 'compania', titulo: '¿Con quién viajan?', total: 3, opciones: [{ valor: 'pareja', nombre: 'En pareja', n: 2, pct: 67 }, { valor: 'amigos', nombre: 'Con amigos', n: 1, pct: 33 }] },
-          { id: 'edad', titulo: 'Edad por tramos', total: 3, opciones: [{ valor: '30_44', nombre: '30 – 44', n: 2, pct: 67 }, { valor: '18_29', nombre: '18 – 29', n: 1, pct: 33 }] },
+          { id: 'edad', titulo: 'Edad por tramos', total: 3, opciones: [{ valor: '35-44', nombre: '35-44', n: 2, pct: 67 }, { valor: '25-34', nombre: '25-34', n: 1, pct: 33 }] },
         ],
       },
       desde_donde: { paises: [{ iso: 'es', n: 2 }, { iso: 'mx', n: 1 }], ciudades: [{ nombre: 'Barcelona', iso: 'es', n: 2 }, { nombre: 'Madrid', iso: 'es', n: 1 }, { nombre: 'Ciudad de México', iso: 'mx', n: 1 }] },

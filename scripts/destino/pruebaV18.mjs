@@ -141,12 +141,10 @@ console.log('3. Lanzarote: EXPLORAR y DÍAS')
     debe(/Ver disponibilidad/.test(bloque?.texto ?? '') && /Añade tu confirmación/.test(bloque?.texto ?? ''), 'E1', '[Ver disponibilidad] y «¿Ya la has reservado? Añade tu confirmación»')
     await a.captura(`${CAP}/E1_sin_reservar.jpg`)
     // E3
-    await ev("document.querySelector('[data-seguir-en-ciudad]').click(); true")
-    await a.esp(800)
-    const e3 = await ev("(document.querySelector('[data-excursion-que-hacemos]')?.innerText ?? '').replace(/\\s+/g, ' ')")
-    debe(/¿Qué hacemos con este día\?/.test(e3) && /Una ruta por Lanzarote, hecha a tu medida/.test(e3) && /Lo organizo yo/.test(e3) && /Mejor me quedo con la excursión/.test(e3), 'E3', `E3: «¿Qué hacemos con este día?» con el texto nuevo (${e3.slice(0, 120)})`)
+    // (V41 §5.4) La salida «¿Prefieres seguir en…?» ya no es una línea subrayada: son los dos botones de «O SIN EXCURSIÓN» (Organízame este día / Crear mi propio día), como los de Roma.
+    const e3 = await ev("(document.querySelector('[data-sin-excursion]')?.innerText ?? '').replace(/\\s+/g, ' ')")
+    debe(/O sin excursión/i.test(e3) && /Crear mi propio día/.test(e3) && /Elige tus sitios en el mapa/.test(e3) && !/Prefieres seguir en/.test(e3), 'E3', `E3 (V41): «O sin excursión» con «Crear mi propio día» (${e3.slice(0, 140)})`)
     await a.captura(`${CAP}/E3_que_hacemos.jpg`)
-    await ev("Array.from(document.querySelectorAll('button')).find((b) => /Mejor me quedo/.test(b.innerText))?.click(); true")
     await a.esp(600)
     // E4
     await ev("document.querySelector('[data-ver-mas-excursiones]').click(); true")

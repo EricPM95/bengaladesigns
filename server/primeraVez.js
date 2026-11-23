@@ -1,10 +1,10 @@
 /**
  * LAS PREGUNTAS DE LA PRIMERA VEZ (V31). Quien abre JUTRIP por primera vez, sin ningún viaje, contesta (o salta) unas preguntas, UNA sola vez por cuenta. Aquí se guardan SOLO tres cosas, en `viajero_primera_vez`
- * (migración 0089): cada cuánto viaja, con quién suele viajar y el año de nacimiento (opcional). El ritmo y «qué te gusta ver» de la pregunta 3 NO se guardan: si llegan, se ignoran. Las respuestas no se usan para
+ * (migración 0089): cada cuánto viaja, con quién suele viajar y la franja de edad (opcional; V41, antes el año de nacimiento: el año ya no se pide ni se guarda; la franja viene de la migración 0094). El ritmo y «qué te gusta ver» de la pregunta 3 NO se guardan: si llegan, se ignoran. Las respuestas no se usan para
  * los viajes: son datos para JUTRIP.
  *
- *   GET /api/primera-vez   → { ok, hecho, frecuencia, compania, anio_nacimiento, pais_vive }   (hecho: ya las contestó o las saltó)
- *   PUT /api/primera-vez   { frecuencia?, compania?, anio_nacimiento?, pais_vive? }          → { ok: true }   (marca «hecho»; las que no lleguen se quedan vacías)
+ *   GET /api/primera-vez   → { ok, hecho, frecuencia, compania, franja_edad, pais_vive }   (hecho: ya las contestó o las saltó)
+ *   PUT /api/primera-vez   { frecuencia?, compania?, franja_edad?, pais_vive? }        → { ok: true }   (marca «hecho»; las que no lleguen se quedan vacías)
  *   GET /api/primera-vez/sueno   (V39) → { ok, sueno: { tipo, nombre, iso } | null, disponible }   (disponible: false = falta la migración 0093)
  *   PUT /api/primera-vez/sueno   { sueno: { tipo: 'pais'|'destino', nombre, iso } | null }   (V39, desde Ajustes: solo el viaje de sus sueños; null lo quita)   → { ok: true, guardado }   (sin las columnas de la 0093: ok y guardado false)
  *   PUT /api/primera-vez/pais   { pais_vive }   (V35B, desde Ajustes: solo el país; null lo quita)   → { ok: true, guardado }   (sin la columna de la 0091: ok y guardado false)
@@ -13,19 +13,21 @@
  */
 import { quienEs, tokenDe } from './cuentas.js'
 import { limpiar } from './avisosDestino.js'
+import { franjaDeAnio, franjaDeFila, franjaValida } from './franjaEdad.js'
 
 export const FRECUENCIAS = ['una_vez_al_anio', 'dos_o_tres', 'cuatro_o_mas']
 export const COMPANIAS = ['a_mi_aire', 'pareja', 'familia', 'amigos']
-export const ANIO_MINIMO = 1920
 
-/** Valida lo que llega del móvil: solo los tres datos; cualquier otra cosa (el ritmo, los gustos) se descarta. Lo que no es válido se deja vacío. */
+/**
+ * Valida lo que llega del móvil: solo los tres datos (la edad ahora es una FRANJA, V41); cualquier otra cosa (el ritmo, los gustos) se descarta. Lo que no es válido se deja vacío.
+ * Un móvil con la app vieja todavía puede mandar `anio_nacimiento`: se convierte en su franja (con `anioActual`, inyectable) y el año NO se guarda.
+ */
 export function limpiarRespuestas(cuerpo, anioActual = new Date().getFullYear()) {
   const c = cuerpo && typeof cuerpo === 'object' ? cuerpo : {}
-  const anio = Number(c.anio_nacimiento)
   return {
     frecuencia: FRECUENCIAS.includes(c.frecuencia) ? c.frecuencia : null,
     compania: COMPANIAS.includes(c.compania) ? c.compania : null,
-    anio_nacimiento: Number.isInteger(anio) && anio >= ANIO_MINIMO && anio <= anioActual ? anio : null,
+    franja_edad: franjaValida(c.franja_edad) ?? franjaDeAnio(c.anio_nacimiento, anioActual),
     pais_vive: limpiarPais(c.pais_vive),
   }
 }
@@ -52,6 +54,8 @@ const COLUMNAS_SUENO = ['sueno_tipo', 'sueno_nombre', 'sueno_iso', 'sueno_norm',
 const faltaElSueno = (error) => Boolean(error) && (error.code === '42703' || error.code === 'PGRST204' || (/sueno_/i.test(String(error.message ?? '')) && /column|schema cache|does not exist/i.test(String(error.message ?? ''))))
 
 const faltaLaTabla = (error) => Boolean(error) && (error.code === '42P01' || error.code === 'PGRST205' || /does not exist|schema cache|Could not find the table/i.test(String(error.message ?? '')))
+/** (V41) La columna `franja_edad` aún no existe (la migración 0094 sin aplicar): se sigue sin ella y la edad no se guarda. */
+const faltaLaFranja = (error) => Boolean(error) && /franja_edad/i.test(String(error.message ?? '')) && /column|schema cache|does not exist/i.test(String(error.message ?? ''))
 /** (V35B) La columna `pais_vive` aún no existe (la migración 0091 sin aplicar): se sigue sin ella. */
 const faltaLaColumna = (error) => Boolean(error) && (error.code === '42703' || error.code === 'PGRST204' || (/pais_vive/i.test(String(error.message ?? '')) && /column|schema cache|does not exist/i.test(String(error.message ?? ''))))
 
@@ -61,7 +65,10 @@ export function crearServicioPrimeraVez({ admin }) {
       if (!admin) return { estado: 503, cuerpo: { ok: false } }
       // Se hace una vez al abrir la app un viajero nuevo y una vez al abrir Ajustes; baja UNA fila de ~150 bytes.
       let suenosDisponibles = true
-      let { data, error } = await admin.from('viajero_primera_vez').select('frecuencia,compania,anio_nacimiento,hecho_en,pais_vive,' + COLUMNAS_SUENO.join(',')).eq('user_id', usuario.id).maybeSingle()
+      // (V41) Baja además `franja_edad` (~7 bytes) y el año de nacimiento de las respuestas viejas, solo para convertirlo en franja: el año no sale del servidor.
+      let { data, error } = await admin.from('viajero_primera_vez').select('frecuencia,compania,anio_nacimiento,franja_edad,hecho_en,pais_vive,' + COLUMNAS_SUENO.join(',')).eq('user_id', usuario.id).maybeSingle()
+      // Sin la 0094 (falta la franja): se vuelve a pedir sin ella (la franja saldrá del año, si lo hay) y se sigue con lo de siempre.
+      if (error && faltaLaFranja(error)) ({ data, error } = await admin.from('viajero_primera_vez').select('frecuencia,compania,anio_nacimiento,hecho_en,pais_vive,' + COLUMNAS_SUENO.join(',')).eq('user_id', usuario.id).maybeSingle())
       // Sin la 0093 (faltan las columnas del sueño) se sigue sin ellas; sin la 0091 (falta el país), sin el país: así las preguntas nunca se atascan.
       if (error && (faltaElSueno(error) || faltaLaColumna(error))) {
         suenosDisponibles = false
@@ -72,12 +79,18 @@ export function crearServicioPrimeraVez({ admin }) {
         if (!faltaLaTabla(error)) console.error('[primera-vez]', error.message)
         return { estado: 503, cuerpo: { ok: false } }
       }
-      return { estado: 200, cuerpo: { ok: true, hecho: Boolean(data), frecuencia: data?.frecuencia ?? null, compania: data?.compania ?? null, anio_nacimiento: data?.anio_nacimiento ?? null, pais_vive: data?.pais_vive ?? null, suenos_disponibles: suenosDisponibles, sueno: limpiarSueno({ tipo: data?.sueno_tipo, nombre: data?.sueno_nombre, iso: data?.sueno_iso }) } }
+      return { estado: 200, cuerpo: { ok: true, hecho: Boolean(data), frecuencia: data?.frecuencia ?? null, compania: data?.compania ?? null, franja_edad: franjaDeFila(data), pais_vive: data?.pais_vive ?? null, suenos_disponibles: suenosDisponibles, sueno: limpiarSueno({ tipo: data?.sueno_tipo, nombre: data?.sueno_nombre, iso: data?.sueno_iso }) } }
     },
     async guardar(usuario, cuerpo) {
       if (!admin) return { estado: 503, cuerpo: { ok: false } }
-      const fila = { user_id: usuario.id, ...limpiarRespuestas(cuerpo), ...columnasDeSueno(limpiarSueno(cuerpo?.sueno)), hecho_en: new Date().toISOString() }
+      let fila = { user_id: usuario.id, ...limpiarRespuestas(cuerpo), ...columnasDeSueno(limpiarSueno(cuerpo?.sueno)), hecho_en: new Date().toISOString() }
       let { error } = await admin.from('viajero_primera_vez').upsert(fila, { onConflict: 'user_id' })
+      // (V41) Sin la 0094 (falta `franja_edad`): se guarda todo menos la edad y las preguntas no se atascan.
+      if (error && faltaLaFranja(error)) {
+        const { franja_edad: _franja, ...sinFranja } = fila
+        fila = sinFranja
+        ;({ error } = await admin.from('viajero_primera_vez').upsert(fila, { onConflict: 'user_id' }))
+      }
       // Sin la 0093 (V39): se guarda todo menos el sueño (y la pregunta ni sale: el GET dijo suenos_disponibles false).
       if (error && faltaElSueno(error)) {
         const sinSueno = Object.fromEntries(Object.entries(fila).filter(([k]) => !COLUMNAS_SUENO.includes(k)))

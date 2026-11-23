@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { FlagIcon } from '../ui/FlagIcon'
 import { nombreDelPais, paisDelAparato, paisesOrdenados } from '../../lib/paisVive'
 import { createPortal } from 'react-dom'
-import { aniosPosibles, guardarPrimeraVez, usePrimeraVezUi, type Compania, type Frecuencia } from '../../lib/primeraVez'
+import { franjasDeEdad, guardarPrimeraVez, usePrimeraVezUi, type Compania, type FranjaEdad, type Frecuencia } from '../../lib/primeraVez'
 import type { Sueno } from '../../lib/suenos'
 import { BuscadorSueno } from './BuscadorSueno'
 import { marca } from '../../lib/marca'
@@ -24,6 +24,11 @@ const IC = {
   pair: 'M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z',
   fam: 'M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM17 12a2.4 2.4 0 1 0 0-4.8 2.4 2.4 0 0 0 0 4.8zM3 20c0-3 2.4-5 5-5s5 2 5 5M14 20c0-2.4 1.6-4 3.6-4 2 0 3.4 1.6 3.4 4',
   fr: 'M7 21V9l5-5 5 5v12M10 21v-6h4v6',
+  // (V41) Los iconos de las seis franjas de edad (los de Design, Q4).
+  int: 'M13 3L5 14h6l-1 7 8-11h-6z',
+  calm: 'M3 12h4l3-6 4 12 3-6h4',
+  bal: 'M5 16l4-8 3 5 3-3 4 6z',
+  sun: 'M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6L7 7M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4',
 } as const
 const SERIE = "'Instrument Serif',serif"
 const ORO = 'linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440)'
@@ -39,10 +44,12 @@ const COMPANIAS: { id: Compania; n: string; i: keyof typeof IC }[] = [
   { id: 'familia', n: 'En familia', i: 'fam' },
   { id: 'amigos', n: 'Con amigos', i: 'fr' },
 ]
-/** (V39) Las pantallas, en orden: cada cuánto viaja, con quién, el viaje de sus sueños, el año de nacimiento y el país donde vive. Sin la migración 0093 el servidor no puede guardar el sueño: esa pantalla NO sale y quedan cuatro. */
-type Pantalla = 'frecuencia' | 'compania' | 'sueno' | 'anio' | 'pais'
-const PANTALLAS_CON_SUENO: Pantalla[] = ['frecuencia', 'compania', 'sueno', 'anio', 'pais']
-const PANTALLAS_SIN_SUENO: Pantalla[] = ['frecuencia', 'compania', 'anio', 'pais']
+/** (V41) El icono de cada franja, en el orden de las seis (los de Design: 18-24 rayo, 25-34 pulso, 35-44 maleta, 45-54 montaña, 55-64 sol, 65 o más corazón). */
+const ICONO_FRANJA: (keyof typeof IC)[] = ['int', 'calm', 'mal', 'bal', 'sun', 'pair']
+/** (V39) Las pantallas, en orden: cada cuánto viaja, con quién, el viaje de sus sueños, la edad por franjas y el país donde vive. Sin la migración 0093 el servidor no puede guardar el sueño: esa pantalla NO sale y quedan cuatro. */
+type Pantalla = 'frecuencia' | 'compania' | 'sueno' | 'edad' | 'pais'
+const PANTALLAS_CON_SUENO: Pantalla[] = ['frecuencia', 'compania', 'sueno', 'edad', 'pais']
+const PANTALLAS_SIN_SUENO: Pantalla[] = ['frecuencia', 'compania', 'edad', 'pais']
 
 function Icono({ d, color }: { d: string; color: string }): ReactNode {
   return (
@@ -64,7 +71,7 @@ export function PreguntasPrimeraVez({ onTerminar }: { onTerminar: () => void }):
   const [bienvenida, setBienvenida] = useState(true)
   const [frecuencia, setFrecuencia] = useState<Frecuencia | null>(null)
   const [compania, setCompania] = useState<Compania | null>(null)
-  const [anio, setAnio] = useState<number | null>(null)
+  const [edad, setEdad] = useState<FranjaEdad | null>(null)
   // (V35B) El país donde vive sale ya marcado con el que dice el idioma del móvil (sin ubicación y sin IP); si no hay, ninguno. Se puede cambiar, quitar o saltar.
   const delMovil = useMemo(() => paisDelAparato(), [])
   const [pais, setPais] = useState<string | null>(delMovil)
@@ -81,16 +88,16 @@ export function PreguntasPrimeraVez({ onTerminar }: { onTerminar: () => void }):
     precargarDestinos(destinosDelMapa(curados).filter((d) => d.listo).map((d) => d.clave))
   }, [curados])
 
-  const terminar = async (r: { frecuencia: Frecuencia | null; compania: Compania | null; anio: number | null; pais: string | null; sueno?: Sueno | null }) => {
+  const terminar = async (r: { frecuencia: Frecuencia | null; compania: Compania | null; edad: FranjaEdad | null; pais: string | null; sueno?: Sueno | null }) => {
     if (guardando) return
     setGuardando(true)
     // Aunque no se pueda guardar (sin red), las preguntas se cierran: no se atasca a nadie. Si no llegó a guardarse, volverán a salir la próxima vez.
-    await guardarPrimeraVez({ frecuencia: r.frecuencia, compania: r.compania, anio_nacimiento: r.anio, pais_vive: r.pais, sueno: conSuenos ? (r.sueno ?? null) : null }).catch(() => false)
+    await guardarPrimeraVez({ frecuencia: r.frecuencia, compania: r.compania, franja_edad: r.edad, pais_vive: r.pais, sueno: conSuenos ? (r.sueno ?? null) : null }).catch(() => false)
     onTerminar()
   }
   const id = pantallas[paso]
   const siguiente = () => {
-    if (paso >= ultimo) void terminar({ frecuencia, compania, anio, pais, sueno })
+    if (paso >= ultimo) void terminar({ frecuencia, compania, edad, pais, sueno })
     else setPaso(paso + 1)
   }
   // «Saltar» pasa a la pregunta siguiente SIN guardar lo de esta (si ya había algo marcado en ella, se quita).
@@ -98,21 +105,21 @@ export function PreguntasPrimeraVez({ onTerminar }: { onTerminar: () => void }):
     if (id === 'frecuencia') setFrecuencia(null)
     if (id === 'compania') setCompania(null)
     if (id === 'sueno') setSueno(null)
-    if (id === 'anio') setAnio(null)
+    if (id === 'edad') setEdad(null)
     if (id === 'pais') setPais(null)
-    if (paso >= ultimo) void terminar({ frecuencia, compania, anio, pais: id === 'pais' ? null : pais, sueno: id === 'sueno' ? null : sueno })
+    if (paso >= ultimo) void terminar({ frecuencia, compania, edad: id === 'edad' ? null : edad, pais: id === 'pais' ? null : pais, sueno: id === 'sueno' ? null : sueno })
     else setPaso(paso + 1)
   }
 
   const tarjeta = (on: boolean) => ({ background: on ? '#1C2230' : '#FFFFFF', border: `1.5px solid ${on ? '#1C2230' : 'rgba(28,34,48,.1)'}`, boxShadow: on ? '0 14px 24px -16px rgba(28,34,48,.8)' : '0 8px 18px -16px rgba(28,34,48,.35)' })
-  const titulo = { frecuencia: '¿Cada cuánto viajas?', compania: '¿Con quién sueles viajar?', sueno: '¿Cuál es el viaje de tus sueños?', anio: '¿En qué año naciste?', pais: '¿En qué país vives?' }[id]
+  const titulo = { frecuencia: '¿Cada cuánto viajas?', compania: '¿Con quién sueles viajar?', sueno: '¿Cuál es el viaje de tus sueños?', edad: '¿Cuántos años tienes?', pais: '¿En qué país vives?' }[id]
 
   // (V34) La bienvenida, antes de la primera pregunta (la primera pregunta se sentía fría). «Saltar» deja las cuatro preguntas sin contestar (como saltarlas una a una).
   if (bienvenida) {
     return createPortal(
       <div data-bienvenida-primera-vez role="dialog" aria-modal="true" aria-label="Bienvenido a JUTRIP" className="fixed inset-0 z-[90] flex flex-col" style={{ background: '#F5EFE4', color: '#1C2230', fontFamily: "'Geist',sans-serif" }}>
         <div className="flex flex-none items-center justify-end px-[22px]" style={{ paddingTop: 'calc(env(safe-area-inset-top,0px) + 22px)' }}>
-          <button type="button" data-saltar-bienvenida onClick={() => void terminar({ frecuencia: null, compania: null, anio: null, pais: null })} disabled={guardando} className="zona-toque" style={{ font: "600 14px 'Geist'", color: 'rgba(28,34,48,.55)', background: 'none', border: 'none', minHeight: 44, minWidth: 56 }}>
+          <button type="button" data-saltar-bienvenida onClick={() => void terminar({ frecuencia: null, compania: null, edad: null, pais: null })} disabled={guardando} className="zona-toque" style={{ font: "600 14px 'Geist'", color: 'rgba(28,34,48,.55)', background: 'none', border: 'none', minHeight: 44, minWidth: 56 }}>
             Saltar
           </button>
         </div>
@@ -191,19 +198,23 @@ export function PreguntasPrimeraVez({ onTerminar }: { onTerminar: () => void }):
           </>
         )}
 
-        {id === 'anio' && (
+        {id === 'edad' && (
           <>
-            <div data-anios className="flex flex-col items-center overflow-y-auto" style={{ height: 300, flex: 'none', borderRadius: 26, background: '#FFFDF8', border: '1px solid rgba(28,34,48,.08)', scrollbarWidth: 'none', padding: '6px 0' }}>
-              {aniosPosibles().map((a) => {
-                const on = anio === a
+            <span data-edad-subtitulo style={{ marginTop: -10, font: "400 14.5px/1.35 'Geist'", color: 'rgba(28,34,48,.6)' }}>Solo para conocer mejor a quien viaja con Jutrip.</span>
+            <div data-franjas className="grid grid-cols-2 gap-3">
+              {franjasDeEdad.map((o, i) => {
+                const on = edad === o.id
                 return (
-                  <button key={a} type="button" data-anio={a} aria-pressed={on} onClick={() => setAnio(on ? null : a)} className="flex flex-none items-center justify-center" style={{ height: 54, width: 'calc(100% - 36px)', borderRadius: 16, border: on ? '1.5px dashed rgba(28,34,48,.45)' : '1.5px solid transparent', background: on ? '#FBF3E2' : 'transparent', font: `400 ${on ? 30 : 24}px ${SERIE}`, color: on ? '#1C2230' : 'rgba(28,34,48,.45)' }}>
-                    {a}
+                  <button key={o.id} type="button" data-opcion={o.id} aria-pressed={on} onClick={() => setEdad(on ? null : o.id)} className="relative flex flex-col justify-between text-left" style={{ height: 132, padding: 16, borderRadius: 24, ...tarjeta(on) }}>
+                    <span className="flex items-center justify-center" style={{ width: 46, height: 46, borderRadius: 15, background: on ? 'rgba(243,216,143,.15)' : '#F7F1E4' }}>
+                      <Icono d={IC[ICONO_FRANJA[i]]} color={on ? '#F3D88F' : '#8A6A2C'} />
+                    </span>
+                    <span style={{ font: "600 16px 'Geist'", color: on ? '#FFFDF8' : '#1C2230' }}>{o.n}</span>
+                    {on && <span className="absolute flex items-center justify-center" style={{ right: 12, top: 12, width: 24, height: 24, borderRadius: '50%', background: '#F3D88F', color: '#1C2230' }}><Tilde t={12} /></span>}
                   </button>
                 )
               })}
             </div>
-            <span style={{ textAlign: 'center', font: "400 13px 'Geist'", color: 'rgba(28,34,48,.5)' }}>Opcional. Nos ayuda a mejorar Jutrip; nunca lo enseñamos</span>
           </>
         )}
 

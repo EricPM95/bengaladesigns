@@ -149,7 +149,8 @@ export function ordenarViajes(viajes: ResumenViaje[], hoyIso: string = todayIso(
 
 /** Todos los viajes de este dispositivo ya ordenados; el que está abierto entra aunque aún no esté guardado. */
 export function viajesDelPerfil(guardados: SavedTrip[], rutaAbierta: Route | null, hoyIso: string = todayIso()): ResumenViaje[] {
-  const lista = guardados.map((viaje) => resumenDeViaje(viaje.route, viaje, hoyIso))
+  // (V41 §4) El viaje que está abierto manda sobre su copia de la lista (la lista puede ir un paso por detrás: fechas, nombre…).
+  const lista = guardados.map((viaje) => resumenDeViaje(rutaAbierta && viaje.route.id === rutaAbierta.id && !rutaAbierta.ligero ? rutaAbierta : viaje.route, viaje, hoyIso))
   if (rutaAbierta && !lista.some((v) => v.id === rutaAbierta.id)) lista.push(resumenDeViaje(rutaAbierta, null, hoyIso))
   return ordenarViajes(lista, hoyIso)
 }

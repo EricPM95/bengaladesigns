@@ -70,7 +70,7 @@ console.log('1b. «Saltar» en la bienvenida salta las cinco preguntas')
     await clic(a, '[data-saltar-bienvenida]')
     const llega = await esperar(a, "Boolean(document.querySelector('[data-mapa-primera-vez]'))")
     const g = (await J(a, 'JSON.stringify(window.__demoPrimeraVez)'))
-    debe(llega && g.guardados === 1 && g.frecuencia === null && g.compania === null && g.anio_nacimiento === null, 'bienvenida', '«Saltar» en la bienvenida: queda «hecho» sin guardar ningún dato y va al Perfil')
+    debe(llega && g.guardados === 1 && g.frecuencia === null && g.compania === null && g.franja_edad === null, 'bienvenida', '«Saltar» en la bienvenida: queda «hecho» sin guardar ningún dato y va al Perfil')
     const f = (await J(a, 'JSON.stringify({ fuga: window.__fuga })'))
     debe(f.fuga === 0, 'sin_origen_destino', 'tampoco se ve ORIGEN/DESTINO al saltar')
   } finally {
