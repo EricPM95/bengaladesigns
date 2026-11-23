@@ -17,6 +17,7 @@
 import { partituraDe, type OpcionesDePartitura } from './sonidos/partituras'
 import { cortar, estudioActual, finSonoroDe, fijarInicioDeLaAnimacion, iniciarPartitura, ponerEstudio, precargar, programarPropios, FUNDIDO_AL_SALTAR_MS } from './sonidos/motor'
 import { animacionDe, SONIDOS_EFIMEROS } from './sonidos/animacionDe'
+import { DURACION as DURACION_APERTURA } from '../../shared/marca/aperturaJutrip.js'
 import { cargarEstudioDeEric, esperaDe, prepararEstudioDeEric } from './sonidos/estudioDeEric'
 
 const CLAVE_SONIDO = 'trazo:sonido'
@@ -116,6 +117,12 @@ const buffers = new Map<string, AudioBuffer>()
 function contextoDeAudio(): AudioContext | null {
   if (contexto) return contexto
   try {
+    // (V40B) El audio que ya se creó y desbloqueó con un toque durante la apertura (antes de que cargara la app) es el de la app.
+    const deLaApertura = (window as unknown as { __ap?: { ctx: AudioContext | null } }).__ap?.ctx
+    if (deLaApertura) {
+      contexto = deLaApertura
+      return contexto
+    }
     // (V34C) El visor de la página de sonidos (un marco dentro de /admin/sonidos) usa el audio de la página que lo contiene: el primer toque se da allí y suena a la primera, también en el iPhone.
     if (window.parent !== window) {
       const prestado = (window.parent as unknown as { __estudioContexto?: AudioContext }).__estudioContexto
@@ -153,10 +160,62 @@ async function cargar(momento: string): Promise<AudioBuffer | null> {
   }
 }
 
+/**
+ * (V40B) LA APERTURA CON SONIDO. La animación lleva su cuenta (index.html anota cuándo empezó, `window.__ap.t0`); el sonido entra SIEMPRE en el punto en que va:
+ *   · si el navegador deja sonar al abrir (Android con la app instalada, ordenador), suena desde el principio, cuadrado con la animación;
+ *   · si no (el iPhone, hasta el primer toque), en cuanto se toca la pantalla durante la apertura el audio se desbloquea y el sonido entra por su segundo «X» (lo que ya pasó, no suena; lo que está sonando entra a mitad);
+ *   · con la apertura ya acabada no suena nada (nunca un sonido con la pantalla quieta, V38C); con «Reducir movimiento» o el sonido apagado, tampoco.
+ * El sonido es lo que Eric eligió en el estudio para la apertura (`data/sonidos/estudio.json`) y, si no hay nada suyo, el candidato A. La apertura no espera al toque ni la corta el toque.
+ */
+export async function sonarApertura(): Promise<void> {
+  const ap = (window as unknown as { __ap?: { t0: number; fin: boolean; ctx: AudioContext | null; cb: (() => void) | null } }).__ap
+  if (!ap || !sonidoActivado() || movimientoReducido()) return
+  const quedaApertura = (): boolean => !ap.fin && (performance.now() - ap.t0) / 1000 < DURACION_APERTURA
+  let programada = false
+  let intentando = false
+  const intentar = (): void => {
+    if (programada || intentando || !quedaApertura()) return
+    const ctx = contextoDeAudio()
+    if (!ctx) return
+    // El resume va AQUÍ, sin esperar nada antes: si esto viene de un toque, cuenta como del toque.
+    const reanudando = ctx.state !== 'running' ? ctx.resume().catch(() => undefined) : null
+    intentando = true
+    void (async () => {
+      try {
+        if (reanudando) await Promise.race([reanudando, new Promise((r) => setTimeout(r, 300))])
+        if (ctx.state !== 'running' || !quedaApertura()) return
+        // Lo de Eric (sus archivos) y los candidatos de Code, descargados ANTES de contar el punto en que va (la descarga no cuenta como tiempo de apertura).
+        const est = await Promise.race([prepararEstudioDeEric(ctx, 'apertura').catch(() => null), new Promise<null>((r) => setTimeout(() => r(null), 2500))])
+        const previo = estudioActual()
+        ponerEstudio(est)
+        const o = { reducido: false }
+        await Promise.race([precargar(ctx, 'apertura', o).catch(() => undefined), new Promise((r) => setTimeout(r, 1500))])
+        if (ctx.state !== 'running' || !quedaApertura()) {
+          ponerEstudio(previo)
+          return
+        }
+        programada = true
+        // El primer fotograma de la animación, en el reloj del audio: lo ya pasado no suena y lo que está sonando entra a mitad.
+        const t0 = ctx.currentTime - (performance.now() - ap.t0) / 1000
+        ponerEstudio(est)
+        fijarInicioDeLaAnimacion(ctx, t0)
+        if (est) programarPropios(ctx, 'apertura', t0)
+        iniciarPartitura(ctx, 'apertura', o)
+        ;((window as unknown as { __sonidosPedidos?: string[] }).__sonidosPedidos ??= []).push('apertura')
+      } finally {
+        intentando = false
+      }
+    })()
+  }
+  // Cada toque durante la apertura vuelve a intentarlo (desbloquea el audio dentro del toque); si ya se pudo, no hace nada.
+  ap.cb = intentar
+  intentar() // si el navegador deja sonar al abrir
+}
+
 /** Hace sonar un momento. Llamarla dentro del toque del dedo (el primer toque desbloquea el audio). Nunca lanza. */
 export async function sonar(momento: string, extra: OpcionesDePartitura & { animacion?: string } = {}): Promise<void> {
   if (!sonidoActivado()) return
-  // (V35B) La apertura va en SILENCIO en la web (el navegador no deja sonar antes del primer toque): la app no la pide nunca. Solo el visor del estudio de sonidos (/admin/sonidos) puede oírla; queda lista para la app de las tiendas.
+  // (V40B) La apertura ya no va en silencio: la pide `sonarApertura` (con su cuenta del tiempo); nadie más la pide por esta vía.
   if (momento === 'apertura' && !(window as unknown as { __estudioVisor?: unknown }).__estudioVisor) return
   // (Tanda 10N4) Para las pruebas: cada vez que de verdad se pide un sonido, queda apuntado.
   try {

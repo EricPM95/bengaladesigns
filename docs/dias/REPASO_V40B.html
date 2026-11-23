@@ -1,0 +1,58 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>REPASO V40B</title><style>body{font:15px/1.5 system-ui,sans-serif;max-width:900px;margin:0 auto;padding:16px;color:#1C2230}img{max-width:260px;border:1px solid #ddd;border-radius:10px;margin:6px 8px 6px 0}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:5px 8px;text-align:left;font-size:14px}code{background:#f3ecd9;padding:1px 4px;border-radius:4px}.eric{background:#FFF7DC;border:1px solid #D8BE84;border-radius:10px;padding:4px 16px}</style>
+<h1>V40B · La apertura con sonido, las medallas diamante y cuatro detalles</h1>
+
+<h2>0 · Lo del apagado</h2>
+<ul><li>En la V40 programé el apagado del PC. No debí: el prompt decía «No apagues el PC» y la regla de <code>CLAUDE.md</code> es que solo se apaga si el prompt de ESA tanda lo pide con esas palabras. En esta tanda <b>no se ha apagado ni programado nada</b> (comprobado: no hay ningún apagado pendiente).</li></ul>
+
+<h2>1 · La apertura de JUTRIP, con su sonido</h2>
+<ul>
+<li><b>Quitado el silencio.</b> Suena el sonido que elegiste en el estudio para la apertura (sus 3 capas, volúmenes y momentos: <code>apertura_1</code> a los 0,19 s al 0 %, <code>apertura_2</code> a los 1,97 s al 65 %, <code>apertura_3</code> desde el 0 al 25 %); lo de Code de la apertura va silenciado, como lo dejaste. Sin nada tuyo, sonaría el candidato A.</li>
+<li><b>Cómo cuadra con la animación.</b> <code>index.html</code> anota el instante en que empieza de verdad la animación y escucha el primer toque (el toque puede llegar antes de que cargue la app: en ese caso el audio se crea y se desbloquea ahí mismo, dentro del toque, y la app lo recoge). La app cuenta desde ese instante:
+ <table><tr><th>Caso</th><th>Qué pasa</th></tr>
+ <tr><td>El navegador deja sonar al abrir (Android con la app instalada, ordenador)</td><td>Suena desde el principio, cuadrado con la animación.</td></tr>
+ <tr><td>iPhone, sin tocar</td><td>Silencio.</td></tr>
+ <tr><td>iPhone, tocando a los X s</td><td>El audio se desbloquea y el sonido entra por su segundo X: lo que ya pasó no suena, lo que está sonando entra a mitad, lo que viene suena en su momento.</td></tr>
+ <tr><td>Tocando con la apertura ya acabada (3,5 s)</td><td>No suena nada (regla de la V38C: nunca un sonido con la pantalla quieta).</td></tr>
+ <tr><td>«Reducir movimiento» o sonido apagado en Ajustes</td><td>No suena (como las demás animaciones).</td></tr></table></li>
+<li><b>La apertura no espera al toque ni la corta el toque</b>: dura lo que dura (comprobado: tras tocar sigue en pantalla).</li>
+<li>Los sonidos pequeños de la partitura de la apertura (el «vuelo» de Code) siguen la misma regla que el resto: los que no ha tocado Eric siguen con Code; aquí Eric los silenció.</li>
+</ul>
+<p><img src="V40B_capturas/apertura_segundo_2.png" alt="La apertura en su segundo 2"></p>
+
+<h2>2 · Medallas diamante</h2>
+<table><tr><th>Destino</th><th>Antes</th><th>Ahora</th></tr>
+<tr><td>Roma</td><td>Roma es tuya</td><td><b>Todos los caminos</b></td></tr>
+<tr><td>Lanzarote</td><td>Lanzarote es tuya</td><td><b>Lanzarote, de punta a punta</b></td></tr>
+<tr><td>El Vaticano</td><td>El Vaticano es tuyo</td><td><b>El Vaticano entero</b> (ver PARA ERIC)</td></tr></table>
+<ul>
+<li>Cambiado en los datos de logros (<code>data/logros</code>, de donde lo leen las fichas, la vitrina, el resumen del viaje, los avisos y el panel «Qué tiene cada destino»), en las animaciones del estudio, en las demos y en los datos de ejemplo de los escaparates, y en el documento de Lanzarote.</li>
+<li><b>Nada dibujado dentro de una pieza de Design:</b> miré las piezas y el nombre solo sale como texto de los datos, así que no hay nada que dejar a Design.</li>
+</ul>
+
+<h2>3 · Detalles</h2>
+<ul>
+<li><b>Licencias:</b> <code>FIRE.mp3</code>, <code>shine.mp3</code> y <code>dimante.mp3</code> son de Pixabay (confirmado por Eric); ya no queda ningún «¿?» en <code>docs/sonidos/LICENCIAS_SONIDOS.md</code>.</li>
+<li><b>Pruebas viejas, arregladas (no sobraban):</b>
+ <ul><li><code>pruebaV34C</code> («lo elegido»): el rótulo de la fila del toque pasó a ser «toque (latidos)» y la tarjeta de Visto lleva también el brillo; la prueba esperaba el texto antiguo.</li>
+ <li><code>pruebaV35A2</code> (rayas): la leyenda «empieza la animación / golpe / final» ya no está dentro de la línea de tiempo (V38E) y ahora hay una tercera leyenda («desde aquí»); la prueba la buscaba en el sitio viejo.</li></ul></li>
+</ul>
+
+<h2>4 · La prueba</h2>
+<ul><li><code>pruebaV40B</code> (37 comprobaciones): suena al abrir si se puede; iPhone sin tocar, nada; tocando a los 0,8 s y a los 1,6 s el sonido entra por ese punto, y va cuadrado con la animación (desfase medido bajo 0,08 s); tocando después, nada; sonido apagado, nada; ningún grado se llama «… es tuyo/a»; Roma diamante «Todos los caminos» y Lanzarote «Lanzarote, de punta a punta».</li>
+<li>En 0: <code>pruebaV40</code> (157), <code>pruebaV38C</code>, <code>pruebaV39B</code>, <code>pruebaV34C</code>, <code>pruebaV35A2</code>, <code>pruebaJutrip</code>; y de regreso <code>pruebaV35B_campana</code>, <code>pruebaLogros1</code>, <code>pruebaTandaLZ3_A</code>, <code>pruebaV36C</code>, <code>pruebaV38B</code>, <code>pruebaV35B2_zip</code>.</li>
+<li>Cómo se prueba el iPhone: el Chrome de prueba arranca con el audio parado (como el iPhone) y se «toca» con un clic de verdad. En desarrollo la app tarda más de 3,5 s en cargar, así que la prueba reinicia el reloj y el dibujo de la apertura cuando la app ya está lista y mide desde ahí.</li></ul>
+
+<h2>Tu lista de comprobación de esta tanda</h2>
+<ul><li>Abre la app en el iPhone sin tocar: la apertura se ve y no suena nada.</li>
+<li>Ciérrala del todo, ábrela otra vez y toca la pantalla a media apertura: entra el sonido a mitad, sin cortar la animación.</li>
+<li>Toca justo cuando acaba: no suena.</li>
+<li>En Android con la app instalada (o el ordenador): suena sola desde el principio.</li>
+<li>Gana la medalla diamante de Roma (o míralo en la vitrina): «Todos los caminos».</li></ul>
+
+<div class="eric"><h2>PARA ERIC</h2><ul>
+<li><b>Para oír la apertura en el iPhone:</b> cierra la app del todo (deslízala fuera), ábrela y <b>toca la pantalla mientras sale el logo</b> (antes de los 3,5 s). Sin tocar, el iPhone no deja sonar nada. Si prefieres que el primer toque pueda ser en cualquier parte de la pantalla (ya lo es), no hay que hacer nada más.</li>
+<li><b>El Vaticano:</b> su diamante también se llamaba «El Vaticano es tuyo» y tu regla («ningún grado se llama … es tuyo/a») lo incluye. Le he puesto <b>«El Vaticano entero»</b> para no dejarlo roto; dime el nombre que quieras y lo cambio (está en <code>data/logros/roma.json</code>).</li>
+<li>«Roma es casi tuya» (el oro de Roma) no lo he tocado: no es «… es tuya», pero lleva la misma palabra; dime si también quieres otro.</li>
+<li>La medalla final nueva (completar un destino al 100 %) queda para cuando la diseñes: el nombre «… es tuya» queda libre para ella.</li>
+<li>Reiniciado el api-server al final de la tanda. <b>No se ha apagado el PC.</b></li>
+</ul></div></html>

@@ -107,7 +107,7 @@ console.log('3. El código')
   debe(!/todavía NO hace sonar|tampoco lo hace sonar todavía/.test(est), 'notas', 'el estudio ya no dice «La app todavía NO hace sonar…»')
   debe(/sonar\('primer_dia'\)/.test(leer('src/components/logros/momentos/PrimerDia.tsx')), 'primer_dia', 'PrimerDia hace sonar su partitura al abrirse')
   // (V38C) Los resúmenes suenan por la puerta única (cifrasQueSuben.ts), solo la primera vez y con cifras que suben.
-  debe(/sonarResumenUnaVez/.test(leer('src/components/logros/momentos/ResumenDia.tsx')) && /sonarResumenUnaVez/.test(leer('src/components/logros/momentos/ResumenViaje.tsx')) && /sonar\('dia_completo'\)/.test(leer('src/components/logros/momentos/cifrasQueSuben.ts')), 'resumenes', 'el resumen del día y el del viaje hacen sonar su partitura (por la puerta única, solo la primera vez)')
+  debe(/sonarResumenUnaVez/.test(leer('src/components/logros/momentos/ResumenDia.tsx')) && /sonarResumenUnaVez/.test(leer('src/components/logros/momentos/ResumenViaje.tsx')) && /sonar\('dia_completo'(, \{ animacion \})?\)/.test(leer('src/components/logros/momentos/cifrasQueSuben.ts')), 'resumenes', 'el resumen del día y el del viaje hacen sonar su partitura (por la puerta única, solo la primera vez)')
   debe(/sonar\('vuelo'\)/.test(leer('src/components/logros/momentos/Reproductor.tsx')), 'vuelo', 'el vuelo de lo ganado hace sonar su partitura')
   const visor = leer('src/components/logros/sonidos/VisorDeAnimacion.tsx')
   debe(/ejemploDelResumenDelViaje\(\)/.test(visor) && /ejemplo=\{/.test(visor), 'ejemplo', 'el visor monta el resumen del viaje con datos de ejemplo')

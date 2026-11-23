@@ -43,7 +43,7 @@ debe(Boolean(L), 'datos', 'Lanzarote tiene logros (DESTINOS_CON_LOGROS)')
 {
   const s = L.sellos.find((x) => x.id === L.sello_principal)
   debe(Boolean(s) && s.coleccion === 'lz_imprescindibles', 'sello', 'el sello de Lanzarote va sobre los imprescindibles')
-  debe(JSON.stringify(s.grados.map((g) => [g.grado, g.desde, g.nombre])) === JSON.stringify([['bronce', 1, 'Primeros pasos en Lanzarote'], ['plata', 3, 'Lanzarote te atrapa'], ['oro', 5, 'Tierra de volcanes'], ['diamante', 7, 'Lanzarote es tuya']]), 'sello', 'grados 1/3/5/7 con los nombres del documento')
+  debe(JSON.stringify(s.grados.map((g) => [g.grado, g.desde, g.nombre])) === JSON.stringify([['bronce', 1, 'Primeros pasos en Lanzarote'], ['plata', 3, 'Lanzarote te atrapa'], ['oro', 5, 'Tierra de volcanes'], ['diamante', 7, 'Lanzarote, de punta a punta']]), 'sello', 'grados 1/3/5/7 con los nombres del documento')
   debe(s.grados[1].linea === '{n} de {total} imprescindibles.' && s.grados[3].linea === 'Todos los imprescindibles de Lanzarote.', 'sello', 'las líneas del sello')
   const imp = L.colecciones.find((c) => c.id === 'lz_imprescindibles')
   debe(imp.sitios.length === 7, 'sello', 'los imprescindibles son 7')

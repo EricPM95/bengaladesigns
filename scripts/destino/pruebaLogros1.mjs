@@ -87,7 +87,7 @@ console.log('1. Los datos de los logros')
   for (const id of ['dos_paises_en_un_dia', 'de_sol_a_sol', 'alondra', 'buho', 'escapada', 'gran_viaje', 'imparable', 'el_fotografo', 'nunca_ultima_vez', 'tres_oro', 'tres_diamante', 'fundador', 'pionero', 'edicion_anio', 'probador', 'cuatro_estaciones', 'destino_cuatro_estaciones', 'doce_meses', 'navidad_fuera', 'nochevieja_fuera', 'tres_viajes_ano', 'dia_perfecto', 'viaje_perfecto', 'ciudad_completa', 'diamante_primera']) debe(ids.includes(id), 'datos', `falta el logro ${id}`)
   debe(!/\bqa\.|password|secret_|api[_-]?key|token/i.test(JSON.stringify(datos)), 'datos', 'ninguna clave en los datos')
   // Los nombres y las líneas, de NOMBRES_LOGROS.md
-  debe(R.sellos[0].grados.map((g) => g.nombre).join('|') === 'Primeros pasos en Roma|Roma te atrapa|Roma en el corazón|Roma es tuya' && R.sellos[1].grados.map((g) => g.nombre).join('|') === 'Has cruzado la frontera|El Vaticano en el corazón|El Vaticano es tuyo', 'datos', 'los nombres de cada grado, de NOMBRES_LOGROS.md')
+  debe(R.sellos[0].grados.map((g) => g.nombre).join('|') === 'Primeros pasos en Roma|Roma te atrapa|Roma en el corazón|Todos los caminos' && R.sellos[1].grados.map((g) => g.nombre).join('|') === 'Has cruzado la frontera|El Vaticano en el corazón|El Vaticano entero', 'datos', 'los nombres de cada grado, de NOMBRES_LOGROS.md')
   // Mapeo de nombres de las colecciones con los de NOMBRES_LOGROS.md
   const nombres = fs.readFileSync('docs/dias/NOMBRES_LOGROS.md', 'utf8')
   debe(R.colecciones.every((c) => nombres.includes(c.nombre) && nombres.includes(c.al_completar)), 'datos', 'colecciones y frases al completar, tal cual NOMBRES_LOGROS.md')

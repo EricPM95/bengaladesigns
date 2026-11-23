@@ -163,7 +163,7 @@ try {
   await adm.esp(1000)
   const lo2 = await adm.evaluar("document.querySelector('[data-lo-elegido]').textContent")
   debe(/Medalla de oro → .*candidato B · 100 %/.test(lo2) && !/Medalla de oro → [^\n]*MÍO/.test(lo2) && !(await adm.evaluar("Boolean(document.querySelector('[data-propio-activo]'))")), 'lo_elegido', 'al quitar mi sonido vuelve el candidato elegido: «Medalla de oro → candidato B · volumen 1,00»')
-  debe(/Visto \(el toque y el brillo\) → toque: se queda como está · 100 %/.test(lo2) && /volumen general: 0,80/.test(lo2), 'lo_elegido', 'los sonidos hechos por código salen como «se queda como está» y el volumen general')
+  debe(/Visto \(el toque y el brillo\) → toque \(latidos\): se queda como está · 100 % · brillo: se queda como está · 100 %/.test(lo2) && /volumen general: 0,80/.test(lo2), 'lo_elegido', 'los sonidos hechos por código salen como «se queda como está» y el volumen general')
   debe(/Los sonidos tuyos: guárdalos en Descargas › sonidos_jutrip con el nombre de la animación \(por ejemplo, medalla_oro\.mp3\) y pasa esta lista a Claude\. En la siguiente tanda se recortan, se igualan de volumen y se ponen en la app/.test(await adm.evaluar("document.querySelector('[data-aviso-propios]').textContent")), 'lo_elegido', 'el aviso fijo, con el texto pedido')
   // Un archivo que no es de audio
   await adm.evaluar(`(() => { const dt = new DataTransfer(); dt.items.add(new File(['no soy audio'], 'roto.mp3', { type: 'audio/mpeg' })); const i = document.querySelector('[data-archivo-propio]'); i.files = dt.files; i.dispatchEvent(new Event('change', { bubbles: true })); return true })()`)

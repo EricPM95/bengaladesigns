@@ -85,7 +85,7 @@ export const MOMENTOS_DEL_ESTUDIO: Record<string, () => Momento[]> = {
   medalla_bronce: () => [sello('bronce', 'Primeros pasos en Roma', 'Has visto tu primer imprescindible.')],
   medalla_plata: () => [sello('plata', 'Roma te atrapa', 'Cuatro imprescindibles vistos: ya eres de aquí.')],
   medalla_oro: () => [sello('oro', 'Roma es casi tuya', 'Seis imprescindibles de ocho.')],
-  medalla_diamante: () => [sello('diamante', 'Roma es tuya', 'Todos los imprescindibles de Roma.')],
+  medalla_diamante: () => [sello('diamante', 'Todos los caminos', 'Todos los imprescindibles de Roma.')],
   sello: () => [sello('bronce', 'Primeros pasos en Roma', 'Has visto tu primer imprescindible.')],
   // (V37C) Colección completa y pedazo, con el estado de ejemplo de `ejemploEstado.ts` (sin él la insignia salía vacía).
   ...MOMENTOS_DE_COLECCIONES,

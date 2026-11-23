@@ -37,7 +37,7 @@ const col = (id: string, nombre: string, sitios: string[], vistos: string[], ext
 // El total sale de los datos (Tanda 10: Roma esconde 14 secretos).
 const TOTAL_SECRETOS = romaLogros.emblemas.length
 const secretos = (ids: string[]) => ({ total: TOTAL_SECRETOS, encontrados: ids.length, texto: ids.length ? `${ids.length} de ${TOTAL_SECRETOS} secretos encontrados` : `Roma esconde ${TOTAL_SECRETOS} secretos`, encontrados_lista: ids.map((id) => ({ id, nombre: '', linea: '', en })) })
-const GRADOS_SELLO = [[1, 'bronce', 'Primeros pasos en Roma'], [4, 'plata', 'Roma te atrapa'], [6, 'oro', 'Roma en el corazón'], [8, 'diamante', 'Roma es tuya']] as const
+const GRADOS_SELLO = [[1, 'bronce', 'Primeros pasos en Roma'], [4, 'plata', 'Roma te atrapa'], [6, 'oro', 'Roma en el corazón'], [8, 'diamante', 'Todos los caminos']] as const
 
 const estadoBase = (acabado: boolean, escenario: Escenario = 'viaje'): EstadoLogros => {
   const imp = escenario === 'coliseo' ? ['coliseo'] : escenario === 's2' ? ['coliseo', 'foro_romano_y_palatino', 'fontana_de_trevi', 'panteon'] : IMPRESCINDIBLES.slice(0, 6)
@@ -92,7 +92,7 @@ const MOMENTOS: Record<string, () => Momento[]> = {
   sello: () => [m({ tipo: 'sello', cat: 'sello', clave: 'roma|sello|roma:bronce', sello: 'roma', destino: 'roma', grado: 'bronce', nombre: 'Primeros pasos en Roma', linea: 'Has visto tu primer imprescindible.', en })],
   sello_s2: () => [m({ tipo: 'sello', cat: 'sello', clave: 'roma|sello|roma:plata', sello: 'roma', destino: 'roma', grado: 'plata', nombre: 'Roma te atrapa', linea: '4 de 8 imprescindibles.', en })],
   sello_evo: () => [m({ tipo: 'sello', cat: 'sello', clave: 'roma|sello|roma:plata', sello: 'roma', destino: 'roma', grado: 'plata', nombre: 'Roma te atrapa', linea: '4 de 8 imprescindibles.', en })],
-  sello_diamante: () => [m({ tipo: 'sello', cat: 'sello', clave: 'roma|sello|roma:diamante', sello: 'roma', destino: 'roma', grado: 'diamante', nombre: 'Roma es tuya', linea: 'Todos los imprescindibles de Roma.', en })],
+  sello_diamante: () => [m({ tipo: 'sello', cat: 'sello', clave: 'roma|sello|roma:diamante', sello: 'roma', destino: 'roma', grado: 'diamante', nombre: 'Todos los caminos', linea: 'Todos los imprescindibles de Roma.', en })],
   sello_vaticano: () => [m({ tipo: 'sello', cat: 'sello', clave: 'vaticano|sello|vaticano:plata', sello: 'vaticano', destino: 'vaticano', grado: 'plata', nombre: 'Has cruzado la frontera', linea: 'Has visto tu primer sitio del Vaticano.', en })],
   suma: () => [m({ tipo: 'suma', cat: 'pedazo', coleccion: 'miradores', destino: 'roma', nombre: 'Los miradores', n: 1, total: 3, sitios: ['janiculo'], linea: '1 de 3' })],
   suma_varias: () => [

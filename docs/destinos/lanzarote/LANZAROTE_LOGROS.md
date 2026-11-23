@@ -10,7 +10,7 @@ Imprescindibles (7): Montañas del Fuego (Timanfaya), Jameos del Agua, Cueva de 
 | Bronce | 1 | Primeros pasos en Lanzarote | Has visto tu primer imprescindible. |
 | Plata | 3 | Lanzarote te atrapa | {n} de {total} imprescindibles. |
 | Oro | 5 | Tierra de volcanes | {n} de {total} imprescindibles. |
-| Diamante | 7 | Lanzarote es tuya | Todos los imprescindibles de Lanzarote. |
+| Diamante | 7 | Lanzarote, de punta a punta | Todos los imprescindibles de Lanzarote. |
 
 ## Las colecciones
 

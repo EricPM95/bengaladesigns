@@ -70,9 +70,12 @@ precargarBanderas()
   const apertura = document.getElementById('apertura')
   const dejar = import.meta.env.DEV && new URLSearchParams(window.location.search).get('apertura') === '1'
   if (import.meta.env.DEV && apertura) (window as unknown as { __aperturaHtml?: string }).__aperturaHtml = apertura.outerHTML // (para la captura de la apertura)
+  // (V40B) La apertura con sonido: suena desde el principio si el navegador deja; si no (el iPhone), entra en cuanto se toca la pantalla, en el punto en que va la animación; con la apertura ya acabada, nada.
+  if (apertura) void import('./lib/sonidos').then((m) => m.sonarApertura())
   if (apertura && !dejar) {
     const reducir = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
     const quitar = () => {
+      ;(window as unknown as { __ap?: { fin: boolean } }).__ap && ((window as unknown as { __ap: { fin: boolean } }).__ap.fin = true) // (V40B) la apertura acabó: ya no suena nada
       apertura.style.opacity = '0'
       window.setTimeout(() => apertura.remove(), reducir ? 0 : 380)
     }

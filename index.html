@@ -49,6 +49,38 @@
         /* sin almacenamiento: sale siempre */
       }
     </script>
+    <script>
+      // (V40B) EL SONIDO DE LA APERTURA. Aquí solo se anota CUÁNDO EMPEZÓ la animación (para que el sonido entre en el punto en que va) y se escucha el primer toque: en el iPhone el audio solo se desbloquea con un toque, y el toque puede llegar
+      // antes de que cargue la app. Si llega antes, aquí mismo se crea y se desbloquea el audio (dentro del toque) y la app lo recoge después; si la app ya está, avisa a su función (`cb`), que sigue dentro del toque.
+      // Nada de esto corta ni salta la apertura. Termina cuando la apertura acaba (main.tsx pone `fin`).
+      ;(function () {
+        var w = window
+        var ap = document.getElementById('apertura')
+        if (!ap) return
+        var a = (w.__ap = { t0: performance.now(), fin: false, ctx: null, cb: null })
+        document.addEventListener('animationstart', function (e) { if (!a.vistoInicio && ap.contains(e.target)) { a.vistoInicio = true; a.t0 = e.timeStamp } }, true)
+        var alToque = function () {
+          if (a.fin) return
+          try {
+            if (a.cb) a.cb()
+            else {
+              var C = w.AudioContext || w.webkitAudioContext
+              if (C) {
+                if (!a.ctx) {
+                  try { if (navigator.audioSession) navigator.audioSession.type = 'ambient' } catch (e) {}
+                  a.ctx = new C()
+                }
+                a.ctx.resume()
+                var s = a.ctx.createBufferSource(); s.buffer = a.ctx.createBuffer(1, 1, 22050); s.connect(a.ctx.destination); s.start(0)
+              }
+            }
+          } catch (e) { /* sin audio */ }
+        }
+        a.alToque = alToque
+        var eventos = ['touchend', 'click', 'pointerup', 'keydown']
+        for (var i = 0; i < eventos.length; i++) document.addEventListener(eventos[i], alToque, { capture: true, passive: true })
+      })()
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

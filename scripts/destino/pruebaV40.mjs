@@ -27,7 +27,11 @@ const DE_LANZAROTE = ['emblema_lanzarote']
 const json = JSON.parse(leer('data/sonidos/estudio.json'))
 const ids = Object.keys(json.animaciones)
 const zip = fs.existsSync(zipRuta) ? leerZip(fs.readFileSync(zipRuta)) : null
-const delZip = (n) => zip?.find((e) => e.nombre === n)?.datos
+// El zip de Eric (SONIDO_dEFINITIVO.zip) o, si ya no está en Descargas, su carpeta descomprimida (ZIP_DIR=...). Sin ninguno, esas comparaciones se saltan y se dice.
+const zipDir = process.env.ZIP_DIR ?? ''
+const delZip = (n) => zip?.find((e) => e.nombre === n)?.datos ?? (zipDir && fs.existsSync(path.join(zipDir, n)) ? fs.readFileSync(path.join(zipDir, n)) : undefined)
+const sinZip = !zip && !(zipDir && fs.existsSync(zipDir))
+if (sinZip) console.log('  (aviso: el zip de Eric ya no está en Descargas y no hay ZIP_DIR: se saltan las comparaciones archivo a archivo con el zip)')
 
 // ───────── Parte 1: datos y archivos ─────────
 debe(json.version === 1 && ids.length >= 27, 'datos', `estudio.json de la app: ${ids.length} animaciones`)
@@ -57,7 +61,7 @@ for (const [id, a] of Object.entries(json.animaciones)) {
     const ruta = path.join(dir, c.archivo.replace(/\.wav$/i, '.m4a'))
     if (!fs.existsSync(ruta)) { debe(false, 'archivos', `${id}: falta ${ruta}`); continue }
     const dz = delZip(c.archivo)
-    if (!dz) { debe(false, 'archivos', `${id}: ${c.archivo} no está en el zip`); continue }
+    if (!dz) { if (!sinZip) debe(false, 'archivos', `${id}: ${c.archivo} no está en el zip`); continue }
     if (/\.wav$/i.test(c.archivo)) {
       // El .wav del zip frente al .m4a de la app.
       const w = path.join(tmp, c.archivo)
@@ -162,8 +166,8 @@ for (const id of ids) {
   const { delEstudio, dela } = r.salida[id]
   const a = json.animaciones[id]
   if (id === 'apertura') {
-    // La apertura va en SILENCIO en la web (V35B): la app no la pide nunca; lo de Eric queda guardado para la app de las tiendas y suena en el estudio.
-    debe(dela.length === 0 && delEstudio.length === json.animaciones.apertura.capas.length, 'apertura', `apertura: en la app en silencio (${dela.length} sonidos) y en el estudio suena lo de Eric (${delEstudio.length})`)
+    // (V40B) La apertura ya no va en silencio, pero no la pide `sonar()`: la pide `sonarApertura` con su cuenta del tiempo (la prueba es pruebaV40B). Aquí solo se mira lo que programa el estudio.
+    debe(dela.length === 0 && delEstudio.length === json.animaciones.apertura.capas.length, 'apertura', `apertura: ${delEstudio.length} sonidos de Eric en el estudio (la app la pide por sonarApertura: pruebaV40B)`)
     continue
   }
   totalSonidos += dela.length
@@ -184,6 +188,7 @@ for (const id of ids) {
 }
 console.log(`  ${ids.length} animaciones, ${totalSonidos} sonidos programados comparados`)
 const { antes, despues } = r.lanzarote
+if (JSON.stringify(antes) !== JSON.stringify(despues)) console.log('  antes:', JSON.stringify(antes), 'despues:', JSON.stringify(despues))
 debe(JSON.stringify(antes) === JSON.stringify(despues) && !despues.some((x) => x.k.includes('propio:')), 'lanzarote', `Lanzarote suena como antes (${despues.length} sonidos de Code, ninguno de Eric)`)
 
 console.log(`\nPrueba V40: ${comprobaciones} comprobaciones · ${fallos.length} fallos`)
