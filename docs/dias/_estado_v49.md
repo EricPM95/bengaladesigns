@@ -1,13 +1,13 @@
-# Estado de la tanda v48
+# Estado de la tanda v49
 
-**Última actualización: 24/11/26, 20:56**
+**Última actualización: 24/11/26, 21:20**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-TERMINADA: pusheada d6109f9f; build sin errores; produccion carga en iPhone (solo 403); sin pruebas por orden de Eric
+Empezando: reorganizar el dia de llegada, excursion en otro dia (E1), datos inventados
 
 ## Qué falta
-dia de llegada de 3 paradas sin reproducir: necesito el viaje de Eric
+todo
 
 ## Procesos abiertos ahora mismo
 - node: 2
