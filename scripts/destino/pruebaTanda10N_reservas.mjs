@@ -151,7 +151,7 @@ try {
     if (!hoja) return null
     const g = hoja.querySelector('[data-guardar-reserva]')
     const est = g ? getComputedStyle(g) : null
-    return { paraQuien: Boolean(hoja.querySelector('[data-para-quien]')), pagaste: /Lo que pagaste en total/.test(hoja.textContent || ''), precio: /Precio/.test(hoja.textContent || ''), fondo: est?.backgroundImage ?? '', color: est?.color ?? '' }
+    return { paraQuien: Boolean(hoja.querySelector('[data-para-quien], [data-siguiente-paso]')), pagaste: /Lo que pagaste en total/.test(hoja.textContent || ''), precio: /Precio/.test(hoja.textContent || ''), fondo: est?.backgroundImage ?? '', color: est?.color ?? '' }
   })()`)
   debe(sinCompartir && sinCompartir.paraQuien === false, 'sin_compartir', 'en un viaje sin compartir NO sale «¿Para quién es?»')
   debe(sinCompartir && sinCompartir.pagaste === false && sinCompartir.precio === true, 'sin_compartir', 'sin «Lo que pagaste en total, todas las personas.» pero con «Precio (opcional)»')
@@ -185,34 +185,24 @@ try {
         filas: new Set(pastillas.map((p) => Math.round(p.getBoundingClientRect().top))).size,
       }
     })()`)
-  let est = await pq()
-  debe(est && est.nombres.map((n) => n.slice(1)).join('|') === 'Eric|Ana|Luis|Marta' && est.cuenta === '1 de 4', 'para_quien', `cuatro pastillas, el dueño marcado y «1 de 4» (${JSON.stringify(est)})`)
-  debe(est && est.marcadas.join('|') === 'Eric', 'para_quien', 'el dueño sale ya marcado')
-  debe(est && /28, 34, 48/.test(est.fondoMarcada), 'para_quien', `la pastilla marcada va en azul oscuro (${est?.fondoMarcada})`)
-  debe(est && est.despuesDeLaDisponibilidad && est.antesDelPrecio, 'para_quien', 'va después de «Recuerda revisar la disponibilidad…» y antes del precio')
-  debe(est && est.pagaste === false, 'para_quien', 'sin «Lo que pagaste en total» tampoco en el viaje compartido')
-  await a.evaluar(`(() => { const hoja = document.querySelector('#add-reservation-heading').closest('[role="dialog"]'); Array.from(hoja.querySelectorAll('[data-persona-cuadrada]')).find((p) => /Ana/.test(p.textContent)).click(); return true })()`)
-  await a.esp(400)
-  est = await pq()
-  debe(est && est.cuenta === '2 de 4' && est.marcadas.join('|') === 'Eric|Ana', 'para_quien', `marcar a Ana: «2 de 4» (${est?.cuenta})`)
-  // (10N10) Se puede marcar y desmarcar a otra persona (sin cambiar el orden de Eric y Ana).
-  const tocaLuis = `(() => { const hoja = document.querySelector('#add-reservation-heading').closest('[role="dialog"]'); Array.from(hoja.querySelectorAll('[data-persona-cuadrada]')).find((p) => /Luis/.test(p.textContent)).click(); return true })()`
-  await a.evaluar(tocaLuis)
-  est = await pq()
-  debe(est && est.marcadas.join('|') === 'Eric|Ana|Luis', 'para_quien', '(10N10) se puede marcar a otra persona')
-  await a.evaluar(tocaLuis)
-  est = await pq()
-  debe(est && est.marcadas.join('|') === 'Eric|Ana', 'para_quien', 'y desmarcarla')
+  // (V45 §4) En grupo la hoja va en DOS pasos: la «¿Para quién es?» de cuatro pastillas ya no está en la hoja de la entrada: el paso 2 («Casi lista») pregunta «¿A qué cuenta lo sumamos?» ([Mi cuenta] / [Cuenta conjunta]).
+  // antes → ahora → decisión de Eric (V45 §4): cuatro pastillas con «1 de 4» → [Mi cuenta] / [Cuenta conjunta]; «¿Quién la ha pagado?» solo con la cuenta conjunta.
+  await a.evaluar(`(async () => { const hoja = document.querySelector('#add-reservation-heading').closest('[role="dialog"]'); const fichas = Array.from(hoja.querySelectorAll('[role="group"] button')).filter((b) => !b.disabled); ;(fichas[1] ?? fichas[0]).click(); await new Promise((r) => setTimeout(r, 1500)); const c = hoja.querySelector('[data-campo-de-hora="anadir"]'); if (c && c.getAttribute('data-vacia') === '1') { c.click(); await new Promise((r) => setTimeout(r, 600)); document.querySelector('[data-hoja-de-hora-guardar]')?.click(); await new Promise((r) => setTimeout(r, 500)) } for (let i = 0; i < 30 && hoja.querySelector('[data-siguiente-paso]')?.disabled; i++) await new Promise((r) => setTimeout(r, 300)); return Boolean(hoja.querySelector('[data-siguiente-paso]')) })()`)
+  const paso1 = await a.evaluar(`(() => { const h = document.querySelector('#add-reservation-heading').closest('[role="dialog"]'); return { siguiente: Boolean(h.querySelector('[data-siguiente-paso]')), guardar: Boolean(h.querySelector('[data-guardar-reserva]')), cuenta: Boolean(h.querySelector('[data-a-que-cuenta]')) } })()`)
+  debe(paso1.siguiente && !paso1.guardar && !paso1.cuenta, 'para_quien', `en grupo el paso 1 tiene [Siguiente] y no [Guardar] (${JSON.stringify(paso1)})`)
+  await a.evaluar(`document.querySelector('[data-siguiente-paso]').click(); true`)
+  await a.esp(900)
+  const paso2 = await a.evaluar(`(() => { const h = document.querySelector('#add-reservation-heading').closest('[role="dialog"]'); const opc = Array.from(h.querySelectorAll('[data-cuenta-opcion]')).map((b) => (b.textContent || '').trim()); return { casi: /Casi lista/.test(h.textContent || ''), opc, guardar: Boolean(h.querySelector('[data-guardar-reserva]')), pagado: /Quién la ha pagado/.test(h.textContent || ''), pastillas: h.querySelectorAll('[data-persona-cuadrada]').length } })()`)
+  debe(paso2.casi && paso2.opc.join('|') === 'Mi cuenta|Cuenta del grupo' && paso2.guardar, 'para_quien', `el paso 2: «Casi lista», [Mi cuenta] / [Cuenta del grupo] y [Guardar] (${JSON.stringify(paso2)})`)
+  debe(paso2.pagado === false, 'para_quien', '«¿Quién la ha pagado?» NO sale con «Mi cuenta»')
+  await a.evaluar(`document.querySelector('[data-cuenta-opcion="comun"]').click(); true`)
+  await a.esp(500)
+  debe(await a.evaluar(`/Quién la ha pagado/.test(document.querySelector('#add-reservation-heading').closest('[role="dialog"]').textContent || '')`), 'para_quien', 'con la cuenta del grupo SÍ sale «¿Quién la ha pagado?»')
   await a.captura(path.join(SALIDA, '10n_reservas_dueno_para_quien.jpg'))
   // El día y la hora de la entrada (el primer día del viaje que no esté cerrado y las 08:00 o la primera hora de la rueda).
   const guardada = await a.evaluar(`(async () => {
     const hoja = document.querySelector('#add-reservation-heading').closest('[role="dialog"]')
-    const fichas = Array.from(hoja.querySelectorAll('[role="group"] button')).filter((b) => !b.disabled)
-    // el 2.º día disponible (así la entrada no coincide con el día en que el motor ya tenía el Coliseo)
-    ;(fichas[1] ?? fichas[0]).click()
-    await new Promise((r) => setTimeout(r, 1500))
-    // antes → ahora → decisión de Eric (10S9b, 1-nov): antes la hora de la hoja «Añadir» se ponía sola (rueda siempre abierta) → ahora la casilla sale con un ejemplo en gris, la hora no cuenta hasta elegirla (se abre la hoja de la hora y el ✓ guarda lo que se ve).
-    { const c = hoja.querySelector('[data-campo-de-hora="anadir"]'); if (c && c.getAttribute('data-vacia') === '1') { c.click(); await new Promise((r) => setTimeout(r, 600)); document.querySelector('[data-hoja-de-hora-guardar]')?.click(); await new Promise((r) => setTimeout(r, 500)) } }
+    // (V45) El día, la hora, [Siguiente] y la cuenta conjunta ya se han puesto arriba.
     const g = hoja.querySelector('[data-guardar-reserva]')
     const texto = g.textContent
     for (let i = 0; i < 30 && g.disabled; i++) await new Promise((r) => setTimeout(r, 300))
@@ -225,7 +215,9 @@ try {
     return { texto, reservas: reservas.map((r) => ({ id: r.id, refId: r.refId, placeNames: r.placeNames, dateIso: r.dateIso, time: r.time, paraQuien: r.paraQuien })) }
   })()`)
   const ownerRes = guardada.reservas.find((r) => /Coliseo/.test(r.refId))
-  debe(Boolean(ownerRes) && JSON.stringify(ownerRes.paraQuien) === JSON.stringify(['p-eric', 'p-ana']), 'para_quien', `la entrada del Coliseo queda para Eric y Ana (${JSON.stringify(ownerRes?.paraQuien)})`)
+  debe(Boolean(ownerRes) && ownerRes.paraQuien?.length === 4 && ownerRes.paraQuien.includes('p-eric') && ownerRes.paraQuien.includes('p-ana'), 'para_quien', `con la cuenta del grupo, la entrada del Coliseo queda para los cuatro (${JSON.stringify(ownerRes?.paraQuien)})`)
+  // (V45: la hoja ya no deja elegir dos de cuatro) Para el resto de la prueba (Ana incluida, Luis no) se deja la entrada para Eric y Ana, como antes.
+  await a.evaluar(`window.__ruta.setState((s) => ({ reservations: s.reservations.map((x) => (/Coliseo/.test(x.refId) ? { ...x, paraQuien: ['p-eric', 'p-ana'] } : x)) })); true`)
   const nReservasDueno = guardada.reservas.length
   const [h, m] = (ownerRes?.time ?? '00:00').split(':')
   const horaOwner = `${Number(h)}:${m}`
@@ -349,7 +341,7 @@ try {
   debe(propias.mias.length === 1 && /Coliseo/.test(propias.mias[0].refId) && propias.mias[0].time === ownerRes.time && propias.mias[0].dateIso === ownerRes.dateIso, 'misma_hora', `la entrada de Luis queda en SU lista con el mismo día y hora (${JSON.stringify(propias.mias)})`)
   debe(propias.dueno === nReservasDueno, 'misma_hora', 'y NO entra en las reservas del dueño (el viaje sigue con las mismas)')
   const lineaLuis = await a.evaluar(`document.querySelector('[data-entrada-fila*="Coliseo"]')?.textContent ?? null`)
-  debe(lineaLuis && /Añadir tu entrada/.test(lineaLuis) && !/Eric la ha reservado/.test(lineaLuis), 'misma_hora', `Luis ve ahora SU entrada del Coliseo como reservada, con Cambiar (${lineaLuis})`)
+  debe(lineaLuis && /Sube tu entrada/.test(lineaLuis) && !/Eric la ha reservado/.test(lineaLuis), 'misma_hora', `Luis ve ahora SU entrada del Coliseo como reservada, con Cambiar (${lineaLuis})`)
   await a.captura(path.join(SALIDA, '10n_reservas_invitado_la_suya.jpg'))
   const etiquetaLuis2 = await (async () => { await irA(a, 'days'); return etiquetaDeLaParada(a) })()
   debe(etiquetaLuis2 === 'tengo', 'dias', `con la suya comprada, Luis pasa a ver el botón verde con ✓ (${etiquetaLuis2})`)

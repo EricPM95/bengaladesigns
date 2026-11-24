@@ -9065,6 +9065,87 @@
       "best_for": "Cocina judeo-romana clásica en el Gueto",
       "_fuente": "https://www.ristorantepiperno.it (dirección y horario, leído el 2026-10-06); coordenadas APROXIMADAS (no verificadas) y precio orientativo: por revisar",
       "comprobado": "2026-10-06"
+    },
+    {
+      "name": "La Licata",
+      "megusta_inicial": 0,
+      "sub_category": "cafe",
+      "tipo_local": "cafeteria",
+      "address": "Via dei Serpenti, 165, 00184 Roma",
+      "coordinates": {
+        "lat": 41.89464,
+        "lng": 12.49088
+      },
+      "zone": "Monti",
+      "price_range": "€",
+      "avg_price_person": "3-8€",
+      "what_to_order": "Cornetto y capuchino en la barra; café y dulces sicilianos",
+      "tip": "Café-pastelería de barrio en pleno Monti, abre muy temprano. Para desayunar de pie, como un romano.",
+      "hours": "Lun-Sáb 6:00-21:30. Dom 7:00-21:00.",
+      "best_for": "Un desayuno temprano en Monti",
+      "coordinates_checked": {
+        "fuente": "OpenStreetMap (el local, consulta suelta de Nominatim)",
+        "fecha": "2026-11-24",
+        "nota": "OpenStreetMap: nodo amenity=cafe «La Licata», Via dei Serpenti 165"
+      },
+      "sources": [
+        "La web del local (horario)"
+      ],
+      "comprobado": "2026-11-24"
+    },
+    {
+      "name": "Oppio Caffè",
+      "megusta_inicial": 0,
+      "sub_category": "cafe",
+      "tipo_local": "cafeteria",
+      "address": "Via delle Terme di Tito, 72, 00184 Roma",
+      "coordinates": {
+        "lat": 41.8915,
+        "lng": 12.49279
+      },
+      "zone": "Coliseo / Monti",
+      "price_range": "€€",
+      "avg_price_person": "8-20€",
+      "what_to_order": "Café o aperitivo en la terraza, con el Coliseo cerca",
+      "tip": "Terraza frente al parque del Colle Oppio, a un paseo del Coliseo. Café de día y aperitivo al caer la tarde.",
+      "hours": "Todos los días 7:00-2:00 (aprox).",
+      "best_for": "Un café o un aperitivo junto al Coliseo",
+      "coordinates_checked": {
+        "fuente": "OpenStreetMap (el local, consulta suelta de Nominatim)",
+        "fecha": "2026-11-24",
+        "nota": "OpenStreetMap: nodo amenity=cafe «Oppio Caffè», Via delle Terme di Tito 72"
+      },
+      "sources": [
+        "Horario de varias fichas públicas; italia.it no tiene ficha de este local (revisar con el local)"
+      ],
+      "comprobado": "2026-11-24"
+    },
+    {
+      "name": "Ciuri Ciuri",
+      "megusta_inicial": 0,
+      "sub_category": "gelato",
+      "tipo_local": "heladeria",
+      "address": "Via Leonina, 18/20, 00184 Roma",
+      "coordinates": {
+        "lat": 41.89481,
+        "lng": 12.49198
+      },
+      "zone": "Monti",
+      "price_range": "€",
+      "avg_price_person": "3-7€",
+      "what_to_order": "Cannolo siciliano relleno al momento, granita o helado de pistacho",
+      "tip": "Dulces y helados sicilianos en Monti. El cannolo se rellena al pedirlo.",
+      "hours": "Todos los días 7:00-24:00.",
+      "best_for": "Helado y cannoli sicilianos en Monti",
+      "coordinates_checked": {
+        "fuente": "OpenStreetMap (el local, consulta suelta de Nominatim)",
+        "fecha": "2026-11-24",
+        "nota": "OpenStreetMap: nodo amenity=ice_cream «Ciuri Ciuri», Via Leonina 18"
+      },
+      "sources": [
+        "Horario comprobado por Eric"
+      ],
+      "comprobado": "2026-11-24"
     }
   ],
   "sitios_grandes": {

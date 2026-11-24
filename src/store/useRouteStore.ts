@@ -635,6 +635,8 @@ interface RouteStoreState {
   setLegOtraHora: (kind: 'arrival' | 'departure', hora: string | null) => void
   /** Tanda 7: la dirección del alojamiento (opcional, de pago); vacío o null la quita. */
   setAccommodationAddress: (direccion: string | null) => void
+  /** (V45) El punto del alojamiento en el mapa (con su dirección); null lo quita. */
+  setAccommodationPoint: (punto: { lat: number; lng: number; direccion: string } | null) => void
   /** Tanda 7: el viajero ya ha visto su vuelta con las fechas de ahora: se va el aviso «revisa que tu vuelta sigue siendo…». */
   marcarVueltaVista: () => void
   /** Tanda 7: guarda el plan de la llegada y/o el de la vuelta que dio el motor al rehacer días sueltos (reservas, Free Tour…). `undefined` = no cambia; `null` los quita. */
@@ -2062,6 +2064,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   setLegOtroPunto: (kind, texto) => set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalOtroPunto' : 'departureOtroPunto']: texto?.trim() ? texto.trim().slice(0, 60) : null } } : state)),
   setLegOtraHora: (kind, hora) => set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalOtraHora' : 'departureOtraHora']: hora && /^\d{1,2}:\d{2}$/.test(hora) ? hora : null } } : state)),
   setAccommodationAddress: (direccion) => set((state) => (state.route ? { route: { ...state.route, accommodationAddress: direccion?.trim() ? direccion.trim().slice(0, 160) : null } } : state)),
+  setAccommodationPoint: (punto) => set((state) => (state.route ? { route: { ...state.route, accommodationPoint: punto && Number.isFinite(punto.lat) && Number.isFinite(punto.lng) ? { lat: punto.lat, lng: punto.lng, direccion: punto.direccion.trim().slice(0, 160) } : null } } : state)),
   ponerPlanes: (planes) =>
     set((state) => {
       if (!state.route || (planes.llegada === undefined && planes.vuelta === undefined)) return state

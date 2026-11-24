@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 30% at 50% 0%,#F1E8D6 0%,#E0D3BA 75%);padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">APP · RESERVAS · ALOJAMIENTO</span><span style="font:400 40px/1 'Instrument Serif',serif">Pon tu alojamiento en el mapa</span></div>
+  <div style="display:grid;grid-template-columns:repeat(3,390px);gap:52px 44px;align-items:start;justify-content:start">
+  <sc-for list="{{ boards }}" as="b" hint-placeholder-count="3">
+    <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.08em;color:#6F4E37">{{ b.id }} · {{ b.cap }}</span>
+      <div style="position:relative;width:375px;height:812px;flex:none;border-radius:48px;overflow:hidden;background:#F5EFE4;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45)">
+        <span style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:112px;height:32px;border-radius:20px;background:#0E1118;z-index:60"></span>
+        <sc-if value="{{ b.form }}" hint-placeholder-val="{{ true }}">
+          <div style="position:absolute;inset:0;padding:64px 18px 0;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;align-items:center;justify-content:space-between"><span style="font:400 30px/1 'Instrument Serif',serif">Tu alojamiento</span><span style="width:36px;height:36px;border-radius:50%;background:rgba(28,34,48,.08);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1C2230" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></div>
+            <div style="display:flex;flex-direction:column;gap:7px"><span style="font:600 13px 'Geist';color:#1C2A52">Nombre del hotel</span><div style="height:48px;border-radius:14px;background:#fff;border:1px solid rgba(28,34,48,.14);display:flex;align-items:center;padding:0 14px;font:500 15px 'Geist'">Hotel Palatino</div></div>
+            <div style="display:flex;flex-direction:column;gap:7px"><span style="font:600 13px 'Geist';color:#1C2A52">Dirección</span>
+              <sc-if value="{{ b.empty }}" hint-placeholder-val="{{ true }}"><div style="height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:10px;font:700 15px 'Geist';background:linear-gradient(135deg,#F9EFCB,#EAD6A0 55%,#D8BD7C);color:#4A3510;border:1px solid rgba(181,138,46,.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 8px 14px -10px rgba(110,80,24,.6)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4A3510" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.5-6-10a6 6 0 0 1 12 0c0 4.5-6 10-6 10zM12 8.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg>Pon tu alojamiento en el mapa</div></sc-if>
+              <sc-if value="{{ b.full }}" hint-placeholder-val="{{ false }}"><div style="border-radius:20px;overflow:hidden;background:#FFFDF8;border:1px solid rgba(181,138,46,.4)">
+                <div style="height:120px;position:relative;background:#E8E3CF"><span style="position:absolute;inset:0;background:repeating-linear-gradient(40deg,rgba(255,255,255,.65) 0 3px,transparent 3px 44px),repeating-linear-gradient(-30deg,rgba(255,255,255,.45) 0 2px,transparent 2px 60px)"></span><span style="position:absolute;left:-10px;top:70px;width:140px;height:60px;border-radius:50%;background:#CFE0E4;opacity:.7"></span><svg width="30" height="38" viewBox="0 0 44 54" style="position:absolute;left:50%;top:38px;margin-left:-15px"><path d="M22 52C22 52 4 32 4 20a18 18 0 0 1 36 0C40 32 22 52 22 52z" fill="#1C2230" stroke="#F3D88F" stroke-width="2.6"></path><circle cx="22" cy="20" r="6.5" fill="#F3D88F"></circle></svg></div>
+                <div style="display:flex;align-items:center;gap:10px;padding:12px 14px"><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><b style="font:700 14.5px/1.25 'Geist'">Via del Corso, 18</b><span style="font:400 12.5px 'Geist';color:rgba(28,34,48,.55)">00186 Roma</span></span><span style="flex:none;height:34px;padding:0 14px;border-radius:12px;display:flex;align-items:center;font:700 13px 'Geist';background:#FBF3E2;border:1px solid rgba(181,138,46,.55);color:#4A3510">Cambiar</span></div></div></sc-if>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px"><span style="font:600 13px 'Geist';color:#1C2A52">¿Para quién es el alojamiento?</span><div style="display:flex;gap:8px"><span style="height:44px;flex:none;white-space:nowrap;padding:0 16px;border-radius:12px;display:flex;align-items:center;background:#1C2230;color:#F3D88F;font:700 14px 'Geist'">Eric ✓</span><span style="height:44px;flex:none;white-space:nowrap;padding:0 16px;border-radius:12px;display:flex;align-items:center;background:#fff;border:1px solid rgba(28,34,48,.14);font:600 14px 'Geist'">Ana</span></div></div>
+            <span style="margin-top:auto;margin-bottom:34px;height:54px;border-radius:16px;display:flex;align-items:center;justify-content:center;font:700 15.5px 'Geist';background:linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E);color:#4A3510;box-shadow:0 10px 20px -14px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55)">Guardar el alojamiento</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ b.map }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;inset:0;background:#F3EBD8">
+            <svg viewBox="0 0 375 812" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%"><rect width="375" height="812" fill="#F3EBD8"></rect><path d="M-20 600C80 560 150 650 240 600S370 540 400 580L400 680C330 640 260 700 190 680S60 650-20 700Z" fill="#CFE3EA"></path><path d="M250 120h120v110H250zM20 330h90v80H20z" fill="#DCE8C6"></path><g stroke="#fff" stroke-width="9" stroke-linecap="round" fill="none"><path d="M-10 200L400 240"></path><path d="M-10 450L400 430"></path><path d="M120 -10L160 830"></path><path d="M300 -10L260 830"></path></g><g stroke="#E6D9BC" stroke-width="4" stroke-linecap="round" fill="none"><path d="M-10 110L400 100"></path><path d="M-10 330L400 360"></path><path d="M-10 530L400 500"></path><path d="M40 -10L20 830"></path><path d="M210 -10L220 830"></path><path d="M350 -10L370 830"></path></g><g font-family="Geist" font-size="11" fill="#8A7A5A"><text x="150" y="226" transform="rotate(4 150 226)">Via del Corso</text><text x="30" y="326">Piazza Navona</text><text x="262" y="162" fill="#5E7A3A">Villa Borghese</text></g></svg>
+            <span style="position:absolute;left:50%;top:50%;margin:-62px 0 0 -22px;display:flex;flex-direction:column;align-items:center"><svg width="44" height="54" viewBox="0 0 44 54"><path d="M22 52C22 52 4 32 4 20a18 18 0 0 1 36 0C40 32 22 52 22 52z" fill="#1C2230" stroke="#F3D88F" stroke-width="2.4"></path><circle cx="22" cy="20" r="6.5" fill="#F3D88F"></circle></svg><span style="width:14px;height:5px;margin-top:-3px;border-radius:50%;background:rgba(28,34,48,.28)"></span></span>
+            <div style="position:absolute;left:14px;right:14px;top:58px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;align-items:center;gap:10px"><span style="flex:none;width:46px;height:46px;border-radius:50%;background:#FFFDF8;box-shadow:0 8px 16px -8px rgba(28,34,48,.5);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1C2230" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg></span><span style="flex:1;font:400 26px/1 'Instrument Serif',serif;text-shadow:0 1px 0 #fff">¿Dónde te alojas?</span></div>
+              <div style="height:48px;border-radius:999px;background:#FFFDF8;box-shadow:0 8px 16px -8px rgba(28,34,48,.5);border:1px solid rgba(181,138,46,.5);display:flex;align-items:center;gap:10px;padding:0 16px;font:500 14px 'Geist'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E5018" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>{{ b.q }}</div>
+              <sc-if value="{{ b.sug }}" hint-placeholder-val="{{ false }}"><div style="border-radius:18px;background:#FFFDF8;box-shadow:0 14px 24px -12px rgba(28,34,48,.5);padding:4px 0;display:flex;flex-direction:column"><sc-for list="{{ sugs }}" as="s" hint-placeholder-count="3"><div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:{{ s.bg }}"><span style="flex:none;width:30px;height:30px;border-radius:50%;background:#F3E6C4;display:flex;align-items:center;justify-content:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6E5018" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.5-6-10a6 6 0 0 1 12 0c0 4.5-6 10-6 10zM12 8.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg></span><span style="display:flex;flex-direction:column"><b style="font:700 14px/1.25 'Geist'">{{ s.n }}</b><span style="font:400 12px 'Geist';color:rgba(28,34,48,.55)">{{ s.c }}</span></span></div></sc-for></div></sc-if></div>
+            <div style="position:absolute;left:14px;right:14px;bottom:34px;border-radius:26px;background:#FFFDF8;box-shadow:0 18px 34px -14px rgba(28,34,48,.55);padding:16px;display:flex;flex-direction:column;gap:14px"><div style="display:flex;align-items:center;gap:12px"><span style="flex:none;width:42px;height:42px;border-radius:13px;background:#F7F1E4;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7A5A1E" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.6-6-10.5a6 6 0 0 1 12 0C18 15.4 12 21 12 21zM12 12.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"></path></svg></span><span style="display:flex;flex-direction:column;gap:2px"><span style="font:600 15px/1.2 'Geist'">Via del Corso, 18</span><span style="font:400 12.5px 'Geist';color:rgba(28,34,48,.55)">00186 Roma</span></span></div><span style="height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font:700 15.5px 'Geist';background:linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E);color:#4A3510;box-shadow:0 10px 20px -14px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55)">Mi alojamiento está aquí</span></div>
+          </div>
+        </sc-if>
+      </div>
+      <span style="font:400 14px/1.45 'Geist';color:rgba(28,34,48,.72);max-width:375px;text-wrap:pretty">{{ b.note }}</span>
+    </div>
+  </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals(){
+    return{sugs:[{n:'Via del Corso',c:'Roma, Italia',bg:'#FBF3E2'},{n:'Via del Corso, 18',c:'00186 Roma',bg:'transparent'},{n:'Hotel Via del Corso',c:'Via del Corso, 126 · Roma',bg:'transparent'}],boards:[
+      {id:'M1',cap:'La ficha, sin dirección',form:true,empty:true,full:false,map:false,note:'Un botón con el pin en lugar del campo de texto.'},
+      {id:'M2',cap:'La pantalla del mapa · buscando «Via del Corso»',form:false,map:true,sug:true,q:'Via del Corso',note:'Las sugerencias son solo de Roma. Al tocar una, el mapa va allí y se puede afinar moviéndolo.'},
+      {id:'M3',cap:'La ficha, con el mapa pequeño',form:true,empty:false,full:true,map:false,note:'Mapa con el pin, la dirección debajo y [Cambiar]. En HOY, las distancias se cuentan desde ese punto.'}
+    ]};
+  }
+}
+</script>
+</body>
+</html>

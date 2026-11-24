@@ -122,6 +122,8 @@ export const supabase: any = {
     },
   }),
 }
+// (V36) El store pregunta quién soy con usuarioLocal(): la nube de mentira contesta lo mismo que getUser().
+export const usuarioLocal = async () => supabase.auth.getUser()
 `)
   const entrada = path.join(tmp, 'entrada.ts')
   fs.writeFileSync(entrada, `export * from '${path.resolve('src/store/useBilleteStore.ts').replace(/\\/g, '/')}'\nexport { nube } from '${falso.replace(/\\/g, '/')}'\n`)

@@ -107,7 +107,7 @@ async function pasada(version) {
     debe(e1.papelera.length === 1 && e1.papelera[0][0] === 44 && e1.papelera[0][1] === 44, 'E1 papelera', `la papelera roja de 44 × 44 (${JSON.stringify(e1.papelera)})`)
     debe(/98,26 €|98.26 €|€ ?98/.test(e1.texto), 'E1 precio', `el precio en su fila (${e1.texto.slice(0, 140)})`)
     debe(/Piazza della Repubblica/.test(e1.texto), 'E1 punto', 'el punto de encuentro en su fila')
-    debe(e1.boton === 'Añadir tu excursión' && e1.candado === (sin ? '1' : '0'), 'candado', sin ? '[Añadir tu excursión] lleva el candado dorado sin pase' : '[Añadir tu excursión] sin candado con pase')
+    debe(e1.boton === '+Sube tu reserva' && e1.candado === (sin ? '1' : '0'), 'candado', sin ? '[+ Sube tu reserva] lleva el candado dorado sin pase' : '[+ Sube tu reserva] sin candado con pase')
     debe(sin ? !e1.comoLlegar : e1.comoLlegar, 'como llegar', sin ? 'sin pase no sale el botón [Cómo llegar al punto de encuentro]' : 'con pase, [Cómo llegar al punto de encuentro]')
     debe(!/Eliminar|Quitar excursión/.test(e1.texto), 'sin eliminar', 'sin «Eliminar excursión»: la papelera lo sustituye')
     await a.captura(path.join(SALIDA, `10r_reservas_excursion_${version}_375.jpg`)).catch(() => {})

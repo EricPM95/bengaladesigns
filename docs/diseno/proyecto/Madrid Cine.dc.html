@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}</style>
+</helmet>
+<div style="min-height:100vh;background:#E7DCC6;padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">LOGROS · MADRID · EMBLEMAS EN CINE</span><span style="font:400 40px/1 'Instrument Serif',serif">Los 16 descubrimientos</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start">
+    <sc-for list="{{ boards }}" as="b" hint-placeholder-count="4">
+      <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+        <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(28,34,48,.7)">{{ b.id }} · {{ b.cap }}</span>
+        <div style="position:relative;width:390px;height:844px;border-radius:40px;overflow:hidden;background:#0C0A08;box-shadow:0 30px 60px -30px rgba(28,34,48,.6)"><sc-if value="{{ b.on }}" hint-placeholder-val="{{ true }}"><dc-import name="Piezas/Emblema Cine Madrid" kind="{{ b.k }}" hint-size="390px,844px"></dc-import></sc-if></div>
+        <button onClick="{{ b.rp }}" style="align-self:flex-start;height:40px;padding:0 18px;border-radius:999px;border:1px solid rgba(28,34,48,.25);background:#FFFDF8;font:600 13.5px 'Geist';cursor:pointer">Repetir la animación</button>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state={off:{}};
+  rp=(id)=>()=>{this.setState(s=>({off:{...s.off,[id]:true}}));setTimeout(()=>this.setState(s=>({off:{...s.off,[id]:false}})),80);};
+  renderVals(){return{boards:[['E1','El kilómetro cero · Puerta del Sol','km'],['E2','Dentro de Las Meninas · Prado','men'],['E3','Más de 3.000 estancias · Palacio Real','pal'],['E4','Un templo de Egipto · Debod','deb'],['E5','237 balcones · Plaza Mayor','bal'],['E6','Frente al Guernica · Reina Sofía','gue'],['E7','El primer rascacielos · Gran Vía','tel'],['E8','El ángel que cayó · El Retiro','ang'],['E8b','El lago del Retiro · Parque del Retiro','ret'],['E8c','Un palacio de cristal · Palacio de Cristal','pdc'],['E9','La tumba sin cabeza · San Antonio de la Florida','tum'],['E10','La estación fantasma · Chamberí','est'],['E11','Cibeles o Neptuno · Plaza de Cibeles','cib'],['E12','El restaurante más antiguo · Botín','hor'],['E13','Madrugador · el sol sale por la izquierda','mad'],['E14','Nocturno · la luna sale por la derecha','noc']].map(([id,cap,k])=>({id,cap,k,on:!this.state.off[id],rp:this.rp(id)}))};}
+}
+</script>
+</body>
+</html>

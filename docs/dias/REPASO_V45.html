@@ -1,0 +1,210 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>REPASO V45</title><style>body{font:15px/1.5 system-ui,sans-serif;max-width:980px;margin:24px auto;padding:0 16px;color:#1C2230;background:#FBF6EA}h1{font-size:26px}h2{margin-top:34px;border-top:2px solid #C9A24A;padding-top:12px}figure{margin:10px 14px 10px 0;display:inline-block;vertical-align:top;max-width:300px}figure img{width:100%;border:1px solid #d8cfb8;border-radius:10px}figure.ancha{max-width:100%;display:block}figcaption{font-size:12.5px;color:#6a6657}.par{display:flex;gap:10px;flex-wrap:wrap}.peq{font-size:13px;color:#555}.falta{color:#a33}pre{background:#fff;padding:12px;border-radius:8px;overflow:auto;font-size:12px}li{margin:4px 0}</style>
+<h1>V45 · RESERVAS (vuelo, alojamiento, entradas y excursiones) y los avisos de toda la app</h1>
+<p>Lo que no he podido hacer o necesita una decisión tuya está en <code>docs/dias/DECISIONES_V45.md</code>. Capturas en tamaño iPhone (390 × 844). Los dibujos de Design (ULTIMO) están copiados en <code>docs/diseno/proyecto/</code>.</p>
+
+<h2>Tu lista de comprobación de esta tanda</h2>
+<ol>
+<li>RESERVAS › Llegada y vuelta: cada vuelo guardado se ve <b>abierto</b>, con el QR gris «+» y «+ Añade tu tarjeta de embarque».</li>
+<li>Con la vuelta sin poner: una línea «Falta añadir la vuelta» (sin QR) que abre la hoja en «Vuelta».</li>
+<li>Una tarjeta de embarque de otro día: línea naranja <b>dentro de la tarjeta</b> con [Es correcta]; no sale ventana ni aviso que se va.</li>
+<li>Entrada, excursión y alojamiento guardados: icono gris con «+» junto al lápiz y botón de borde «+ Sube tu entrada» / «+ Sube tu reserva» / «+ Añade tu reserva».</li>
+<li>La hoja «Elige día y hora»: sin [Añadir tu entrada] ni «Rellenar desde el email o el PDF»; en grupo, dos pasos («Casi lista»).</li>
+<li>El contador «X de Y reservadas» sube al <b>guardar</b>, no al subir el documento.</li>
+<li>Excursiones y actividades: [Ver todas] abre la página de <b>todas</b> (no EXPLORAR); en Lanzarote están las 7 del carrusel y más.</li>
+<li>El mapa del alojamiento: «Pon tu alojamiento en el mapa», la búsqueda solo de la ciudad y el mapa pequeño con la dirección y [Cambiar].</li>
+<li>HOY: a las 22:35 la comida del mediodía ya no sale en «Tu día».</li>
+</ol>
+
+<h2>1 · El vuelo</h2>
+<p>Antes la ida salía plegada en una línea y no se veía [Añadir tarjeta de embarque]. Ahora cada vuelo guardado se ve abierto: las horas grandes, el trayecto, el lápiz, el QR y, sin tarjeta, «+ Añade tu tarjeta de embarque».</p>
+<figure><img src="V45_capturas/v45_vuelo.jpg" alt="Ida y vuelta abiertas, con el QR gris"><figcaption>Ida y vuelta abiertas, con el QR gris</figcaption></figure>
+<figure><img src="V45_capturas/v45_sin_vuelta.jpg" alt="Sin vuelta: «Falta añadir la vuelta», sin QR"><figcaption>Sin vuelta: «Falta añadir la vuelta», sin QR</figcaption></figure>
+<figure><img src="V45_capturas/v45_aviso_fecha.jpg" alt="Tarjeta de otro día: línea naranja dentro de la tarjeta"><figcaption>Tarjeta de otro día: línea naranja dentro de la tarjeta</figcaption></figure>
+
+<h2>2 · Entradas, excursiones y alojamiento</h2>
+<p>El mismo patrón en las tres: icono del documento junto al lápiz (gris con «+» si falta, dorado si está) y un botón de borde abajo mientras falta. Primero se guarda, después se sube.</p>
+<figure><img src="V45_capturas/v45_entrada.jpg" alt="Entrada guardada"><figcaption>Entrada guardada</figcaption></figure>
+<figure><img src="V45_capturas/v45_excursion.jpg" alt="Excursión guardada"><figcaption>Excursión guardada</figcaption></figure>
+<figure><img src="V45_capturas/v45_alojamiento.jpg" alt="Alojamiento: «Listo» con hotel y fechas, y «+ Añade tu reserva»"><figcaption>Alojamiento: «Listo» con hotel y fechas, y «+ Añade tu reserva»</figcaption></figure>
+
+<h2>3 · La hoja «Elige día y hora»</h2>
+<p>Viajando solo: días, hora, precio y [Guardar la entrada]. En grupo, dos pasos: días y hora [Siguiente]; después «Casi lista» con «¿A qué cuenta lo sumamos?» y, solo con la cuenta conjunta o del grupo, «¿Quién la ha pagado?».</p>
+<figure><img src="V45_capturas/v45_hoja_solo.jpg" alt="Una persona sola"><figcaption>Una persona sola</figcaption></figure>
+<figure><img src="V45_capturas/v45_hoja_grupo_paso1.jpg" alt="En grupo, paso 1"><figcaption>En grupo, paso 1</figcaption></figure>
+<p class="falta">(Sin captura: En grupo, paso 2)</p>
+
+<h2>4 · Excursiones y actividades: [Ver todas]</h2>
+<p>Antes [Ver todas] abría EXPLORAR con 3 excursiones. Ahora abre la página de todas, con filtros por tipo.</p>
+<figure><img src="V45_capturas/v45_ver_todas.jpg" alt="La página de todas las excursiones y actividades (Lanzarote)"><figcaption>La página de todas las excursiones y actividades (Lanzarote)</figcaption></figure>
+
+<h2>5 · El mapa del alojamiento</h2>
+<p>Búsqueda con Photon (OpenStreetMap): solo cuando dejas de escribir, solo en la ciudad del viaje. El punto se guarda en el viaje y HOY y «Cómo llegar» cuentan desde ahí. Con la hoja larga del pase, el bloque de dirección queda más abajo que en el dibujo (se ve haciendo scroll).</p>
+<figure><img src="V45_capturas/v45_mapa_m1_hoja.jpg" alt="M1 · la hoja con el botón"><figcaption>M1 · la hoja con el botón</figcaption></figure>
+<figure><img src="V45_capturas/v45_mapa_m2_busqueda.jpg" alt="M2 · buscando"><figcaption>M2 · buscando</figcaption></figure>
+<figure><img src="V45_capturas/v45_mapa_m2_elegido.jpg" alt="M2 · elegido"><figcaption>M2 · elegido</figcaption></figure>
+<figure><img src="V45_capturas/v45_mapa_m3_hoja.jpg" alt="M3 · la hoja con el mapa pequeño"><figcaption>M3 · la hoja con el mapa pequeño</figcaption></figure>
+<figure><img src="V45_capturas/v45_mapa_m3_reservas.jpg" alt="M3 · la tarjeta de RESERVAS"><figcaption>M3 · la tarjeta de RESERVAS</figcaption></figure>
+
+<h2>6 · Lo de la V44 comparado con los dibujos (antes y después)</h2>
+<p>Ahora que veo Design, comparé la tarjeta de la parada, el «···» de pendientes y «Activa tu ubicación». La tarjeta de la parada ya coincidía en lo importante (dos cajas, el recuadro punteado, el reproductor azul oscuro). Ajusté el <b>«···» de pendientes</b> (textos y colores del dibujo: Recuperar hoy en verde, Ya lo visité en dorado, Quitar en rojo, sin flechas) y el <b>texto de «Activa tu ubicación»</b>. Una diferencia que dejo: el dibujo tiene [Abrir Ajustes], que una web no puede hacer; se queda [Entendido].</p>
+<div class="par"><figure><img src="V45_capturas/antes_pendientes_menu.jpg" alt="Antes"><figcaption>Antes</figcaption></figure><figure><img src="V45_capturas/despues_pendientes_menu.jpg" alt="Después"><figcaption>Después</figcaption></figure></div><p class="peq">El «···» de una parada pendiente</p>
+<div class="par"><figure><img src="V45_capturas/antes_sin_ubicacion.jpg" alt="Antes"><figcaption>Antes</figcaption></figure><figure><img src="V45_capturas/despues_sin_ubicacion.jpg" alt="Después"><figcaption>Después</figcaption></figure></div><p class="peq">Parada sin ubicación (igual: ya coincidía)</p>
+<div class="par"><figure><img src="V45_capturas/antes_lejos.jpg" alt="Antes"><figcaption>Antes</figcaption></figure><figure><img src="V45_capturas/despues_lejos.jpg" alt="Después"><figcaption>Después</figcaption></figure></div><p class="peq">Con la ubicación lejos (igual)</p>
+<div class="par"><figure><img src="V45_capturas/antes_en_la_ruta.jpg" alt="Antes"><figcaption>Antes</figcaption></figure><figure><img src="V45_capturas/despues_en_la_ruta.jpg" alt="Después"><figcaption>Después</figcaption></figure></div><p class="peq">En la ruta (igual)</p>
+<figure class="ancha"><img src="V45_design/parada_tarjeta.jpg" alt="Design: la tarjeta de la parada (T1-T5)"><figcaption>Design: la tarjeta de la parada (T1-T5)</figcaption></figure>
+<figure class="ancha"><img src="V45_design/lugares_pendientes.jpg" alt="Design: lugares pendientes (L1-L4)"><figcaption>Design: lugares pendientes (L1-L4)</figcaption></figure>
+
+<h2>7 · El billete con QR (HOY y DÍAS) y lo demás</h2>
+<ul>
+<li><b>El billete de HOY y DÍAS</b> (Design «Billete QR», Q1-Q4): hecho (QR dorado / gris con «+», franja «Tarjeta de embarque guardada» / «Añade tu tarjeta de embarque»). <b>No he conseguido capturarlo en pantalla</b> (su sitio es el último día de DÍAS y la tarjeta de vuelta de HOY); está verificado por tipos y por la prueba de código.</li>
+<li><b>Sitios nuevos de Roma:</b> La Licata, Oppio Caffè y Ciuri Ciuri (coordenadas de OpenStreetMap). El horario de Oppio no es de italia.it (no tiene ficha): decisión tuya.</li>
+<li><b>HOY:</b> lo que ya pasó y no es una visita (la comida del mediodía a las 22:35) sale de «Tu día».</li>
+</ul>
+<figure class="ancha"><img src="V45_design/billete_qr.jpg" alt="Design: el billete con su QR a mano"><figcaption>Design: el billete con su QR a mano</figcaption></figure>
+
+<h2>Pruebas</h2>
+<pre>=== pruebaV42
+exit=1
+  FALLO [reservas] [Ver todas] abre EXPLORAR
+Prueba de la Tanda V42: 65 comprobaciones · 1 fallos
+=== pruebaTanda10S8_C
+exit=1
+107 comprobaciones, 11 fallos
+=== pruebaTanda10S8_D
+exit=1
+  ✗ [candado] [Añadir tu reserva] NO lleva candado con pase
+  ✗ [A1p direccion] la dirección UNA sola vez, con la zona nuestra (["Via Cavour 12, Roma"])
+  ✗ [A2p direccion] la dirección UNA sola vez (["Via Cavour 12, Roma"])
+83 comprobaciones, 8 fallos
+  ✗ [E1 boton] [Añadir tu entrada] (+Sube tu entrada)
+  ✗ [Free Tour] el Free Tour con el mismo estilo que una entrada, sin precio ({"crema":true,"chip":"Ya no está en tu ruta","hora":"HORA10:00","boton":"+Sube tu entrada","lapices":1,"papelera":1,"precio":false})
+  ✗ [candado] [Añadir tu reserva] lleva el candado sin pase
+  ✗ [E1 boton] [Añadir tu entrada] (+Sube tu entrada)
+  ✗ [Free Tour] el Free Tour con el mismo estilo que una entrada, sin precio ({"crema":true,"chip":"Ya no está en tu ruta","hora":"HORA10:00","boton":"+Sube tu entrada","lapices":1,"papelera":1,"precio":false})
+  ✗ [candado] [Añadir tu reserva] NO lleva candado con pase
+  ✗ [A1p direccion] la dirección UNA sola vez, con la zona nuestra (["Via Cavour 12, Roma"])
+  ✗ [A2p direccion] la dirección UNA sola vez (["Via Cavour 12, Roma"])
+=== pruebaTanda10S9_B
+exit=0
+Prueba 10S9 B: 113 comprobaciones · 0 fallos
+=== pruebaTanda10S9b_A
+exit=0
+Prueba 10S9b A: 40 comprobaciones · 0 fallos
+=== pruebaTanda10S9b_B
+exit=0
+18 comprobaciones, 0 fallos
+=== pruebaTanda10S9b_C
+exit=0
+pruebaCorr6z6_reservas: salida 0 · Corrección 6z6b RESERVAS: 319 comprobaciones, 0 fallos.
+pruebaTanda10S4_I: salida 0 · 78 comprobaciones · 0 fallos
+6 comprobaciones · 0 fallos
+=== pruebaTanda10R_B
+exit=1
+  ✗ [candado] [Añadir tu excursión] lleva el candado dorado sin pase
+  ✗ [candado] [Añadir tu excursión] sin candado con pase
+54 comprobaciones, 2 fallos
+  ✗ [candado] [Añadir tu excursión] lleva el candado dorado sin pase
+  ✗ [candado] [Añadir tu excursión] sin candado con pase
+=== pruebaTanda10R_C
+exit=0
+24 comprobaciones, 0 fallos
+FIN
+=== pruebaTanda10S5_L
+exit=0
+78 comprobaciones, 0 fallos
+=== pruebaTanda10S7_T
+exit=0
+86 comprobaciones, 0 fallos
+=== pruebaTanda10S6_P
+exit=0
+34 comprobaciones, 0 fallos
+=== pruebaTanda10N10_reservas
+exit=0
+52 comprobaciones, 0 fallos
+=== pruebaTanda10N8_reservas
+exit=0
+24 comprobaciones, 0 fallos
+=== pruebaTanda10N_reservas
+exit=1
+✗ [para_quien] con la cuenta del grupo SÍ sale «¿Quién la ha pagado?»
+✗ [misma_hora] (10N5) quien compra la suya también ve «¿Para quién es?» (la reserva es suya y decide para quién)
+Prueba de la Tanda 10N (D1, RESERVAS del invitado): 45 comprobaciones · 2 fallos
+=== pruebaV45
+exit=1
+  FALLO [hoja_solo] viaje solo: la hoja con los días, la hora, el precio y [Guardar la entrada], sin documento ni cuenta (ENTRADA · ELIGE DÍA Y HORA Coliseo, Foro y Palatino Sáb 17 Dom 18 Lun 19 En tu ruta HORA DE ENTRADA 09:15 Recuerda revisar la disponibilidad antes de añadirlo a)
+  FALLO [hoja_grupo] en pareja, paso 1: los días y la hora con [Siguiente] (ENTRADA · ELIGE DÍA Y HORA Coliseo, Foro y Palatino Sáb 17 Dom 18 Lun 19 En tu ruta HORA DE ENTRADA 09:15 Recuerda revisar la disponibilidad)
+Prueba de la V45: 54 comprobaciones · 9 fallos
+✗ [vuelo] la ida se ve ABIERTA, con las horas grandes (null)
+✗ [vuelo] ida: QR gris con «+» y «+ Añade tu tarjeta de embarque» (null)
+✗ [vuelo] vuelta: QR gris con «+» y su botón (null)
+✗ [aviso_fecha] el aviso de fecha va DENTRO de la tarjeta, en naranja, con [Es correcta] (null)
+✗ [aviso_fecha] ni ventana ni aviso de abajo que se va
+✗ [aviso_fecha] se queda: no se va solo
+✗ [error] la prueba se ha parado en la parte 1: TypeError: st(...).removeLeg is not a function
+✗ [hoja_solo] viaje solo: la hoja con los días, la hora, el precio y [Guardar la entrada], sin documento ni cuenta (ENTRADA · ELIGE DÍA Y HORA Coliseo, Foro y Palatino Sáb 17 Dom 18 Lun 19 En tu ruta HORA DE ENTRADA 09:15 Recuerda revisar la disponibilidad antes de añadirlo a)
+✗ [hoja_grupo] en pareja, paso 1: los días y la hora con [Siguiente] (ENTRADA · ELIGE DÍA Y HORA Coliseo, Foro y Palatino Sáb 17 Dom 18 Lun 19 En tu ruta HORA DE ENTRADA 09:15 Recuerda revisar la disponibilidad)
+FIN
+=== pruebaV45
+exit=0
+Prueba de la V45: 54 comprobaciones · 0 fallos
+=== pruebaTanda10N_reservas
+exit=1
+✗ [misma_hora] (10N5) quien compra la suya también ve «¿Para quién es?» (la reserva es suya y decide para quién)
+Prueba de la Tanda 10N (D1, RESERVAS del invitado): 45 comprobaciones · 1 fallos
+=== pruebaTanda10N10_reservas
+exit=0
+52 comprobaciones, 0 fallos
+=== pruebaTanda10S8_D
+exit=0
+83 comprobaciones, 0 fallos
+=== pruebaTanda10S8_C
+exit=0
+107 comprobaciones, 0 fallos
+FIN
+=== pruebaV43
+exit=0
+Prueba de la V43 · 41 comprobaciones · 0 fallos
+=== pruebaV44
+exit=0
+Prueba de la V44: 43 comprobaciones · 0 fallos
+=== pruebaV36
+exit=1
+=== pruebaTanda10J
+exit=0
+La prueba de la Tanda 10J: 253 comprobaciones · 0 fallos
+FIN
+=== pruebaTanda10N_reservas
+exit=0
+Prueba de la Tanda 10N (D1, RESERVAS del invitado): 45 comprobaciones · 0 fallos
+=== pruebaV45
+exit=0
+Prueba de la V45: 54 comprobaciones · 0 fallos
+=== pruebaTandaHOY2b_D
+exit=1
+92 comprobaciones · 2 fallos
+ ✗ [8b] el mirador no hereda la foto del Tempietto (va sin foto hasta que haya una buena)
+ ✗ [6] 2 o 3 sitios, cada uno en su fila (1)
+=== pruebaV36_cliente
+exit=0
+Prueba de la Tanda V36 (cliente): 28 comprobaciones · 0 fallos
+=== pruebaV36_servidor
+exit=0
+La prueba de la V36 (servidor): 28 comprobaciones · 0 fallos
+=== pruebaV36C
+exit=0
+Prueba de la Tanda V36C: 122 comprobaciones · 0 fallos
+=== pruebaV36B
+exit=0
+Prueba de la Tanda V36B: 41 comprobaciones · 0 fallos
+FIN
+=== pruebaTandaHOY2b_D
+exit=1
+92 comprobaciones · 1 fallos
+ ✗ [6] 2 o 3 sitios, cada uno en su fila (1)
+FIN
+=== pruebaJutrip
+exit=0
+Prueba de JUTRIP: 130 comprobaciones · 0 fallos
+FIN
+</pre>
+</html>

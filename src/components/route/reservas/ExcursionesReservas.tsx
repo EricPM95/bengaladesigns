@@ -27,7 +27,7 @@ import { precioEnVista } from '../../../lib/moneda'
 import type { DatosExcursionLeida } from '../../../lib/billeteLeer'
 import { paginaEnMemoria, pedirPaginaDeDestino, type ActividadDeDestino } from '../../../lib/paginaDestino'
 import { TarjetaDeActividad } from '../DestinationDetailModal'
-import { useExploreAperturaStore } from '../../../store/useExploreAperturaStore'
+import { TodasLasActividades } from './TodasLasActividades'
 
 /** Una excursión de la lista de «¿Qué excursión tienes?»: su foto pequeña (o el color), el nombre y «Día completo» / «Medio día». */
 function FilaExcursion({ excursion, onPick }: { excursion: Excursion; onPick: () => void }) {
@@ -98,10 +98,18 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [excursionPedida])
   const [actividades, setActividades] = useState<ActividadDeDestino[]>(() => paginaEnMemoria(route.destination)?.actividades ?? [])
+  // (V45 §5) TODAS las del destino (el carrusel primero y lo demás detrás): las que enseña [Ver todas].
+  const [todas, setTodas] = useState<ActividadDeDestino[]>(() => paginaEnMemoria(route.destination)?.todas ?? [])
+  const [verTodas, setVerTodas] = useState(false)
   useEffect(() => {
     let vivo = true
     setActividades(paginaEnMemoria(route.destination)?.actividades ?? [])
-    void pedirPaginaDeDestino(route.destination).then((p) => vivo && setActividades(p.actividades))
+    setTodas(paginaEnMemoria(route.destination)?.todas ?? [])
+    void pedirPaginaDeDestino(route.destination).then((p) => {
+      if (!vivo) return
+      setActividades(p.actividades)
+      setTodas(p.todas)
+    })
     return () => {
       vivo = false
     }
@@ -155,6 +163,7 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
               delGrupo={Boolean(delGrupo)}
               notes={delGrupo ? [{ text: textoQuienVa(grupo.nombreAdmin, route, delGrupo) }] : []}
               buyLabel={delGrupo ? 'Reservar la mía' : 'Reservar excursión'}
+              botonYaLaTengo
               buyHref={excursion.page?.affiliateUrl ?? excursion.bookUrl ?? buildActivitySearchUrl(`${excursion.title} ${route.destination}`)}
               reservedTime={null}
               onAdd={() => setTarget({ kind: 'excursion', refId: excursion.id, name: excursion.title, placeNames: [], excursion, currentDayId: day.id })}
@@ -210,26 +219,21 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
             ))}
           </div>
         )}
-        <button
-          type="button"
-          onClick={() => {
-            useExploreAperturaStore.getState().pedir({ categoria: 'excursiones', origen: null })
-            useRouteStore.getState().setMode('explore')
-          }}
-          data-ver-mas-excursiones
-          data-ver-todas-excursiones
-          className="zona-toque flex h-12 items-center justify-center gap-2 rounded-[15px] border-[1.5px] border-text/20 bg-transparent text-[14px] font-semibold text-text"
-        >
-          Ver todas
-        </button>
+        {/* (V45 §5) [Ver todas] abre la PÁGINA de todas las excursiones y actividades (no EXPLORAR); solo sale si hay más de las que se ven. */}
+        {todas.length > actividades.length && (
+          <button type="button" onClick={() => setVerTodas(true)} data-ver-mas-excursiones data-ver-todas-excursiones className="zona-toque flex h-12 items-center justify-center gap-2 rounded-[15px] border-[1.5px] border-text/20 bg-transparent text-[14px] font-semibold text-text">
+            Ver todas
+          </button>
+        )}
         {info.excursions.length > 0 && (
           <button type="button" onClick={() => setLista(true)} data-ya-tengo-excursion className="zona-toque border-none bg-transparent p-0 text-center text-[12px] leading-[1.25] text-text/60">
-            ¿Ya tienes una? <span className="font-semibold text-text underline underline-offset-2">Añádela</span>
+            {hayDiaDeExcursion ? '¿Ya tienes otra?' : '¿Ya tienes una?'} <span className="font-semibold text-text underline underline-offset-2">Añádela</span>
           </button>
         )}
           </>
         )}
       </BloqueClaro>
+      {verTodas && <TodasLasActividades destino={route.destination} todas={todas} onCerrar={() => setVerTodas(false)} />}
       {lista && (
         <HojaQueExcursion
           excursions={info.excursions}

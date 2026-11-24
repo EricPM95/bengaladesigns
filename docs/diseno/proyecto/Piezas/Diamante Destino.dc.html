@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div onMouseMove="{{ mv }}" onMouseLeave="{{ lv }}" style="width:{{ S }}px;height:{{ H }}px;perspective:760px;flex:none;cursor:grab">
+<div style="width:100%;height:100%;transform:{{ tf }};transform-style:preserve-3d">
+<svg width="{{ S }}" height="{{ H }}" viewBox="0 0 200 220" fill="none" style="overflow:visible;display:block">
+  <defs>
+    <linearGradient id="{{ u }}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF3C4"></stop><stop offset=".5" stop-color="#F0BD4A"></stop><stop offset="1" stop-color="#B8791C"></stop></linearGradient>
+    <radialGradient id="{{ u }}r" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFE9A8" stop-opacity=".95"></stop><stop offset="1" stop-color="#FFE9A8" stop-opacity="0"></stop></radialGradient>
+    <linearGradient id="{{ u }}rb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9FD8FF"></stop><stop offset=".25" stop-color="#C9B0FF"></stop><stop offset=".5" stop-color="#FFB0D8"></stop><stop offset=".75" stop-color="#FFE7A0"></stop><stop offset="1" stop-color="#A8F0D0"></stop></linearGradient>
+    <linearGradient id="{{ u }}s" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"></stop><stop offset=".5" stop-color="#fff" stop-opacity=".9"></stop><stop offset="1" stop-color="#fff" stop-opacity="0"></stop></linearGradient>
+    <linearGradient id="{{ u }}st" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFF4CC"></stop><stop offset=".45" stop-color="#EBB955"></stop><stop offset="1" stop-color="#8E5A16"></stop></linearGradient>
+    <linearGradient id="{{ u }}ar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2A1606"></stop><stop offset="1" stop-color="#7A4A16"></stop></linearGradient>
+    <linearGradient id="{{ u }}lt" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".35"></stop><stop offset=".5" stop-color="#FFFFFF" stop-opacity="0"></stop><stop offset="1" stop-color="#1A0A00" stop-opacity=".5"></stop></linearGradient>
+    <clipPath id="{{ u }}k"><path d="{{ sil }}"></path></clipPath>
+    <clipPath id="{{ u }}c"><path d="M62 28H138L186 82L100 204L14 82Z"></path></clipPath>
+    <clipPath id="{{ u }}pv"><path d="M14 90H186L100 204Z"></path></clipPath>
+    <filter id="{{ u }}sh" x="-30%" y="-20%" width="160%" height="160%"><feDropShadow dx="0" dy="14" stdDeviation="9" flood-color="#0A1A3A" flood-opacity=".55"></feDropShadow></filter>
+  </defs>
+  <ellipse cx="{{ shx }}" cy="214" rx="56" ry="6" fill="#000" opacity=".35"></ellipse>
+  <path d="M62 28H138L186 82L100 204L14 82Z" fill="#CFE6F6" filter="url(#{{ u }}sh)"></path>
+  <g clip-path="url(#{{ u }}c)">
+    <sc-for list="{{ facets }}" as="f" hint-placeholder-count="14"><path d="{{ f.d }}" fill="{{ f.f }}" fill-opacity="{{ f.o }}"></path></sc-for>
+    <circle cx="100" cy="104" r="54" fill="url(#{{ u }}r)"></circle>
+    <g transform="{{ par }}"><g transform="translate(100 104)" clip-path="url(#{{ u }}k)"><sc-for list="{{ shapes }}" as="s" hint-placeholder-count="8"><path d="{{ s.d }}" fill="{{ s.f }}" stroke="{{ s.s }}" stroke-width="{{ s.w }}" stroke-linecap="round" stroke-linejoin="round"></path></sc-for></g></g>
+    <g clip-path="url(#{{ u }}pv)" opacity=".3" transform="translate(0 6)"><g transform="translate(100 200) scale(.62 -.62) translate(-100 -104)"><g transform="translate(100 104)"><sc-for list="{{ shapes }}" as="s" hint-placeholder-count="8"><path d="{{ s.d }}" fill="{{ s.f }}"></path></sc-for></g></g></g>
+    <sc-for list="{{ glints }}" as="f" hint-placeholder-count="14"><path d="{{ f.d }}" fill="{{ f.f }}" fill-opacity="{{ f.o }}"></path></sc-for>
+    <path d="M62 28L14 82M62 28L46 82M62 28L78 82M100 28L100 82M138 28L122 82M138 28L154 82M138 28L186 82M14 82L100 204M46 82L100 204M78 82L100 204M122 82L100 204M154 82L100 204M186 82L100 204M14 82H186" stroke="#FFFFFF" stroke-opacity=".8" stroke-width="1.1" stroke-linejoin="round"></path>
+    <path d="M14 84H186" stroke="url(#{{ u }}rb)" stroke-width="3.2" opacity=".9"></path>
+    <rect x="{{ sx }}" y="0" width="30" height="230" fill="url(#{{ u }}s)" transform="skewX(-20)"></rect>
+  </g>
+  <path d="M62 28H138L186 82L100 204L14 82Z" stroke="#FFFFFF" stroke-width="2.4" stroke-linejoin="round"></path>
+  <path d="M62 28H138" stroke="#FFFFFF" stroke-width="3.4" stroke-linecap="round"></path>
+  <sc-for list="{{ sparks }}" as="k" hint-placeholder-count="4"><path d="M{{ k.x }} {{ k.y }}m0 -{{ k.r }}l{{ k.q }} {{ k.q }}l{{ k.r }} {{ k.q }}l-{{ k.r }} {{ k.q }}l-{{ k.q }} {{ k.r }}l-{{ k.q }} -{{ k.r }}l-{{ k.r }} -{{ k.q }}l{{ k.r }} -{{ k.q }}Z" fill="#FFFFFF"><animate attributeName="opacity" values="0;1;0" dur="2.6s" begin="{{ k.d }}" repeatCount="indefinite"></animate></path></sc-for>
+</svg>
+</div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;kind&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;coliseo&quot;,&quot;mapa&quot;],&quot;default&quot;:&quot;coliseo&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:200,&quot;tsType&quot;:&quot;number&quot;}}">
+const TRI=(a)=>'M'+a.map(p=>p.join(' ')).join('L')+'Z';
+const FC=[[[62,28],[14,82],[46,82]],[[62,28],[46,82],[78,82]],[[62,28],[100,28],[100,82],[78,82]],[[100,28],[138,28],[122,82],[100,82]],[[138,28],[122,82],[154,82]],[[138,28],[154,82],[186,82]],
+ [[14,82],[46,82],[100,204]],[[46,82],[78,82],[100,204]],[[78,82],[100,82],[100,204]],[[100,82],[122,82],[100,204]],[[122,82],[154,82],[100,204]],[[154,82],[186,82],[100,204]]];
+const COL=['#FFFFFF','#9FB6CC','#DCE6F2','#4E6682','#EAF2FA','#B8C8DA','#C8D8E8','#5C7690','#F4F8FC','#8EA6C0','#3E566F','#A9BBD0'];
+class Component extends DCLogic {
+  u='dd'+Math.random().toString(36).slice(2,7);
+  state={tx:0,ty:0,t:0,hov:false};
+  timer=null;
+  componentDidMount(){this.timer=setInterval(()=>this.setState(s=>s.hov?{t:s.t+1}:{t:s.t+1,tx:Math.sin(s.t/38)*.7,ty:Math.cos(s.t/52)*.35}),40);}
+  componentWillUnmount(){clearInterval(this.timer);}
+  mv=(e)=>{const r=e.currentTarget.getBoundingClientRect();this.setState({hov:true,tx:((e.clientX-r.left)/r.width-.5)*2,ty:((e.clientY-r.top)/r.height-.5)*2});};
+  lv=()=>this.setState({hov:false});
+  renderVals(){
+    const k=String(this.props.kind||'coliseo'),S=Number(this.props.size)||200,u=this.u,{tx,ty,t}=this.state;
+    const sh=(d,f,s,w)=>({d,f:f||'none',s:s||'none',w:w||0});
+    const G=`url(#${u}g)`,sh2=[];const SIL=k==='coliseo'?'M-46 20V-18Q-46 -26 -30 -26H8L14 -20L18 -22L26 -14L32 -16L46 -8V20Z':'M-100 -100H100V100H-100Z';
+    if(k==='coliseo'){
+      const ST='url(#'+u+'st)',AR='url(#'+u+'ar)',LT='url(#'+u+'lt)';
+      const cv=x=>(x*x/2116)*3;
+      sh2.push(sh(SIL,ST,'#FFF3C4',.8));
+      const tiers=[[20,9],[8,9],[-4,9]];
+      tiers.forEach(([y,h],ti)=>{const n=10,w=92/n;let d='',pl='';for(let i=0;i<n;i++){const c=-46+(i+.5)*w,dy=cv(c),yy=y+dy;d+='M'+(c-2.4).toFixed(1)+' '+yy.toFixed(1)+'V'+(yy-h+2.4).toFixed(1)+'a2.4 2.4 0 0 1 4.8 0V'+yy.toFixed(1)+'Z';pl+='M'+(c+w/2-.5).toFixed(1)+' '+(yy-h).toFixed(1)+'v'+h.toFixed(1);}
+        sh2.push(sh(d,AR));sh2.push(sh(pl,'none','#FFF1BC',.7));
+        const cy=y-h-.5;sh2.push(sh('M-46 '+(cy+3)+'Q0 '+(cy-3)+' 46 '+(cy+3),'none','#6A400E',1.6));sh2.push(sh('M-46 '+(cy+1.6)+'Q0 '+(cy-4.4)+' 46 '+(cy+1.6),'none','#FFF1BC',.7));});
+      let wd='';for(let i=0;i<9;i++){const c=-42+i*9.2;if(c<8)wd+='M'+(c-1.6)+' '+(-23+cv(c)*.4)+'h3.2v5h-3.2z';}
+      sh2.push(sh(wd,AR));
+      sh2.push(sh('M-46 20H46','none','#5A3408',2));
+      sh2.push(sh(SIL,LT));
+      for(let i=0;i<26;i++){const x=-44+((i*37)%88),y=-22+((i*53)%40);sh2.push(sh('M'+x+' '+y+'h.7','none','#6A400E',.9));}
+    }else{
+      sh2.push(sh('M-30 -8C-26 -28 8 -36 30 -22C48 -10 50 16 34 28C18 40-14 42-28 24C-38 12-38 0-30 -8Z',G,'#FFF3C4',1.4));
+      sh2.push(sh('M5 -36C-4 -18 20 -8 6 8C-4 20 14 30 6 40','none','#5AA8E0',3.4));
+      sh2.push(sh('M5 -36C-4 -18 20 -8 6 8C-4 20 14 30 6 40','none','#E8F6FF',1.1));
+      [[-4,12],[16,-14],[-16,-6]].forEach(([x,y])=>sh2.push(sh(`M${x-4.4} ${y}a4.4 4.4 0 1 0 8.8 0a4.4 4.4 0 1 0-8.8 0`,'#7A4A10','#FFF3C4',1.4)));
+    }
+    const facets=FC.map((a,i)=>({d:TRI(a),f:COL[i],o:Math.min(.92,.5+.38*Math.abs(Math.sin(i*1.3+tx*2.2)))}));
+    const glints=FC.map((a,i)=>({d:TRI(a),f:'#FFFFFF',o:Math.max(0,Math.sin(i*2.1+tx*4.2+ty*2+t/90))*.42})).concat([{d:'M26 84L46 84L36 112Z',f:'#FF6A3A',o:Math.max(0,.2+.4*Math.sin(tx*3+1))},{d:'M152 84L172 84L160 108Z',f:'#FF9A3A',o:Math.max(0,.2+.4*Math.sin(tx*3+3))},{d:'M90 92L110 92L100 128Z',f:'#6FB4FF',o:Math.max(0,.18+.3*Math.sin(tx*2.4))}]);
+    const sparks=[[28,60,5,1.7,'0s'],[176,52,4,1.3,'.9s'],[168,150,3.5,1.2,'1.6s'],[34,150,3,1,'.4s']].map(([x,y,r,q,d])=>({x,y,r,q,d}));
+    return{sil:SIL,S,H:Math.round(S*1.1),u,shapes:sh2,facets,glints,sparks,mv:this.mv,lv:this.lv,
+      tf:`rotateY(${(tx*22).toFixed(1)}deg) rotateX(${(-ty*16).toFixed(1)}deg)`,par:`translate(${(-tx*9).toFixed(1)} ${(-ty*6).toFixed(1)})`,sx:(tx*80-10).toFixed(0),shx:(100+tx*14).toFixed(0)};
+  }
+}
+</script>
+</body>
+</html>

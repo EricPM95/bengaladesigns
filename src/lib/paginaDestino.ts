@@ -12,7 +12,10 @@ export interface ActividadDeDestino {
   desde: number | null
   gratis: boolean
   url: string
+  /** (V45 §5) Solo en `todas`: de qué tipo es (para los filtros de la página de todas). */
+  categoria?: CategoriaDeActividad
 }
+export type CategoriaDeActividad = 'excursion' | 'free_tour' | 'actividad' | 'entrada'
 export interface HotelDeDestino {
   id: string
   nombre: string
@@ -27,6 +30,8 @@ export interface HotelDeDestino {
 }
 export interface PaginaDeDestino {
   actividades: ActividadDeDestino[]
+  /** (V45 §5) TODAS (el carrusel primero y en su orden, y luego lo demás de Civitatis y nuestras): la página que abre [Ver todas]. */
+  todas: ActividadDeDestino[]
   hoteles: HotelDeDestino[]
 }
 
@@ -40,12 +45,12 @@ export async function pedirPaginaDeDestino(destino: string): Promise<PaginaDeDes
   if (ya) return ya
   try {
     const r = await fetch('/api/destino-pagina', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ destination: destino }) })
-    const j = (await r.json()) as { ok?: boolean; actividades?: ActividadDeDestino[]; hoteles?: HotelDeDestino[] }
-    const pagina = { actividades: j.actividades ?? [], hoteles: j.hoteles ?? [] }
+    const j = (await r.json()) as { ok?: boolean; actividades?: ActividadDeDestino[]; todas?: ActividadDeDestino[]; hoteles?: HotelDeDestino[] }
+    const pagina = { actividades: j.actividades ?? [], todas: j.todas ?? j.actividades ?? [], hoteles: j.hoteles ?? [] }
     if (j.ok) memoria.set(clave, pagina)
     return pagina
   } catch {
-    return { actividades: [], hoteles: [] }
+    return { actividades: [], todas: [], hoteles: [] }
   }
 }
 

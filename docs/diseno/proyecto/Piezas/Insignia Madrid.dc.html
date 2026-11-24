@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<svg width="{{ S }}" height="{{ S }}" viewBox="0 0 200 200" fill="none" style="overflow:visible;flex:none;display:block">
+  <defs>
+    <linearGradient id="{{ u }}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF1B8"></stop><stop offset=".4" stop-color="#F0B93E"></stop><stop offset=".75" stop-color="#C2801C"></stop><stop offset="1" stop-color="#F6D26B"></stop></linearGradient>
+    <linearGradient id="{{ u }}b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".6"></stop><stop offset=".45" stop-color="#FFFFFF" stop-opacity="0"></stop><stop offset="1" stop-color="#000000" stop-opacity=".35"></stop></linearGradient>
+    <radialGradient id="{{ u }}c" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#3C4A8C"></stop><stop offset="1" stop-color="#0E1530"></stop></radialGradient>
+    <linearGradient id="{{ u }}sw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"></stop><stop offset=".5" stop-color="#fff" stop-opacity=".7"></stop><stop offset="1" stop-color="#fff" stop-opacity="0"></stop></linearGradient>
+    <sc-for list="{{ pieces }}" as="p" hint-placeholder-count="8"><linearGradient id="{{ p.gid }}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{{ p.c1 }}"></stop><stop offset="1" stop-color="{{ p.c2 }}"></stop></linearGradient></sc-for>
+    <clipPath id="{{ u }}fr"><path d="{{ frameD }}"></path></clipPath>
+  </defs>
+  <path d="{{ frameD }}" fill="#0E1530" fill-opacity="0"></path>
+  <sc-for list="{{ pieces }}" as="p" hint-placeholder-count="8">
+    <g style="{{ p.st }}">
+      <path d="{{ p.d }}" fill="url(#{{ p.gid }})"></path>
+      <path d="{{ p.dI }}" fill="#FFFFFF" fill-opacity=".22"></path>
+      <path d="{{ p.dG }}" fill="#FFFFFF" fill-opacity=".3"></path>
+      <path d="{{ p.d }}" fill="url(#{{ u }}b)"></path>
+      <g transform="{{ p.tr }}"><path d="{{ p.ic }}" stroke="#1A0A10" stroke-opacity=".4" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" transform="translate(1 1.5)"></path><path d="{{ p.ic }}" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></g>
+      <path d="{{ p.d }}" stroke="#FFFFFF" stroke-opacity=".7" stroke-width="1.8" stroke-linejoin="round"></path>
+    </g>
+  </sc-for>
+  <path d="{{ divD }}" stroke="url(#{{ u }}g)" stroke-width="2.4" stroke-linecap="round"></path>
+  <path d="{{ frameD }}" stroke="url(#{{ u }}g)" stroke-width="3" stroke-linejoin="round"></path>
+  <g clip-path="url(#{{ u }}fr)"><rect x="-70" y="0" width="30" height="210" fill="url(#{{ u }}sw)" transform="skewX(-20)"><animate attributeName="x" values="-90;260" dur="5s" repeatCount="indefinite"></animate></rect></g>
+  <circle cx="100" cy="100" r="27" fill="url(#{{ u }}c)" stroke="url(#{{ u }}g)" stroke-width="4"></circle>
+  <g transform="translate(100 100) scale(1.15)"><path d="{{ icon }}" stroke="#F3D59A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="{{ icFill }}"></path></g>
+</svg>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;col&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;1&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;set&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:200,&quot;tsType&quot;:&quot;number&quot;}}">
+const R=Math.PI/180;
+const COLS={
+ '1':{n:8,sides:8,rot:22.5,pal:[['#EE5A44','#8E1F18'],['#58B8F2','#2C73C6'],['#40B1DE','#1B6AA6'],['#9D66D0','#52288C'],['#5A92E6','#2A4FA2'],['#EE8CB0','#B03C70'],['#F7CB52','#C48A1C'],['#7DBB62','#3A7832']],ic:'M0 -12L3.2 -3.8 12 0 3.2 3.8 0 12-3.2 3.8-12 0-3.2-3.8Z',fill:'#F3D59A',pi:['M-6 10V-4h12v14M-6 -4L0 -10l6 6M0 -2v-3M0 -2l2 1M-9 10h18','M-10 -3L0 -9l10 6M-8 -3h16M-6 -3v11M0 -3v11M6 -3v11M-10 8h20','M-10 9V-2h20v11M-10 -2L0 -8l10 6M-6 3h3M3 3h3M-1.5 9V4M-10 9h20','M-10 9V-1M10 9V-1M-10 -1h20M-6 9V3a2 2 0 0 1 4 0v6M2 9V3a2 2 0 0 1 4 0v6M-10 -1l2-4h16l2 4','M0 -9a6 6 0 1 0 .01 0M0 -3v10M-9 9q4.5-3 9 0t9 0','M-4 10V-2h8v12M-3 -2V-6h6v4M-1.5 -6v-4h3v4M-7 10h14','M-9 9h18M-3 9v-4h6v4M0 5V-3M0 -3a2.5 2.5 0 1 0 .01 0M-8 5a3 3 0 0 1 6 0M2 5a3 3 0 0 1 6 0','M-9 8h18M-8 8V-1M8 8V-1M-8 -1h16M-3 8V3a3 3 0 0 1 6 0v5M-9 -1l9-5 9 5']},
+ '2':{n:6,sides:6,rot:0,pal:[['#FFE08A','#D98A12']],ic:'M-9 8h18M-8 8V-1M8 8V-1M-8 -1h16M-6 -1v9M6 -1v9M-3 8V3a3 3 0 0 1 6 0v5M-9 -1l9-5 9 5M0 -9v-4'},
+ '3':{n:5,sides:5,rot:0,pal:[['#E8765A','#8E2A1E']],ic:'M-11 8h22M-9 8V0a3 3 0 0 1 6 0v8M-3 8V0a3 3 0 0 1 6 0v8M3 8V0a3 3 0 0 1 6 0v8M-11 -3h22'},
+ '4':{n:4,sides:4,rot:0,pal:[['#B79AE8','#4E2E8E']],ic:'M8 -9C-2 -8-8 0-8 8M8 -9C8 0 2 6-8 8M-8 8l-2 3M-3 3l6-2M-2 0l6-1'},
+ '5':{n:3,sides:3,rot:0,pal:[['#56D0C6','#17706A']],ic:'M0 -10L10 7H-10ZM-4 3h8v-4h-8z'},
+ '6':{n:3,sides:60,rot:0,pal:[['#B8A24C','#5A4A12']],ic:'M9 -9l-9 9M0 0c-2 0-5 1-5 4s-2 4-3 5c4 1 9-1 8-9'},
+ '7':{n:5,sides:60,rot:0,pal:[['#FF9A6A','#C23A4E']],ic:'M-10 8h20M-9 8V3l3-2 3 2v5M-3 8V4l3-3 3 3v4M3 8V5l3-2 3 2v3M-5 -2a5 5 0 0 1 10 0M0 -9v-3M-8 -6l-2-2M8 -6l2-2'},
+ '8':{n:6,sides:12,rot:0,pal:[['#6FB4FF','#1F4FA8']],ic:'M-9 8h18M-6 8v-5h12v5M-9 3h18M0 3V-4M0 -4c-3 0-4-3-4-5M0 -4c3 0 4-3 4-5'},
+ '9':{n:4,sides:4,rot:45,pal:[['#86D08A','#2A7A3A']],ic:'M-10 -2h20l-2-6H-8zM-10 -2c0 3 5 3 5 0 0 3 5 3 5 0 0 3 5 3 5 0M-8 1v8M8 1v8M-8 5h16'},
+ '10':{n:4,sides:7,rot:0,pal:[['#9A8AE0','#3A2E7A']],ic:'M0 -9a4.2 4.2 0 1 0 .01 0M-2.4 -2l-2.6 11h10l-2.6-11'}
+};
+class Component extends DCLogic {
+  u='im'+Math.random().toString(36).slice(2,7);
+  renderVals(){
+    const p=this.props,k=String(p.col||'1'),C=COLS[k]||COLS['1'],S=Number(p.size)||200,u=this.u;
+    const lit=String(p.set==null?'':p.set).split(',').filter(x=>x!=='').map(Number);
+    const n=C.n,st=360/n,a0=-90,Rm=94,f=x=>x.toFixed(1);
+    const rad=a=>{if(C.sides>=60)return Rm;const sd=360/C.sides,rel=((a-C.rot-a0+3600)%sd)-sd/2;return Rm*Math.cos(Math.PI/C.sides)/Math.cos(rel*R);};
+    const bp=a=>[100+Math.cos(a*R)*rad(a),100+Math.sin(a*R)*rad(a)];
+    const pieces=[],divs=[];
+    for(let j=0;j<n;j++){const A=a0+j*st,B=A+st;const pts=[[100,100]];for(let q=0;q<=10;q++)pts.push(bp(A+(B-A)*q/10));
+      const d='M'+pts.map(v=>f(v[0])+' '+f(v[1])).join('L')+'Z';
+      const m=(A+B)/2,cx=100+Math.cos(m*R)*20,cy=100+Math.sin(m*R)*20;
+      const dI='M'+pts.map(v=>f(cx+(v[0]-cx)*.58)+' '+f(cy+(v[1]-cy)*.58)).join('L')+'Z';
+      const pal=C.pal[j%C.pal.length],shade=C.pal.length===1?j%2:0;
+      const on=lit.includes(j);
+      const gp=[pts[0],pts[1],pts[Math.floor(pts.length/2)]];const dG='M'+gp.map(v=>f(v[0])+' '+f(v[1])).join('L')+'Z';const mid=bp(m),rr=Math.hypot(mid[0]-100,mid[1]-100)*0.62;
+      pieces.push({d,dI,dG,ic:(C.pi&&C.pi[j])||'',tr:'translate('+f(100+Math.cos(m*R)*rr)+' '+f(100+Math.sin(m*R)*rr)+') scale(1.25)',gid:u+'p'+j,c1:C.pal.length===1?(shade?pal[0]:'#FFFFFF'):pal[0],c2:pal[1],st:on?'':'filter:grayscale(1) brightness(1.15) contrast(.75);opacity:.88'});
+      if(C.pal.length===1)pieces[j].c1=pal[0];
+      divs.push('M100 100L'+f(pts[1][0])+' '+f(pts[1][1]));}
+    const bd=[];for(let q=0;q<=72;q++)bd.push(bp(a0+q*5));
+    return{S,u,pieces,frameD:'M'+bd.map(v=>f(v[0])+' '+f(v[1])).join('L')+'Z',divD:divs.join(''),icon:C.ic,icFill:C.fill||'none'};
+  }
+}
+</script>
+</body>
+</html>

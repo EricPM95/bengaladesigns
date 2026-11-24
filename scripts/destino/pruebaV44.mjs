@@ -47,7 +47,7 @@ console.log('1. La zona de ubicación y lo escrito (sin navegador)')
 }
 {
   const ubi = leer('src/components/route/hoy/v2/HojaActivaUbicacion.tsx')
-  debe(/Para guiarte en tu viaje necesitamos saber dónde estás\. Activa la ubicación para jutrip\.app en los ajustes de tu móvil o de tu navegador, y vuelve a esta página\./.test(ubi) && /Entendido/.test(ubi) && !/«aA»|Ajustes del sitio web|Safari \(iPhone\)/.test(sinComentarios(ubi)), 'activa', '«Activa tu ubicación» sin pasos y con [Entendido]')
+  debe(/Para ver lo que tienes cerca, Jutrip necesita tu ubicación\. Actívala en los ajustes de tu móvil o de tu navegador: solo se usa mientras usas la app\./.test(ubi) && /Entendido/.test(ubi) && !/«aA»|Ajustes del sitio web|Safari \(iPhone\)/.test(sinComentarios(ubi)), 'activa', '«Activa tu ubicación» sin pasos y con [Entendido]')
   const hoy = sinComentarios(leer('src/components/route/hoy/v2/HoyDuranteV2.tsx'))
   debe(/avisarAbajo\(\{ id: `saltada:\$\{stop\.id\}`, texto, accion: \{ etiqueta: 'Deshacer'/.test(hoy), 'avisos', 'saltar() da su aviso CON [Deshacer]')
   debe(/Han cerrado/.test(hoy), 'avisos', 'al saltar mira todo el día: «Han cerrado…» en plural, en un solo aviso')

@@ -32,6 +32,7 @@ import { LapizDeReserva, claveDocumentoDeMedio } from './BotonesDeReserva'
 import { BuscarVuelos } from './BuscarVuelos'
 import { HojaPrecio } from './HojaPrecio'
 import { fechaEnProsa } from '../../../lib/nombreDeDia'
+import { ponerAvisoDeDocumento, quitarAvisoDeDocumento, useAvisoDeDocumento } from '../../../lib/avisoDeDocumento'
 import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { estadoDelPaseParaDocumentos } from '../../../lib/pago'
 
@@ -234,6 +235,8 @@ function MitadConBillete({ route, leg, ciudad, onCambiar, onQuitar, onAnadirTarj
   const [ampliado, setAmpliado] = useState(false)
   const [datosAbiertos, setDatosAbiertos] = useState(false)
   const [plegadaAbierta, setPlegadaAbierta] = useState(false)
+  const tripIdAviso = useSyncStore((s) => s.activeTripId)
+  const avisoDeFecha = useAvisoDeDocumento(tripIdAviso, leg.kind)
   const ciudadFuera = ciudadDeSalida(route)
   const trayecto = trayectoDeLaMitad({ kind: esIda ? 'llegada' : 'vuelta', ciudadFuera, otroPunto: leg.otroPunto, ciudadRoma: ciudad, puntoRoma: leg.point })
   const horaFuera = leg.otraHora
@@ -243,7 +246,8 @@ function MitadConBillete({ route, leg, ciudad, onCambiar, onQuitar, onAnadirTarj
   const salida = esIda ? horaFuera : leg.time
   const pie = [filas.find((f) => f.clave === 'asiento')?.texto, filas.find((f) => f.clave === 'numero')?.texto].filter(Boolean).join(' · ')
   // (B2c) La Ida de un día que ya pasó: una línea con la llegada, que siempre está (la salida es opcional y no sale).
-  const pasada = esIda && Boolean(leg.dateIso && leg.dateIso < hoyIso())
+  // (V45 §2) Cada vuelo guardado se ve ABIERTO (las horas grandes, el trayecto, el lápiz, el QR y, sin tarjeta, [+ Añade tu tarjeta de embarque]): la Ida ya pasada ya no se pliega en una línea.
+  const pasada = false && esIda && Boolean(leg.dateIso && leg.dateIso < hoyIso())
   const plegada = pasada && !plegadaAbierta
   return (
     <>
@@ -252,7 +256,7 @@ function MitadConBillete({ route, leg, ciudad, onCambiar, onQuitar, onAnadirTarj
           <CabeceraDeMitad leg={leg} fecha={diaEntero(leg.dateIso) || fecha} resto={[leg.time, leg.point ? puntoCorto(leg.point) : ''].filter(Boolean).join(' · ')} onCambiar={onCambiar} onToggle={() => setPlegadaAbierta(true)} pasada />
         </div>
       ) : (
-        <TarjetaBillete leg={leg} trayecto={trayecto} fecha={fecha} billete={billete} duracion={duracion} horaFuera={horaFuera} onCambiar={onCambiar} onQuitar={onQuitar} onAnadirTarjeta={() => onAnadirTarjeta(leg.kind)} onAmpliar={() => setAmpliado(true)} onDatos={() => setDatosAbiertos(true)} onToggle={pasada ? () => setPlegadaAbierta(false) : undefined} />
+        <TarjetaBillete avisoDeFecha={avisoDeFecha ? { texto: avisoDeFecha, onCorrecta: () => quitarAvisoDeDocumento(tripIdAviso, leg.kind) } : null} leg={leg} trayecto={trayecto} fecha={fecha} billete={billete} duracion={duracion} horaFuera={horaFuera} onCambiar={onCambiar} onQuitar={onQuitar} onAnadirTarjeta={() => onAnadirTarjeta(leg.kind)} onAmpliar={() => setAmpliado(true)} onDatos={() => setDatosAbiertos(true)} onToggle={pasada ? () => setPlegadaAbierta(false) : undefined} />
       )}
       {datosAbiertos && <HojaDatosDelBillete leg={leg} billete={billete} onClose={() => setDatosAbiertos(false)} onCambioDeVuelo={onCambioDeVuelo} />}
       {ampliado && billete?.codigo && (
@@ -285,7 +289,13 @@ export function MitadGuardada({ route, leg, ciudad, onCambiar, onQuitar, onAnadi
       {coche ? (
         <span className="text-[14px] text-text/70">{legLine(leg)}</span>
       ) : (
-        <span className="text-[13.5px] text-text/55">{esIda ? 'Falta la ida' : 'Falta la vuelta'}</span>
+        // (V45 §2) El vuelo sin poner: una línea con «+» y el enlace «Falta añadir la vuelta», que abre la hoja del vuelo en «Vuelta». Sin QR.
+        <span className="flex items-center gap-2.5" data-falta-anadir={leg.kind}>
+          <span aria-hidden="true" className="flex h-6 w-6 flex-none items-center justify-center rounded-full text-[17px] font-medium leading-none" style={{ border: '1.5px solid rgba(28,34,48,.3)', color: INK }}>+</span>
+          <button type="button" onClick={onCambiar} className="zona-toque border-none bg-transparent p-0 text-[14px] font-semibold underline underline-offset-[3px]" style={{ color: INK }}>
+            {esIda ? 'Falta añadir la ida' : 'Falta añadir la vuelta'}
+          </button>
+        </span>
       )}
     </div>
   )
@@ -497,10 +507,12 @@ export function LlegadaYVuelta({
     })
     // La fecha de la tarjeta frente a la del vuelo (la de llegada en la ida; la de salida en la vuelta).
     const fechaTarjeta = kind === 'arrival' ? (datos.fechaLlegada ?? datos.fecha) : datos.fecha
+    // (V45 §6) El error de fecha NO es una ventana ni un aviso que se va: una línea naranja DENTRO de la tarjeta, junto al QR, con [Es correcta]; se queda hasta cambiar el documento o pulsarla.
     if (fechaTarjeta && leg.dateIso && fechaTarjeta !== leg.dateIso) {
-      setAviso({ tipo: 'fecha', kind, texto: `Tu ${tarjeta} es del ${fechaEnProsa(fechaTarjeta)} y tu ${del} está el ${fechaEnProsa(leg.dateIso)}. Revisa las fechas.` })
+      ponerAvisoDeDocumento(tripId, kind, `${leg.mode === 'avion' ? 'Esta tarjeta' : 'Este billete'} es del ${fechaEnProsa(fechaTarjeta)} y tu ${del} es el ${fechaEnProsa(leg.dateIso)}. Revisa que sea la buena`)
       return
     }
+    quitarAvisoDeDocumento(tripId, kind)
     if (l.hora && l.hora !== leg.time) {
       setAviso({ tipo: 'hora', kind, hora: l.hora, texto: `Tu ${tarjeta} dice que ${kind === 'arrival' ? 'llegas' : 'sales'} a las ${l.hora}. ¿Actualizamos la hora de tu ${del}?` })
       return

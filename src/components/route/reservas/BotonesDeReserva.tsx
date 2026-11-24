@@ -5,6 +5,7 @@ import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { Icono } from '../../ui/Icono'
 import { CandadoRedondo } from '../../pase/Candado'
 import { useRouteStore } from '../../../store/useRouteStore'
+import { BOTON_ORO, DORADO } from '../../ui/botonesOro'
 
 /**
  * LAS PIEZAS COMPARTIDAS DE LOS BLOQUES DE RESERVAS (Tanda 10S8, agente C; `Piezas/Billete Reservas` y `Piezas/Entradas Billete`): las usan Llegada y vuelta, Entradas y Free Tour y Alojamiento.
@@ -26,6 +27,7 @@ export function BotonAnadirDocumento({
   datos = 'anadir-documento',
   icono,
   aMano,
+  estilo = 'dorado',
 }: {
   texto: string
   clave: ClaveDocumento
@@ -35,6 +37,8 @@ export function BotonAnadirDocumento({
   icono?: ReactNode
   /** (10S9b §1) Con pase: el enlace pequeño «o escribe los datos a mano» debajo del botón, que abre la hoja de datos de siempre vacía (con sus ejemplos en gris). Sin pase no sale (los datos son del pase). */
   aMano?: () => void
+  /** (V45 §1) `borde`: el botón de borde «+ Añade/Sube…» (el de las tarjetas guardadas de vuelo, alojamiento, entradas y excursiones) en vez del dorado grande. Hace lo mismo. */
+  estilo?: 'dorado' | 'borde'
 }) {
   const estado = usePaseParaDocumentos()
   const destino = useRouteStore((s) => s.route?.destination) ?? ''
@@ -47,10 +51,12 @@ export function BotonAnadirDocumento({
         data-billete-anadir={datos}
         data-anadir-doc={datos}
         data-con-candado={cerrado ? '1' : '0'}
-        className="flex h-[50px] w-full items-center justify-center gap-2 rounded-[15px] text-[15.5px] font-bold"
-        style={{ background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510', boxShadow: '0 10px 20px -14px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55)' }}
+        className={estilo === 'borde' ? 'flex h-[48px] w-full items-center justify-center gap-2 rounded-[15px] border-[1.5px] border-text/25 bg-transparent text-[14.5px] font-bold text-text' : 'flex h-[50px] w-full items-center justify-center gap-2 rounded-[15px] text-[15.5px] font-bold'}
+        style={estilo === 'borde' ? undefined : BOTON_ORO}
       >
-        {icono ?? (
+        {estilo === 'borde' ? (
+          <span aria-hidden="true" className="text-[19px] font-medium leading-none">+</span>
+        ) : icono ?? (
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A3510" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d={ICONOS.pase} />
           </svg>
@@ -83,6 +89,49 @@ export function PapeleraRoja({ onClick, etiqueta, datos = 'papelera', atributos 
       style={{ background: 'oklch(0.52 0.19 25 / .14)', color: 'oklch(0.52 0.19 25)' }}
     >
       <Icono nombre="papelera" size={18} />
+    </button>
+  )
+}
+
+const D_QR = 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 14h2v6h-4M14 18h2v2'
+const D_RESERVA = 'M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h7'
+
+/**
+ * (V45 §1) EL ICONO DEL DOCUMENTO de una tarjeta guardada (vuelo, alojamiento, entrada, excursión), arriba a la derecha junto al lápiz: el QR (o la hoja de la reserva) en GRIS con un «+» mientras falta, y DORADO cuando está.
+ * Dorado: al tocarlo se abre en grande (`onAbrir`: `CodigoPantallaCompleta`). Gris: hace lo mismo que el botón de borde «+ Añade/Sube…» de la misma tarjeta (con su aviso del pase si no hay pase): busca ese botón en la tarjeta y lo toca.
+ * Regla de la V45: solo se AÑADE; el documento se sube DESPUÉS de guardar, nunca en la hoja.
+ */
+export function IconoDeDocumento({ hay, tipo = 'qr', onAbrir, onAnadir, etiqueta, datos = 'documento' }: { hay: boolean; tipo?: 'qr' | 'reserva'; onAbrir?: () => void; onAnadir?: () => void; etiqueta?: string; datos?: string }) {
+  const nombre = etiqueta ?? (hay ? (tipo === 'qr' ? 'Ver el código en grande' : 'Ver tu reserva') : tipo === 'qr' ? 'Añadir el código' : 'Añadir tu reserva')
+  return (
+    <button
+      type="button"
+      onClick={(event) => {
+        event.stopPropagation()
+        if (hay) return onAbrir?.()
+        let p = (event.currentTarget as HTMLElement).parentElement
+        while (p) {
+          const boton = p.querySelector<HTMLElement>('[data-anadir-doc]')
+          if (boton) return boton.click()
+          p = p.parentElement
+        }
+        onAnadir?.()
+      }}
+      aria-label={nombre}
+      data-icono-documento={hay ? 'si' : 'falta'}
+      data-icono-documento-tipo={datos}
+      className="relative flex h-11 w-11 flex-none items-center justify-center border-none bg-transparent p-0"
+    >
+      <span aria-hidden="true" className="flex h-[30px] w-[30px] items-center justify-center rounded-full" style={hay ? { background: DORADO, border: '1.5px solid #B58A2E', color: '#4A3510' } : { background: '#ECE8DE', border: '1.5px solid rgba(107,102,90,.4)', color: '#6B665A' }}>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+          <path d={tipo === 'qr' ? D_QR : D_RESERVA} />
+        </svg>
+      </span>
+      {!hay && (
+        <span aria-hidden="true" className="absolute bottom-[5px] right-[5px] flex h-[15px] w-[15px] items-center justify-center rounded-full text-[12px] font-bold leading-none" style={{ background: '#1C2230', color: '#F3D88F' }}>
+          +
+        </span>
+      )}
     </button>
   )
 }

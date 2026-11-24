@@ -23,6 +23,7 @@ const CAMPOS = [
   'departureOtraHora',
   'accommodationZone',
   'accommodationAddress',
+  'accommodationPoint',
   'departureFechaVista',
   'cuentasEntre',
   'pagadoPorDe',

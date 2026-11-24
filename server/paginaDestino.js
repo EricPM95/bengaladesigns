@@ -72,7 +72,7 @@ export function actividadesEnBruto({ civitatis, datosDestino }) {
   const salida = []
   if (civitatis?.excursiones?.length) {
     for (const e of [...civitatis.excursiones, ...(civitatis.free_tours ?? [])]) {
-      salida.push({ id: e.id, nombre: e.name, foto: e.photo_url ?? null, nota: sobre10(e.rating, e.rating_max), opiniones: e.review_count, duracion: e.duration_label ?? null, desde: typeof e.price_from_eur === 'number' ? e.price_from_eur : null, gratis: e.price_from_eur === 0, url: e.url ?? null })
+      salida.push({ id: e.id, nombre: e.name, foto: e.photo_url ?? null, nota: sobre10(e.rating, e.rating_max), opiniones: e.review_count, duracion: e.duration_label ?? null, desde: typeof e.price_from_eur === 'number' ? e.price_from_eur : null, gratis: e.price_from_eur === 0, url: e.url ?? null, ...((civitatis.free_tours ?? []).includes(e) ? { free_tour: true } : {}) })
     }
     return salida
   }
@@ -94,6 +94,36 @@ export function actividadesEnBruto({ civitatis, datosDestino }) {
   return salida
 }
 
+/** (V45 §5) Pura: de qué CATEGORÍA es (para los filtros de la página de todas): Free tours, Entradas, Excursiones (un día fuera: excursión, ferry, isla…) o Actividades (lo demás). */
+export function categoriaDeActividad(a) {
+  const t = `${a.nombre ?? ''}`.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+  if (a.free_tour || /free ?tour|gratuit/.test(t)) return 'free_tour'
+  if (/^entradas?\b|\bentradas? (a|al|para|del)\b|^billete|\bticket/.test(t) && !/tour|excursion/.test(t)) return 'entrada'
+  if (/excursion|\bferry\b|\bisla\b|\bdesde\b|traslado|\bday ?trip\b/.test(t)) return 'excursion'
+  return 'actividad'
+}
+
+/**
+ * (V45 §5) Pura: TODAS las actividades de un destino (la página que abre [Ver todas] de RESERVAS): las del carrusel PRIMERO y en su orden, y luego lo demás (de Civitatis y nuestras) de más a menos opiniones, cada una con su categoría.
+ * Sin repetir (por id ni por nombre). Solo las que tienen nombre y enlace.
+ */
+export function todasLasActividades(brutas, carrusel = []) {
+  const norm = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
+  const vistos = new Set()
+  const salida = []
+  const meter = (a) => {
+    if (!a || !a.nombre || !a.url) return
+    const k = norm(a.nombre)
+    if (vistos.has(a.id) || vistos.has(k)) return
+    vistos.add(a.id)
+    vistos.add(k)
+    salida.push({ ...a, categoria: categoriaDeActividad(a) })
+  }
+  for (const a of carrusel) meter(a)
+  for (const a of [...brutas].sort((x, y) => (y.opiniones ?? 0) - (x.opiniones ?? 0))) meter(a)
+  return salida
+}
+
 /** Pura: los hoteles que salen (sin los pendientes ni los que no tienen todo). (V28, decisión de Eric) SIN etiqueta encima de la foto («Mejor nota de …» ni otra): foto, nombre, zona y nota con sus opiniones. */
 export function hotelesDeLaPagina(archivo) {
   return (archivo?.hoteles ?? [])
@@ -105,9 +135,12 @@ export function paginaDelDestino({ raiz, destination, datosDestino }) {
   const clave = String(destination ?? '').trim().toLowerCase()
   const dir = join(raiz, 'data', 'dias', clave)
   const civitatis = leer(join(dir, '_civitatis.json'))
-  const actividades = ordenarActividades(elegirActividades(actividadesEnBruto({ civitatis, datosDestino })), civitatis?.orden_actividades ?? datosDestino?.excursions?.orden_actividades)
+  const brutas = actividadesEnBruto({ civitatis, datosDestino })
+  const actividades = ordenarActividades(elegirActividades(brutas), civitatis?.orden_actividades ?? datosDestino?.excursions?.orden_actividades)
+  // (V45 §5) Todas: el carrusel primero y lo demás de Civitatis y nuestras (las excursiones del JSON del destino) detrás. CADA CUÁNTO y CUÁNTO BAJA: va en la MISMA petición de siempre (/api/destino-pagina, estática, una vez por destino y sesión); +20-30 actividades × ~350 B = unos 8-10 KB más, no hay bucle.
+  const todas = todasLasActividades([...brutas, ...(civitatis?.excursiones?.length ? actividadesEnBruto({ civitatis: null, datosDestino }) : [])], actividades)
   const hoteles = hotelesDeLaPagina(leer(join(dir, '_hoteles.json')))
-  return { ok: true, destino: destination, actividades, hoteles }
+  return { ok: true, destino: destination, actividades, todas, hoteles }
 }
 
 export function registrarRutaPaginaDestino(app, { raiz, findDatos }) {

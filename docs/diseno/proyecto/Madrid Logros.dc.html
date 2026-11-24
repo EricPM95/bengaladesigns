@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}</style>
+</helmet>
+<div style="min-height:100vh;background:#E7DCC6;padding:40px 48px 90px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:44px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">LOGROS · MADRID</span><span style="font:400 42px/1 'Instrument Serif',serif">Madrid: medalla, colecciones y emblemas</span></div>
+
+  <div style="display:flex;flex-direction:column;gap:16px"><span style="font:400 30px/1 'Instrument Serif',serif"><span style="color:oklch(0.55 0.17 5)">01 · </span>La medalla, en sus 4 grados</span>
+    <div style="display:flex;flex-wrap:wrap;gap:20px">
+      <sc-for list="{{ seals }}" as="s" hint-placeholder-count="4"><div style="width:230px;border-radius:26px;background:#FFFDF8;border:1px solid rgba(28,34,48,.08);padding:20px 14px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;box-shadow:0 14px 28px -22px rgba(28,34,48,.45)"><dc-import name="Piezas/Sello Logro" grade="{{ s.g }}" icon="oso" size="{{ 170 }}" label="MADRID" hint-size="170px,170px"></dc-import><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;color:#8A6A2C">{{ s.gl }}</span><span style="font:400 21px/1.1 'Instrument Serif',serif;text-align:center">{{ s.n }}</span></div></sc-for>
+    </div></div>
+
+  <div style="display:flex;flex-direction:column;gap:16px"><span style="font:400 30px/1 'Instrument Serif',serif"><span style="color:oklch(0.55 0.17 5)">02 · </span>Las 10 insignias de colección</span>
+    <div style="display:flex;flex-wrap:wrap;gap:20px">
+      <sc-for list="{{ cols }}" as="c" hint-placeholder-count="10"><div style="width:292px;border-radius:26px;background:#FFFDF8;border:1px solid rgba(28,34,48,.08);padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 14px 28px -22px rgba(28,34,48,.45)">
+        <span style="display:flex;flex-direction:column;gap:2px"><span style="font:400 21px/1.1 'Instrument Serif',serif">{{ c.n }}</span><span style="font:500 11px 'Geist Mono',monospace;color:rgba(28,34,48,.55)">{{ c.p }} sitios</span></span>
+        <div style="display:flex;gap:10px;justify-content:center"><dc-import name="Piezas/Insignia Lanza Codigo" col="{{ c.lk }}" set="{{ c.all }}" size="{{ 150 }}" hint-size="150px,150px"></dc-import></div>
+      </div></sc-for>
+    </div></div>
+
+  <div style="display:flex;flex-direction:column;gap:16px"><span style="font:400 30px/1 'Instrument Serif',serif"><span style="color:oklch(0.55 0.17 5)">03 · </span>Los 14 emblemas ocultos</span>
+    <div style="display:flex;flex-wrap:wrap;gap:18px">
+      <sc-for list="{{ embs }}" as="e" hint-placeholder-count="14"><div style="width:210px;border-radius:26px;background:radial-gradient(120% 90% at 50% 10%,#2A3050 0%,#161B2E 80%);padding:22px 12px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;box-shadow:0 14px 28px -20px rgba(28,34,48,.6)"><dc-import name="Piezas/Emblema Madrid" kind="{{ e.k }}" size="{{ 128 }}" hint-size="128px,128px"></dc-import><span style="font:400 20px/1.1 'Instrument Serif',serif;color:#FFFDF8;text-align:center">{{ e.n }}</span><span style="font:500 11px 'Geist';color:#F3D59A;text-align:center">{{ e.s }}</span></div></sc-for>
+      <div style="width:210px;border-radius:26px;background:radial-gradient(120% 90% at 50% 10%,#2A3050 0%,#161B2E 80%);padding:22px 12px 16px;display:flex;flex-direction:column;align-items:center;gap:10px"><dc-import name="Piezas/Emblema Madrid" kind="km" found="{{ false }}" size="{{ 128 }}" hint-size="128px,128px"></dc-import><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;color:rgba(243,213,154,.6)">SIN ENCONTRAR</span></div>
+    </div></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals(){
+    const seals=[['bronce','BRONCE','Primeros pasos en Madrid'],['plata','PLATA','Madrid te atrapa'],['oro','ORO','Madrid en el corazón'],['diamante','DIAMANTE','De Madrid al cielo']].map(([g,gl,n])=>({g,gl,n}));
+    const C=[['1','Los imprescindibles de Madrid',8],['2','El Paisaje de la Luz',6],['3','La Madrid de los Austrias',5],['4','El Barrio de las Letras',4],['5','El Triángulo del Arte',3],['6','La Madrid de Goya',3],['7','Madrid desde arriba',7],['8','Plazas y fuentes de Madrid',6],['9','Mercados de Madrid',4],['10','La Madrid secreta',5]];
+    const rg=n=>Array.from({length:n},(_,i)=>i).join(',');
+    const cols=C.map(([k,n,p])=>({k,n,p,half:rg(Math.ceil(p/2)),all:rg(p),lk:k==='1'?'r1es':'m'+k}));
+    const E=[['km','El kilómetro cero','Puerta del Sol'],['men','Dentro de Las Meninas','Museo del Prado'],['pal','Más de 3.000 estancias','Palacio Real'],['bal','237 balcones','Plaza Mayor'],['gue','Frente al Guernica','Museo Reina Sofía'],['deb','Un templo de Egipto','Templo de Debod'],['tel','El primer rascacielos','Gran Vía'],['ang','El ángel que cayó','Fuente del Ángel Caído'],['ret','El lago del Retiro','Parque del Retiro'],['pdc','Un palacio de cristal','Palacio de Cristal (Retiro)'],['tum','La tumba sin cabeza','Ermita de San Antonio de la Florida'],['est','La estación fantasma','Andén 0 (Chamberí)'],['cib','Cibeles o Neptuno','Fuente de Cibeles'],['hor','El restaurante más antiguo','Sobrino de Botín'],['mad','Madrugador','Antes de las 8:00 · Madrid'],['noc','Nocturno','Madrid con las luces encendidas']].map(([k,n,s])=>({k,n,s}));
+    return{seals,cols,embs:E};
+  }
+}
+</script>
+</body>
+</html>

@@ -10,6 +10,8 @@ import { usePasePintable } from '../../../lib/pago'
 import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { CandadoRedondo, LineaDelPase } from '../../pase/Candado'
 import { BotonComoLlegarAlojamiento } from './BotonComoLlegarAlojamiento'
+import { MapaDelAlojamiento, MapaPequenoDelAlojamiento, type PuntoAlojamiento } from '../reservas/MapaDelAlojamiento'
+import { BOTON_ORO } from '../../ui/botonesOro'
 
 export interface ZonaParaElegir {
   id: string
@@ -27,6 +29,8 @@ export interface DatosDelAlojamiento {
   solo: boolean
   todos: string[]
   precio: Importe | null
+  /** (V45) El punto puesto en el mapa. undefined = no se ha tocado (se conserva el que hubiera). */
+  punto?: PuntoAlojamiento | null
 }
 
 const ETIQUETA = { font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' as const, color: 'rgba(28,34,48,.55)' }
@@ -43,6 +47,8 @@ export function HojaTuAlojamiento({
   zonas = [],
   zonaActual = null,
   direccionActual = null,
+  puntoActual = null,
+  conMapa = false,
   para = null,
   pagado = null,
   onGuardar,
@@ -57,6 +63,10 @@ export function HojaTuAlojamiento({
   zonas?: ZonaParaElegir[]
   zonaActual?: string | null
   direccionActual?: string | null
+  /** (V45) El punto del alojamiento ya puesto en el mapa. */
+  puntoActual?: PuntoAlojamiento | null
+  /** (V45) Con `true` sale [Pon tu alojamiento en el mapa] (solo con pase: la dirección es del pase). */
+  conMapa?: boolean
   para?: readonly string[] | null
   pagado?: readonly string[] | null
   onGuardar: (hotel: TuAlojamiento | null, datos: DatosDelAlojamiento) => void
@@ -73,6 +83,9 @@ export function HojaTuAlojamiento({
   const [nombre, setNombre] = useState(actual?.name ?? '')
   const [zona, setZona] = useState<string | null>(zonaActual)
   const [direccion, setDireccion] = useState(direccionActual ?? '')
+  const [punto, setPunto] = useState<PuntoAlojamiento | null>(puntoActual)
+  const [puntoTocado, setPuntoTocado] = useState(false)
+  const [mapaAbierto, setMapaAbierto] = useState(false)
   const zonaElegidaReal = Boolean(zona) && zona !== 'nose' && zonas.some((z) => z.id === zona)
   const [desplegada, setDesplegada] = useState(false)
   const dinero = useDineroDeReserva({ para, pagado, precio: precioDeAlojamiento(actual), marcarTodos: true, pagadoTodos: true })
@@ -95,6 +108,7 @@ export function HojaTuAlojamiento({
       solo: dinero.solo,
       todos: dinero.gente.map((p) => p.id),
       precio: total,
+      punto: conPase && conMapa && puntoTocado ? punto : undefined,
     })
   }
 
@@ -232,10 +246,37 @@ export function HojaTuAlojamiento({
               )}
             </div>
           )}
-          <label className="flex flex-col gap-1.5 rounded-[16px] border border-text/15 bg-white px-3.5 py-2.5">
-            <span style={ETIQUETA}>Dirección</span>
-            <input value={direccion} onChange={(event) => setDireccion(event.target.value)} maxLength={160} placeholder="Escribe la dirección" autoComplete="street-address" data-alojamiento-direccion className="w-full bg-transparent text-[15px] text-text outline-none placeholder:text-text/35" />
-          </label>
+          {conMapa && (
+            <div className="flex flex-col gap-[7px]" data-alojamiento-punto-bloque>
+              <span style={{ font: "700 14.5px 'Geist'" }}>Dirección</span>
+              {punto ? (
+                <MapaPequenoDelAlojamiento punto={punto} onCambiar={() => setMapaAbierto(true)} />
+              ) : (
+                <button type="button" onClick={() => setMapaAbierto(true)} data-alojamiento-poner-en-mapa className="flex h-[52px] w-full items-center justify-center gap-2 rounded-[16px] text-[15px] font-bold transition-transform active:scale-[.98]" style={BOTON_ORO}>
+                  <Icono nombre="ubicacion" size={17} />
+                  Pon tu alojamiento en el mapa
+                </button>
+              )}
+            </div>
+          )}
+          {!punto && (
+            <label className="flex flex-col gap-1.5 rounded-[16px] border border-text/15 bg-white px-3.5 py-2.5">
+              <span style={ETIQUETA}>{conMapa ? 'O escribe la dirección' : 'Dirección'}</span>
+              <input value={direccion} onChange={(event) => setDireccion(event.target.value)} maxLength={160} placeholder="Escribe la dirección" autoComplete="street-address" data-alojamiento-direccion className="w-full bg-transparent text-[15px] text-text outline-none placeholder:text-text/35" />
+            </label>
+          )}
+          {mapaAbierto && (
+            <MapaDelAlojamiento
+              inicial={punto}
+              onVolver={() => setMapaAbierto(false)}
+              onElegido={(p) => {
+                setPunto(p)
+                setPuntoTocado(true)
+                setDireccion(p.direccion)
+                setMapaAbierto(false)
+              }}
+            />
+          )}
           {direccionLimpia && <BotonComoLlegarAlojamiento direccion={direccionLimpia} />}
         </div>
       )}

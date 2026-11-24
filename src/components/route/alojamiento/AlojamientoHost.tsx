@@ -20,6 +20,7 @@ export function AlojamientoHost() {
   const setHotel = useRouteStore((state) => state.setAccommodationHotel)
   const setZona = useRouteStore((state) => state.setAccommodationZone)
   const setDireccion = useRouteStore((state) => state.setAccommodationAddress)
+  const setPunto = useRouteStore((state) => state.setAccommodationPoint)
   const abrirMapa = useAlojamientoUi((state) => state.abrirMapa)
   const setCuentasEntre = useRouteStore((state) => state.setCuentasEntre)
   const setPagadoPorDe = useRouteStore((state) => state.setPagadoPorDe)
@@ -54,6 +55,8 @@ export function AlojamientoHost() {
           zonas={info.zonasAlojamiento}
           zonaActual={route.accommodationZone ?? null}
           direccionActual={route.accommodationAddress ?? null}
+          puntoActual={route.accommodationPoint ?? null}
+          conMapa
           onBuscar={() => {
             const seg = estanciaHoja.segmentDayId
             cerrarHoja()
@@ -70,6 +73,8 @@ export function AlojamientoHost() {
             setHotel(seg, hotel)
             // (10N11) La dirección del hotel se guarda con el viaje (solo con pase): la leen «Cómo llegar a tu alojamiento» en RESERVAS, DÍAS y HOY.
             if (d.direccion !== (route.accommodationAddress ?? null)) setDireccion(d.direccion)
+            // (V45) El punto del mapa viaja dentro del viaje (sin consulta nueva). Solo si el viajero lo ha tocado.
+            if (d.punto !== undefined) setPunto(d.punto)
             if (d.zona !== (route.accommodationZone ?? null) && d.zona) {
               setZona(d.zona)
               void alCambiarElVuelo({ que: 'zona', mitad: null })

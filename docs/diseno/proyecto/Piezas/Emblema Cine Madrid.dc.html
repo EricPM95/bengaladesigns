@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@keyframes emDraw{to{stroke-dashoffset:0}}
+@keyframes emFade{to{opacity:1}}
+@keyframes emPh{0%{opacity:0;transform:translateY(10px)}15%,80%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-8px)}}
+@keyframes emOut{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.88)}}
+@keyframes emFlash{0%{opacity:0;transform:scale(.2)}18%{opacity:1}100%{opacity:0;transform:scale(3.4)}}
+@keyframes emShock{0%{opacity:0;transform:scale(.4)}4%{opacity:.9}100%{opacity:0;transform:scale(3.2)}}
+@keyframes emEmb{0%{opacity:0;transform:scale(.3) rotate(-24deg)}60%{opacity:1;transform:scale(1.06) rotate(3deg)}100%{opacity:1;transform:none}}
+@keyframes emUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes emBeam{0%{opacity:0;transform:scaleY(0)}30%{opacity:1}100%{opacity:1;transform:scaleY(1)}}
+@keyframes emBeamOut{to{opacity:0}}
+@keyframes emRise{0%{opacity:0;transform:translateY(74px) scale(.2)}55%{opacity:1;transform:translateY(-6px) scale(1.06)}100%{opacity:1;transform:none}}
+@keyframes emGlow{0%{opacity:0;transform:scale(.3)}100%{opacity:1;transform:scale(1)}}
+@keyframes emSun{0%{opacity:0;transform:translateY(70px)}100%{opacity:.8;transform:none}}
+@keyframes emSunArc{0%{opacity:0;transform:translate(-40px,150px)}12%{opacity:1}50%{transform:translate(110px,18px)}88%{opacity:1}100%{opacity:0;transform:translate(262px,150px)}}
+@keyframes emMoonArc{0%{opacity:0;transform:translate(262px,150px)}12%{opacity:1}50%{transform:translate(110px,18px)}88%{opacity:1}100%{opacity:0;transform:translate(-40px,150px)}}
+@keyframes emDay{0%{opacity:0}30%,70%{opacity:.8}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001s!important;animation-delay:0s!important}}
+</style>
+</helmet>
+<div style="position:relative;width:390px;height:844px;background:radial-gradient(ellipse 80% 55% at 50% 38%,#1E2338 0%,#0C0A08 75%);overflow:hidden;font-family:'Geist',sans-serif">
+  <div style="position:absolute;left:45px;top:150px;width:300px;height:300px;animation:emOut .7s 7.5s ease both">
+    <svg width="300" height="300" viewBox="0 0 300 300" fill="none" stroke="#F3D59A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="overflow:visible;filter:drop-shadow(0 0 6px rgba(243,213,154,.45))">
+      <sc-if value="{{ k.sm }}" hint-placeholder-val="{{ false }}"><ellipse cx="150" cy="200" rx="150" ry="110" fill="#FFB060" stroke="none" style="opacity:0;animation:emDay 6s 1s ease-in-out both;filter:blur(18px)"></ellipse><g style="opacity:0;animation:emSunArc 6s 1s ease-in-out both"><circle cx="0" cy="0" r="22" fill="#FFC060" stroke="#FFE2A0" style="filter:drop-shadow(0 0 14px #FF9A3A)"></circle></g></sc-if>
+      <sc-if value="{{ k.mm }}" hint-placeholder-val="{{ false }}"><g style="opacity:0;animation:emMoonArc 6s 1s ease-in-out both"><circle cx="0" cy="0" r="20" fill="#E8EEFF" stroke="#FFFFFF" style="filter:drop-shadow(0 0 12px #9FB4FF)"></circle><circle cx="8" cy="-5" r="17" fill="#1E2338" stroke="none"></circle></g></sc-if>
+      <sc-if value="{{ k.sun }}" hint-placeholder-val="{{ false }}"><circle cx="150" cy="176" r="38" fill="#FF9A4E" fill-opacity=".7" stroke="#FFC878" style="opacity:0;animation:emSun 3.2s 3.4s ease-out both"></circle></sc-if>
+      <sc-for list="{{ paths }}" as="p" hint-placeholder-count="12"><path d="{{ p.d }}" pathLength="1" stroke-opacity="{{ p.o }}" fill="none" style="stroke-dasharray:1;stroke-dashoffset:1;animation:emDraw {{ p.t }}s {{ p.s }}s ease forwards"></path></sc-for>
+      <sc-for list="{{ fills }}" as="p" hint-placeholder-count="10"><path d="{{ p.d }}" fill="#FFE9A8" stroke="none" style="opacity:0;animation:emFade .7s {{ p.s }}s ease forwards"></path></sc-for>
+    </svg>
+  </div>
+  <sc-if value="{{ k.km }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:0;top:0;width:390px;height:412px;pointer-events:none;animation:emBeamOut .6s 8.6s ease forwards">
+      <div style="position:absolute;left:155px;top:0;width:80px;height:412px;transform-origin:top;opacity:0;clip-path:polygon(34% 0,66% 0,100% 100%,0 100%);background:linear-gradient(180deg,rgba(255,243,208,0) 0%,rgba(255,233,168,.55) 55%,rgba(255,255,255,.95) 100%);filter:blur(1.5px);animation:emBeam 1.3s 6.7s ease-in forwards"></div>
+      <div style="position:absolute;left:165px;top:0;width:60px;height:412px;transform-origin:top;opacity:0;clip-path:polygon(44% 0,56% 0,70% 100%,30% 100%);background:linear-gradient(180deg,rgba(255,255,255,0),#FFFFFF);animation:emBeam 1.3s 6.7s ease-in forwards"></div>
+      <span style="position:absolute;left:105px;top:392px;width:180px;height:40px;border-radius:50%;background:radial-gradient(ellipse,#FFFFFF,rgba(255,226,160,.6) 45%,transparent 70%);opacity:0;animation:emGlow 1s 7.3s ease-out forwards"></span>
+    </div>
+  </sc-if>
+  <div style="position:absolute;left:0;right:0;top:500px;height:60px;display:flex;align-items:center;justify-content:center;pointer-events:none">
+    <sc-for list="{{ phr }}" as="q" hint-placeholder-count="3"><span style="position:absolute;width:320px;text-align:center;font:italic 400 24px/1.2 'Instrument Serif',serif;color:#F3D59A;opacity:0;animation:emPh {{ q.t }}s {{ q.s }}s ease both">{{ q.x }}</span></sc-for>
+  </div>
+  <span style="position:absolute;left:105px;top:250px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,#FFFFFF,rgba(255,226,160,.5) 40%,transparent 70%);opacity:0;animation:emFlash 1.3s 8s ease-out both"></span>
+  <span style="position:absolute;left:105px;top:250px;width:180px;height:180px;border-radius:50%;border:3px solid #FFF3D0;opacity:0;animation:emShock 1.4s 8s ease-out both"></span>
+  <div style="position:absolute;left:0;right:0;top:238px;display:flex;justify-content:center;opacity:0;animation:{{ emA }}"><dc-import name="Piezas/Emblema Madrid" kind="{{ kind }}" size="{{ 200 }}" hint-size="200px,200px"></dc-import></div>
+  <div style="position:absolute;left:30px;right:30px;top:476px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center">
+    <span style="font:400 36px/1.05 'Instrument Serif',serif;color:#FFFDF8;opacity:0;animation:emUp .7s 8.5s ease both">{{ name }}</span>
+    <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.16em;color:#F3D59A;opacity:0;animation:emUp .6s 8.8s ease both">{{ site }}</span>
+    <span style="max-width:300px;font:400 15.5px/1.45 'Geist';color:rgba(255,253,248,.78);text-wrap:balance;opacity:0;animation:emUp .7s 9.1s ease both">{{ line }}</span>
+  </div>
+  <div style="position:absolute;left:22px;right:22px;bottom:48px;opacity:0;animation:emUp .6s 10s ease both"><span style="height:56px;border-radius:18px;background:linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440);box-shadow:0 12px 22px -14px rgba(110,80,24,.75),inset 0 1px 0 rgba(255,255,255,.6);color:#4A3510;display:flex;align-items:center;justify-content:center;font:700 16px 'Geist'">Seguir</span></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;kind&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;km&quot;,&quot;men&quot;,&quot;pal&quot;,&quot;deb&quot;,&quot;bal&quot;,&quot;gue&quot;,&quot;tel&quot;,&quot;ang&quot;,&quot;ret&quot;,&quot;pdc&quot;,&quot;tum&quot;,&quot;est&quot;,&quot;cib&quot;,&quot;hor&quot;,&quot;mad&quot;,&quot;noc&quot;],&quot;default&quot;:&quot;km&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const D=(d,s,t,o)=>({d,s,t,o:o==null?1:o});
+const SC={
+ km:{name:'El kilómetro cero',site:'PUERTA DEL SOL',line:'De aquí salen las seis carreteras radiales de España.',phr:['La Puerta del Sol…','el reloj de las campanadas…','y la placa del kilómetro cero.'],
+  paths:[D('M40 230V140h220v90',0,1.4),D('M40 140L150 100L260 140',1.2,1.2),D('M126 140V100h48v40',2,1),D('M126 100L150 74L174 100',2.8,.9),D('M139 118a11 11 0 1 0 22 0a11 11 0 1 0-22 0',3.4,.8),D('M150 118V110M150 118l6 3',4.2,.5),D('M62 160h18v26h-18zM100 160h18v26h-18zM182 160h18v26h-18zM220 160h18v26h-18z',3,2.4,.7),D('M70 262a80 18 0 1 0 160 0a80 18 0 1 0-160 0',4.8,1.4),D('M118 258l9-5 14-1 12 3 7 7-4 7-9 5-16 1-11-6z',5.8,1.2,.8),D('M150 262L150 236M150 262L205 250M150 262L214 272M150 262L150 286M150 262L96 272M150 262L88 250',6.2,1.2)],fills:[{d:'M146 114h8v8h-8z',s:4.4}]},
+ men:{name:'Dentro de Las Meninas',site:'MUSEO DEL PRADO',line:'Velázquez se pintó a sí mismo dentro del cuadro, en 1656.',phr:['Una sala del Prado…','un cuadro enorme…','y un pintor que asoma.'],
+  paths:[D('M30 250H270',0,1),D('M60 250V70M240 250V70',.6,1.2),D('M60 70H240',1.4,1),D('M104 100H196V210H104Z',2,1.4),D('M112 108H188V202H112Z',2.8,1.2,.6),D('M150 140a10 10 0 1 0 20 0a10 10 0 1 0-20 0',3.6,.8),D('M138 202l22-46 22 46z',4,1.2),D('M78 150a8 8 0 1 0 16 0a8 8 0 1 0-16 0',5.2,.8),D('M86 158V218M70 218H102M70 176l-12 24',5.6,1.2),D('M70 110v140',6,1)],fills:[{d:'M154 136h12v8h-12z',s:4.4}]},
+ pal:{name:'Más de 3.000 estancias',site:'PALACIO REAL',line:'El Palacio Real tiene más de 3.000 estancias.',phr:['La fachada del palacio…','una ventana…','y otra, y otra.'],
+  paths:[D('M30 240H270',.2,.8),D('M40 240V130h220v110',0,1.4),D('M40 130L150 82L260 130',1.2,1.2),D('M40 150H260',2,1),D('M80 150v90M120 150v90M180 150v90M220 150v90',2.2,1.4,.7),D('M138 240V200a12 12 0 0 1 24 0V240',3.4,1)],
+  fills:Array.from({length:14},(_,i)=>({d:'M'+(54+(i%7)*30)+' '+(i<7?160:200)+'h14v22h-14z',s:3.8+i*.22}))},
+ deb:{name:'Un templo de Egipto',site:'TEMPLO DE DEBOD',line:'Tiene más de 2.000 años: Egipto se lo regaló a España en 1968.',phr:['Un templo de Egipto…','el agua delante…','y el sol que se pone.'],sun:true,
+  paths:[D('M30 250H270',0,.8),D('M30 266Q60 258 90 266T150 266T210 266T270 266',.6,1.5,.7),D('M84 250V150h34v100M182 250V150h34v100',1.4,1.6),D('M76 150H224M84 138H216',2.6,1.2),D('M78 124h144',3.2,.8,.6),D('M118 250V176M182 250V176',3.6,.8,.4)],fills:[]},
+ bal:{name:'237 balcones',site:'PLAZA MAYOR',line:'La Plaza Mayor tiene 237 balcones que dan a la plaza.',phr:['La Plaza Mayor…','un balcón…','y doscientos treinta y seis más.'],
+  paths:[D('M30 250H270',0,.8),D('M40 250V90h220v160',.2,1.6),D('M40 90H260',1.2,.8),D('M40 130H260M40 170H260M40 210H260',1.6,1.8,.6),D('M70 130v-30M110 130v-30M150 130v-30M190 130v-30M230 130v-30',2.4,1,.5),D('M62 132h24M102 132h24M142 132h24M182 132h24M222 132h24M62 172h24M102 172h24M142 172h24M182 172h24M222 172h24M62 212h24M102 212h24M142 212h24M182 212h24M222 212h24',2.8,2.4,.9)],
+  fills:Array.from({length:15},(_,i)=>({d:'M'+(64+(i%5)*40)+' '+(100+Math.floor(i/5)*40)+'h20v26h-20z',s:3.8+i*.22}))},
+ gue:{name:'Frente al Guernica',site:'MUSEO REINA SOFÍA',line:'El Guernica mide casi ocho metros de ancho.',phr:['Una sala del Reina Sofía…','un cuadro en blanco y negro…','y un grito que no se apaga.'],
+  paths:[D('M20 240H280',0,.8),D('M26 90H274V210H26Z',.4,1.4),D('M34 98H266V202H34Z',1.2,1,.5),D('M70 190l16-46 22 10 16-26 18 34',2,1.6),D('M148 150l-14-22 8-14',2.8,1),D('M150 128l16 10',3,.8),D('M190 190l-6-40 18-18 10 28',3.4,1.4),D('M226 124a9 9 0 1 0 18 0a9 9 0 1 0-18 0',4.2,.8),D('M235 124v-14',4.6,.5),D('M60 170l18-16',3.8,.8)],fills:[{d:'M231 120h8v8h-8z',s:4.6}]},
+ ret:{name:'El lago del Retiro',site:'PARQUE DEL RETIRO',line:'Se rema bajo la mirada de Alfonso XII, a caballo sobre el estanque.',phr:['Un parque enorme…','un lago con barcas…','y un rey que lo vigila.'],
+  paths:[D('M20 214H280',0,0.8),D('M40 120H110M40 120V190M62 120V190M84 120V190M110 120V190',0.4,1.4),D('M190 120H260M190 120V190M212 120V190M234 120V190M260 120V190',0.8,1.4),D('M120 200V170H186V200Z',1.4,1.4),D('M114 200H192',1.8,1),D('M111 170L114 146Q117 128 138 128H168Q177 125 183 110L192 104L207 110L204 122L192 122Q189 137 186 146L186 170L177 170L174 149H144L141 170L132 170L129 152L123 170Z',2,2.2),D('M111 137Q96 143 99 164',2.6,1),D('M144 125L144 95Q144 89 153 89Q162 89 162 95L162 125Z',2.9,1.4),D('M144 80a9 9 0 1 0 18 0a9 9 0 1 0-18 0',3.2,1),D('M156 98L180 77',3.5,1),D('M144 89Q153 74 162 89',3.7,0.8),D('M30 226Q60 216 90 226T150 226T210 226T270 226',3.6,1.2),D('M50 242Q80 232 110 242T170 242T230 242',4,1,0.7),D('M60 238h30l-5 10H65z',4.3,1.2),D('M75 238V220l12 14',4.6,1),D('M200 244h30l-5 10h-20z',4.8,1.2),D('M215 244V228',5,1)],fills:[{d:'M111 170L114 146Q117 128 138 128H168Q177 125 183 110L192 104L207 110L204 122L192 122Q189 137 186 146L186 170L177 170L174 149H144L141 170L132 170L129 152L123 170Z',s:3.9},{d:'M144 125L144 95Q144 89 153 89Q162 89 162 95L162 125Z',s:4.1},{d:'M63 239h24l-3 8H66z',s:4.7},{d:'M203 245h24l-3 8h-18z',s:5.1}]},
+ pdc:{name:'Un palacio de cristal',site:'PALACIO DE CRISTAL · RETIRO',line:'Se levantó en 1887, de hierro y cristal, para una exposición.',phr:['Entras en el palacio…','ventanales enormes…','y el parque se llena de luz.'],
+  paths:[D('M20 252H280',0,0.8),D('M40 252L96 226M260 252L204 226',0.2,1,0.5),D('M30 252V112Q30 40 150 40Q270 40 270 112V252',0.4,1.6),D('M150 40L62 108M150 40L96 104M150 40L124 100M150 40V98M150 40L176 100M150 40L204 104M150 40L238 108',1,1.4,0.6),D('M62 108Q150 82 238 108',1.3,1.2,0.7),D('M86 80Q150 62 214 80',1.5,1.2,0.7),D('M118 56Q150 48 182 56',1.7,1,0.7),D('M50 232V122Q50 82 90 82Q130 82 130 122V232Z',1.4,1.8),D('M170 232V122Q170 82 210 82Q250 82 250 122V232Z',1.8,1.8),D('M90 82V232M50 152H130M50 192H130',2.4,1.2,0.55),D('M210 82V232M170 152H250M170 192H250',2.8,1.2,0.55),D('M110 232V198Q102 174 110 142Q118 174 110 198',3.2,1.4,0.85),D('M72 232V208Q68 192 72 170Q76 192 72 208',3.5,1.2,0.7),D('M190 232V198Q182 174 190 142Q198 174 190 198',3.8,1.4,0.85),D('M232 232V208Q228 192 232 170Q236 192 232 208',4.1,1.2,0.7)],fills:[{d:'M70 121l4 9-4 9-4-9z',s:4.6},{d:'M112 103l4 9-4 9-4-9z',s:4.9},{d:'M70 163l4 9-4 9-4-9z',s:5.2},{d:'M190 103l4 9-4 9-4-9z',s:5},{d:'M232 121l4 9-4 9-4-9z',s:5.3},{d:'M232 163l4 9-4 9-4-9z',s:5.6},{d:'M150 57l4 9-4 9-4-9z',s:5.8},{d:'M110 61l4 9-4 9-4-9z',s:5.9},{d:'M190 61l4 9-4 9-4-9z',s:6}]},
+ tel:{name:'El primer rascacielos',site:'GRAN VÍA',line:'Cuando se terminó, en 1929, era el edificio más alto de Madrid.',phr:['La Gran Vía…','un edificio altísimo…','el primero de Madrid.'],
+  paths:[D('M30 260H270',0,.8),D('M110 260V130h80v130',.2,1.6),D('M120 130V90h60v40',1.2,1.2),D('M130 90V56h40v34',1.8,1.2),D('M140 56V28h20v28',2.4,1),D('M150 28V8',3,.8),D('M126 150v100M174 150v100M150 130v120',2.2,2.2,.6),D('M60 260V190h40v70M200 260V200h40v60',2.8,1.2,.7)],
+  fills:Array.from({length:12},(_,i)=>({d:'M'+(120+(i%4)*16)+' '+(154+Math.floor(i/4)*34)+'h10v16h-10z',s:3.8+i*.22}))},
+ ang:{name:'El ángel que cayó',site:'FUENTE DEL ÁNGEL CAÍDO',line:'Es una de las pocas estatuas del mundo dedicadas al demonio.',phr:['Un parque…','una fuente…','y un ángel que cae.'],
+  paths:[D('M30 262H270',0,.8),D('M50 262Q60 244 150 244T250 262',.4,1.4),D('M100 244l8-60h84l8 60',1.2,1.4),D('M120 184l10-30h40l10 30',2,1.2),D('M150 154v-46',2.6,1.4),D('M150 108l-40-50q-6-8 2-6l38 28M150 108l40-50q6-8-2-6l-38 28',3.2,1.6),D('M142 100a8 8 0 1 0 16 0a8 8 0 1 0-16 0',3.8,.8),D('M150 150q-26 16-18 36',4.2,1.2,.7)],fills:[]},
+ tum:{name:'La tumba sin cabeza',site:'ERMITA DE SAN ANTONIO DE LA FLORIDA',line:'Goya está enterrado en esta pequeña ermita que pintó él mismo.',phr:['Una ermita pequeña…','una cúpula pintada…','y una tumba que guarda un secreto.'],
+  paths:[D('M30 250H270',0,.8),D('M70 250V150h160v100',.2,1.4),D('M70 150L150 112L230 150',1.2,1.2),D('M100 150a50 50 0 0 1 100 0',1.8,1.2),D('M150 100V74M138 86h24',2.6,1),D('M130 250V196a20 20 0 0 1 40 0V250',3,1.2),D('M96 250v-14h108v14',3.6,1,.6)],fills:[{d:'M146 78h8v6h-8z',s:4.2}]},
+ est:{name:'La estación fantasma',site:'ANDÉN 0 · CHAMBERÍ',line:'Estuvo cerrada casi 60 años, y hoy se puede visitar.',phr:['Un túnel olvidado…','un andén vacío…','y una estación que sigue ahí.'],
+  paths:[D('M30 250H270',0,.8),D('M46 250V122a104 84 0 0 1 208 0V250',0,1.6),D('M78 250V150Q78 126 102 126H198Q222 126 222 150V250',.8,1.6),D('M92 150H208V192H92Z',1.6,1.2),D('M150 150V192',2,.8),D('M104 160H142V184H104ZM158 160H196V184H158Z',2.2,1,.6),D('M104 218a8 8 0 1 0 16 0a8 8 0 1 0-16 0M180 218a8 8 0 1 0 16 0a8 8 0 1 0-16 0',2.8,1),D('M134 112h32v14h-32z',3,1),D('M144 118a6 6 0 1 0 12 0a6 6 0 1 0-12 0',3.4,.8),D('M86 250L66 270M214 250L234 270M118 250V268M182 250V268',3.6,1),D('M110 78h80',3.8,.8)],fills:[{d:'M141 114h18v8h-18z',s:4},{d:'M99 214h12v8h-12zM189 214h12v8h-12z',s:3.2}]},
+ cib:{name:'Cibeles o Neptuno',site:'FUENTE DE CIBELES',line:'La diosa va en un carro tirado por dos leones, en el centro de la plaza.',phr:['Una plaza enorme…','un carro con leones…','y una diosa en lo alto.'],
+  paths:[D('M30 266H270',0,.8),D('M48 266V244H252V266',.2,1.4),D('M70 244Q150 230 230 244',.6,1,.7),D('M82 238V220H170V238',1.2,1.2),D('M96 214a22 22 0 1 0 44 0a22 22 0 1 0-44 0',1.8,1.4),D('M118 192v44M96 214h44M102 198l32 32M134 198l-32 32',2.4,.9,.7),D('M144 204Q140 156 114 158Q96 160 96 192',2.8,1.4),D('M118 140a8 8 0 1 0 16 0a8 8 0 1 0-16 0',3.2,1.2),D('M118 134l4-8 4 6 4-6 4 8',3.5,1),D('M126 148V162M126 154l18-12',3.7,1.2),D('M144 192H188',4,1),D('M184 206V188Q184 172 208 172H232',4,1.4),D('M230 170a12 12 0 1 0 24 0a12 12 0 1 0-24 0',4.4,1.4),D('M190 206v28M202 206v28M226 206v28M236 206v28',4.6,1.2),D('M184 186q-12-6-10-20',4.8,1),D('M64 244V222',1,1),D('M64 222Q50 200 40 242',1.4,1.2),D('M64 222Q78 200 90 242',1.6,1.2),D('M64 222V196',1.8,1.2),D('M196 214V198Q196 184 220 184H244',4.2,1.4,.7),D('M246 184a10 10 0 1 0 20 0a10 10 0 1 0-20 0',4.6,1.2,.7),D('M200 214v22M212 214v22M238 214v22M248 214v22',5,1,.7)],fills:[{d:'M121 132h10v8h-10z',s:4.2}]},
+ hor:{name:'El restaurante más antiguo',site:'SOBRINO DE BOTÍN',line:'Abrió en 1725 y sigue sirviendo con su horno de leña.',phr:['Una calle estrecha…','un horno de leña…','y casi 300 años sin apagarse.'],
+  paths:[D('M30 250H270',0,.8),D('M70 250V130a80 70 0 0 1 160 0V250',.4,1.6),D('M96 250V150a54 46 0 0 1 108 0V250',1.2,1.4),D('M120 250V200a30 24 0 0 1 60 0V250',2,1.2),D('M142 224q-8-14 8-28q16 14 8 28',3,1.2),D('M80 120h140',2.4,.8,.6),D('M108 108l-8-22h100l-8 22',3.4,.9,.7)],fills:[{d:'M146 212q4-10 8 0v10h-8z',s:4.2}]},
+ mad:{name:'Madrugador',site:'ANTES DE LAS 8:00 · MADRID',line:'Madrid antes que nadie.',phr:['Todavía es de noche…','la ciudad aún duerme…','y sale el sol.'],
+  paths:[D('M20 250H280',0,.8),D('M60 250V160h30v90M210 250V160h30v90',.2,1.4),D('M100 250V150a50 50 0 0 1 100 0V250',.8,1.6),D('M128 250V190a22 22 0 0 1 44 0V250',1.6,1.2),D('M100 150H200M116 134h68',2.2,1),D('M40 160h40M220 160h40',2.6,1)],fills:[]},
+ noc:{name:'Nocturno',site:'MADRID CON LAS LUCES ENCENDIDAS',line:'Madrid con las luces encendidas.',phr:['Cae la tarde…','la luna se asoma…','y la ciudad se enciende.'],
+  paths:[D('M20 250H280',0,.8),D('M60 250V160h30v90M210 250V160h30v90',.2,1.4),D('M100 250V150a50 50 0 0 1 100 0V250',.8,1.6),D('M128 250V190a22 22 0 0 1 44 0V250',1.6,1.2),D('M100 150H200M116 134h68',2.2,1),D('M40 160h40M220 160h40',2.6,1)],
+  fills:[{d:'M68 176h14v18h-14z',s:3.4},{d:'M218 176h14v18h-14z',s:3.8},{d:'M142 210h16v26h-16z',s:4.2},{d:'M104 170h12v14h-12z',s:4.5},{d:'M184 170h12v14h-12z',s:4.8}]}
+};
+class Component extends DCLogic {
+  renderVals(){const kind=SC[this.props.kind]?this.props.kind:'km',c=SC[kind];
+    return{kind,name:c.name,site:c.site,line:c.line,k:{sun:!!c.sun,sm:kind==='mad',mm:kind==='noc',km:kind==='km'},emA:kind==='km'?'emRise 1.2s 8s cubic-bezier(.2,.8,.2,1) both':'emEmb .8s 8s cubic-bezier(.2,.8,.2,1) both',paths:c.paths.map(p=>({...p})),fills:c.fills,phr:c.phr.map((x,i)=>({x,s:(.4+i*2.5).toFixed(1),t:2.3}))};}
+}
+</script>
+</body>
+</html>

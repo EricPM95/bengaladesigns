@@ -593,7 +593,7 @@ export function filasConFranja(day: DayPlan, paradas: Stop[]): FilaConFranja[] {
   return salida
 }
 
-export function TuDia({ route, day, dateIso, paradas, siguienteId, reservaDe, horaDelSol = null, inicialAbierta = true, onAbrirParada }: { route: Route; day: DayPlan; dateIso: string; paradas: Stop[]; siguienteId: string | null; reservaDe: (s: Stop) => Reservation | null; /** «18:04»: la hora del atardecer, que es de las pocas que se enseñan (con la de las reservas y los turnos). */ horaDelSol?: string | null; /** Abierta o cerrada al montarse (el día acabado, cerrada). */ inicialAbierta?: boolean; onAbrirParada?: (s: Stop) => void }) {
+export function TuDia({ route, day, dateIso, paradas, siguienteId, reservaDe, horaDelSol = null, inicialAbierta = true, onAbrirParada, ahoraMin = null }: { /** (V45) Los minutos de ahora (hoy): la comida o la cena cuya hora ya pasó no es una visita y sale de la lista. */ ahoraMin?: number | null;  route: Route; day: DayPlan; dateIso: string; paradas: Stop[]; siguienteId: string | null; reservaDe: (s: Stop) => Reservation | null; /** «18:04»: la hora del atardecer, que es de las pocas que se enseñan (con la de las reservas y los turnos). */ horaDelSol?: string | null; /** Abierta o cerrada al montarse (el día acabado, cerrada). */ inicialAbierta?: boolean; onAbrirParada?: (s: Stop) => void }) {
   // (V2, apartado 4) ABIERTO por defecto; si se cierra, se recuerda (en el móvil).
   const [abierta, setAbiertaEstado] = useState(() => {
     try {
@@ -614,7 +614,24 @@ export function TuDia({ route, day, dateIso, paradas, siguienteId, reservaDe, ho
       return n
     })
   const { total, hechas } = cuentaDelDia(paradas)
-  const filas = filasConFranja(day, paradas)
+  // (V45) Lo que ya pasó y no es una visita (la comida del mediodía a las 22:35) sale de la lista: una comida o cena sin hacer no se queda «pendiente» ni ocupa un sitio. Pasan 2 h desde su hora.
+  const filas = (() => {
+    const todas = filasConFranja(day, paradas)
+    if (ahoraMin == null) return todas
+    const pasada = (f: FilaConFranja) => {
+      if (f.tipo !== 'comida') return false
+      const m = /^(\d{1,2}):(\d{2})$/.exec(String(f.meal.time ?? '').trim())
+      return Boolean(m) && ahoraMin > Number(m![1]) * 60 + Number(m![2]) + 120
+    }
+    let ultima: FranjaDeTuDia | null = null
+    return todas
+      .filter((f) => !pasada(f))
+      .map((f) => {
+        const r = { ...f, cabecera: ultima !== f.franja }
+        ultima = f.franja
+        return r
+      })
+  })()
   void route
   return (
     <div data-hoy-tu-dia={abierta ? 'abierta' : 'cerrada'} className="flex flex-none flex-col gap-3 rounded-[22px] px-3.5 pb-2.5 pt-3.5" style={{ background: '#FFFDF8', border: '1px solid rgba(28,34,48,.1)' }}>

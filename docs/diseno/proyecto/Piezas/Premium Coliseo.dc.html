@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div onMouseMove="{{ mv }}" onMouseLeave="{{ lv }}" style="width:{{ S }}px;height:{{ H }}px;perspective:800px;flex:none;cursor:grab"><div style="width:100%;height:100%;transform:{{ tf }};transform-style:preserve-3d">
+<svg width="{{ S }}" height="{{ H }}" viewBox="0 0 220 260" fill="none" style="overflow:visible;display:block">
+  <defs>
+    <linearGradient id="{{ u }}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF6D2"></stop><stop offset=".4" stop-color="#F2C050"></stop><stop offset=".75" stop-color="#B8791C"></stop><stop offset="1" stop-color="#F8D974"></stop></linearGradient>
+    <linearGradient id="{{ u }}st" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFF4C8"></stop><stop offset=".45" stop-color="#EDB853"></stop><stop offset="1" stop-color="#8A5412"></stop></linearGradient>
+    <linearGradient id="{{ u }}s2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C58A38"></stop><stop offset="1" stop-color="#4E2C08"></stop></linearGradient>
+    <linearGradient id="{{ u }}ar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1A0C02"></stop><stop offset="1" stop-color="#5E360E"></stop></linearGradient>
+    <linearGradient id="{{ u }}in" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7A4A16"></stop><stop offset="1" stop-color="#D49A3E"></stop></linearGradient>
+    <linearGradient id="{{ u }}lt" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".38"></stop><stop offset=".5" stop-color="#FFFFFF" stop-opacity="0"></stop><stop offset="1" stop-color="#140800" stop-opacity=".55"></stop></linearGradient>
+    <linearGradient id="{{ u }}sw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"></stop><stop offset=".5" stop-color="#fff" stop-opacity=".85"></stop><stop offset="1" stop-color="#fff" stop-opacity="0"></stop></linearGradient>
+    <linearGradient id="{{ u }}sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0A1238"></stop><stop offset=".55" stop-color="#2E2F78"></stop><stop offset=".85" stop-color="#D88A62"></stop><stop offset="1" stop-color="#FFC878"></stop></linearGradient>
+    <radialGradient id="{{ u }}su" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFE29A" stop-opacity=".95"></stop><stop offset="1" stop-color="#FFB060" stop-opacity="0"></stop></radialGradient>
+    <radialGradient id="{{ u }}gl" cx=".5" cy=".5" r=".5"><stop offset=".62" stop-color="#9FD0FF" stop-opacity="0"></stop><stop offset=".93" stop-color="#BFE4FF" stop-opacity=".3"></stop><stop offset="1" stop-color="#FFFFFF" stop-opacity=".85"></stop></radialGradient>
+    <clipPath id="{{ u }}k"><path d="{{ sil }}"></path></clipPath>
+    <clipPath id="{{ u }}dc"><path d="M62 28H138L186 82L100 204L14 82Z"></path></clipPath>
+    <clipPath id="{{ u }}o"><circle cx="110" cy="112" r="84"></circle></clipPath>
+    <clipPath id="{{ u }}j"><path d="{{ outerD }}"></path></clipPath>
+    <clipPath id="{{ u }}t"><path d="{{ tableD }}"></path></clipPath>
+    <filter id="{{ u }}sh" x="-30%" y="-20%" width="160%" height="160%"><feDropShadow dx="0" dy="14" stdDeviation="9" flood-color="#000" flood-opacity=".55"></feDropShadow></filter>
+  <radialGradient id="{{ u }}sp" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".8"></stop><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"></stop></radialGradient>
+    <filter id="{{ u }}gw" x="-150%" y="-150%" width="400%" height="400%"><feDropShadow dx="0" dy="0" stdDeviation="1.6" flood-color="#FFFFFF" flood-opacity=".95"></feDropShadow></filter>
+    <clipPath id="{{ u }}dd"><circle cx="110" cy="124" r="76"></circle></clipPath>
+    <clipPath id="{{ u }}dr"><path d="M110 30A94 94 0 1 0 110.01 30ZM110 44A80 80 0 1 1 109.99 44Z" clip-rule="evenodd"></path></clipPath>
+    <clipPath id="{{ u }}ef"><rect x="76" y="62" width="68" height="146"></rect></clipPath>
+    <clipPath id="{{ u }}fs"><path d="M38 52H182V130Q182 194 110 234Q38 194 38 130Z"></path></clipPath>
+    <linearGradient id="{{ u }}pl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1A2A78"></stop><stop offset=".5" stop-color="#6C86E0"></stop><stop offset="1" stop-color="#16206A"></stop></linearGradient>
+    <linearGradient id="{{ u }}pr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E8EEFF"></stop><stop offset="1" stop-color="#7C96E8"></stop></linearGradient>
+  <radialGradient id="{{ u }}b1" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#BFE2FF" stop-opacity=".06"></stop><stop offset=".78" stop-color="#9FD0FF" stop-opacity=".16"></stop><stop offset=".95" stop-color="#E4F3FF" stop-opacity=".55"></stop><stop offset="1" stop-color="#FFFFFF" stop-opacity=".95"></stop></radialGradient>
+    <radialGradient id="{{ u }}b2" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFE6A8" stop-opacity=".9"></stop><stop offset="1" stop-color="#FFC060" stop-opacity="0"></stop></radialGradient>
+    <linearGradient id="{{ u }}b3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF6D2"></stop><stop offset=".25" stop-color="#F2C050"></stop><stop offset=".7" stop-color="#9A5E14"></stop><stop offset="1" stop-color="#4E2C08"></stop></linearGradient>
+    <clipPath id="{{ u }}bo"><circle cx="110" cy="116" r="88"></circle></clipPath>
+  </defs>
+
+  <sc-if value="{{ isD }}" hint-placeholder-val="{{ true }}">
+    <g transform="translate(10 18)">
+      <ellipse cx="{{ shx }}" cy="214" rx="56" ry="6" fill="#000" opacity=".35"></ellipse>
+      <path d="M62 28H138L186 82L100 204L14 82Z" fill="#CFE6F6" filter="url(#{{ u }}sh)"></path>
+      <g clip-path="url(#{{ u }}dc)">
+        <sc-for list="{{ facets }}" as="f" hint-placeholder-count="12"><path d="{{ f.d }}" fill="{{ f.f }}" fill-opacity="{{ f.o }}"></path></sc-for>
+        <circle cx="100" cy="104" r="58" fill="url(#{{ u }}su)"></circle>
+        <g transform="{{ par }}"><g transform="translate(100 108) scale(.88)"><sc-for list="{{ colo }}" as="s" hint-placeholder-count="60"><path d="{{ s.d }}" fill="{{ s.f }}" fill-opacity="{{ s.o }}" stroke="{{ s.s }}" stroke-width="{{ s.w }}" stroke-linejoin="round" stroke-linecap="round"></path></sc-for></g></g>
+        <sc-for list="{{ glints }}" as="f" hint-placeholder-count="14"><path d="{{ f.d }}" fill="{{ f.f }}" fill-opacity="{{ f.o }}"></path></sc-for>
+        <path d="M62 28L14 82M62 28L46 82M62 28L78 82M100 28L100 82M138 28L122 82M138 28L154 82M138 28L186 82M14 82L100 204M46 82L100 204M78 82L100 204M122 82L100 204M154 82L100 204M186 82L100 204M14 82H186" stroke="#FFFFFF" stroke-opacity=".8" stroke-width="1.1" stroke-linejoin="round"></path>
+        <rect x="{{ sx }}" y="0" width="30" height="230" fill="url(#{{ u }}sw)" transform="skewX(-20)"></rect>
+      </g>
+      <path d="M62 28H138L186 82L100 204L14 82Z" stroke="#FFFFFF" stroke-width="2.4" stroke-linejoin="round"></path>
+      <path d="M62 28H138" stroke="#FFFFFF" stroke-width="3.4" stroke-linecap="round"></path>
+    </g>
+  </sc-if>
+
+  <sc-if value="{{ isG }}" hint-placeholder-val="{{ false }}">
+    <ellipse cx="110" cy="248" rx="72" ry="7" fill="#000" opacity=".35"></ellipse>
+    <path d="M60 200Q110 218 160 200L172 234Q110 254 48 234Z" fill="url(#{{ u }}g)" stroke="#FFF3C4" stroke-width="1.2"></path>
+    <path d="M52 222Q110 240 168 222M56 210Q110 228 164 210" stroke="#7A4A10" stroke-width="1" opacity=".6"></path>
+    <circle cx="110" cy="112" r="84" fill="#0A1238" filter="url(#{{ u }}sh)"></circle>
+    <g clip-path="url(#{{ u }}o)">
+      <rect x="20" y="20" width="180" height="190" fill="url(#{{ u }}sk)"></rect>
+      <circle cx="110" cy="146" r="74" fill="url(#{{ u }}su)"></circle>
+      <sc-for list="{{ stars }}" as="s" hint-placeholder-count="14"><circle cx="{{ s.x }}" cy="{{ s.y }}" r="{{ s.r }}" fill="#FFFFFF"><animate attributeName="opacity" values=".1;1;.1" dur="{{ s.d }}s" repeatCount="indefinite"></animate></circle></sc-for>
+      <path d="M20 160Q60 152 110 158T200 156V210H20Z" fill="#2A1606"></path>
+      <g transform="translate(110 146) scale(1.18)"><sc-for list="{{ colo }}" as="s" hint-placeholder-count="60"><path d="{{ s.d }}" fill="{{ s.f }}" fill-opacity="{{ s.o }}" stroke="{{ s.s }}" stroke-width="{{ s.w }}" stroke-linejoin="round" stroke-linecap="round"></path></sc-for></g>
+      <sc-for list="{{ dust }}" as="p" hint-placeholder-count="16"><circle cx="{{ p.x }}" cy="{{ p.y }}" r="{{ p.r }}" fill="#FFE9A8"><animate attributeName="cy" values="{{ p.y }};{{ p.y2 }}" dur="{{ p.d }}s" begin="{{ p.b }}s" repeatCount="indefinite"></animate><animate attributeName="opacity" values="0;1;0" dur="{{ p.d }}s" begin="{{ p.b }}s" repeatCount="indefinite"></animate></circle></sc-for>
+    </g>
+    <circle cx="110" cy="112" r="84" fill="url(#{{ u }}gl)"></circle>
+    <path d="M52 82A66 66 0 0 1 100 42" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round" opacity=".6"></path>
+    <ellipse cx="82" cy="56" rx="14" ry="6" fill="#FFFFFF" opacity=".55" transform="rotate(-38 82 56)"></ellipse>
+    <circle cx="110" cy="112" r="84" stroke="#FFFFFF" stroke-opacity=".7" stroke-width="1.8"></circle>
+    <g clip-path="url(#{{ u }}o)"><rect x="-40" y="10" width="26" height="210" fill="url(#{{ u }}sw)" transform="skewX(-20)"><animate attributeName="x" values="-60;260" dur="5.2s" repeatCount="indefinite"></animate></rect></g>
+    <path d="M44 188Q110 210 176 188L182 200Q110 226 38 200Z" fill="url(#{{ u }}g)" stroke="#FFF3C4" stroke-width="1.2"></path>
+  </sc-if>
+
+  <sc-if value="{{ isJ }}" hint-placeholder-val="{{ false }}">
+    <g transform="translate(10 0)">
+      <g transform="translate(100 130)"><g><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="60s" repeatCount="indefinite"></animateTransform><sc-for list="{{ rays }}" as="r" hint-placeholder-count="24"><path d="{{ r.d }}" fill="#F3D88F" opacity="{{ r.o }}"></path></sc-for></g></g>
+      <path d="{{ outerD }}" fill="#0E1A4A" filter="url(#{{ u }}sh)"></path>
+      <g clip-path="url(#{{ u }}j)">
+        <sc-for list="{{ jf }}" as="f" hint-placeholder-count="24"><path d="{{ f.d }}" fill="{{ f.f }}" fill-opacity="{{ f.o }}" stroke="#FFFFFF" stroke-opacity=".55" stroke-width=".9" stroke-linejoin="round"></path></sc-for>
+        <g clip-path="url(#{{ u }}t)">
+          <rect x="40" y="60" width="120" height="150" fill="url(#{{ u }}sk)"></rect>
+          <circle cx="100" cy="150" r="60" fill="url(#{{ u }}su)"></circle>
+          <sc-for list="{{ stars }}" as="s" hint-placeholder-count="12"><circle cx="{{ s.x }}" cy="{{ s.y }}" r="{{ s.r }}" fill="#FFFFFF" opacity=".7"></circle></sc-for>
+          <g transform="translate(100 150) scale(.7)"><sc-for list="{{ colo }}" as="s" hint-placeholder-count="60"><path d="{{ s.d }}" fill="{{ s.f }}" fill-opacity="{{ s.o }}" stroke="{{ s.s }}" stroke-width="{{ s.w }}" stroke-linejoin="round" stroke-linecap="round"></path></sc-for></g>
+        </g>
+        <rect x="-60" y="0" width="34" height="260" fill="url(#{{ u }}sw)" transform="skewX(-20)"><animate attributeName="x" values="-90;260" dur="4.8s" repeatCount="indefinite"></animate></rect>
+      </g>
+      <path d="{{ outerD }}" stroke="url(#{{ u }}g)" stroke-width="7" stroke-linejoin="round"></path>
+      <path d="{{ outerD }}" stroke="#FFF6D2" stroke-width="1.2" stroke-linejoin="round" opacity=".8"></path>
+      <sc-for list="{{ prongs }}" as="p" hint-placeholder-count="8"><circle cx="{{ p.x }}" cy="{{ p.y }}" r="6.5" fill="url(#{{ u }}g)" stroke="#FFF3C4" stroke-width="1"></circle></sc-for>
+      <path d="M100 6L104 16L116 17L107 25L110 37L100 31L90 37L93 25L84 17L96 16Z" fill="url(#{{ u }}g)" stroke="#FFF3C4" stroke-width="1"></path>
+      <sc-for list="{{ leaves }}" as="l" hint-placeholder-count="16"><path d="{{ l.d }}" transform="{{ l.t }}" fill="url(#{{ u }}g)" stroke="#FFF3C4" stroke-width=".6"></path></sc-for>
+    </g>
+  </sc-if>
+
+  <sc-if value="{{ isM }}" hint-placeholder-val="{{ false }}">
+    <ellipse cx="110" cy="236" rx="70" ry="7" fill="#000" opacity=".35"></ellipse>
+    <sc-for list="{{ ext }}" as="e" hint-placeholder-count="9"><circle cx="{{ e.x }}" cy="{{ e.y }}" r="94" fill="{{ e.f }}" stroke="#FFFFFF" stroke-opacity=".35" stroke-width=".6"></circle></sc-for>
+    <circle cx="110" cy="124" r="94" fill="#CFE6F6" filter="url(#{{ u }}sh)"></circle>
+    <sc-for list="{{ ringF }}" as="f" hint-placeholder-count="24"><path d="{{ f.d }}" fill="{{ f.f }}" fill-opacity="{{ f.o }}" stroke="#FFFFFF" stroke-opacity=".7" stroke-width=".8" stroke-linejoin="round"></path></sc-for>
+    <circle cx="110" cy="124" r="94" stroke="#FFFFFF" stroke-width="2"></circle>
+    <circle cx="110" cy="124" r="80" fill="#0A1238" stroke="#FFFFFF" stroke-opacity=".8" stroke-width="1.6"></circle>
+    <g transform="translate(110 124)"><g><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="70s" repeatCount="indefinite"></animateTransform><sc-for list="{{ ringStars }}" as="s" hint-placeholder-count="24"><path d="{{ s.d }}" fill="#EAF6FF" stroke="#FFFFFF" stroke-width=".7" stroke-linejoin="round" filter="url(#{{ u }}gw)"><animate attributeName="opacity" values=".55;1;.55" dur="2.4s" begin="{{ s.b }}s" repeatCount="indefinite"></animate></path><path d="{{ s.f }}" stroke="#7CA8D8" stroke-width=".5" opacity=".8"></path></sc-for></g></g>
+    <g clip-path="url(#{{ u }}dd)">
+      <g transform="{{ d1 }}"><rect x="10" y="30" width="200" height="190" fill="url(#{{ u }}sk)"></rect>
+      <circle cx="110" cy="150" r="70" fill="url(#{{ u }}su)"></circle>
+      <sc-for list="{{ stars }}" as="s" hint-placeholder-count="14"><circle cx="{{ s.x }}" cy="{{ s.y }}" r="{{ s.r }}" fill="#FFFFFF"><animate attributeName="opacity" values=".1;1;.1" dur="{{ s.d }}s" repeatCount="indefinite"></animate></circle></sc-for></g>
+      <g transform="{{ d3 }}"><path d="M10 156Q70 150 110 154T210 152V220H10Z" fill="#2A1606"></path></g>
+      <g transform="{{ d2 }}"><g transform="translate(110 150) scale(1.08)"><sc-for list="{{ colo }}" as="s" hint-placeholder-count="60"><path d="{{ s.d }}" fill="{{ s.f }}" fill-opacity="{{ s.o }}" stroke="{{ s.s }}" stroke-width="{{ s.w }}" stroke-linejoin="round" stroke-linecap="round"></path></sc-for></g></g>
+      <circle cx="{{ spx }}" cy="{{ spy }}" r="46" fill="url(#{{ u }}sp)"></circle>
+      <path d="M40 70A76 76 0 0 1 120 48" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" opacity=".35"></path>
+      <rect x="-60" y="0" width="30" height="260" fill="url(#{{ u }}sw)" transform="skewX(-20)"><animate attributeName="x" values="-90;260" dur="5s" repeatCount="indefinite"></animate></rect>
+    </g>
+    <circle cx="110" cy="124" r="76" stroke="#FFFFFF" stroke-opacity=".6" stroke-width="1.6"></circle>
+    <g clip-path="url(#{{ u }}dr)"><rect x="-60" y="0" width="30" height="260" fill="url(#{{ u }}sw)" transform="skewX(-20)"><animate attributeName="x" values="-90;260" dur="3.6s" repeatCount="indefinite"></animate></rect><rect x="-60" y="0" width="14" height="260" fill="url(#{{ u }}sw)" transform="skewX(-20)"><animate attributeName="x" values="-90;260" dur="3.6s" begin="1.1s" repeatCount="indefinite"></animate></rect></g>
+  </sc-if>
+  <sc-if value="{{ isP }}" hint-placeholder-val="{{ false }}">
+    <ellipse cx="110" cy="250" rx="66" ry="6" fill="#000" opacity=".35"></ellipse>
+    <path d="M44 226H176V244H44Z" fill="url(#{{ u }}g)" stroke="#FFF3C4" stroke-width="1.2"></path>
+    <path d="M56 208H164V226H56Z" fill="url(#{{ u }}g)" stroke="#FFF3C4" stroke-width="1.2"></path>
+    <path d="M110 6L40 50L76 62L110 14Z" fill="#E8EEFF" fill-opacity=".9"></path><path d="M110 6L180 50L144 62L110 14Z" fill="#7C96E8" fill-opacity=".9"></path><path d="M110 6L76 62H144Z" fill="#B8C8FF" fill-opacity=".85"></path>
+    <path d="M40 50L76 62V208H40Z" fill="url(#{{ u }}pl)" filter="url(#{{ u }}sh)"></path>
+    <path d="M180 50L144 62V208H180Z" fill="url(#{{ u }}pr)"></path>
+    <path d="M76 62H144V208H76Z" fill="#0A1238"></path>
+    <g clip-path="url(#{{ u }}ef)">
+      <rect x="76" y="62" width="68" height="146" fill="url(#{{ u }}sk)"></rect>
+      <circle cx="110" cy="170" r="56" fill="url(#{{ u }}su)"></circle>
+      <sc-for list="{{ stars }}" as="s" hint-placeholder-count="12"><circle cx="{{ s.x }}" cy="{{ s.y }}" r="{{ s.r }}" fill="#FFFFFF" opacity=".7"></circle></sc-for>
+      <g transform="translate(110 172) scale(.54)"><sc-for list="{{ colo }}" as="s" hint-placeholder-count="60"><path d="{{ s.d }}" fill="{{ s.f }}" fill-opacity="{{ s.o }}" stroke="{{ s.s }}" stroke-width="{{ s.w }}" stroke-linejoin="round" stroke-linecap="round"></path></sc-for></g>
+      <rect x="-60" y="0" width="30" height="260" fill="url(#{{ u }}sw)" transform="skewX(-20)"><animate attributeName="x" values="-90;260" dur="5s" repeatCount="indefinite"></animate></rect>
+    </g>
+    <path d="M110 6V62M76 62V208M144 62V208M40 50V208M180 50V208M40 50L76 62L110 6L144 62L180 50M76 62H144" stroke="#FFFFFF" stroke-opacity=".75" stroke-width="1.2" stroke-linejoin="round"></path>
+    <path d="M44 120L76 132M180 120L144 132M44 160L76 172M180 160L144 172" stroke="#FFFFFF" stroke-opacity=".4" stroke-width="1"></path>
+    <path d="M40 50L110 6L180 50V208H40Z" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round"></path>
+  </sc-if>
+  <sc-if value="{{ isE }}" hint-placeholder-val="{{ false }}">
+    <ellipse cx="110" cy="250" rx="64" ry="6" fill="#000" opacity=".35"></ellipse>
+    <path d="M30 44H190V130Q190 200 110 244Q30 200 30 130Z" fill="url(#{{ u }}g)" filter="url(#{{ u }}sh)"></path>
+    <path d="M30 44H190V130Q190 200 110 244Q30 200 30 130Z" stroke="#FFF6D2" stroke-width="1.6"></path>
+    <path d="M38 52H182V130Q182 194 110 234Q38 194 38 130Z" fill="#0A1238"></path>
+    <g clip-path="url(#{{ u }}fs)">
+      <rect x="30" y="44" width="160" height="200" fill="url(#{{ u }}sk)"></rect>
+      <circle cx="110" cy="164" r="76" fill="url(#{{ u }}su)"></circle>
+      <sc-for list="{{ stars }}" as="s" hint-placeholder-count="14"><circle cx="{{ s.x }}" cy="{{ s.y }}" r="{{ s.r }}" fill="#FFFFFF" opacity=".8"></circle></sc-for>
+      <g transform="translate(110 166) scale(.92)"><sc-for list="{{ colo }}" as="s" hint-placeholder-count="60"><path d="{{ s.d }}" fill="{{ s.f }}" fill-opacity="{{ s.o }}" stroke="{{ s.s }}" stroke-width="{{ s.w }}" stroke-linejoin="round" stroke-linecap="round"></path></sc-for></g>
+      <path d="M38 52L182 196M38 100L150 220M38 150L110 234M80 52L182 150M130 52L182 100" stroke="#FFFFFF" stroke-opacity=".22" stroke-width="1"></path>
+      <rect x="-60" y="0" width="30" height="260" fill="url(#{{ u }}sw)" transform="skewX(-20)"><animate attributeName="x" values="-90;260" dur="5s" repeatCount="indefinite"></animate></rect>
+    </g>
+    <path d="M38 52H182V130Q182 194 110 234Q38 194 38 130Z" stroke="#FFFFFF" stroke-opacity=".6" stroke-width="1.4"></path>
+    <path d="M62 44L72 18L90 34L110 10L130 34L148 18L158 44Z" fill="url(#{{ u }}g)" stroke="#FFF3C4" stroke-width="1"></path>
+    <circle cx="72" cy="18" r="3.4" fill="#FFF6D2"></circle><circle cx="110" cy="10" r="3.8" fill="#FFF6D2"></circle><circle cx="148" cy="18" r="3.4" fill="#FFF6D2"></circle>
+  </sc-if>
+
+  <sc-if value="{{ isB }}" hint-placeholder-val="{{ false }}">
+    <ellipse cx="{{ shx }}" cy="252" rx="78" ry="7" fill="#000" opacity=".4"></ellipse>
+    <path d="M52 214Q110 232 168 214L180 242Q110 262 40 242Z" fill="url(#{{ u }}b3)" stroke="#FFF3C4" stroke-width="1.2"></path>
+    <path d="M44 232Q110 252 176 232" stroke="#FFF3C4" stroke-width="1" opacity=".7"></path>
+    <circle cx="110" cy="116" r="88" fill="#0A1238" filter="url(#{{ u }}sh)"></circle>
+    <g clip-path="url(#{{ u }}bo)">
+      <rect x="20" y="20" width="180" height="200" fill="url(#{{ u }}sk)"></rect>
+      <circle cx="110" cy="170" r="80" fill="url(#{{ u }}su)"></circle>
+      <sc-for list="{{ stars }}" as="s" hint-placeholder-count="14"><circle cx="{{ s.x }}" cy="{{ s.y }}" r="{{ s.r }}" fill="#FFFFFF"><animate attributeName="opacity" values=".1;1;.1" dur="{{ s.d }}s" repeatCount="indefinite"></animate></circle></sc-for>
+      <g transform="{{ par }}">
+        <path d="M20 168Q60 158 110 164T200 162V220H20Z" fill="#2A1606"></path>
+        <path d="M30 190Q110 176 190 190" stroke="#FFE9A8" stroke-width="1" opacity=".5"></path>
+        <g transform="translate(110 166) scale(1.34 1.3)"><sc-for list="{{ colo }}" as="s" hint-placeholder-count="60"><path d="{{ s.d }}" fill="{{ s.f }}" fill-opacity="{{ s.o }}" stroke="{{ s.s }}" stroke-width="{{ s.w }}" stroke-linejoin="round" stroke-linecap="round"></path></sc-for></g>
+      </g>
+      <sc-for list="{{ dust }}" as="p" hint-placeholder-count="16"><circle cx="{{ p.x }}" cy="{{ p.y }}" r="{{ p.r }}" fill="#FFE9A8"><animate attributeName="cy" values="{{ p.y }};{{ p.y2 }}" dur="{{ p.d }}s" begin="{{ p.b }}s" repeatCount="indefinite"></animate><animate attributeName="opacity" values="0;1;0" dur="{{ p.d }}s" begin="{{ p.b }}s" repeatCount="indefinite"></animate></circle></sc-for>
+      <ellipse cx="110" cy="206" rx="64" ry="9" fill="url(#{{ u }}b2)" opacity=".7"></ellipse>
+    </g>
+    <circle cx="110" cy="116" r="88" fill="url(#{{ u }}b1)"></circle>
+    <path d="M32 96A80 80 0 0 1 96 34" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" opacity=".7"></path>
+    <path d="M36 118A80 80 0 0 1 40 100" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity=".5"></path>
+    <ellipse cx="78" cy="52" rx="16" ry="7" fill="#FFFFFF" opacity=".75" transform="rotate(-40 78 52)"></ellipse>
+    <path d="M168 168A80 80 0 0 1 120 202" stroke="#FFE2A0" stroke-width="5" stroke-linecap="round" opacity=".55"></path>
+    <circle cx="110" cy="116" r="88" stroke="#FFFFFF" stroke-opacity=".8" stroke-width="1.8"></circle>
+    <g clip-path="url(#{{ u }}bo)"><rect x="-40" y="10" width="24" height="220" fill="url(#{{ u }}sw)" transform="skewX(-20)"><animate attributeName="x" values="-60;260" dur="5s" repeatCount="indefinite"></animate></rect></g>
+    <path d="M60 214Q110 226 160 214L164 224Q110 238 56 224Z" fill="url(#{{ u }}g)" stroke="#FFF3C4" stroke-width="1"></path>
+  </sc-if>
+  <sc-for list="{{ sparks }}" as="k" hint-placeholder-count="4"><path d="M{{ k.x }} {{ k.y }}m0 -{{ k.r }}l{{ k.q }} {{ k.q }}l{{ k.r }} {{ k.q }}l-{{ k.r }} {{ k.q }}l-{{ k.q }} {{ k.r }}l-{{ k.q }} -{{ k.r }}l-{{ k.r }} -{{ k.q }}l{{ k.r }} -{{ k.q }}Z" fill="#FFFFFF"><animate attributeName="opacity" values="0;1;0" dur="2.6s" begin="{{ k.d }}" repeatCount="indefinite"></animate></path></sc-for>
+</svg></div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;kind&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;diamante&quot;,&quot;globo&quot;,&quot;joya&quot;,&quot;medallon&quot;,&quot;prisma&quot;,&quot;escudo&quot;,&quot;bola&quot;],&quot;default&quot;:&quot;diamante&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;size&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:240,&quot;tsType&quot;:&quot;number&quot;}}">
+const S=(d,f,s,w,o)=>({d,f:f||'none',s:s||'none',w:w||0,o:o==null?1:o});
+const SILP='M-60 26V-20Q-60 -26 -44 -26Q-18 -22 8 -25L10 -19L14 -14L18 -16L24 -10L30 -12L36 -6L44 -8L52 0L60 6V26Q0 32 -60 26Z';
+function colo(u){
+  const ST=`url(#${u}st)`,AR=`url(#${u}ar)`,IN=`url(#${u}in)`,LT=`url(#${u}lt)`,o=[];
+  const off=x=>(1-(x/60)*(x/60))*3,f=v=>v.toFixed(1);
+  o.push(S('M12 14V-26L24 -21L36 -15L48 -9L60 -2V14Z',`url(#${u}s2)`,'#3A2006',.5));
+  let d='';for(let i=0;i<6;i++){const c=18+i*7.6;d+=`M${c-2.2} 14V4a2.2 2.2 0 0 1 4.4 0V14ZM${c-2.2} -2V-9a2.2 2.2 0 0 1 4.4 0V-2Z`;}
+  o.push(S(d,AR));
+  o.push(S('M12 14V-26L24 -21L36 -15L48 -9L60 -2','none','#FFF3C4',.6,.7));
+  o.push(S(SILP,ST,'#FFF3C4',.7));
+  let tone='',tone2='';for(let i=0;i<10;i++){const x=-58+((i*41)%110),w=4+(i%3)*2;tone+=`M${x} -24h${w}v48h-${w}Z`;tone2+=`M${x+9} -24h${w-1}v48h-${w-1}Z`;}
+  o.push(S(tone,'#7A4A12','none',0,.12));o.push(S(tone2,'#FFF6D2','none',0,.12));
+  [26,12.4,-1.2].forEach((yb0,ti)=>{
+    const h=12;let rim='',arc='',far='',key='',shL='',shD='',cap='',bas='',st='';
+    for(let i=0;i<12;i++){const c=-55+i*10,y=yb0+off(c),p=c+5;
+      rim+=`M${f(c-3.9)} ${f(y)}V${f(y-h+3.2)}a3.9 3.9 0 0 1 7.8 0V${f(y)}Z`;
+      arc+=`M${f(c-3.2)} ${f(y)}V${f(y-h+3.2)}a3.2 3.2 0 0 1 6.4 0V${f(y)}Z`;
+      far+=`M${f(c-1.5)} ${f(y)}V${f(y-h+6)}a1.9 1.9 0 0 1 3.4 0V${f(y)}Z`;
+      key+=`M${f(c-1)} ${f(y-h-.5)}h2l-.6 2.6h-.8Z`;
+      shL+=`M${f(p-1.3)} ${f(y-h)}h1.1v${h}h-1.1Z`;shD+=`M${f(p+.4)} ${f(y-h)}h1v${h}h-1Z`;
+      cap+=`M${f(p-1.8)} ${f(y-h-.3)}h3.6v1.2h-3.6Z`;bas+=`M${f(p-1.8)} ${f(y-1.1)}h3.6v1.1h-3.6Z`;
+      st+=`M${f(c+2.4)} ${f(y-h-.6)}v${2+(i%3)}`;}
+    o.push(S(rim,'#7A4A12','none',0,.55));o.push(S(arc,AR));o.push(S(far,IN,'none',0,.85));o.push(S(key,'#FFF1BC','#6A400E',.3));
+    o.push(S(shL,'#FFF1BC','none',0,.7));o.push(S(shD,'#5A3208','none',0,.55));o.push(S(cap,'#FFE9A8','#6A400E',.3));o.push(S(bas,'#C48A36','none',0,.8));
+    const yc=yb0-h-1.6;
+    o.push(S(`M-60 ${yc}Q0 ${yc+6} 60 ${yc}`,'none',ST,1.8));
+    o.push(S(`M-60 ${yc-.8}Q0 ${yc+5.2} 60 ${yc-.8}`,'none','#FFF6D2',.5,.8));
+    o.push(S(`M-60 ${yc+1.6}Q0 ${yc+7.6} 60 ${yc+1.6}`,'none','#3A2006',1.3,.55));
+    o.push(S(st,'none','#5A3208',.8,.28));
+  });
+  let w='',wf='',cb='';for(let i=0;i<12;i++){const c=-55+i*10,y=-23+off(c);w+=`M${c-1.7} ${f(y)}h3.4v5.5h-3.4Z`;wf+=`M${c-2.1} ${f(y-.4)}h4.2v6.3h-4.2Z`;}
+  for(let i=0;i<24;i++){const x=-58+i*5;cb+=`M${x} ${f(-25+off(x)*.9)}h1.8v1.3h-1.8Z`;}
+  o.push(S(wf,'none','#FFF1BC',.4,.6));o.push(S(w,AR));o.push(S(cb,'#8A5412','none',0,.8));
+  o.push(S('M-60 -26Q-18 -22 8 -25','none','#FFF6D2',.9,.85));
+  for(let i=0;i<70;i++){const x=-58+((i*37)%116),y=-24+((i*53)%48),k=.6+(i%4)*.3;o.push(S(`M${x} ${y}h${k}`,'none',i%3?'#5A3208':'#FFF3C4',.9,.55));}
+  o.push(S('M20 -8L23 -2L21 4M40 -2L38 6L41 12M-20 -12L-18 -6M-40 4L-37 9','none','#4A2A08',.5,.55));
+  o.push(S(SILP,LT));
+  o.push(S('M-60 26V-20Q-60 -26 -44 -26','none','#FFFFFF',1.2,.8));
+  o.push(S('M34 26L40 21L45 24L50 19L55 23L60 18V28Z','#A47432','#3A2006',.4));
+  o.push(S('M44 28L48 25L53 27L57 24L60 27V29Z','#6A400E','none',0,.9));
+  o.push(S('M-62 27Q0 33.5 62 27V29.6Q0 36 -62 29.6Z','#8A5412','#2A1606',.5));
+  o.push(S('M-62 29.6Q0 36 62 29.6','none','#FFE9A8',.5,.7));
+  return o;
+}
+const TRI=(a)=>'M'+a.map(p=>p.join(' ')).join('L')+'Z';
+const FC=[[[62,28],[14,82],[46,82]],[[62,28],[46,82],[78,82]],[[62,28],[100,28],[100,82],[78,82]],[[100,28],[138,28],[122,82],[100,82]],[[138,28],[122,82],[154,82]],[[138,28],[154,82],[186,82]],[[14,82],[46,82],[100,204]],[[46,82],[78,82],[100,204]],[[78,82],[100,82],[100,204]],[[100,82],[122,82],[100,204]],[[122,82],[154,82],[100,204]],[[154,82],[186,82],[100,204]]];
+const COL=['#FFFFFF','#9FB6CC','#DCE6F2','#4E6682','#EAF2FA','#B8C8DA','#C8D8E8','#5C7690','#F4F8FC','#8EA6C0','#3E566F','#A9BBD0'];
+const oct=(i)=>{const l=24+i,r=176-i,t=34+i,b=226-i,c=Math.max(8,26-i*.35);return[[l+c,t],[r-c,t],[r,t+c],[r,b-c],[r-c,b],[l+c,b],[l,b-c],[l,t+c]];};
+const P=(v)=>'M'+v.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join('L')+'Z';
+class Component extends DCLogic {
+  u='pc'+Math.random().toString(36).slice(2,7);
+  state={tx:0,ty:0,t:0,hov:false};
+  componentDidMount(){this.timer=setInterval(()=>this.setState(s=>s.hov?{t:s.t+1}:{t:s.t+1,tx:Math.sin(s.t/38)*.7,ty:Math.cos(s.t/52)*.3}),40);}
+  componentWillUnmount(){clearInterval(this.timer);}
+  mv=(e)=>{const r=e.currentTarget.getBoundingClientRect();this.setState({hov:true,tx:((e.clientX-r.left)/r.width-.5)*2,ty:((e.clientY-r.top)/r.height-.5)*2});};
+  lv=()=>this.setState({hov:false});
+  renderVals(){
+    const kind=String(this.props.kind||'diamante'),Sz=Number(this.props.size)||240,u=this.u,{tx,ty,t}=this.state;
+    const facets=FC.map((a,i)=>({d:TRI(a),f:COL[i],o:Math.min(.92,.5+.38*Math.abs(Math.sin(i*1.3+tx*2.2)))}));
+    const glints=FC.map((a,i)=>({d:TRI(a),f:'#FFFFFF',o:Math.max(0,Math.sin(i*2.1+tx*4.2+ty*2+t/90))*.42})).concat([{d:'M26 84L46 84L36 112Z',f:'#FF6A3A',o:Math.max(0,.2+.4*Math.sin(tx*3+1))},{d:'M152 84L172 84L160 108Z',f:'#FF9A3A',o:Math.max(0,.2+.4*Math.sin(tx*3+3))},{d:'M90 92L110 92L100 128Z',f:'#6FB4FF',o:Math.max(0,.18+.3*Math.sin(tx*2.4))}]);
+    const stars=[],dust=[],jf=[],prongs=[],leaves=[],rays=[];
+    for(let i=0;i<18;i++)stars.push({x:44+((i*47)%130),y:30+((i*31)%90),r:(i%3?.7:1.2),d:(1.6+(i%5)*.5).toFixed(1)});
+    for(let i=0;i<16;i++){const x=50+((i*53)%120),y=70+((i*37)%70);dust.push({x,y,y2:y+38,r:(1+(i%3)*.5).toFixed(1),d:(3+(i%4)*.7).toFixed(1),b:(i*.37).toFixed(2)});}
+    const O=oct(0),M=oct(10),N=oct(19),T=oct(28);
+    for(let k=0;k<8;k++){const q=(k+1)%8;
+      jf.push({d:P([O[k],O[q],M[q],M[k]]),f:['#9FB8FF','#4C68C8','#DDE6FF','#2A3C98'][k%4],o:.85});
+      jf.push({d:P([M[k],M[q],N[q],N[k]]),f:['#2A3C98','#B8C8FF','#3C58B8','#E8EEFF'][k%4],o:.88});
+      jf.push({d:P([N[k],N[q],T[q],T[k]]),f:['#6C86E0','#1E2E78','#A8BCFF','#3A52B0'][k%4],o:.92});prongs.push({x:O[k][0],y:O[k][1]});}
+    for(let i=0;i<24;i++){const a=i/24*Math.PI*2,w=.07;rays.push({d:'M0 0L'+(Math.cos(a-w)*190).toFixed(1)+' '+(Math.sin(a-w)*190).toFixed(1)+'L'+(Math.cos(a+w)*190).toFixed(1)+' '+(Math.sin(a+w)*190).toFixed(1)+'Z',o:i%2?.1:.2});}
+    for(let sd=-1;sd<=1;sd+=2)for(let i=0;i<8;i++){const y=222-i*22,x=100+sd*(96+Math.sin(i/7*Math.PI)*-3);leaves.push({d:`M${x} ${y}c${sd*6} -4 ${sd*14} -4 ${sd*18} 0c${-sd*4} 5 ${-sd*12} 5 ${-sd*18} 0Z`,t:`rotate(${sd*(-40+i*6)} ${x} ${y})`});}
+    const sparks=[[26,66,5,1.7,'0s'],[196,60,4,1.3,'.9s'],[190,160,3.5,1.2,'1.6s'],[28,164,3,1,'.4s']].map(([x,y,r,q,d])=>({x,y,r,q,d}));
+    return{S:Sz,H:Math.round(Sz*260/220),u,isD:kind==='diamante',isG:kind==='globo',isJ:kind==='joya',isM:kind==='medallon',isB:kind==='bola',ext:Array.from({length:9},(_,j)=>{const i=9-j;return{x:(110+tx*1.2*i).toFixed(1),y:(124+ty*1*i).toFixed(1),f:['#9FB6CC','#8CA4BE','#7A92AE','#6A82A0','#5C7690','#52688A','#485C7E','#3E5272','#34486A'][j]};}),d1:'translate('+(-tx*5).toFixed(1)+' '+(-ty*4).toFixed(1)+')',d2:'translate('+(-tx*11).toFixed(1)+' '+(-ty*7).toFixed(1)+')',d3:'translate('+(-tx*15).toFixed(1)+' '+(-ty*9).toFixed(1)+')',spx:(110+tx*44).toFixed(0),spy:(124+ty*34).toFixed(0),ringF:Array.from({length:24},(_,i)=>{const a0=i/24*Math.PI*2,a1=(i+1)/24*Math.PI*2,f=(a,r)=>(110+Math.cos(a)*r).toFixed(1)+' '+(124+Math.sin(a)*r).toFixed(1);return{d:'M'+f(a0,94)+'L'+f(a1,94)+'L'+f(a1,80)+'L'+f(a0,80)+'Z',f:['#FFFFFF','#9FB6CC','#DCE6F2','#4E6682','#EAF2FA','#B8C8DA'][i%6],o:Math.min(1,.7+.3*Math.abs(Math.sin(i*1.7+tx*2.2)))};}),isP:kind==='prisma',isE:kind==='escudo',ringStars:Array.from({length:24},(_,i)=>{const an=i/24*Math.PI*2,x=Math.cos(an)*87,y=Math.sin(an)*87,k=i%2?3.4:2.5,n=v=>v.toFixed(1);return{d:'M'+n(x-k)+' '+n(y-k*.35)+'L'+n(x-k*.55)+' '+n(y-k*.85)+'L'+n(x+k*.55)+' '+n(y-k*.85)+'L'+n(x+k)+' '+n(y-k*.35)+'L'+n(x)+' '+n(y+k*1.1)+'Z',f:'M'+n(x-k)+' '+n(y-k*.35)+'H'+n(x+k)+'M'+n(x-k*.55)+' '+n(y-k*.85)+'L'+n(x)+' '+n(y+k*1.1)+'L'+n(x+k*.55)+' '+n(y-k*.85),b:(i*.1).toFixed(1)};}),colo:colo(u),sil:SILP,facets,glints,stars,dust,jf,prongs,leaves,rays,sparks,outerD:P(O),tableD:P(T),mv:this.mv,lv:this.lv,
+      tf:`rotateY(${(tx*(kind==='medallon'?28:20)).toFixed(1)}deg) rotateX(${(-ty*(kind==='medallon'?20:14)).toFixed(1)}deg)`,par:`translate(${(-tx*8).toFixed(1)} ${(-ty*5).toFixed(1)})`,sx:(tx*80-10).toFixed(0),shx:(100+tx*14).toFixed(0)};
+  }
+}
+</script>
+</body>
+</html>

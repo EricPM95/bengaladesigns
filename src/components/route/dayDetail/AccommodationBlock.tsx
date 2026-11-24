@@ -35,12 +35,13 @@ export function AccommodationBlock({ city, segmentDayId, onAnadir }: Accommodati
   const abrirTuAlojamiento = useAlojamientoUi((state) => state.abrirTuAlojamiento)
   const hotelDeEstaEstancia = useRouteStore((state) => state.accommodationSelections[segmentDayId])
   const viaje = useAlojamientoDelViaje()
+  const puntoGuardado = useRouteStore((state) => state.route?.accommodationPoint ?? null) // (V45)
   // La zona y la dirección son las del viaje (de la primera estancia); el nombre, el de esta estancia.
   const esLaPrimera = viaje.primeraEstanciaId === segmentDayId
   const nombre = (hotelDeEstaEstancia?.name ?? '').trim() || null
   const zona = pago && esLaPrimera ? viaje.zonaNombre : null
   const direccion = pago && esLaPrimera ? viaje.direccion : null
-  const enlace = pago && esLaPrimera ? enlaceComoLlegarAlojamiento(viaje.direccion, city) : null
+  const enlace = pago && esLaPrimera ? enlaceComoLlegarAlojamiento(viaje.direccion, city, puntoGuardado) : null
   const etiqueta = `ALOJAMIENTO · ${zonaCorta(zona ?? city).toUpperCase()}`
 
   const cama = (color: string, tamano: number) => (

@@ -144,10 +144,10 @@ export function LugaresPendientes({ route, day, dateIso, pendientes }: { route: 
         <span data-hoy-pendiente-menu>
           <HojaDelMenu etiqueta="Parada" titulo={displayStopName(menu.stop.name)} onCerrar={() => setMenu(null)} z={95}>
             {menu.motivo !== 'cerrada' && (
-              <OpcionTarjeta tono="arena" icono={ICONOS_OPCION.volver} titulo="Recuperar hoy" linea="Vuelve a tu día de hoy" flecha datos="pendiente-recuperar" atributos={{ 'data-hoy-pendiente-recuperar': '1' }} onClick={() => { recuperar(menu); setMenu(null) }} />
+              <OpcionTarjeta tono="salvia" icono={ICONOS_OPCION.volver} titulo="Recuperar hoy" linea="Vuelve a ser una parada normal del día" datos="pendiente-recuperar" atributos={{ 'data-hoy-pendiente-recuperar': '1' }} onClick={() => { recuperar(menu); setMenu(null) }} />
             )}
-            <OpcionTarjeta tono="azul" icono={ICONOS_OPCION.check} titulo="Ya lo visité" linea="Cuenta como hecha" flecha atributos={{ 'data-hoy-pendiente-visitado': '1' }} onClick={() => { visitado(menu); setMenu(null) }} />
-            <OpcionTarjeta peligro icono={ICONOS_OPCION.papelera} titulo="Quitar" linea="Sale de tu ruta. Puedes deshacerlo" atributos={{ 'data-hoy-pendiente-quitar': '1' }} onClick={() => { quitar(menu); setMenu(null) }} />
+            <OpcionTarjeta tono="arena" icono={ICONOS_OPCION.check} titulo="Ya lo visité" linea="Márcala como vista y quítala de pendientes" atributos={{ 'data-hoy-pendiente-visitado': '1' }} onClick={() => { visitado(menu); setMenu(null) }} />
+            <OpcionTarjeta peligro icono={ICONOS_OPCION.papelera} titulo="Quitar" linea="Sale de tu lista. Puedes deshacerlo" atributos={{ 'data-hoy-pendiente-quitar': '1' }} onClick={() => { quitar(menu); setMenu(null) }} />
           </HojaDelMenu>
         </span>
       )}

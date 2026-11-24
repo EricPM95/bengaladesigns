@@ -152,7 +152,9 @@ try {
   await cap('2_reservas_excursiones_y_actividades')
   await a.evaluar("document.querySelector('[data-ver-todas-excursiones]')?.click(); true")
   await a.esp(900)
-  debe((await R('return st().mode')) === 'explore', 'reservas', '[Ver todas] abre EXPLORAR')
+  debe((await a.evaluar("Boolean(document.querySelector('[data-todas-actividades]'))")) === true, 'reservas', '[Ver todas] abre la página de todas las actividades (V45; ya no EXPLORAR)')
+  await a.evaluar("document.querySelector('[data-cerrar-todas]')?.click(); true")
+  await a.esp(400)
   await R("st().setMode('days'); return true")
 
   // ── 3 · Las fotos de las excursiones, más nítidas ──

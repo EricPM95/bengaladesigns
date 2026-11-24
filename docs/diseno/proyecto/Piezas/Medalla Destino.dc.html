@@ -111,8 +111,8 @@ class Component extends DCLogic {
   renderVals(){const p=this.props;const s=Math.max(1,Math.min(10,parseInt(p.stage)||1));let P=ST[s];if(p.metal==='rosa'){const M={'#FFF1B8':'#FFF0EA','#EDBE50':'#FFB8A4','#B5821C':'#E07A66','#7A520C':'#9A4636','#FFF1C2':'#FFF2EC','#F4D06A':'#FFC2B0','#9A6A12':'#C25C48','#E9D58A':'#FFD6C8','#E3B13F':'#FFAE98','#8A5E12':'#B04E3E'};P=JSON.parse(JSON.stringify(P).replace(/#[0-9A-Fa-f]{6}/g,h=>M[h.toUpperCase()]||h));}
     const sz=(Number(p.size)||200)+'px';
     const c=GM[P.gem];const G={a:c[0],b:c[1],c:c[2],d:c[3],e:c[4],f:c[5],g:c[6],h:c[7]};
-    const gems=[];[0,90,180,270].forEach(r=>gems.push({t:'rotate('+r+' 200 200) translate(200 56) scale(.62) translate(-200 -56)'}));
-    if(P.gems===8)[45,135,225,315].forEach(r=>gems.push({t:'rotate('+r+' 200 200) translate(200 58) scale(.42) translate(-200 -58)'}));
+    const noG=(p.gems===false||p.gems==='false'||p.gems==='0'||p.gems===0);const gems=[];if(!noG)[0,90,180,270].forEach(r=>gems.push({t:'rotate('+r+' 200 200) translate(200 56) scale(.62) translate(-200 -56)'}));
+    if(!noG&&P.gems===8)[45,135,225,315].forEach(r=>gems.push({t:'rotate('+r+' 200 200) translate(200 58) scale(.42) translate(-200 -58)'}));
     const lv=[];if(P.leaves){const N=14;for(let i=0;i<N;i++){const t=i/(N-1);const ang=(98+t*150)*Math.PI/180;const R0=150;const x=200+R0*Math.cos(ang),y=200+R0*Math.sin(ang);const rot=98+t*150+180-28;const sc=(1.0-0.22*t).toFixed(2);
       lv.push({t:'translate('+x.toFixed(1)+' '+y.toFixed(1)+') rotate('+rot.toFixed(1)+') scale('+sc+')'});lv.push({t:'translate('+(400-x).toFixed(1)+' '+y.toFixed(1)+') rotate('+(-rot).toFixed(1)+') scale('+sc+')'});}}
     const beads=Array.from({length:32},(_,i)=>{const a=i/32*Math.PI*2;return{x:(200+138.5*Math.cos(a)).toFixed(1),y:(200+138.5*Math.sin(a)).toFixed(1)};});

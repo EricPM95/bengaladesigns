@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}
+@keyframes mnUp{0%{opacity:0;transform:translateY(14px)}100%{opacity:1;transform:none}}
+@keyframes mnFade{0%{opacity:0}100%{opacity:1}}</style>
+</helmet>
+<div style="min-height:100vh;background:#E7DCC6;padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">LOGROS · UNA MARAVILLA NUEVA</span><span style="font:400 40px/1 'Instrument Serif',serif">La moneda nueva encaja en la medalla</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start">
+    <sc-for list="{{ boards }}" as="b" hint-placeholder-count="2">
+      <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+        <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(28,34,48,.7)">{{ b.id }} · {{ b.cap }}</span>
+        <div style="position:relative;width:390px;height:844px;border-radius:40px;overflow:hidden;background:radial-gradient(circle at 50% 30%,#1E2744 0%,#0C1020 72%);box-shadow:0 30px 60px -30px rgba(28,34,48,.6)">
+          <sc-if value="{{ b.on }}" hint-placeholder-val="{{ true }}">
+            <div style="position:absolute;left:0;right:0;top:128px;display:flex;flex-direction:column;align-items:center;gap:22px">
+              <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.2em;color:#F3D59A;animation:mnFade .8s both">UNA MARAVILLA NUEVA</span>
+              <dc-import name="Piezas/Medalla Siete" gain="{{ b.gain }}" gainDelay="{{ 0.8 }}" size="{{ 330 }}" hint-size="330px,388px"></dc-import>
+            </div>
+            <div style="position:absolute;left:0;right:0;top:604px;display:flex;flex-direction:column;align-items:center;gap:10px;padding:0 32px;text-align:center">
+              <span style="font:400 34px/1.05 'Instrument Serif',serif;color:#FFFDF8;opacity:0;animation:mnUp .7s 2.7s both">{{ b.name }} · <em style="color:#F3D59A">{{ b.cnt }}</em></span>
+              <span style="font:400 15.5px/1.4 'Geist';color:rgba(255,253,248,.72);text-wrap:balance;opacity:0;animation:mnUp .7s 3s both">{{ b.line }}</span>
+            </div>
+            <div style="position:absolute;left:22px;right:22px;bottom:44px;opacity:0;animation:mnUp .6s 3.4s both"><span style="height:56px;border-radius:18px;background:linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440);box-shadow:0 12px 22px -14px rgba(110,80,24,.75),inset 0 1px 0 rgba(255,255,255,.6);color:#4A3510;display:flex;align-items:center;justify-content:center;font:700 16px 'Geist'">Seguir</span></div>
+          </sc-if>
+        </div>
+        <button onClick="{{ b.replay }}" style="align-self:flex-start;height:40px;padding:0 18px;border-radius:999px;border:1px solid rgba(28,34,48,.25);background:#FFFDF8;font:600 13.5px 'Geist';cursor:pointer">Repetir la animación</button>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state={on:[true,true]};
+  rp=(i)=>()=>{this.setState(s=>({on:s.on.map((v,j)=>j===i?false:v)}));setTimeout(()=>this.setState(s=>({on:s.on.map((v,j)=>j===i?true:v)})),120);};
+  renderVals(){
+    const B=[{id:'M1',cap:'La primera: el Coliseo · 1 de 7',gain:1,name:'El Coliseo',cnt:'1 de 7',line:'El mayor anfiteatro de la Antigüedad.'},{id:'M2',cap:'La cuarta: el Cristo Redentor · 4 de 7',gain:4,name:'Cristo Redentor',cnt:'4 de 7',line:'30 metros de brazos abiertos sobre Río.'}];
+    return{boards:B.map((b,i)=>({...b,on:this.state.on[i],replay:this.rp(i)}))};
+  }
+}
+</script>
+</body>
+</html>

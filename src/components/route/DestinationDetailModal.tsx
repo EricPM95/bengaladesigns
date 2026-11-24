@@ -84,7 +84,7 @@ export function TarjetaDeActividad({ a, i, ancho }: { a: ActividadDeDestino; i: 
       <div className="flex flex-col gap-2 px-3.5 pb-3.5 pt-1.5">
         <span className="flex h-[46px] items-start overflow-hidden text-[21px] leading-[1.1]" style={SERIE}>{a.nombre}</span>
         <span className="flex items-center gap-2">
-          <span data-nota-actividad><Pastilla nota={a.nota} /></span>
+          {typeof a.nota === 'number' && <span data-nota-actividad><Pastilla nota={a.nota} /></span>}
           <span className="flex h-[34px] flex-col justify-center leading-[1.25]">
             <span className="whitespace-nowrap text-[13px] font-semibold text-text">{opinionesTexto(a.opiniones)}</span>
             {a.duracion && <span className="whitespace-nowrap text-[12px] text-text/55">{a.duracion}</span>}

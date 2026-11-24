@@ -8,7 +8,7 @@ import { useAlojamientoUi } from '../../../store/useAlojamientoUi'
 import { estanciasDelViaje, precioDeAlojamiento, zonaDeAlojamientoElegida } from '../../../lib/tuAlojamiento'
 import { CabeceraBloque, ICONOS } from './BloqueReservas'
 import { BloqueClaro, CajaDia, CajaNoches, FilaIcono, ParaQuienDesign, SeccionDatos, TarjetaCrema } from './PiezasDesignReservas'
-import { LapizDeReserva, PapeleraRoja } from './BotonesDeReserva'
+import { IconoDeDocumento, LapizDeReserva, PapeleraRoja } from './BotonesDeReserva'
 import { fechaCorta } from '../../../lib/nombreDeDia'
 import { Icono } from '../../ui/Icono'
 import { LineaDelPase } from '../../pase/Candado'
@@ -21,6 +21,7 @@ import { TimeListWheel } from '../../ui/TimeListWheel'
 import type { EnCambioDeVuelo } from '../../../lib/cambioDeVuelo'
 import { BotonComoLlegarAlojamiento } from '../alojamiento/BotonComoLlegarAlojamiento'
 import { ReservaDelAlojamiento } from './ReservaDelAlojamiento'
+import { MapaDelAlojamiento, MapaPequenoDelAlojamiento } from './MapaDelAlojamiento'
 import { reservaConDatos, textoHorasReserva } from '../../../lib/reservaAlojamiento'
 
 /** La hoja de la zona (Tanda 6v): las zonas del destino en una rueda, como la de la hora, y [Guardar]. */
@@ -78,6 +79,11 @@ export function AlojamientoReservas({
   const zona = useRouteStore((state) => state.route?.accommodationZone ?? null)
   const direccion = useRouteStore((state) => state.route?.accommodationAddress ?? null)
   const setHotel = useRouteStore((state) => state.setAccommodationHotel)
+  // (V45, M3) El punto del alojamiento puesto en el mapa: sale el mapa pequeño con la dirección y [Cambiar].
+  const punto = useRouteStore((state) => state.route?.accommodationPoint ?? null)
+  const setPunto = useRouteStore((state) => state.setAccommodationPoint)
+  const setDireccionRuta = useRouteStore((state) => state.setAccommodationAddress)
+  const [cambiandoPunto, setCambiandoPunto] = useState(false)
   const abrirMapa = useAlojamientoUi((state) => state.abrirMapa)
   const abrirTuAlojamiento = useAlojamientoUi((state) => state.abrirTuAlojamiento)
   const grupoLoSuyo = useLoSuyo((s) => s.grupo)
@@ -92,8 +98,6 @@ export function AlojamientoReservas({
   const zonaHecha = alojamientoHecho(elegida?.id)
   const precio = precioDeAlojamiento(hotel)
 
-  // Con el hotel puesto pero sin la zona (de pago) la línea sigue en rosa: lo que falta es la zona.
-  const resumenVerde = pago ? zonaHecha : true
   const hayAlgo = Boolean(hotel) || zonaHecha
   /** (10S9 §1) Al entrar: abierto si falta algo, cerrado si está «Listo». El viajero lo puede cerrar SIEMPRE (y abrir) con la cabecera; su gesto manda hasta que cambie lo que falta o el panel pida abrirlo. */
   const [desplegadoUsuario, setDesplegadoUsuario] = useState<boolean | null>(null)
@@ -120,6 +124,8 @@ export function AlojamientoReservas({
   const salidaIso = conReserva ? (hotel?.reserva?.salida ?? rango?.end ?? null) : (rango?.end ?? null)
   const nochesCaja = (conReserva ? hotel?.reserva?.noches : null) ?? noches
   const lineaFechas = entradaIso && salidaIso ? { rotulo: `${fechaCorta(entradaIso)} → ${fechaCorta(salidaIso)}`, grande: rangoDeFechas(entradaIso, salidaIso) } : null
+  // (V45 §3) «Listo» con el hotel y las fechas, haya documento (la reserva) o no; «Falta» solo si falta el hotel o las fechas. La zona y la reserva ya no lo encienden ni lo apagan.
+  const resumenVerde = Boolean(hotel) && Boolean(lineaFechas)
   // La zona nuestra de verdad, sin lo que va entre paréntesis («Centro (Panteón, Trevi, Navona)» → «Zona Centro»).
   const zonaCorta = elegida ? elegida.nombre.replace(/\s*\(.*\)\s*$/, '').trim() : ''
   const zonaTexto = pago && elegida && zonaCorta ? (/^zona\b/i.test(zonaCorta) ? zonaCorta : `Zona ${zonaCorta}`) : null
@@ -132,7 +138,7 @@ export function AlojamientoReservas({
           <>
             {/* (10S8 §5, A1/A2) La cabecera clara: icono, título y «Listo» (en cuanto el hotel está puesto; el documento es un extra y del pase) o «Falta», SIN línea de texto debajo. Con todo listo se pliega y se abre al tocarla; mientras falta algo, abierto. */}
             <div data-aloj-cabecera>
-              <CabeceraBloque icono={ICONOS.hotel} titulo="Alojamiento" datos="alojamiento" onClick={alternarBloque} estado={resumenVerde ? 'Listo' : 'Falta la zona'} hecho={resumenVerde} abierto={desplegado} className="px-0.5" />
+              <CabeceraBloque icono={ICONOS.hotel} titulo="Alojamiento" datos="alojamiento" onClick={alternarBloque} estado={resumenVerde ? 'Listo' : 'Falta'} hecho={resumenVerde} abierto={desplegado} className="px-0.5" />
             </div>
             {/* La línea del pase (sin pase): con el bloque cerrado, debajo de la cabecera; abierto, dentro y debajo (al final). */}
             {!pago && !desplegado && <LineaDelPase clave="alojamiento" datos="alojamiento-tarjeta" texto="Con el {pase}, adaptamos tus días a donde duermes y llegas a tu alojamiento en un toque, estés donde estés." />}
@@ -141,6 +147,7 @@ export function AlojamientoReservas({
                 <ReservaDelAlojamiento hotel={hotel ?? { name: '', precio: null }} segmentDayId={segmentDayId} nombreMostrado={nombreHotel} conPase={pago} direccionDelViaje={direccion} año={rango?.start ? Number(rango.start.slice(0, 4)) : undefined}>
                   {({ reserva, localizador, esAdmin, abrirDatos, botonAnadir }) => {
                     const dirTexto = reserva?.direccion ?? direccion
+                    // (V45 §3) La dirección, una vez: «Zona Prati» en una línea y la dirección en otra.
                     const filaDireccion = [zonaTexto, dirTexto].filter(Boolean).join(' · ')
                     const horas = reserva ? textoHorasReserva(reserva) : null
                     const hayFilas = (gestionaAdmin && quienes.length > 0) || precio !== null || Boolean(filaDireccion) || Boolean(horas) || Boolean(reserva?.telefono) || Boolean(localizador)
@@ -151,7 +158,11 @@ export function AlojamientoReservas({
                             <span className="min-w-0 flex-1 [overflow-wrap:anywhere]" style={{ font: "400 28px/1.05 'Instrument Serif',serif" }} data-alojamiento-nombre>
                               {nombreHotel ?? elegida?.nombre ?? 'Tu alojamiento'}
                             </span>
-                            <LapizDeReserva onClick={() => abrirTuAlojamiento(segmentDayId)} etiqueta="Cambiar el alojamiento" datos="aloj-arriba" />
+                            {/* (V45 §1 y §3) El icono de la reserva junto al lápiz: gris con «+» si falta, dorado si está (al tocarlo, sus datos). */}
+                            <span className="flex flex-none items-center">
+                              {esAdmin && hotel && <IconoDeDocumento hay={Boolean(reserva)} tipo="reserva" onAbrir={abrirDatos} datos="aloj" />}
+                              <LapizDeReserva onClick={() => abrirTuAlojamiento(segmentDayId)} etiqueta="Cambiar el alojamiento" datos="aloj-arriba" />
+                            </span>
                           </div>
                           {(lineaFechas || nochesCaja > 0) && (
                             <div className="flex items-stretch gap-2.5">
@@ -181,9 +192,19 @@ export function AlojamientoReservas({
                                 <span data-alojamiento-precio>{precioEnVista(precio)}</span>
                               </FilaIcono>
                             )}
-                            {filaDireccion && (
+                            {zonaTexto && (
+                              <FilaIcono icono="direccion" datos="zona">
+                                <span data-zona-tarjeta>{zonaTexto}</span>
+                              </FilaIcono>
+                            )}
+                            {punto && pago && (
+                              <div data-alojamiento-mapa-tarjeta className="mb-1">
+                                <MapaPequenoDelAlojamiento punto={punto} puedeCambiar={esAdmin} onCambiar={() => setCambiandoPunto(true)} />
+                              </div>
+                            )}
+                            {dirTexto && !(punto && pago && dirTexto === punto.direccion) && (
                               <FilaIcono icono="direccion" datos="direccion">
-                                <span data-direccion-tarjeta>{filaDireccion}</span>
+                                <span data-direccion-tarjeta>{dirTexto}</span>
                               </FilaIcono>
                             )}
                             {horas && (
@@ -212,6 +233,17 @@ export function AlojamientoReservas({
                   }}
                 </ReservaDelAlojamiento>
                 {!pago && <LineaDelPase clave="alojamiento" datos="alojamiento-tarjeta" texto="Con el {pase}, adaptamos tus días a donde duermes y llegas a tu alojamiento en un toque, estés donde estés." />}
+                {cambiandoPunto && (
+                  <MapaDelAlojamiento
+                    inicial={punto}
+                    onVolver={() => setCambiandoPunto(false)}
+                    onElegido={(p) => {
+                      setPunto(p)
+                      setDireccionRuta(p.direccion)
+                      setCambiandoPunto(false)
+                    }}
+                  />
+                )}
               </>
             )}
           </>

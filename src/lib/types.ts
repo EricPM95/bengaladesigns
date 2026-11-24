@@ -1045,6 +1045,8 @@ export interface Route {
   departureOtraHora?: string | null
   /** Tanda 7: la dirección del alojamiento (opcional, de pago). Solo con ella existe [Cómo llegar a tu alojamiento]. */
   accommodationAddress?: string | null
+  /** (V45) El punto del alojamiento puesto en el mapa (RESERVAS › Alojamiento › «Pon tu alojamiento en el mapa», búsqueda con Photon/OpenStreetMap): sus coordenadas y su dirección. Viaja dentro del viaje; ausente en los viajes de antes. HOY y «Cómo llegar» lo prefieren a la zona. */
+  accommodationPoint?: { lat: number; lng: number; direccion: string } | null
   /**
    * Tanda 7 (de pago): lo que el motor decidió con la hora de llegada y la de vuelta del viajero (`day.arrival_plan` del día 1 y `day.return_day` del día de vuelta), guardado al generar o rehacer
    * la ruta. Las pantallas (ficha de llegada y vuelta, tarjeta «Hoy vuelves a casa», hoja del resumen, campana) leen de aquí. Ausente = sin horas puestas, la gratis, coche o la ruta a mano.

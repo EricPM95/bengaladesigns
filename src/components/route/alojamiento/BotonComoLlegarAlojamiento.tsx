@@ -24,7 +24,8 @@ interface BotonComoLlegarAlojamientoProps {
  */
 export function BotonComoLlegarAlojamiento({ direccion, variante = 'completo', className = '', style }: BotonComoLlegarAlojamientoProps) {
   const ciudadDelViaje = useRouteStore((state) => state.route?.destination ?? null)
-  const enlace = enlaceComoLlegarAlojamiento(direccion, ciudadDelViaje)
+  const punto = useRouteStore((state) => state.route?.accommodationPoint ?? null)
+  const enlace = enlaceComoLlegarAlojamiento(direccion, ciudadDelViaje, punto)
   const pago = usePagoActivo()
   if (!enlace) return null
   // (Tanda 10G: sin el pase, cerrado y a la vista; Tanda 10N5: con la caja pequeña del pase, y sin pintar hasta saber si hay pase.)

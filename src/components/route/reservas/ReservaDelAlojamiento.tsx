@@ -126,7 +126,7 @@ export function BotonAnadirReserva({ onLeida, año, onAMano }: { onLeida: (datos
   return (
     <div className="flex flex-col gap-2.5">
       <input ref={ref} type="file" accept="application/pdf,image/*" className="hidden" data-reserva-aloj-archivo onChange={(e) => void alElegir(e.target.files?.[0])} />
-      <BotonAnadirDocumento texto={leyendo ? 'Leyendo tu reserva…' : 'Añadir tu reserva'} clave="documento_alojamiento" datos="reserva-aloj-anadir" icono={<TrazoDesign d="cama" size={18} color="#4A3510" grosor={1.9} />} onAnadir={() => !leyendo && ref.current?.click()} aMano={onAMano} />
+      <BotonAnadirDocumento estilo="borde" texto={leyendo ? 'Leyendo tu reserva…' : 'Añade tu reserva'} clave="documento_alojamiento" datos="reserva-aloj-anadir" icono={<TrazoDesign d="cama" size={18} color="#4A3510" grosor={1.9} />} onAnadir={() => !leyendo && ref.current?.click()} aMano={onAMano} />
       {aviso && (
         <span role="status" data-reserva-aloj-error className="text-center text-[12.5px] leading-snug text-accent-red">
           {aviso}

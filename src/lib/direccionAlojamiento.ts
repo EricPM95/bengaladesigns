@@ -6,6 +6,12 @@ import type { Route } from './types'
  * Esta pieza es la única que construye el enlace; la ficha de llegada y HOY (y cualquier pantalla) llaman a `enlaceComoLlegarAlojamiento`.
  */
 
+/** (V45) Las coordenadas del punto del alojamiento puesto en el mapa, o null (viajes de antes, o sin punto). */
+export function puntoDelAlojamiento(route: Pick<Route, 'accommodationPoint'> | null | undefined): { lat: number; lng: number } | null {
+  const p = route?.accommodationPoint
+  return p && Number.isFinite(p.lat) && Number.isFinite(p.lng) && (p.lat !== 0 || p.lng !== 0) ? { lat: p.lat, lng: p.lng } : null
+}
+
 /** La dirección limpia (espacios de más fuera), o null si no hay. */
 export function direccionDelAlojamiento(route: Pick<Route, 'accommodationAddress'> | null | undefined): string | null {
   const texto = (route?.accommodationAddress ?? '').replace(/\s+/g, ' ').trim()
@@ -16,7 +22,11 @@ export function direccionDelAlojamiento(route: Pick<Route, 'accommodationAddress
  * El enlace de Google Maps para llegar a la dirección, desde donde esté el viajero (sin origen: el mapa usa su ubicación) y en transporte público. Sin dirección, null: nadie construye
  * un enlace con el nombre del hotel ni con la zona.
  */
-export function enlaceComoLlegarAlojamiento(direccion: string | null | undefined, ciudad?: string | null): string | null {
+export function enlaceComoLlegarAlojamiento(direccion: string | null | undefined, ciudad?: string | null, punto?: { lat: number; lng: number } | null): string | null {
+  // (V45) Con el punto puesto en el mapa, el enlace va a sus coordenadas (exacto, sin depender de que Google entienda la dirección).
+  if (punto && Number.isFinite(punto.lat) && Number.isFinite(punto.lng) && (punto.lat !== 0 || punto.lng !== 0) && (direccion ?? '').trim()) {
+    return `https://www.google.com/maps/dir/?${new URLSearchParams({ api: '1', destination: `${punto.lat},${punto.lng}`, travelmode: 'transit' }).toString()}`
+  }
   let limpia = (direccion ?? '').replace(/\s+/g, ' ').trim()
   if (!limpia) return null
   // (V44 §8) Google buscaba «Via X 12» en cualquier ciudad y puso un alojamiento de Roma en Mataró: el enlace lleva la CIUDAD DEL VIAJE (si la dirección no la dice ya). Guardar el punto de un mapa de búsqueda no se puede (los resultados de Mapbox son temporales, ver DECISIONES_V44), así que esto es lo que se hace.

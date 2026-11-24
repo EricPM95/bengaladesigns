@@ -6,7 +6,7 @@ import { addDaysToIso } from '../../../../lib/dateRange'
 import { displayStopName } from '../../../../lib/format'
 import { fijasDelDia, horaFijaDe, horaCorta } from '../../../../lib/hoyParada'
 import { datosDeHorarioEnMemoria, horarioDeParada, normalizaNombre, useDatosDeHorario } from '../../../../lib/horarioDeParada'
-import { direccionDelAlojamiento, enlaceComoLlegarAlojamiento } from '../../../../lib/direccionAlojamiento'
+import { direccionDelAlojamiento, enlaceComoLlegarAlojamiento, puntoDelAlojamiento } from '../../../../lib/direccionAlojamiento'
 import { StopsMapView, type StopsMapMarker } from '../../../map/StopsMapView'
 import { hasRealCoordinates } from '../../../../lib/distanceMock'
 import {
@@ -259,7 +259,7 @@ export function BotonCambiarPlan(p: PropsCambiarPlan) {
   const [vacio, setVacio] = useState<string | undefined>(undefined)
   const ctx = useContexto(route, p.enCoche)
   const setMode = useRouteStore((s) => s.setMode)
-  const enlaceCasa = enlaceComoLlegarAlojamiento(direccionDelAlojamiento(route), route.destination)
+  const enlaceCasa = enlaceComoLlegarAlojamiento(direccionDelAlojamiento(route), route.destination, puntoDelAlojamiento(route))
   const tripId = useSyncStore((s) => s.activeTripId) ?? route.id
   const cerca = useCercaDeAqui({ tripId, sitiosHoy: day.stops.map((s) => s.name), activo: paso === 'anadir_lista' })
   const fijas = ctx.fijasDe(day)

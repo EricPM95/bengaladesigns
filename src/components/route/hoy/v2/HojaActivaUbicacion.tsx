@@ -11,7 +11,7 @@ export function HojaActivaUbicacion({ onCerrar }: { onCerrar: () => void; /** (s
     <HojaV2 onCerrar={onCerrar} etiqueta="Activa tu ubicación" fondo="#FBF3E2">
       <div data-hoy-activa-ubicacion className="flex flex-col gap-3">
         <Titulo texto="Activa tu ubicación" onCerrar={onCerrar} />
-        <span className="text-[14.5px] font-medium leading-[1.4]">Para guiarte en tu viaje necesitamos saber dónde estás. Activa la ubicación para jutrip.app en los ajustes de tu móvil o de tu navegador, y vuelve a esta página.</span>
+        <span className="text-[14.5px] font-medium leading-[1.4]">Para ver lo que tienes cerca, Jutrip necesita tu ubicación. Actívala en los ajustes de tu móvil o de tu navegador: solo se usa mientras usas la app.</span>
         <button type="button" onClick={onCerrar} data-activa-ubicacion-entendido className="flex h-[50px] items-center justify-center rounded-2xl text-[15px] font-bold" style={BOTON_ORO}>
           Entendido
         </button>

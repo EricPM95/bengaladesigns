@@ -323,20 +323,27 @@ try {
   // La hoja de la entrada: día y hora (01), luego el dinero (02-03).
   await ev(`(() => { const hoja = document.querySelector('#add-reservation-heading')?.closest('[role="dialog"]'); const fichas = Array.from(hoja.querySelectorAll('[role="group"] button')).filter((b) => !b.disabled); (fichas[1] ?? fichas[0]).click(); return true })()`)
   await a.esp(1500)
-  await ev("document.querySelector('[data-para-quien]')?.scrollIntoView({ block: 'center' }); true")
+  // (V45 §4) En grupo la hoja va en DOS pasos: 1) días y hora [Siguiente]; 2) «Casi lista» (¿A qué cuenta lo sumamos?, ¿Quién la ha pagado? solo con la cuenta conjunta, el precio y [Guardar…]).
+  await ev(`(async () => { const hoja = document.querySelector('#add-reservation-heading')?.closest('[role="dialog"]'); const c = hoja.querySelector('[data-campo-de-hora="anadir"]'); if (c && c.getAttribute('data-vacia') === '1') { c.click(); await new Promise((r) => setTimeout(r, 600)); document.querySelector('[data-hoja-de-hora-guardar]')?.click(); await new Promise((r) => setTimeout(r, 500)) } for (let i = 0; i < 30 && hoja.querySelector('[data-siguiente-paso]')?.disabled; i++) await new Promise((r) => setTimeout(r, 300)); hoja.querySelector('[data-siguiente-paso]')?.click(); return true })()`)
+  await a.esp(1200)
+  await ev("document.querySelector('[data-a-que-cuenta]')?.scrollIntoView({ block: 'center' }); true")
   await a.esp(500)
   const he = await ev(`(() => {
     const d = document.querySelector('#add-reservation-heading')?.closest('[role="dialog"]'); const t = d?.innerText.replace(/\\s+/g, ' ') ?? ''
-    return { t, orden: ['¿Para quién son las entradas?', 'Precio', '¿Quién la ha pagado?'].map((s) => t.indexOf(s)), cuadrados: Array.from(d.querySelectorAll('[data-personas-cuadradas]')).map((g) => g.getAttribute('data-personas-cuadradas')), boton: d.querySelector('[data-guardar-reserva]')?.textContent.trim() }
+    return { t, orden: ['Casi lista', '¿A qué cuenta lo sumamos?', 'Precio'].map((s) => t.indexOf(s)), cuadrados: Array.from(d.querySelectorAll('[data-personas-cuadradas]')).map((g) => g.getAttribute('data-personas-cuadradas')), boton: d.querySelector('[data-guardar-reserva]')?.textContent.trim() }
   })()`)
-  debe(/¿Para quién son las entradas\?/.test(he.t) && /Precio/.test(he.t), '7d', '«¿Para quién son las entradas?» antes del precio')
-  debe(he.orden[0] > 0 && he.orden[0] < he.orden[1], '7d', `el orden: para quién → precio (${he.orden.join(' < ')})`)
-  debe(!/¿A qué cuenta lo sumamos\?/.test(he.t), '7d', 'fuera «¿A qué cuenta lo sumamos?»')
+  debe(/Casi lista/.test(he.t) && /¿A qué cuenta lo sumamos\?/.test(he.t) && /Precio/.test(he.t), '7d', '«Casi lista» y «¿A qué cuenta lo sumamos?» antes del precio (V45 §4: dos pasos en grupo)')
+  debe(he.orden[0] >= 0 && he.orden[0] < he.orden[1] && he.orden[1] < he.orden[2], '7d', `el orden: Casi lista → cuenta → precio (${he.orden.join(' < ')})`)
   debe(he.boton === 'Guardar la entrada', '7d', `el botón dice «Guardar la entrada» (${he.boton})`)
-  await ev("(() => { const d = document.querySelector('#add-reservation-heading')?.closest('[role=dialog]'); const c = d.querySelector('[data-persona-cuadrada=\"p-ana\"]'); c?.click(); const i = Array.from(d.querySelectorAll('input')).find((x) => x.getAttribute('aria-label') === 'Precio'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(i, '36'); i.dispatchEvent(new Event('input', { bubbles: true })); return true })()")
+  await ev("document.querySelector('[data-cuenta-opcion=\"mia\"]')?.click(); true")
+  await a.esp(400)
+  debe(!/¿Quién la ha pagado\?|¿Quién lo ha pagado\?/.test(await ev("document.querySelector('#add-reservation-heading')?.closest('[role=dialog]')?.innerText ?? ''")), '7d', '«¿Quién la ha pagado?» NO sale con «Mi cuenta» (V45 §4)')
+  await ev("(() => { const d = document.querySelector('#add-reservation-heading')?.closest('[role=dialog]'); d.querySelector('[data-cuenta-opcion=\"comun\"]')?.click(); return true })()")
+  await a.esp(500)
+  await ev("(() => { const d = document.querySelector('#add-reservation-heading')?.closest('[role=dialog]'); const i = Array.from(d.querySelectorAll('input')).find((x) => x.getAttribute('aria-label') === 'Precio'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(i, '36'); i.dispatchEvent(new Event('input', { bubbles: true })); return true })()")
   await a.esp(600)
   const he2 = await ev("(() => { const d = document.querySelector('#add-reservation-heading')?.closest('[role=dialog]'); return { t: d.innerText.replace(/\\s+/g, ' '), cuadrados: Array.from(d.querySelectorAll('[data-personas-cuadradas]')).map((g) => g.getAttribute('data-personas-cuadradas')) } })()")
-  debe(/¿Quién la ha pagado\?|¿Quién lo ha pagado\?/.test(he2.t) && he2.cuadrados.includes('pagado'), '7d', `«¿Quién la ha pagado?» en CUADRADOS (${he2.cuadrados.join(',')})`)
+  debe(/¿Quién la ha pagado\?|¿Quién lo ha pagado\?/.test(he2.t) && he2.cuadrados.includes('pagado'), '7d', `con la cuenta conjunta sí sale «¿Quién la ha pagado?» en CUADRADOS (${he2.cuadrados.join(',')})`)
   await ev("document.querySelector('[data-quien-lo-ha-pagado]')?.scrollIntoView({ block: 'center' }); true")
   await a.esp(400)
   await a.captura(foto('12_entrada_dinero'))
@@ -344,6 +351,8 @@ try {
     const hoja = document.querySelector('#add-reservation-heading')?.closest('[role="dialog"]')
     // antes → ahora → decisión de Eric (10S9b, 1-nov): antes la hora de la hoja «Añadir» se ponía sola (rueda siempre abierta) → ahora la casilla sale con un ejemplo en gris, la hora no cuenta hasta elegirla (se abre la hoja de la hora y el ✓ guarda lo que se ve).
     { const c = hoja.querySelector('[data-campo-de-hora="anadir"]'); if (c && c.getAttribute('data-vacia') === '1') { c.click(); await new Promise((r) => setTimeout(r, 600)); document.querySelector('[data-hoja-de-hora-guardar]')?.click(); await new Promise((r) => setTimeout(r, 500)) } }
+    // (V45 §4) En grupo la hoja va en dos pasos: [Siguiente] lleva al «Casi lista», donde está [Guardar…].
+    { for (let i = 0; i < 30 && hoja.querySelector('[data-siguiente-paso]')?.disabled; i++) await new Promise((r) => setTimeout(r, 300)); const sg = hoja.querySelector('[data-siguiente-paso]'); if (sg) { sg.click(); await new Promise((r) => setTimeout(r, 900)) } }
     const g = hoja.querySelector('[data-guardar-reserva]')
     for (let i = 0; i < 30 && g.disabled; i++) await new Promise((r) => setTimeout(r, 300))
     g.click()

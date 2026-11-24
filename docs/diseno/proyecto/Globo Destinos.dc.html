@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}::-webkit-scrollbar{display:none}@keyframes gbPulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.35);opacity:.3}}</style>
+</helmet>
+<div style="min-height:100vh;background:#E7DCC6;padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">APP · PERFIL · «¿A DÓNDE TE APETECE IR?»</span><span style="font:400 40px/1 'Instrument Serif',serif">El mapa a pantalla completa</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start">
+  <sc-for list="{{ boards }}" as="b" hint-placeholder-count="3">
+    <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(28,34,48,.7)">{{ b.id }} · {{ b.cap }}</span>
+      <div style="position:relative;width:390px;height:844px;border-radius:40px;overflow:hidden;background:radial-gradient(120% 70% at 50% 28%,#FBF7EC 0%,#EFE5CE 100%);box-shadow:0 30px 60px -30px rgba(28,34,48,.5);touch-action:none">
+        <svg viewBox="0 0 390 844" width="390" height="844" style="position:absolute;inset:0;cursor:grab;user-select:none;touch-action:none" onPointerDown="{{ b.pd }}" onPointerMove="{{ b.pm }}" onPointerUp="{{ b.pu }}" onPointerCancel="{{ b.pu }}" onWheel="{{ b.wh }}">
+          <defs><linearGradient id="{{ b.gid }}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8DBFE4"></stop><stop offset="1" stop-color="#6FA6D4"></stop></linearGradient><linearGradient id="{{ b.sid }}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E4EDC4"></stop><stop offset="1" stop-color="#C4D8A0"></stop></linearGradient></defs>
+          <rect x="0" y="0" width="390" height="844" fill="url(#{{ b.gid }})"></rect>
+          <path d="{{ b.landD }}" fill="url(#{{ b.sid }})" stroke="#9DBE86" stroke-width=".8" stroke-linejoin="round"></path>
+          <path d="{{ b.bordD }}" fill="none" stroke="#A89BC0" stroke-opacity=".7" stroke-width=".7" stroke-dasharray="3 2"></path>
+          
+          <sc-for list="{{ b.pins }}" as="p" hint-placeholder-count="14">
+            <g onClick="{{ p.tap }}" style="cursor:pointer;opacity:{{ p.op }};pointer-events:{{ p.pe }}">
+              <circle cx="{{ p.x }}" cy="{{ p.y }}" r="18" fill="transparent"></circle>
+              <sc-if value="{{ p.trip }}" hint-placeholder-val="{{ false }}"><circle cx="{{ p.x }}" cy="{{ p.y }}" r="15" fill="none" stroke="#C99A44" stroke-width="2.2" style="transform-box:fill-box;transform-origin:center;animation:gbPulse 2.2s ease-in-out infinite"></circle><circle cx="{{ p.x }}" cy="{{ p.y }}" r="11.5" fill="none" stroke="#C99A44" stroke-width="2.4"></circle></sc-if>
+              <circle cx="{{ p.x }}" cy="{{ p.y }}" r="{{ p.r }}" fill="{{ p.fill }}" stroke="{{ p.ring }}" stroke-width="2.2"></circle>
+              <sc-if value="{{ p.done }}" hint-placeholder-val="{{ false }}"><path d="M{{ p.cx1 }} {{ p.y }}l2.6 2.6l4.6 -5.2" fill="none" stroke="#1C2230" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></sc-if>
+              <sc-if value="{{ p.sel }}" hint-placeholder-val="{{ false }}"><circle cx="{{ p.x }}" cy="{{ p.y }}" r="17" fill="none" stroke="#1C2230" stroke-width="1.6" stroke-dasharray="3 3"></circle></sc-if>
+            </g>
+          </sc-for>
+          
+        </svg>
+        <sc-for list="{{ b.cl }}" as="l" hint-placeholder-count="12"><span style="position:absolute;left:{{ l.x }}px;top:{{ l.y }}px;transform:translate(-50%,-50%);font:italic 500 {{ l.fs }}px 'Geist';color:#3C4A3A;opacity:.75;white-space:nowrap;pointer-events:none">{{ l.n }}</span></sc-for>
+        <sc-for list="{{ b.labels }}" as="l" hint-placeholder-count="10"><span style="position:absolute;left:{{ l.x }}px;top:{{ l.y }}px;transform:translate({{ l.tx }},-50%);font:600 11.5px 'Geist';color:{{ l.c }};white-space:nowrap;pointer-events:none;text-shadow:0 0 3px #F6EFE0,0 0 3px #F6EFE0,0 0 2px #F6EFE0,1px 1px 0 #F6EFE0,-1px -1px 0 #F6EFE0,1px -1px 0 #F6EFE0,-1px 1px 0 #F6EFE0">{{ l.n }}</span></sc-for>
+        <span style="position:absolute;left:22px;top:60px;width:44px;height:44px;border-radius:50%;background:#FFFDF8;border:1.5px solid #B58A2E;box-shadow:0 8px 16px -8px rgba(28,34,48,.5);display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1C2230" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span>
+        <div style="position:absolute;left:0;right:0;top:{{ b.top }}px;bottom:0;border-radius:30px 30px 0 0;background:#FFFDF8;box-shadow:0 -18px 40px -18px rgba(28,34,48,.5);display:flex;flex-direction:column;transition:top .35s ease">
+          <div onClick="{{ b.toggle }}" style="flex:none;padding:10px 0 6px;cursor:pointer;display:flex;justify-content:center"><span style="width:42px;height:5px;border-radius:5px;background:rgba(28,34,48,.2)"></span></div>
+          <sc-if value="{{ b.hasSel }}" hint-placeholder-val="{{ false }}">
+            <div style="flex:1;min-height:0;overflow-y:auto;padding:4px 20px 120px;display:flex;flex-direction:column;gap:14px">
+              <div style="display:flex;align-items:center;justify-content:space-between"><span style="font:400 30px/1 'Instrument Serif',serif">{{ b.sel.n }}</span><span onClick="{{ b.clr }}" style="width:34px;height:34px;border-radius:50%;background:#F1EADC;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></div>
+              <div style="height:130px;border-radius:22px;background:{{ b.sel.ph }};{{ b.sel.gray }};position:relative"><sc-if value="{{ b.sel.soon }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:12px;top:12px;height:26px;padding:0 12px;border-radius:999px;background:rgba(255,253,248,.92);display:flex;align-items:center;font:600 11.5px 'Geist'">Próximamente</span></sc-if></div>
+              <sc-if value="{{ b.sel.ready }}" hint-placeholder-val="{{ false }}">
+                <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;color:rgba(28,34,48,.5)">LO QUE TE PUEDES LLEVAR</span>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><sc-for list="{{ b.take }}" as="k" hint-placeholder-count="3"><div style="border-radius:18px;background:#F7F1E4;padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center"><span style="font:400 28px/1 'Instrument Serif',serif;color:#8A6A2C">{{ k.n }}</span><span style="font:500 12px/1.25 'Geist';color:rgba(28,34,48,.7)">{{ k.l }}</span></div></sc-for></div>
+                <div style="display:flex;gap:10px"><span style="flex:1;height:54px;border-radius:16px;background:#FFFDF8;border:1px solid rgba(28,34,48,.2);display:flex;align-items:center;justify-content:center;font:600 15px 'Geist'">{{ b.sel.b1 }}</span><span style="flex:1;height:54px;border-radius:16px;background:linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440);box-shadow:0 12px 22px -14px rgba(110,80,24,.75),inset 0 1px 0 rgba(255,255,255,.6);color:#4A3510;display:flex;align-items:center;justify-content:center;font:700 15px 'Geist'">{{ b.sel.b2 }}</span></div>
+              </sc-if>
+              <sc-if value="{{ b.sel.soon }}" hint-placeholder-val="{{ false }}"><span style="height:54px;border-radius:16px;background:#1C2230;color:#F3D88F;display:flex;align-items:center;justify-content:center;gap:9px;font:700 15px 'Geist'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 8-3 8h18s-3-1-3-8M10 20a2 2 0 0 0 4 0"></path></svg>Avísame</span></sc-if>
+            </div>
+          </sc-if>
+          <sc-if value="{{ b.noSel }}" hint-placeholder-val="{{ true }}">
+            <div style="flex:none;padding:2px 20px 10px"><span style="font:400 30px/1.02 'Instrument Serif',serif">¿A dónde te <em style="color:#8A6A2C">apetece ir?</em></span></div>
+            <div style="flex:1;min-height:0;overflow-y:auto;padding:0 20px 130px;display:flex;flex-direction:column;gap:18px">
+              <sc-for list="{{ b.groups }}" as="g" hint-placeholder-count="3">
+                <div style="display:flex;flex-direction:column;gap:8px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.5)">{{ g.t }}</span>
+                  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px"><sc-for list="{{ g.items }}" as="c" hint-placeholder-count="3">
+                    <div onClick="{{ c.tap }}" style="cursor:pointer;min-height:112px;padding:10px 8px;border-radius:20px;background:{{ c.bg }};border:1.5px solid {{ c.bd }};display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center">
+                      <span style="width:34px;height:34px;border-radius:50%;background:{{ c.fl }};box-shadow:inset 0 0 0 1px rgba(28,34,48,.18);{{ c.gr }}"></span>
+                      <span style="font:600 13.5px/1.15 'Geist';color:{{ c.fg }};text-wrap:balance">{{ c.n }}</span>
+                      <span style="font:500 11px/1.25 'Geist';color:{{ c.sc }}">{{ c.st }}</span>
+                    </div></sc-for></div></div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+        <span style="position:absolute;right:20px;bottom:34px;width:62px;height:62px;border-radius:50%;background:linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440);box-shadow:0 0 0 6px rgba(246,239,224,.9),0 16px 28px -8px rgba(110,80,24,.85),inset 0 1px 0 rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4A3510" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></span>
+      </div>
+    </div>
+  </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const FLG={it:'linear-gradient(90deg,#2E8B57 0 33%,#F4F1EA 33% 66%,#CE3B3B 66%)',fr:'linear-gradient(90deg,#2D4FA0 0 33%,#F4F1EA 33% 66%,#CE3B3B 66%)',gb:'linear-gradient(#CE3B3B,#CE3B3B) center/100% 22% no-repeat,linear-gradient(#CE3B3B,#CE3B3B) center/16% 100% no-repeat,linear-gradient(#fff,#fff) center/100% 46% no-repeat,linear-gradient(#fff,#fff) center/30% 100% no-repeat,#2D4FA0',es:'linear-gradient(#C8323C 0 25%,#F2C230 25% 75%,#C8323C 75%)',pt:'linear-gradient(90deg,#2E8B57 0 40%,#CE3B3B 40%)',tr:'radial-gradient(circle at 40% 50%,#fff 0 22%,transparent 24%),#D0302F',ma:'radial-gradient(circle,#2E8B57 0 22%,transparent 24%),#C8323C',jp:'radial-gradient(circle,#CE3B3B 0 26%,transparent 28%),#F8F8F4',us:'linear-gradient(135deg,#2D4FA0 0 38%,transparent 38%),repeating-linear-gradient(#CE3B3B 0 3px,#fff 3px 6px)',mx:'linear-gradient(90deg,#2E8B57 0 33%,#F4F1EA 33% 66%,#CE3B3B 66%)',co:'linear-gradient(#F2C230 0 50%,#2D4FA0 50% 75%,#CE3B3B 75%)'};
+// id,nombre,lon,lat,bandera,estado,foto,grupo
+const C=[['roma','Roma',12.5,41.9,'it','viaje','linear-gradient(160deg,#E7B98A,#B9764A 55%,#5E3A2A)','E'],['flo','Florencia',11.25,43.77,'it','listo','linear-gradient(160deg,#E8C89A,#A8683A)','E'],['pis','Pisa',10.4,43.72,'it','listo','linear-gradient(160deg,#D8D0B8,#8A8062)','E'],['par','París',2.35,48.85,'fr','estado','linear-gradient(160deg,#9DB4D8,#5A6EA0 55%,#2E3A5E)','E'],['lon','Londres',-.12,51.5,'gb','listo','linear-gradient(160deg,#A9B8C4,#66788A)','E'],['mad','Madrid',-3.7,40.4,'es','listo','linear-gradient(160deg,#E9C08A,#B5683A)','E'],['lis','Lisboa',-9.14,38.72,'pt','listo','linear-gradient(160deg,#E8C98A,#B8884A)','E'],['lan','Lanzarote',-13.6,29.04,'es','estado','linear-gradient(160deg,#E2896A,#6B2E1E)','E'],['est','Estambul',28.97,41,'tr','pronto','linear-gradient(160deg,#C9A27A,#7A4E2E)','E'],['mar','Marrakech',-8,31.63,'ma','pronto','linear-gradient(160deg,#E0A070,#9A4E2A)','A'],['can','Cancún',-86.85,21.16,'mx','listo','linear-gradient(160deg,#7FD3D3,#2A8C9A)','M'],['nyc','Nueva York',-74,40.7,'us','listo','linear-gradient(160deg,#9AA8B8,#4A5A6E)','M'],['car','Cartagena de Indias',-75.5,10.4,'co','listo','linear-gradient(160deg,#F0C890,#C8783A)','M'],['tok','Tokio',139.7,35.7,'jp','pronto','linear-gradient(160deg,#F2B8C6,#B85A7A)','S']];
+const GR=[['EUROPA','E'],['ÁFRICA','A'],['AMÉRICA Y CARIBE','M'],['ASIA','S']];
+const PRI={viaje:0,listo:1,estado:2,pronto:3};
+let LAND=null;
+class Component extends DCLogic {
+  state={geo:false,b:{G1:{c:[4,43],z:1,open:false,sel:null},G2:{c:[4,43],z:1,open:true,sel:null},G3:{c:[-80,25],z:1,open:false,sel:null}}};
+  ptr={};
+  async componentDidMount(){try{const imp=async(a,b)=>{try{return await import(a);}catch(e){return await import(b);}};
+    const[g,tp]=await Promise.all([imp('https://cdn.jsdelivr.net/npm/d3-geo@3/+esm','https://esm.sh/d3-geo@3'),imp('https://cdn.jsdelivr.net/npm/topojson-client@3/+esm','https://esm.sh/topojson-client@3')]);
+    let w;try{w=await(await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')).json();}catch(e){w=await(await fetch('https://unpkg.com/world-atlas@2/countries-110m.json')).json();}
+    this.g=g;this.countries=tp.feature(w,w.objects.countries).features;this.land=tp.feature(w,w.objects.land);this.border=tp.mesh(w,w.objects.countries,(a,b)=>a!==b);this.setState({geo:true});}catch(e){console.warn('mapa',e);}}
+  upd=(id,f)=>this.setState(s=>({b:{...s.b,[id]:{...s.b[id],...(typeof f==='function'?f(s.b[id]):f)}}}));
+  proj=(s,cy)=>this.g.geoMercator().scale(520*s.z*180/Math.PI*Math.PI/180*1).center(s.c).translate([195,cy]);
+  fly=(id,lo,la)=>{const s0=this.state.b[id],from=s0.c.slice(),z0=s0.z,t0=performance.now();const step=t=>{const k=Math.min(1,(t-t0)/800),e=1-Math.pow(1-k,3);this.upd(id,{c:[from[0]+(lo-from[0])*e,from[1]+(la-from[1])*e],z:z0+(2.2-z0)*e});if(k<1)requestAnimationFrame(step);};requestAnimationFrame(step);};
+  hand=(id,cyOf)=>({
+    pd:e=>{this.ptr[id]=this.ptr[id]||{};const P=this.ptr[id];P[e.pointerId]={x:e.clientX,y:e.clientY};P.m=0;P.d0=null;try{e.currentTarget.setPointerCapture(e.pointerId);}catch(_){}},
+    pm:e=>{const P=this.ptr[id];if(!P||!P[e.pointerId]||!this.g)return;const ids=Object.keys(P).filter(k=>k!=='m'&&k!=='d0'),old=P[e.pointerId];const dx=e.clientX-old.x,dy=e.clientY-old.y;P[e.pointerId]={x:e.clientX,y:e.clientY};P.m+=Math.abs(dx)+Math.abs(dy);
+      if(ids.length>=2){const a=P[ids[0]],b=P[ids[1]],d=Math.hypot(a.x-b.x,a.y-b.y);if(P.d0){const f=d/P.d0;this.upd(id,s=>({z:Math.max(.5,Math.min(8,s.z*f))}));}P.d0=d;return;}
+      this.upd(id,s=>{const pr=this.proj(s,cyOf(s)),n=pr.invert([195-dx,cyOf(s)-dy]);return n?{c:[n[0],Math.max(-70,Math.min(78,n[1]))]}:{};});},
+    pu:e=>{const P=this.ptr[id];if(P){delete P[e.pointerId];P.d0=null;}setTimeout(()=>{if(this.ptr[id])this.ptr[id].m=0;},0);},
+    wh:e=>{this.upd(id,s=>({z:Math.max(.5,Math.min(8,s.z*(e.deltaY<0?1.1:.91)))}));}});
+  renderVals(){
+    const st=this.state,TAKE=[{n:'4',l:'medallas'},{n:'11',l:'colecciones'},{n:'12',l:'emblemas secretos'}];
+    const mkB=(id,cap)=>{const s=st.b[id],cyOf=q=>q.open?120:290,h=this.hand(id,cyOf),cy=cyOf(s),top=s.open?150:560;
+      let pins=[],labels=[],landD='',bordD='',cl=[];
+      if(this.g&&this.land){const g=this.g,pr=this.proj(s,cy),pa=g.geoPath(pr);landD=pa(this.land);bordD=pa(this.border);
+        this.countries.forEach(f=>{const ar=pa.area(f);if(ar>(s.z>2?1800:5200)){const c=pa.centroid(f);if(c[0]>10&&c[0]<380&&c[1]>90&&c[1]<(top-20)&&f.properties&&f.properties.name)cl.push({n:f.properties.name,x:c[0].toFixed(0),y:c[1].toFixed(0),fs:Math.min(13,9+Math.sqrt(ar)/40).toFixed(1)});}});
+        const vis=C.map(c=>({c,p:pr([c[2],c[3]])})).filter(v=>v.p&&v.p[0]>-10&&v.p[0]<400&&v.p[1]>70&&v.p[1]<(top+10));
+        vis.sort((a,b)=>PRI[b.c[5]]-PRI[a.c[5]]);
+        vis.forEach(v=>{const c=v.c,p=v.p,ok=c[5]!=='pronto',sel=s.sel===c[0];
+          pins.push({x:p[0].toFixed(1),y:p[1].toFixed(1),cx1:(p[0]-3.6).toFixed(1),r:c[5]==='estado'?9:7.5,fill:c[5]==='estado'?'#F3D88F':ok?'#1C2230':'#B8B09C',ring:c[5]==='estado'?'#FFFFFF':ok?'#F3D88F':'#FFFFFF',trip:c[5]==='viaje',done:c[5]==='estado',sel,op:1,pe:'auto',tap:()=>{const P=this.ptr[id];if(P&&P.m>4)return;this.upd(id,{sel:c[0],open:false});this.fly(id,c[2],c[3]);}});});
+        const placed=[];
+        vis.slice().sort((a,b)=>PRI[a.c[5]]-PRI[b.c[5]]).forEach(v=>{const c=v.c,p=v.p,w=c[1].length*6.4+8,right=p[0]+14+w<382;const x0=right?p[0]+14:p[0]-14-w,box=[x0,p[1]-10,x0+w,p[1]+6];
+          if(box[0]<6||placed.some(q=>!(box[2]<q[0]||box[0]>q[2]||box[3]<q[1]||box[1]>q[3])))return;placed.push(box);
+          labels.push({n:c[1],x:(right?p[0]+14:p[0]-14).toFixed(1),y:p[1].toFixed(1),tx:right?'0':'-100%',a:right?'start':'end',c:c[5]==='pronto'?'#6A6E60':'#1C2230',o:1});});}
+      const sel=C.find(c=>c[0]===s.sel),ready=sel&&sel[5]!=='pronto';
+      const groups=GR.map(([t,k])=>({t,items:C.filter(c=>c[7]===k).map(c=>{const ok=c[5]!=='pronto',on=s.sel===c[0],stt={viaje:'Tu viaje · 6–10 dic',estado:'✓ Ya has estado',listo:'Listo para crear',pronto:'Próximamente'}[c[5]];return{n:c[1],fl:FLG[c[4]],gr:ok?'':'filter:grayscale(1);opacity:.6',bg:c[5]==='viaje'||on?'#FBF3E2':'#FFFFFF',bd:c[5]==='viaje'||on?'#C99A44':'rgba(28,34,48,.12)',fg:ok?'#1C2230':'rgba(28,34,48,.5)',st:stt,sc:c[5]==='viaje'?'#8A6A2C':c[5]==='estado'?'#2F6B43':'rgba(28,34,48,.5)',tap:()=>{this.upd(id,{sel:c[0],open:false});this.fly(id,c[2],c[3]);}};})}));
+      return{id,cap,gid:'gg'+id,sid:'gs'+id,top,pins,labels,landD,bordD,cl,groups,pd:h.pd,pm:h.pm,pu:h.pu,wh:h.wh,toggle:()=>this.upd(id,{open:!s.open}),clr:()=>this.upd(id,{sel:null}),hasSel:!!sel,noSel:!sel,take:TAKE,sel:sel?{n:sel[1],ph:sel[6],gray:ok2(sel),soon:sel[5]==='pronto',ready,b1:sel[5]==='viaje'||sel[5]==='estado'?'Abrir mi viaje':'Ver destino',b2:sel[5]==='viaje'?'Ver mi viaje':'Crear viaje'}:{}};};
+    return{boards:[mkB('G1','Con la hoja bajada · arrastra para mover, rueda o dos dedos para acercar'),mkB('G2','Con la hoja subida · la lista entera por continentes'),mkB('G3','América · Cancún, Nueva York y Cartagena de Indias')]};
+  }
+}
+function ok2(c){return c[5]==='pronto'?'filter:grayscale(1) brightness(1.1);opacity:.75':'';}
+</script>
+</body>
+</html>

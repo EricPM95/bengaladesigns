@@ -6,7 +6,7 @@ import { diaEntero } from '../../../lib/billete'
 import type { BilleteGuardado, CodigoDelBillete } from '../../../store/useBilleteStore'
 import { Icono } from '../../ui/Icono'
 import { iconoDeMedio, INK } from './BloqueReservas'
-import { BotonAnadirDocumento, LapizDeReserva, PapeleraRoja, claveDocumentoDeMedio } from './BotonesDeReserva'
+import { BotonAnadirDocumento, IconoDeDocumento, LapizDeReserva, PapeleraRoja, claveDocumentoDeMedio } from './BotonesDeReserva'
 
 /**
  * LA MITAD DEL VUELO (O DEL TREN…) EN RESERVAS, con su billete (Tanda 10S5 §4; 10S8 §3, `Piezas/Billete Reservas` B1b a B3). Todo lo del billete es de esta persona (se guarda en su móvil y se ve sin internet). Por bloques:
@@ -74,7 +74,7 @@ function CodigoDibujado({ codigo, tam }: { codigo: CodigoDelBillete; tam: number
 }
 
 /** La cabecera de una mitad: «IDA» / «VUELTA», el día y el lápiz de arriba (la hoja del vuelo). `onToggle`: la Ida plegada (B2c) se abre y se cierra tocando su línea. */
-export function CabeceraDeMitad({ leg, fecha, resto, onCambiar, onToggle, pasada }: { leg: Pick<LegState, 'kind' | 'mode'>; fecha: string; /** (B2c) Lo que va tras el día en la línea plegada: «11:25 · Fiumicino». */ resto?: string; onCambiar: () => void; onToggle?: () => void; pasada?: boolean }) {
+export function CabeceraDeMitad({ leg, fecha, resto, onCambiar, onToggle, pasada, documento }: { /** (V45 §1) El QR junto al lápiz: gris con «+» si falta la tarjeta, dorado si está (al tocarlo, en grande). */ documento?: { hay: boolean; onAbrir: () => void }; leg: Pick<LegState, 'kind' | 'mode'>; fecha: string; /** (B2c) Lo que va tras el día en la línea plegada: «11:25 · Fiumicino». */ resto?: string; onCambiar: () => void; onToggle?: () => void; pasada?: boolean }) {
   const esIda = leg.kind === 'arrival'
   const contenido = (
     <>
@@ -97,7 +97,8 @@ export function CabeceraDeMitad({ leg, fecha, resto, onCambiar, onToggle, pasada
       ) : (
         <span className="flex min-w-0 flex-1 items-center gap-2.5">{contenido}</span>
       )}
-      <span className="-my-2 -mr-2.5 flex-none">
+      <span className="-my-2 -mr-2.5 flex flex-none items-center">
+        {documento && <IconoDeDocumento hay={documento.hay} onAbrir={documento.onAbrir} datos={`vuelo-${leg.kind}`} />}
         <LapizDeReserva onClick={onCambiar} etiqueta={`Cambiar ${esIda ? 'la ida' : 'la vuelta'}`} datos={`mitad-${leg.kind}`} atributos={{ 'data-cambiar-mitad': '' }} />
       </span>
     </div>
@@ -117,6 +118,7 @@ export function TarjetaBillete({
   onAmpliar,
   onDatos,
   onToggle,
+  avisoDeFecha,
 }: {
   leg: LegState
   trayecto: string
@@ -134,6 +136,8 @@ export function TarjetaBillete({
   onDatos?: () => void
   /** (B2c) Con la Ida ya pasada, tocar la cabecera la pliega. */
   onToggle?: () => void
+  /** (V45 §6) «⚠ Esta tarjeta es del viernes 13 y tu vuelo es el lunes 23. Revisa que sea la buena» con [Es correcta]: dentro de la tarjeta, junto al QR. */
+  avisoDeFecha?: { texto: string; onCorrecta: () => void } | null
 }) {
   const esIda = leg.kind === 'arrival'
   const conCodigo = Boolean(billete?.codigo && (billete.codigo.dibujo || billete.codigo.imagen))
@@ -141,12 +145,12 @@ export function TarjetaBillete({
   // (10S9b §1) Lo escrito a mano en «Datos del vuelo» (localizador, terminal, asiento, coche) ya cuenta igual que lo leído del documento: guarda la misma fila privada y abre el bloque con su lápiz. El número del vuelo solo NO lo abre (viene también de la hoja del vuelo, «Ref. vuelo»).
   const conDatos = conCodigo || Boolean(leg.codigo) || Boolean(billete && (billete.localizador || billete.terminal || billete.asiento || billete.coche))
   const filas = conDatos ? filasDelBillete(leg, billete, conCodigo ? duracion : null) : []
-  const botonTexto = leg.mode === 'avion' ? 'Añadir tarjeta de embarque' : 'Añadir tu billete'
+  const botonTexto = leg.mode === 'avion' ? 'Añade tu tarjeta de embarque' : 'Añade tu billete'
   const iconoMedio = iconoDeMedio(leg.mode)
   const horas = horaFuera ? (esIda ? [horaFuera, leg.time] : [leg.time, horaFuera]) : null
   return (
     <div data-mitad={leg.kind} data-mitad-hecha="1" data-billete-privado={conCodigo ? 'con-codigo' : 'sin-codigo'} className="mx-3.5 mb-3 flex flex-col gap-3 rounded-[20px] px-4 py-3.5" style={{ background: '#FBF3E2', border: '1px solid rgba(181,138,46,.35)' }}>
-      <CabeceraDeMitad leg={leg} fecha={fecha} onCambiar={onCambiar} onToggle={onToggle} />
+      <CabeceraDeMitad leg={leg} fecha={fecha} onCambiar={onCambiar} onToggle={onToggle} documento={{ hay: conCodigo, onAbrir: onAmpliar }} />
 
       {horas ? (
         <div className="flex items-center gap-2" data-billete-horas>
@@ -191,6 +195,14 @@ export function TarjetaBillete({
         </div>
       )}
 
+      {avisoDeFecha && (
+        <div data-aviso-documento="fecha" role="status" className="flex flex-col gap-1.5 rounded-[14px] px-3 py-2.5" style={{ background: '#FDECD9', border: '1px solid rgba(194,88,28,.4)' }}>
+          <span className="text-[13px] font-semibold leading-[1.3]" style={{ color: '#9A4A12' }}>⚠ {avisoDeFecha.texto}</span>
+          <button type="button" onClick={avisoDeFecha.onCorrecta} data-aviso-documento-correcta className="zona-toque self-start rounded-full px-3 py-1.5 text-[12.5px] font-bold" style={{ background: '#fff', border: '1px solid rgba(194,88,28,.4)', color: '#9A4A12' }}>
+            Es correcta
+          </button>
+        </div>
+      )}
       {conCodigo && billete?.codigo ? (
         <button type="button" onClick={onAmpliar} data-billete-codigo-pequeno className="flex w-full items-center gap-3.5 text-left" style={{ borderTop: PUNTEADA, paddingTop: 12 }}>
           <span className="rounded-xl bg-white p-1.5" style={{ border: '1px solid rgba(28,34,48,.14)' }}>
@@ -207,7 +219,7 @@ export function TarjetaBillete({
         </button>
       ) : (
         <div style={{ borderTop: filas.length === 0 ? PUNTEADA : undefined, paddingTop: filas.length === 0 ? 12 : 0 }}>
-          <BotonAnadirDocumento texto={botonTexto} clave={claveDocumentoDeMedio(leg.mode)} onAnadir={onAnadirTarjeta} datos={`vuelo-${leg.kind}`} aMano={onDatos} />
+          <BotonAnadirDocumento estilo="borde" texto={botonTexto} clave={claveDocumentoDeMedio(leg.mode)} onAnadir={onAnadirTarjeta} datos={`vuelo-${leg.kind}`} aMano={onDatos} />
         </div>
       )}
 

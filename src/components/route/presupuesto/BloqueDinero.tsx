@@ -93,6 +93,8 @@ export function BloqueDinero({
   onSoloParaAlgunos,
   destino,
   pregunta,
+  sinParaQuien = false,
+  sinLineas = false,
 }: {
   tipo: TipoDeHoja
   /** Viajando solo: solo el precio. */
@@ -114,17 +116,22 @@ export function BloqueDinero({
   /** Sustituye las líneas pequeñas de destino (por si la hoja tiene un caso especial). */
   destino?: ReactNode
   pregunta?: string
+  /** (V45 §4) La hoja ya preguntó «¿A qué cuenta lo sumamos?»: aquí no vuelve a salir «¿Para quién…?». */
+  sinParaQuien?: boolean
+  /** (V45 §4) Sin las líneas pequeñas en gris («Va a Mi cuenta», «Solo lo ves tú», «Entra directo en el presupuesto»). */
+  sinLineas?: boolean
 }) {
   const textoPregunta = pregunta ?? preguntaParaQuien(tipo)
   const esGasto = tipo === 'gasto'
   // Los marcados reales: en un gasto sin «Solo para algunos», es para todos; en «Mi cuenta» (cuenta no común) no se pregunta nada.
   const marcados = esGasto && !soloParaAlgunos ? personas.map((p) => p.id) : paraQuien
   const hayPrecio = precio.importe !== null
-  const variosYPrecio = !solo && marcados.length > 1 && hayPrecio
+  // (V45 §4) En la hoja de dos pasos, con la cuenta conjunta o del grupo, «¿Quién la ha pagado?» sale siempre (con todos los viajeros), aunque el precio aún no se haya escrito.
+  const variosYPrecio = !solo && marcados.length > 1 && (hayPrecio || sinParaQuien)
   const lineas = lineasDeDestino({ solo, marcados, yoId, precio: precio.importe, cuenta, permiso, nombreAdmin })
   return (
     <div className="flex flex-col gap-5" data-bloque-dinero={tipo}>
-      {!solo && !esGasto && textoPregunta && (
+      {!solo && !esGasto && textoPregunta && !sinParaQuien && (
         <div className="flex flex-col gap-2.5" data-para-quien-cuadrados>
           <span style={ESTILO_PREGUNTA}>{textoPregunta}</span>
           <PersonasCuadradas personas={personas} marcados={paraQuien} onAlternar={onParaQuien} datos="para-quien" etiqueta={textoPregunta} />
@@ -141,12 +148,12 @@ export function BloqueDinero({
       )}
       {variosYPrecio && (
         <div className="flex flex-col gap-2.5" data-quien-lo-ha-pagado>
-          <span style={ESTILO_PREGUNTA}>¿Quién lo ha pagado?</span>
-          <PersonasCuadradas personas={personas.filter((p) => marcados.includes(p.id) || pagadoPor.includes(p.id))} marcados={pagadoPor} onAlternar={onPagadoPor} grande datos="pagado" etiqueta="¿Quién lo ha pagado?" />
+          <span style={ESTILO_PREGUNTA}>{sinParaQuien ? '¿Quién la ha pagado?' : '¿Quién lo ha pagado?'}</span>
+          <PersonasCuadradas personas={personas.filter((p) => marcados.includes(p.id) || pagadoPor.includes(p.id))} marcados={pagadoPor} onAlternar={onPagadoPor} grande datos="pagado" etiqueta={sinParaQuien ? '¿Quién la ha pagado?' : '¿Quién lo ha pagado?'} />
         </div>
       )}
       {destino ??
-        (lineas.length > 0 && (
+        (!sinLineas && lineas.length > 0 && (
           <div className="flex flex-col gap-0.5" data-linea-destino style={{ font: "400 12.5px/1.4 'Geist'", color: 'rgba(28,34,48,.6)' }}>
             {lineas.map((l, i) => (
               <span key={l} style={i === 0 ? { fontWeight: 600, color: 'rgba(28,34,48,.78)' } : undefined}>

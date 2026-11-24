@@ -39,7 +39,6 @@ import { FREE_TOUR_REF } from '../../../lib/freeTourManual'
 import type { DatosEntradaLeida } from '../../../lib/billeteLeer'
 import { useBilleteStore, entradaConCodigo, type CodigoDelBillete } from '../../../store/useBilleteStore'
 import { useBilletesDeEntradas } from '../../../hooks/useBilleteEntrada'
-import { BotonAnadirEntrada } from './EntradaConBillete'
 import { ImagenDelCodigo } from './TarjetaBillete'
 
 /** (10N8, N6) El nombre de la entrada con su artículo: «el Coliseo, Foro y Palatino» (la tabla de artículos solo conoce «Coliseo»: si el nombre entero no está, se usa el artículo del primer sitio que cubre). */
@@ -236,7 +235,9 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   // La hoja de la hora (Tanda 6m) es lo primero para una entrada; el formulario de siempre (email, captura, a mano) sigue detrás de «Rellenar desde el email o el PDF» y para las excursiones.
-  const [view, setView] = useState<'hora' | 'form'>('hora')
+  const [view] = useState<'hora' | 'form'>('hora')
+  // (V45 §4) En grupo la hoja va en DOS pasos: 1) los días y la hora [Siguiente]; 2) «Casi lista» (¿A qué cuenta?, ¿Quién la ha pagado?, el precio y [Guardar…]).
+  const [pasoGrupo, setPasoGrupo] = useState<1 | 2>(1)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -379,6 +380,10 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   })
   const permisos = usePermisosDelViaje()
   const alternarPersona = (id: string) => setMarcados((previous) => (previous.includes(id) ? previous.filter((other) => other !== id) : [...previous, id]))
+  // (V45) «Reservar la mía a la misma hora» (día y hora ya elegidos): una sola pantalla, como antes (quien compra decide para quién).
+  const enDosPasos = paraQuienVisible && !soloDatos && igual?.modo !== 'comprar'
+  const verDias = !soloDatos && (!enDosPasos || pasoGrupo === 1)
+  const verDinero = !enDosPasos || pasoGrupo === 2
   const alternarPagado = (id: string) => setPagadoPor((previous) => (previous.includes(id) ? previous.filter((other) => other !== id) : [...previous, id]))
   const draftReservation = (): Reservation | null => {
     if (!resolvedDay) return null
@@ -591,6 +596,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     if (leida.codigo) setCodigoDeEntrada(leida.codigo as CodigoDelBillete)
   }
 
+  // (V45 §4) La hoja ya no pide el documento (se guarda primero y se sube después, desde la tarjeta): `aplicarLecturaDeEntrada` se conserva por si vuelve.
+  void aplicarLecturaDeEntrada
   const showForm = tab === 'manual' || read
   /** «Eliminar reserva» (solo dentro de «Cambiar»): la tarjeta vuelve a sin reservar, el día se queda donde está y la parada vuelve a su lista normal. */
   const deleteReservation = () => {
@@ -638,9 +645,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               )}
 
               {/* (10S7 §3, E1) [Añadir tu entrada]: desde el PDF, una foto o una captura la app lee el día, la hora, las personas y el localizador y guarda el código. Todo se puede cambiar a mano. */}
-              {!isExcursion && !igual && (
+              {!isExcursion && !igual && (billeteTocado || billeteDeAntes || codigoDeEntrada || soloDatos) && (
                 <div className="mt-5 flex flex-col gap-3" data-entrada-billete-hoja>
-                  {!soloDatos && <BotonAnadirEntrada onLeida={aplicarLecturaDeEntrada} año={route.answers.dateRange ? Number(route.answers.dateRange.start.slice(0, 4)) : undefined} datos="hoja" />}
                   {/* (10S9b §1) En «Datos de la entrada» (solo con pase, desde «o escribe los datos a mano») el localizador sale siempre, vacío y con su ejemplo en gris. */}
                   {(billeteTocado || billeteDeAntes || codigoDeEntrada || soloDatos) && (
                     <div className="flex flex-col gap-2.5" data-entrada-billete-datos>
@@ -666,7 +672,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                 </div>
               )}
 
-              {!soloDatos && (<>
+              {verDias && (<>
               {/* Los días del viaje, en fichas que se deslizan de lado: el día que tiene en la ruta ya va marcado («En tu ruta»); un sitio cerrado ese día sale apagado. */}
               {/* (10S5) Los días ocupan todo el ancho, a partes iguales; si no caben en una fila (más de 4), en dos o más filas igual de llenas. */}
               <div className="mt-5 flex flex-col gap-1.5" role="group" aria-label="Día de tu reserva" data-dias-filas>
@@ -759,6 +765,41 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               </>)}
 
               {/* (Tanda 10N10 §6-7; `Piezas/Entrada Nueva` 01-03) El orden de todas las hojas: la hora (arriba), ¿para quién son las entradas?, ¿cuánto ha costado en total?, ¿quién la ha pagado? (en cuadrados) y la línea de a dónde va el dinero. Sin gente en el viaje, solo el precio. */}
+              {/* (V45 §4) Paso 2 en grupo: «Casi lista», con el día y la hora arriba y «¿A qué cuenta lo sumamos?» ([Mi cuenta] / [Cuenta conjunta] o [Cuenta del grupo]); «¿Quién la ha pagado?» solo con la cuenta común. */}
+              {enDosPasos && pasoGrupo === 2 && (
+                <div className="flex flex-col gap-5" data-casi-lista>
+                  <div className="flex flex-col gap-1.5">
+                    <h3 className="font-display text-[26px] leading-none text-text" data-casi-lista-titulo>Casi lista</h3>
+                    {resolvedDay && (
+                      <span data-casi-lista-cuando className="text-[15px] font-semibold text-text/70">
+                        {chipText(resolvedDay)} · {validTime ? fields.time : ''}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-2.5" data-a-que-cuenta>
+                    <span style={ESTILO_PREGUNTA}>¿A qué cuenta lo sumamos?</span>
+                    <div className="flex gap-2">
+                      {([
+                        { id: 'mia', etiqueta: 'Mi cuenta', activa: marcados.length <= 1 },
+                        { id: 'comun', etiqueta: cuentaDelViaje(personasDelViaje.length, esFamilia(route)) === 'grupo' ? 'Cuenta del grupo' : 'Cuenta conjunta', activa: marcados.length > 1 },
+                      ] as const).map((o) => (
+                        <button
+                          key={o.id}
+                          type="button"
+                          aria-pressed={o.activa}
+                          data-cuenta-opcion={o.id}
+                          onClick={() => setMarcados(o.id === 'mia' ? (quienReservaId ? [quienReservaId] : []) : personasDelViaje.map((p) => p.id))}
+                          className="flex h-[52px] min-w-0 flex-1 items-center justify-center rounded-2xl px-3 text-[14.5px] font-bold"
+                          style={o.activa ? { background: '#1C2230', color: '#F3D88F', border: '1px solid #1C2230' } : { background: '#FFFDF8', color: '#1C2230', border: '1px solid rgba(28,34,48,.14)' }}
+                        >
+                          {o.etiqueta}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+              {verDinero && (<>
               {isFreeTour ? (
                 paraQuienVisible && (
                   <div className="mt-7 flex flex-col gap-2.5" data-para-quien>
@@ -769,6 +810,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               ) : (
                 <div className="mt-7" data-para-quien={paraQuienVisible ? '' : undefined}>
                   <BloqueDinero
+                    sinLineas
+                    sinParaQuien={enDosPasos}
                     tipo={isExcursion ? 'excursion' : 'entradas'}
                     solo={!paraQuienVisible}
                     personas={personasDelViaje.map((p) => ({ id: p.id, nombre: nombreDe(p) }))}
@@ -785,6 +828,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                 </div>
               )}
 
+              </>)}
+
               {outside && (
                 <p className="mt-2 text-[13px] leading-snug text-accent-red">
                   Tu reserva es del {shortDateEs(fields.dateIso)}, fuera de las fechas de tu viaje. Revisa la fecha.
@@ -796,19 +841,6 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                 </p>
               )}
 
-              {!soloDatos && (<p className="mt-1 text-center">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setView('form')
-                    setTab('email')
-                  }}
-                  className="inline-flex items-center gap-1.5 px-2 py-1 text-[12px] font-medium text-text/65"
-                >
-                  <Icono nombre="correo" size={13} />
-                  <span className="underline underline-offset-2">Rellenar desde el email o el PDF</span>
-                </button>
-              </p>)}
 
               {(() => {
                 // [Reservar la mía a la misma hora] (Tanda 10N8 §8): «Comprar a las 14:00» abre la web; «Ya la tengo · Guardarla» la guarda en RESERVAS con ese día y esa hora, sin abrir la web.
@@ -822,6 +854,11 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                         {igual.quien || 'El dueño'} {/ y |,/.test(igual.quien) ? 'la tienen' : 'la tiene'} {diaDeLaReservaEnPalabras(route, igual.reserva)} a las {horaCorta(igual.reserva.time)}. Recuerda elegir esa hora al reservar.
                       </p>
                     )}
+                    {enDosPasos && pasoGrupo === 1 && !comprando ? (
+                      <button type="button" disabled={!ready} data-siguiente-paso onClick={() => setPasoGrupo(2)} className="mt-7 h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98] disabled:opacity-40">
+                        Siguiente
+                      </button>
+                    ) : (
                     <button
                       type="button"
                       disabled={!ready || planPending}
@@ -836,6 +873,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                     >
                       {comprando ? 'Ir a comprar' : soloDatos ? 'Guardar los datos' : textoDelBoton({ normal: isExcursion ? 'Guardar la excursión' : isFreeTour ? 'Guardar el Free Tour' : 'Guardar la entrada', solo: !paraQuienVisible, marcados, yoId: quienReservaId, permiso: permisos.rol, nombreAdmin: grupo.nombreAdmin })}
                     </button>
+                    )}
                     {comprando && (
                       <button type="button" disabled={!ready || planPending} data-ya-la-tengo-guardarla onClick={() => save()} className="mt-3 w-full py-2 text-center text-[14px] font-semibold text-text underline underline-offset-2 disabled:opacity-40">
                         Ya la tengo · Guardarla

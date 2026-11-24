@@ -8,7 +8,7 @@ import { Candado } from '../../pase/Candado'
 import { CodigoPantallaCompleta, ImagenDelCodigo } from './TarjetaBillete'
 import { INK } from './BloqueReservas'
 import { HojaAbajo } from './HojaAbajo'
-import { BotonAnadirDocumento, LapizDeReserva, PapeleraRoja } from './BotonesDeReserva'
+import { BotonAnadirDocumento, IconoDeDocumento, LapizDeReserva, PapeleraRoja } from './BotonesDeReserva'
 import { CajaDia, CajaHora, FilaIcono, ParaQuienDesign, SeccionDatos, TarjetaCrema, Trazo } from './PiezasDesignReservas'
 
 /**
@@ -40,7 +40,7 @@ export function BotonComoLlegarPuntoDeEncuentro({ punto, ciudad, className = '' 
 }
 
 /** [Añadir tu excursión]: abre el selector, lee el billete (`read-ticket`, tipo excursión) y devuelve lo leído. Sin pase, candado y aviso pequeño (clave `documento_excursion`). */
-export function BotonAnadirExcursion({ onLeida, año, datos = 'excursion-anadir', onAMano }: { onLeida: (datos: DatosExcursionLeida) => void; año?: number; datos?: string; /** (10S9b §1) «o escribe los datos a mano» (solo con pase): abre «Datos de la excursión» vacía. */ onAMano?: () => void }) {
+export function BotonAnadirExcursion({ onLeida, año, datos = 'excursion-anadir', onAMano, borde = false }: { onLeida: (datos: DatosExcursionLeida) => void; año?: number; datos?: string; /** (V45 §1) El botón de borde «+ Sube tu reserva» de la tarjeta guardada. */ borde?: boolean; /** (10S9b §1) «o escribe los datos a mano» (solo con pase): abre «Datos de la excursión» vacía. */ onAMano?: () => void }) {
   const ref = useRef<HTMLInputElement>(null)
   const [leyendo, setLeyendo] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -63,7 +63,7 @@ export function BotonAnadirExcursion({ onLeida, año, datos = 'excursion-anadir'
   return (
     <div className="flex flex-col gap-2.5">
       <input ref={ref} type="file" accept="application/pdf,image/*" className="hidden" data-excursion-archivo={datos} onChange={(e) => void alElegir(e.target.files?.[0])} />
-      <BotonAnadirDocumento texto={leyendo ? 'Leyendo tu excursión…' : 'Añadir tu excursión'} clave="documento_excursion" datos={datos} icono={<Trazo d="entrada" size={18} color="#4A3510" grosor={1.9} />} onAnadir={() => !leyendo && ref.current?.click()} aMano={onAMano} />
+      <BotonAnadirDocumento estilo={borde ? 'borde' : 'dorado'} texto={leyendo ? 'Leyendo tu excursión…' : borde ? 'Sube tu reserva' : 'Añadir tu excursión'} clave="documento_excursion" datos={datos} icono={<Trazo d="entrada" size={18} color="#4A3510" grosor={1.9} />} onAnadir={() => !leyendo && ref.current?.click()} aMano={onAMano} />
       {error && (
         <span role="status" data-excursion-error className="text-center text-[12.5px] leading-snug text-accent-red">
           {error}
@@ -134,7 +134,12 @@ export function TarjetaExcursionDesign({
             </span>
           )}
         </span>
-        {onLapizArriba && <LapizDeReserva onClick={onLapizArriba} etiqueta="Cambiar la excursión, el día y la hora" datos="excursion-arriba" />}
+        {onLapizArriba && (
+          <span className="flex flex-none items-center">
+            <IconoDeDocumento hay={conCodigo} tipo="reserva" onAbrir={() => setAmpliado(true)} datos="excursion" />
+            <LapizDeReserva onClick={onLapizArriba} etiqueta="Cambiar la excursión, el día y la hora" datos="excursion-arriba" />
+          </span>
+        )}
       </div>
       <div className="flex items-stretch gap-2.5">
         <CajaDia rotulo={diaRotulo} grande={diaGrande} />
@@ -184,7 +189,7 @@ export function TarjetaExcursionDesign({
             </span>
           </button>
         )}
-        {!conCodigo && <BotonAnadirExcursion onLeida={onLeida} año={año} datos="excursion-sin-codigo" onAMano={onLapizDatos} />}
+        {!conCodigo && <BotonAnadirExcursion borde onLeida={onLeida} año={año} datos="excursion-sin-codigo" onAMano={onLapizDatos} />}
         <BotonComoLlegarPuntoDeEncuentro punto={puntoEncuentro} ciudad={ciudad} />
         {extra}
         {onQuitar && (

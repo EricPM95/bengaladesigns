@@ -4,6 +4,7 @@ import { displayStopName } from '../../../lib/format'
 import { botonChampan } from '../../../lib/marcaBoton'
 import { Insignia } from '../dibujos/InsigniaPerezosa'
 import { Trazo, TRAZO } from './trazos'
+import { AvisoArriba } from '../../ui/AvisoArriba'
 import { AvisoSobreLaBarra } from '../../ui/AvisoSobreLaBarra'
 import { deSitio, enSitio } from '../../../lib/articulos'
 import type { DestinoDeFoto, Hoja } from './vistoStore'
@@ -215,14 +216,15 @@ export function AvisoDeVisto({ nombre, ms, onDeshacer }: { nombre: string; ms: n
 /** Un mensaje corto («Foto guardada»), que se va solo. */
 export function NotaCorta({ texto, onFin }: { texto: string; onFin: () => void }) {
   useEffect(() => {
-    const t = window.setTimeout(onFin, 2600)
+    // (V45 §6) Solo informa: arriba y se va a los 5 s.
+    const t = window.setTimeout(onFin, 5000)
     return () => window.clearTimeout(t)
   }, [onFin, texto])
   return createPortal(
-    <AvisoSobreLaBarra z={85} datos={{ 'data-visto': 'nota' }} estilo={{ background: TINTA, font: "500 13.5px 'Geist'", animation: 'vistoToast .35s ease both' }}>
+    <AvisoArriba z={85} datos={{ 'data-visto': 'nota' }} onIrse={onFin} estilo={{ background: TINTA, font: "500 13.5px 'Geist'" }}>
       <Trazo d={TRAZO.check} tam={14} grosor={2.4} />
       {texto}
-    </AvisoSobreLaBarra>,
+    </AvisoArriba>,
     document.body,
   )
 }

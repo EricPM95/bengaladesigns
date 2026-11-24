@@ -37,6 +37,7 @@ export function EntradaCard({
   name,
   reservedTime,
   buyLabel = 'Reservar entrada',
+  botonYaLaTengo = false,
   buyHref = null,
   onBuy,
   onAdd,
@@ -52,6 +53,8 @@ export function EntradaCard({
   /** La hora de la reserva, si ya está reservada. */
   reservedTime: string | null
   buyLabel?: string
+  /** (V45 §5) En vez del texto «¿Ya la tienes? Añádela»: el botón de borde [Ya la tengo] junto al dorado (abre lo mismo que `onAdd`). */
+  botonYaLaTengo?: boolean
   /** El enlace de compra (excursiones). Las entradas y el Free Tour usan `onBuy`. */
   buyHref?: string | null
   /** [Reservar …] abre esto (la ficha del sitio, en su pestaña «Entradas», Tanda 6v) en vez del enlace. */
@@ -128,7 +131,12 @@ export function EntradaCard({
             >
               {buyLabel}
             </button>
-            {onAdd && (
+            {onAdd && botonYaLaTengo && (
+              <button type="button" onClick={onAdd} data-ya-la-tengo className="zona-toque h-8 whitespace-nowrap rounded-full border-[1.5px] border-text/25 bg-transparent px-3.5 text-text transition-transform active:scale-[.97]" style={{ font: "600 12.5px 'Geist'" }}>
+                Ya la tengo
+              </button>
+            )}
+            {onAdd && !botonYaLaTengo && (
               <span className="text-text/55" style={{ font: "400 11px 'Geist'" }}>
                 ¿Ya la tienes?{' '}
                 <button type="button" onClick={onAdd} className="zona-toque font-semibold text-text underline underline-offset-2">

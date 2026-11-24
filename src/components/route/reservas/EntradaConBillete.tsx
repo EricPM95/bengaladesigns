@@ -5,7 +5,7 @@ import { entradaConCodigo } from '../../../store/useBilleteStore'
 import { CodigoPantallaCompleta, ImagenDelCodigo } from './TarjetaBillete'
 import { INK } from './BloqueReservas'
 import type { Persona } from '../../../store/useViajeCompartido'
-import { BotonAnadirDocumento, LapizDeReserva, PapeleraRoja } from './BotonesDeReserva'
+import { BotonAnadirDocumento, IconoDeDocumento, LapizDeReserva, PapeleraRoja } from './BotonesDeReserva'
 import { CajaDia, CajaHora, FilaIcono, ParaQuienDesign, SeccionDatos, TarjetaCrema, Trazo } from './PiezasDesignReservas'
 
 /**
@@ -33,7 +33,7 @@ export function BotonCodigoDeEntrada({ onClick }: { onClick: () => void }) {
  * E1: [Añadir tu entrada]. Abre el selector de archivos, lee la entrada y devuelve los datos (`onLeida`). Si no se puede leer nada, lo dice y deja añadirla a mano.
  * (10S8 §2) SIN pase lleva el candado dorado y, al tocarlo, abre el aviso pequeño del pase en vez del selector; con pase, nunca candado. Sin la línea «Desde el PDF, una foto o una captura.» (Design no la lleva).
  */
-export function BotonAnadirEntrada({ onLeida, año, datos = 'entrada-anadir', onAMano }: { onLeida: (datos: DatosEntradaLeida) => void; año?: number; datos?: string; /** (10S9b §1) «o escribe los datos a mano» (solo con pase): abre «Datos de la entrada» vacía. */ onAMano?: () => void }) {
+export function BotonAnadirEntrada({ onLeida, año, datos = 'entrada-anadir', onAMano, borde = false }: { onLeida: (datos: DatosEntradaLeida) => void; año?: number; datos?: string; /** (V45 §1) El botón de borde «+ Sube tu entrada» de la tarjeta guardada. */ borde?: boolean; /** (10S9b §1) «o escribe los datos a mano» (solo con pase): abre «Datos de la entrada» vacía. */ onAMano?: () => void }) {
   const ref = useRef<HTMLInputElement>(null)
   const [leyendo, setLeyendo] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -57,7 +57,7 @@ export function BotonAnadirEntrada({ onLeida, año, datos = 'entrada-anadir', on
   return (
     <div className="flex flex-col gap-2.5">
       <input ref={ref} type="file" accept="application/pdf,image/*" className="hidden" data-entrada-archivo={datos} onChange={(e) => void alElegir(e.target.files?.[0])} />
-      <BotonAnadirDocumento texto={leyendo ? 'Leyendo tu entrada…' : 'Añadir tu entrada'} clave="documento_entrada" datos={datos} icono={<Trazo d="entrada" size={18} color="#4A3510" grosor={1.9} />} onAnadir={() => !leyendo && ref.current?.click()} aMano={onAMano} />
+      <BotonAnadirDocumento estilo={borde ? 'borde' : 'dorado'} texto={leyendo ? 'Leyendo tu entrada…' : borde ? 'Sube tu entrada' : 'Añadir tu entrada'} clave="documento_entrada" datos={datos} icono={<Trazo d="entrada" size={18} color="#4A3510" grosor={1.9} />} onAnadir={() => !leyendo && ref.current?.click()} aMano={onAMano} />
       {error && (
         <span role="status" data-entrada-error className="text-center text-[12.5px] leading-snug text-accent-red">
           {error}
@@ -134,7 +134,13 @@ export function TarjetaEntradaDesign({
             </span>
           )}
         </span>
-        {!soloVer && onLapizArriba && <LapizDeReserva onClick={onLapizArriba} etiqueta="Cambiar el sitio, el día y la hora" datos="entrada-arriba" />}
+        {/* (V45 §1) El icono del documento junto al lápiz: el QR gris con «+» si falta, dorado si está (al tocarlo, en grande). */}
+        {!soloVer && onLapizArriba && (
+          <span className="flex flex-none items-center">
+            <IconoDeDocumento hay={conCodigo} onAbrir={() => setAmpliado(true)} datos="entrada" />
+            <LapizDeReserva onClick={onLapizArriba} etiqueta="Cambiar el sitio, el día y la hora" datos="entrada-arriba" />
+          </span>
+        )}
       </div>
       <div className="flex items-stretch gap-2.5">
         <CajaDia rotulo={diaRotulo} grande={diaGrande} />
@@ -170,7 +176,7 @@ export function TarjetaEntradaDesign({
             </span>
           </button>
         )}
-        {!conCodigo && !soloVer && onLeida && <BotonAnadirEntrada onLeida={onLeida} año={año} datos="entrada-sin-codigo" onAMano={onLapizDatos} />}
+        {!conCodigo && !soloVer && onLeida && <BotonAnadirEntrada borde onLeida={onLeida} año={año} datos="entrada-sin-codigo" onAMano={onLapizDatos} />}
         {extra}
         {!soloVer && onQuitar && (
           <>

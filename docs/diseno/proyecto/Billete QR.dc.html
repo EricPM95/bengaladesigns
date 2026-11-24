@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 30% at 50% 0%,#F1E8D6 0%,#E0D3BA 75%);padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:30px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">APP · HOY Y DÍAS · EL BILLETE</span><span style="font:400 40px/1 'Instrument Serif',serif">El billete, con su QR a mano</span></div>
+  <sc-for list="{{ groups }}" as="g" hint-placeholder-count="2">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <span style="font:400 28px/1 'Instrument Serif',serif">{{ g.t }}</span>
+      <div style="display:flex;flex-wrap:wrap;gap:28px">
+        <sc-for list="{{ g.items }}" as="b" hint-placeholder-count="2">
+          <div style="display:flex;flex-direction:column;gap:12px;width:360px">
+            <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.08em;color:#6F4E37">{{ b.id }} · {{ b.cap }}</span>
+            <div style="position:relative;border-radius:24px;background:#FFFDF8;border:1px solid rgba(181,138,46,.45);box-shadow:0 22px 36px -24px rgba(28,34,48,.55);overflow:hidden">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:6px;background:linear-gradient(180deg,#2C3F86,#1F2E66)"></div>
+              <div style="padding:16px 16px 14px 22px;display:flex;flex-direction:column;gap:14px">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <span style="width:30px;height:30px;border-radius:50%;flex:none;background:#1F2E66;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F3D88F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"></path></svg></span>
+                  <span style="flex:1;min-width:0;font:600 10px/1.3 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#1F2E66">{{ b.eye }}</span>
+                  <span style="flex:none;position:relative;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:{{ b.bg }};border:1.5px solid {{ b.bd }};box-shadow:{{ b.sh }}">
+                    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="{{ b.fg }}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.2"></rect><rect x="13.5" y="3.5" width="7" height="7" rx="1.2"></rect><rect x="3.5" y="13.5" width="7" height="7" rx="1.2"></rect><path d="M14 14h3v3M20.5 14v.01M14 20.5h.01M17 20.5h3.5v-3.5"></path></svg>
+                    <sc-if value="{{ b.plus }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:-4px;bottom:-4px;width:18px;height:18px;border-radius:50%;background:#1C2230;color:#fff;border:2px solid #FFFDF8;display:flex;align-items:center;justify-content:center"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></span></sc-if>
+                  </span>
+                </div>
+                <div style="display:grid;grid-template-columns:auto minmax(30px,1fr) auto;align-items:center;gap:12px">
+                  <span style="display:flex;flex-direction:column;gap:2px"><span style="font:400 36px/1 'Instrument Serif',serif;letter-spacing:-.01em">{{ b.t1 }}</span><span style="font:700 11px 'Geist Mono',monospace;letter-spacing:.14em;color:#1F2E66">{{ b.a }}</span></span>
+                  <span style="position:relative;height:20px"><span style="position:absolute;left:0;right:0;top:10px;border-top:1.5px dashed rgba(31,46,102,.4)"></span><span style="position:absolute;left:0;top:6px;width:8px;height:8px;border-radius:50%;background:#1F2E66"></span><span style="position:absolute;right:0;top:6px;width:8px;height:8px;border-radius:50%;border:2px solid #1F2E66;background:#FFFDF8"></span><span style="position:absolute;left:50%;top:2px;margin-left:-8px;width:16px;height:16px;background:#FFFDF8;display:flex;align-items:center;justify-content:center;color:#B58A2E"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M21 15.5v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V8.5l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-6z" transform="rotate(90 12 12)"></path></svg></span></span>
+                  <span style="display:flex;flex-direction:column;align-items:flex-end;gap:2px"><span style="font:400 36px/1 'Instrument Serif',serif;letter-spacing:-.01em">{{ b.t2 }}</span><span style="font:700 11px 'Geist Mono',monospace;letter-spacing:.14em;color:#1F2E66">{{ b.b }}</span></span>
+                </div>
+              </div>
+              <div style="position:relative;height:0;border-top:1.5px dashed rgba(28,34,48,.18);margin:0 14px 0 22px"><span style="position:absolute;left:-30px;top:-10px;width:20px;height:20px;border-radius:50%;background:#E8DCC4"></span><span style="position:absolute;right:-24px;top:-10px;width:20px;height:20px;border-radius:50%;background:#E8DCC4"></span></div>
+              <div style="padding:11px 16px 12px 22px;display:flex;align-items:center;gap:8px;background:{{ b.fbg }}">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="{{ b.fc }}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="{{ b.fi }}"></path></svg>
+                <span style="flex:1;font:600 12.5px 'Geist';color:{{ b.fc }}">{{ b.foot }}</span>
+                <span style="font:500 11.5px 'Geist';color:rgba(28,34,48,.5)">{{ b.day }}</span>
+              </div>
+            </div>
+            <span style="font:400 13.5px/1.45 'Geist';color:rgba(28,34,48,.7);text-wrap:pretty">{{ b.note }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals(){
+    const G={bg:'linear-gradient(135deg,#F9EFCB,#EAD6A0 55%,#D8BD7C)',bd:'rgba(181,138,46,.75)',sh:'0 8px 14px -8px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.75)',fg:'#5A3E0C',plus:false,fbg:'rgba(181,138,46,.1)',fc:'#6E5018',fi:'M5 12.5l4.5 4.5L19 7.5',foot:'Tarjeta de embarque guardada'};
+    const N={bg:'#ECEAE4',bd:'rgba(28,34,48,.16)',sh:'none',fg:'rgba(28,34,48,.42)',plus:true,fbg:'rgba(28,34,48,.04)',fc:'rgba(28,34,48,.62)',fi:'M12 5v14M5 12h14',foot:'Añade tu tarjeta de embarque'};
+    const IDA={eye:'Llegada · Vuelo XX1234',t1:'12:05',a:'BCN',t2:'14:20',b:'FCO',day:'mar 20 oct'};
+    const VUE={eye:'Llegada al aeropuerto de Fiumicino',t1:'19:05',a:'FCO',t2:'21:10',b:'BCN',day:'vie 24 oct'};
+    const mk=(id,cap,t,s,note)=>({id,cap,...t,...s,note});
+    return{groups:[{t:'Billete de llegada',items:[
+      mk('Q1','Con la tarjeta de embarque guardada',IDA,G,'QR dorado. Al tocarlo, la tarjeta se abre en grande, como «Toca para ampliar».'),
+      mk('Q2','Sin tarjeta de embarque',IDA,N,'QR gris claro con «+». Al tocarlo, se abre la hoja de [Añadir tarjeta de embarque] de RESERVAS.')]},
+     {t:'Billete de vuelta',items:[
+      mk('Q3','Con la tarjeta de embarque guardada',VUE,G,'Igual que la llegada, con la tarjeta de la vuelta.'),
+      mk('Q4','Sin tarjeta de embarque',VUE,N,'Abre la hoja de añadir la tarjeta de la vuelta.')]}]};
+  }
+}
+</script>
+</body>
+</html>

@@ -67,6 +67,8 @@ export const supabase: any = {
     },
   }),
 }
+// (V36) El store pregunta quién soy con usuarioLocal(): la nube de mentira contesta lo mismo que getUser().
+export const usuarioLocal = async () => supabase.auth.getUser()
 `)
   const entrada = path.join(tmp, 'entrada.ts')
   fs.writeFileSync(entrada, `export * from '${path.resolve('src/store/useBilleteStore.ts').replace(/\\/g, '/')}'\nexport { nube } from '${falso.replace(/\\/g, '/')}'\n`)
@@ -186,7 +188,7 @@ try {
   // — E1: la entrada reservada sin billete —
   let f1 = await fila()
   // antes → ahora → decisión de Eric (10S8, 31-oct): E1 con «Desde el PDF…» → sin esa línea (Design no la lleva).
-  debe(f1 && f1.estado === 'sin-billete' && f1.anadir === 'Añadir tu entrada' && f1.ayuda === null, 'E1', `la entrada sin billete lleva [Añadir tu entrada], sin línea de ayuda (${JSON.stringify(f1)})`)
+  debe(f1 && f1.estado === 'sin-billete' && f1.anadir === '+Sube tu entrada' && f1.ayuda === null, 'E1', `la entrada sin billete lleva [+ Sube tu entrada] (V45: de borde), sin línea de ayuda (${JSON.stringify(f1)})`)
   // antes → ahora → decisión de Eric (10S8, 31-oct): sin billete la tarjeta lleva los dos lápices y la papelera, y ningún botón del código.
   debe(f1 && !f1.botonesTarjeta.includes('CODIGO') && f1.botonesTarjeta.length === 2 /* (10S9b) antes → ahora → decisión de Eric (10S9, 1-nov): sin documento un solo lápiz arriba; los botones son «entrada-arriba» y «entrada», ya no 3 */, 'L2', `sin billete, la tarjeta no lleva código (${JSON.stringify(f1?.botonesTarjeta)})`)
   await ev(`document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"]')?.scrollIntoView({ block: 'center' }); true`)
@@ -203,7 +205,7 @@ try {
   const hoja = await ev(`(() => ({ localizador: document.querySelector('[data-entrada-dato="localizador"]')?.value, codigo: Boolean(document.querySelector('[data-entrada-codigo-leido] img')), titulo: document.querySelector('#add-reservation-heading')?.innerText, boton: document.querySelector('[data-anadir-doc="hoja"]')?.textContent }))()`)
   // antes → ahora → decisión de Eric (10S8, 31-oct): la hoja ya no trae «Personas».
   debe(hoja.localizador === 'ABC123' && hoja.codigo === true, 'E1 lee', `la hoja sale rellena con lo leído: ABC123 y el código (${JSON.stringify(hoja)})`)
-  debe(hoja.boton === 'Añadir tu entrada', 'E1 hoja', 'y la hoja de «Añádela»/«Cambiar» también lleva [Añadir tu entrada]')
+  debe(!hoja.boton, 'E1 hoja', 'y la hoja de «Añádela»/«Cambiar» ya NO lleva [Añadir tu entrada] (V45 §4: primero se guarda, después se sube)')
   await a.captura(path.join(SALIDA, '10s7_entradas_billete_02_hoja.jpg')).catch(() => {})
   // antes → ahora → decisión de Eric (10S8, 31-oct): se quita el cambio a mano de «personas» (el dato ya no se enseña).
 

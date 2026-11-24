@@ -15,7 +15,7 @@ import { misPases } from '../../lib/pagoPase'
 import { pedirPermisoUnaVez } from '../../lib/permisoAvisos'
 import { usePedirNombre } from '../../store/usePedirNombre'
 import { EntrarCuenta } from '../cuenta/EntrarCuenta'
-import { AvisoSobreLaBarra } from '../ui/AvisoSobreLaBarra'
+import { AvisoArriba } from '../ui/AvisoArriba'
 
 /**
  * [Compartir viaje] como icono de la tarjeta del destino (RUTA): mismo tamaño y estilo que la bombilla y la varita. SIEMPRE a la vista (Tanda 10C; en la 10B solo salía con cuenta y viaje guardado, y por eso no se veía).
@@ -87,9 +87,9 @@ function IconoCompartir({ cuenta, activo, tripId = null }: { cuenta: 'cuenta' | 
         Compartir
       </button>
       {aviso && createPortal(
-        <AvisoSobreLaBarra z={60} datos={{ 'data-aviso-compartir': '' }} className="justify-center text-center text-[13.5px] font-medium">
+        <AvisoArriba z={60} datos={{ 'data-aviso-compartir': '' }}>
           {aviso}
-        </AvisoSobreLaBarra>,
+        </AvisoArriba>,
         document.body,
       )}
       {entrando &&

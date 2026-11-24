@@ -58,6 +58,7 @@ import { CercaDeTiFila } from '../CercaDeTiFila'
 import { AvisoDeAbajoHost } from './AvisoDeAbajo'
 import { LugaresPendientes } from './LugaresPendientes'
 import { VolverAlAlojamiento } from './VolverAlAlojamiento'
+import { puntoDelAlojamiento } from '../../../../lib/direccionAlojamiento'
 import { avisarAbajo } from '../../../../store/useAvisoDeAbajo'
 import { marcarDicho, yaDicho } from '../../../../lib/avisosUnaVez'
 import { AVISO_SALTADA, avisoDeCerrada, cerradasDeHoy, lugaresPendientes } from '../../../../lib/hoyPendientes'
@@ -293,7 +294,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
 
   // Tanda 10P (1.3): la puesta de sol y lo de mañana (con el pase y en el día de prueba; sin pase, como antes).
   const conPaseOPrueba = pagoActivo()
-  const zonaCoordsAtardecer = (route.accommodationZone ? info.zonasAlojamiento.find((z) => z.id === route.accommodationZone)?.coordinates : null) ?? null
+  const zonaCoordsAtardecer = puntoDelAlojamiento(route) ?? (route.accommodationZone ? info.zonasAlojamiento.find((z) => z.id === route.accommodationZone)?.coordinates : null) ?? null
   // (LG1) Lanzarote: la hora del sol sale de la fecha y la parada del atardecer es El Golfo, Famara…; ver `atardecerDelDestino`.
   const solDelDestino = atardecerDelDestino(route.destination, dateIso)
   const fraseAtardecer = conPaseOPrueba
@@ -306,7 +307,8 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
         enCoche,
       })
     : null
-  const zonaCoords = (route.accommodationZone ? info.zonasAlojamiento.find((z) => z.id === route.accommodationZone)?.coordinates : null) ?? null
+  // (V45) El punto del alojamiento puesto en el mapa manda sobre el centro de la zona.
+  const zonaCoords = puntoDelAlojamiento(route) ?? (route.accommodationZone ? info.zonasAlojamiento.find((z) => z.id === route.accommodationZone)?.coordinates : null) ?? null
   // (HOY2, Completa 7) Lo de mañana, SOLO cuando no queda ninguna parada por hacer hoy (antes salía también a la hora de la cena).
   const manana =
     conPaseOPrueba && !day.isReturnLeg && !siguiente && paradas.length > 0
@@ -651,7 +653,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       </div>
 
       {/* 6 · «Tu día», por franjas y sin horas */}
-      {!sinParadasDeVuelta && paradas.length > 0 && <TuDia key={diaTerminado ? 'fin' : 'dia'} route={route} day={day} dateIso={dateIso} paradas={paradas} siguienteId={siguiente?.id ?? null} reservaDe={reservaDe} horaDelSol={horaSolHoy} inicialAbierta={!diaTerminado} onAbrirParada={(s) => setFichaCompleta(s)} />}
+      {!sinParadasDeVuelta && paradas.length > 0 && <TuDia key={diaTerminado ? 'fin' : 'dia'} route={route} day={day} dateIso={dateIso} paradas={paradas} siguienteId={siguiente?.id ?? null} reservaDe={reservaDe} horaDelSol={horaSolHoy} inicialAbierta={!diaTerminado} onAbrirParada={(s) => setFichaCompleta(s)} ahoraMin={ahoraMinHoy} />}
 
       {/* HOY2 (Completa 7): «Hasta aquí, hoy» y lo de mañana, solo cuando no queda nada por hacer hoy */}
       {manana && (
