@@ -1,13 +1,13 @@
-# Estado de la tanda v46
+# Estado de la tanda v47
 
-**Última actualización: 24/11/26, 19:55**
+**Última actualización: 24/11/26, 20:10**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-TERMINADA: pusheada 6a485aa7 a main; produccion carga en iPhone con el build nuevo (solo 403)
+Empezando: tarjeta de la parada (3 cajas, al llegar), foto de la parada, V2Hoy
 
 ## Qué falta
-nada; V2Hoy con 1 fallo sin aclarar
+todo
 
 ## Procesos abiertos ahora mismo
 - node: 2
