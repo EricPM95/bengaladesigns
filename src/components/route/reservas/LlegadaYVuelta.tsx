@@ -509,7 +509,7 @@ export function LlegadaYVuelta({
     const fechaTarjeta = kind === 'arrival' ? (datos.fechaLlegada ?? datos.fecha) : datos.fecha
     // (V45 §6) El error de fecha NO es una ventana ni un aviso que se va: una línea naranja DENTRO de la tarjeta, junto al QR, con [Es correcta]; se queda hasta cambiar el documento o pulsarla.
     if (fechaTarjeta && leg.dateIso && fechaTarjeta !== leg.dateIso) {
-      ponerAvisoDeDocumento(tripId, kind, `${leg.mode === 'avion' ? 'Esta tarjeta' : 'Este billete'} es del ${fechaEnProsa(fechaTarjeta)} y tu ${del} es el ${fechaEnProsa(leg.dateIso)}. Revisa que sea la buena`)
+      ponerAvisoDeDocumento(tripId, kind, `${leg.mode === 'avion' ? 'Esta tarjeta de embarque' : 'Este billete'} es del ${fechaEnProsa(fechaTarjeta)} y tu ${del} es el ${fechaEnProsa(leg.dateIso)}. Revisa que sea la buena`)
       return
     }
     quitarAvisoDeDocumento(tripId, kind)
@@ -552,8 +552,27 @@ export function LlegadaYVuelta({
       <BloqueShell bloque="llegada">
         {!algoHecho ? (
           <>
-            <CabeceraBloque icono={iconoDeMedio(ida.mode)} titulo="Llegada y vuelta" estado={etiqueta} hecho={false} abierto={false} onClick={() => abrirHoja(primeraLibre)} atributos={{ 'data-llegada-vacia': '' }} className="p-4" />
-            {faltaAvion && <BuscarVuelos route={route} className="mx-4 mb-4 w-[calc(100%-2rem)]" />}
+            {/* (V50) Sin vuelos, como «Alojamiento»: plegado, solo la cabecera; abierto, «¿Ya tienes vuelo?» con [Añadir mi vuelo] (la hoja «Tu vuelo» de siempre) y «¿Aún no?» con [Buscar vuelos]. */}
+            <CabeceraBloque icono={iconoDeMedio(ida.mode)} titulo="Llegada y vuelta" estado={etiqueta} hecho={false} abierto={desplegado} onClick={() => setDesplegadoUsuario(!desplegado)} atributos={{ 'data-llegada-vacia': '' }} className="px-0.5 py-4" />
+            {desplegado && (
+              <div data-llegada-vacia-abierta className="flex flex-col gap-2.5 px-4 pb-4">
+                <span className="text-[14px] font-medium">{ida.mode === 'avion' ? '¿Ya tienes vuelo?' : '¿Ya tienes tu billete?'}</span>
+                <button
+                  type="button"
+                  onClick={() => abrirHoja(primeraLibre)}
+                  data-anadir-mi-vuelo
+                  className="flex h-12 w-full items-center justify-center rounded-full border border-text/20 bg-white text-[14.5px] font-semibold text-text transition-transform active:scale-[.98]"
+                >
+                  {ida.mode === 'avion' ? 'Añadir mi vuelo' : 'Añadir mi billete'}
+                </button>
+                {faltaAvion && (
+                  <>
+                    <span className="mt-1 text-[14px] font-medium">¿Aún no?</span>
+                    <BuscarVuelos route={route} />
+                  </>
+                )}
+              </div>
+            )}
           </>
         ) : (
           <>

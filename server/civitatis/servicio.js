@@ -194,7 +194,8 @@ export function crearServicioCivitatis(opciones = {}) {
         const f = r.datos
         if (f.desde == null || f.valoracion == null || f.opiniones == null) return opcion // (sin los tres datos, se quedan nuestros datos: nunca media nota real)
         enriquecidas++
-        return { ...opcion, price_from_eur: f.desde, rating: f.valoracion, rating_max: 10, review_count: f.opiniones, meeting_point: f.puntoDeEncuentro?.texto ?? opcion.meeting_point ?? null, civitatis: f }
+        return { ...opcion, price_from_eur: f.desde, rating: f.valoracion, rating_max: 10, review_count: f.opiniones, // (V50) SOLO el que publica la API: nunca el de nuestros datos escritos a mano.
+        meeting_point: f.puntoDeEncuentro?.texto ?? null, civitatis: f }
       }),
     )
     return { opciones: opciones2, enriquecidas }

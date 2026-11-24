@@ -1020,6 +1020,9 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     get().addBlankDayExcursion(dayId, excursion)
   },
   addReservation: (reservation, excursion, freeTour) => {
+    // (V50) Cómo estaba todo antes de guardarla: para el [Deshacer] que sale cuando el motor termina de recolocar los días (deshace la reserva y el movimiento, todo).
+    const rutaAntesDeGuardar = get().route
+    const reservasAntesDeGuardar = get().reservations
     set((state) => ({ reservations: [...state.reservations.filter((other) => !(other.kind === reservation.kind && other.refId === reservation.refId)), reservation] }))
     const route = get().route
     if (!route) return
@@ -1063,6 +1066,12 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
               set((state) => ({ reservations: state.reservations.map((other) => (other.id === reservation.id ? { ...other, noMueve: true } : other)) }))
             }
             set((state) => (state.route ? { route: reapplyReservations(state.route, state.reservations) } : state))
+            // (V50) Entrada grande en otro día: cuando el motor ha recolocado los días, el aviso de abajo con [Deshacer], que lo deshace todo (los días y la reserva).
+            if (ok && rutaAntesDeGuardar && !isManualRoute(route)) {
+              const { useAddFlowStore } = await import('./useAddFlowStore')
+              const { fechaCorta } = await import('../lib/excursionMove')
+              useAddFlowStore.setState({ toast: { message: `Tu ${reservation.placeNames[0] ?? reservation.name}, el ${fechaCorta(reservation.dateIso ?? null, Number(reservation.dayNumber ?? 0))}`, previous: rutaAntesDeGuardar, previousReservations: reservasAntesDeGuardar, id: Date.now() } })
+            }
           })
           .catch(() => {})
         return

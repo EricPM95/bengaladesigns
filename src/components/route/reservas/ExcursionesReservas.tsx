@@ -25,6 +25,7 @@ import { removeReservationWithUndo } from '../../../store/useAddFlowStore'
 import { leerImporte } from '../../../lib/dinero'
 import { precioEnVista } from '../../../lib/moneda'
 import type { DatosExcursionLeida } from '../../../lib/billeteLeer'
+import { corregirConElDocumento } from '../../../lib/corregirConElDocumento'
 import { paginaEnMemoria, pedirPaginaDeDestino, type ActividadDeDestino } from '../../../lib/paginaDestino'
 import { TarjetaDeActividad } from '../DestinationDetailModal'
 import { TodasLasActividades } from './TodasLasActividades'
@@ -204,7 +205,7 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
                 año={route.answers.dateRange ? Number(route.answers.dateRange.start.slice(0, 4)) : undefined}
                 onLapizArriba={() => setTarget({ kind: 'excursion', refId: reserva.refId, name: reserva.name, placeNames: [], excursion, currentDayId: dayOfReservation(route, reserva)?.id ?? null, existing: reserva })}
                 onLapizDatos={() => setDatosDe({ reserva, leida: null })}
-                onLeida={(leida) => setDatosDe({ reserva, leida })}
+                onLeida={(leida) => setDatosDe({ reserva: corregirConElDocumento(reserva, { fecha: leida.fecha, hora: leida.hora }, 'reserva', excursionDe(reserva)), leida })}
                 onQuitar={quitar}
                 extra={reserva.noMueve ? <VolverExcursionARuta route={route} reserva={reserva} excursion={excursion} /> : undefined}
               />

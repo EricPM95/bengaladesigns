@@ -243,7 +243,7 @@ export function ExcursionDayPage({
                   return (
                     <span key={`${stop.time}-${index}`} className={`flex min-w-0 flex-col gap-[5px] ${edge}`}>
                       <span className={`h-3 w-3 rounded-full border-2 border-bg ${dark ? 'bg-text' : 'bg-accent'}`} />
-                      <span className="font-mono text-[11px] font-semibold text-accent">{stop.time}</span>
+                      {stop.time && <span className="font-mono text-[11px] font-semibold text-accent">{stop.time}</span>}
                       <span className="break-words font-display text-[15px] leading-[1.1] text-text">{stop.name}</span>
                     </span>
                   )
@@ -281,7 +281,7 @@ export function ExcursionDayPage({
 
       {view.halfDay && (
         <div className="flex flex-col gap-2">
-          <span className="text-center text-[13px] text-text/70">Vuelves a {destination} a las {view.returnTime ?? '14:00'}. La tarde es para ti: añade los sitios que quieras con «Añadir lugares».</span>
+          <span className="text-center text-[13px] text-text/70">{view.returnTime ? `Vuelves a ${destination} a las ${view.returnTime}. ` : ''}La tarde es para ti: añade los sitios que quieras con «Añadir lugares».</span>
           <button
             type="button"
             onClick={onAddPlaces}

@@ -10,6 +10,7 @@ import { BloqueClaro } from './PiezasDesignReservas'
 import { CabeceraBloque, ICONOS } from './BloqueReservas'
 import { useMisReservas } from '../../../store/useMisReservas'
 import { removeReservationWithUndo } from '../../../store/useAddFlowStore'
+import { corregirConElDocumento } from '../../../lib/corregirConElDocumento'
 import { FueraDeRutaFila } from './FueraDeRutaFila'
 import { FichaEntrada } from './FichaEntrada'
 import { TarjetaEntradaDesign, CodigoDeEntradaPantallaCompleta } from './EntradaConBillete'
@@ -192,7 +193,7 @@ export function EntradasYFreeTour({ route, info, abierto }: { route: Route; info
           año={route.answers.dateRange ? Number(route.answers.dateRange.start.slice(0, 4)) : undefined}
           onLapizArriba={() => setTarget({ ...targetOf(item), existing: reserva })}
           onLapizDatos={() => setTarget({ ...targetOf(item), existing: reserva, soloDatos: true })}
-          onLeida={(lectura) => setTarget({ ...targetOf(item), existing: reserva, lectura })}
+          onLeida={(lectura) => setTarget({ ...targetOf(item), existing: corregirConElDocumento(reserva, { fecha: lectura.fecha, hora: lectura.hora }, 'entrada'), lectura })}
           onQuitar={quitar}
         />
         {reserva.fueraDeRuta && <FueraDeRutaFila reservaId={reserva.id} esFreeTour={item.isFreeTour} />}

@@ -100,3 +100,6 @@ El plan gratis de Supabase tiene 5 GB de «egress» al mes; la app llegó a 10 G
 - **«Pasar a otro día»** (HOY) solo ofrece días POSTERIORES a hoy; el recomendado va en su tarjeta destacada con borde dorado y «Te lo recomendamos» (dibujo 26a); los cerrados, en gris con «Cerrado ese día».
 - **La tarjeta de la parada** (HOY): la caja HORARIO sale SIEMPRE («Abierto» si el sitio no tiene horario) y el recuadro de la ubicación («Sin tu ubicación…» / «Estás lejos…») va debajo de las cajas y encima de «Escucha su historia».
 - **Nada que aparezca tarde empuja lo de debajo:** «Aquí ganas 1 pedazo» se pregunta en cuanto la parada es la siguiente y se guarda en memoria.
+
+## Toda pantalla, hoja o aviso nuevo usa las piezas que ya existen (Eric, 24-nov, V50: «a veces hace las cosas horribles»)
+**Nunca se inventa un diseño.** Toda pantalla, hoja o aviso nuevo usa las piezas que YA existen (`HojaPropuesta`, `BOTON_ORO` / `BOTON_CLARO`, las tarjetas de HOY, la hoja de opciones de DÍAS…) y el mismo diseño que su pantalla hermana. **Si no hay dibujo, se copia la pantalla más parecida que ya existe y se dice en el REPASO** (qué pantalla se copió). Ante la duda, se pregunta a Eric. Un botón dorado nuevo, un degradado, una tarjeta con otro borde o una hoja con otra forma son un diseño inventado.

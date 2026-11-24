@@ -9203,7 +9203,7 @@
         "review_count": 793,
         "cancellation": "gratuita",
         "checked": "2026-10-26 (Eric, web de Civitatis)",
-        "meeting_point": "Estación de Termini",
+        "meeting_point": null,
         "description": "Descubre las ruinas de Pompeya con guía y pasea por Sorrento, la joya de la costa napolitana. Incluye transporte en autobús, entrada a Pompeya y tiempo libre en Sorrento.",
         "destination_coords": [
           40.7497,
@@ -9231,7 +9231,7 @@
         "review_count": 704,
         "cancellation": "gratuita",
         "checked": "2026-10-26 (Eric, web de Civitatis)",
-        "meeting_point": "Estación de Termini",
+        "meeting_point": null,
         "description": "Visita la cuna del Renacimiento y la famosa Torre Inclinada en un solo día. Incluye transporte en autobús, guía en Florencia y tiempo libre en Pisa.",
         "destination_coords": [
           43.7696,
@@ -9259,7 +9259,7 @@
         "review_count": 343,
         "cancellation": "no_reembolsable",
         "checked": "2026-11-01 (web de Civitatis)",
-        "meeting_point": "Estación de Termini",
+        "meeting_point": null,
         "description": "Viaja en tren de alta velocidad a Nápoles, recorre su centro histórico con guía y continúa hasta Pompeya para explorar las ruinas.",
         "destination_coords": [
           40.8518,
@@ -9287,7 +9287,7 @@
         "review_count": 60,
         "cancellation": "gratuita",
         "checked": "2026-10-26 (Eric, web de Civitatis)",
-        "meeting_point": "Estación de Termini",
+        "meeting_point": null,
         "description": "Recorre la espectacular Costa Amalfitana en autobús y barco. Paradas en Positano y Amalfi con tiempo libre para explorar sus callejuelas, playas y vistas al Mediterráneo.",
         "destination_coords": [
           40.634,
@@ -9315,7 +9315,7 @@
         "review_count": 689,
         "cancellation": "no_reembolsable",
         "checked": "2026-10-26 (Eric, web de Civitatis)",
-        "meeting_point": "Estación de Termini",
+        "meeting_point": null,
         "description": "Viaja en Frecciarossa a Florencia y descúbrela a tu ritmo. Incluye tren ida y vuelta y guía para un recorrido por el Duomo, Ponte Vecchio y las plazas del centro histórico.",
         "destination_coords": [
           43.7696,
@@ -9344,7 +9344,7 @@
         "cancellation": "gratuita",
         "cancellation_note": "Gratuita hasta 24 h antes",
         "checked": "2026-10-26 (Eric, web de Civitatis)",
-        "meeting_point": "Via Marsala 46/48 (junto a la estación Termini)",
+        "meeting_point": null,
         "description": "Un día entero en la ciudad de los canales: tren de alta velocidad desde Roma, guía en español y varias horas libres para perderte entre puentes, plazas y góndolas.",
         "destination_coords": [
           45.4408,
@@ -9373,7 +9373,7 @@
         "cancellation": "gratuita",
         "cancellation_note": "Gratuita hasta 3 días antes",
         "checked": "2026-11-01 (web de Civitatis)",
-        "meeting_point": "Piazzale Ostiense (salida del metro Piramide)",
+        "meeting_point": null,
         "description": "Explora uno de los puertos romanos mejor conservados. Teatros, termas, mosaicos y calles que llevan enterradas más de mil años, a solo 30 minutos de Roma.",
         "destination_coords": [
           41.7556,
@@ -9400,7 +9400,7 @@
         "review_count": 725,
         "cancellation": "gratuita",
         "checked": "2026-10-26 (Eric, web de Civitatis)",
-        "meeting_point": "Recogida en hotel o Viale de Giorgio Washington (Villa Borghese)",
+        "meeting_point": null,
         "description": "Visita las dos joyas de Tívoli: la villa del emperador Adriano con sus palacios y termas, y Villa d'Este con más de 500 fuentes renacentistas entre jardines espectaculares.",
         "destination_coords": [
           41.9633,

@@ -3,7 +3,6 @@ import { createPortal } from 'react-dom'
 import { Icono } from './Icono'
 import { RuedaDeHora } from './RuedaDeHora'
 import { TimeListWheel } from './TimeListWheel'
-import { CruzDeHoja } from './CruzDeHoja'
 
 /**
  * ELEGIR UNA HORA, SIEMPRE IGUAL EN TODA LA APP (Tanda 10S6, apartado 2; regla en `docs/REGLAS_DE_LA_APP.md`).
@@ -61,13 +60,20 @@ export function HojaDeHora({
     onElegir(null)
     onCerrar()
   }
-  const guardarRef = useRef(guardar)
-  guardarRef.current = guardar
+  // (V50) Sin la X: se cierra tocando fuera o deslizando hacia abajo (desde el asa y el título, no desde la rueda), SIN guardar. Solo la papelera y el ✓ cambian la hora.
+  const cerrarSinGuardar = () => {
+    if (cierre.current) return
+    cierre.current = true
+    onCerrar()
+  }
+  const inicioDeslizar = useRef<number | null>(null)
+  const guardarRef = useRef(cerrarSinGuardar)
+  guardarRef.current = cerrarSinGuardar
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.stopPropagation()
-        guardarRef.current(false)
+        guardarRef.current()
       }
     }
     window.addEventListener('keydown', onKey, true)
@@ -75,10 +81,21 @@ export function HojaDeHora({
   }, [])
   return createPortal(
     <div className="fixed inset-0 z-[140] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-label={titulo} data-hoja-de-hora>
-      <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={() => guardar(false)} data-hoja-de-hora-fondo />
+      <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={cerrarSinGuardar} data-hoja-de-hora-fondo />
       <div className="trazo-notice-panel relative flex w-full flex-col rounded-t-[28px] bg-bg-card pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[400px] md:rounded-[28px]">
-        <CruzDeHoja onCerrar={() => guardar(false)} />
-        <div className="flex shrink-0 justify-center pt-2.5" aria-hidden="true">
+        <div
+          className="flex shrink-0 touch-none justify-center pt-2.5 pb-1"
+          aria-hidden="true"
+          data-hoja-de-hora-asa
+          onTouchStart={(e) => {
+            inicioDeslizar.current = e.touches[0].clientY
+          }}
+          onTouchEnd={(e) => {
+            const y0 = inicioDeslizar.current
+            inicioDeslizar.current = null
+            if (y0 != null && e.changedTouches[0].clientY - y0 > 50) cerrarSinGuardar()
+          }}
+        >
           <span className="h-1 w-[42px] rounded-full bg-text/20" />
         </div>
         <div className="flex items-center justify-between gap-3 px-6 pt-3">

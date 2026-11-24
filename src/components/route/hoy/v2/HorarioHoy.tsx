@@ -3,12 +3,17 @@ import type { Coordinates, DayPlan, Route } from '../../../../lib/types'
 import { useDatosDeHorario } from '../../../../lib/horarioDeParada'
 import { numberedStopsOf } from '../../../../lib/stopKind'
 import { aplicarPropuesta, volverALaRutaOriginal } from '../../../../lib/hoyCambiarPlanAplicar'
-import { aHora, mejorDiaPara, proponerPasarADia, type Propuesta } from '../../../../lib/hoyCambiarPlan'
-import { paradasJustasDeHoy, parrafoDeHoy, proponerAdelantar, quienLlegaTarde, textoDelAviso, ventanaDeHorario, type VentanaDeHorario } from '../../../../lib/hoyHorarios'
+import { aHora, diaAdmite, mejorDiaPara, opcionesDeDia, proponerPasarADia, type Propuesta } from '../../../../lib/hoyCambiarPlan'
+import { ListaDeDias } from '../../dayDetail/ListaDeDias'
+import { avisarAbajo } from '../../../../store/useAvisoDeAbajo'
+import { conA, paradasJustasDeHoy, parrafoDeHoy, proponerAdelantar, quienLlegaTarde, textoDelAviso, ventanaDeHorario, type VentanaDeHorario } from '../../../../lib/hoyHorarios'
 import { useRouteStore } from '../../../../store/useRouteStore'
 import { Icono } from '../../../ui/Icono'
 import { AvisoDeHoy, CruzDeAviso, useAvisoCerrado } from './AvisosHoy'
-import { HojaPropuesta, useContexto } from './CambiarPlan'
+import { HojaPropuesta, Titulo, useContexto } from './CambiarPlan'
+import { HojaV2 } from './HojasV2'
+import { BOTON_ORO } from '../../../ui/botonesOro'
+import { displayStopName } from '../../../../lib/format'
 
 /**
  * (HOY2b 8b) LOS AVISOS DE HORARIO EN HOY. Los cálculos viven en `src/lib/hoyHorarios.ts`; aquí, lo que se ve:
@@ -64,13 +69,29 @@ export function AvisoDeHorarioEnDirecto({ route, day, dateIso, ubicacion, enCoch
   const [abierta, setAbierta] = useState(false)
   const [propuestas, setPropuestas] = useState<Propuesta[]>([])
   const [indice, setIndice] = useState(0)
+  const [eligiendo, setEligiendo] = useState(false)
   if (!tarde) return null
   const { titulo, hora } = textoDelAviso(tarde)
+  // (V50; Design «Aviso Cierre» A2) El texto de arriba de la hoja y el botón, en «tú», con el sitio de la última entrada: «Hoy ya no llegas a los Museos Vaticanos. Te los pasamos al jueves 26, que tiene hueco y está abierto.»
+  const conTextoDeCierre = (p: Propuesta): Propuesta => {
+    const t = p.tarjetaDia
+    if (!t || !tarde) return p
+    const los = tarde.v.plural ? 'los' : 'lo'
+    const semana = t.destino.replace(/ \d+$/, '')
+    return {
+      ...p,
+      intro: p.caso === 'c' ? p.intro : `Hoy ya no llegas ${conA(tarde.v.nombre)}. Te ${los} pasamos al ${t.destino}, que tiene hueco y está abierto.`,
+      boton: `Pasar${los} al ${p.caso === 'c' ? semana : semana}`,
+    }
+  }
+  // «Elegir otro día»: la misma lista de días que Cambiar plan (solo posteriores a hoy; el mejor, destacado; los cerrados, en gris).
+  const iHoy = route.days.findIndex((d) => d.id === day.id)
+  const diasPosibles = route.days.filter((d, i) => i > iHoy && d.id !== day.id && diaAdmite(d)).map((d) => ({ id: d.id, dayNumber: d.dayNumber, city: d.city }))
   const ver = () => {
     // (V48) Si ya no se puede entrar hoy, la solución es pasarlo al mejor otro día (no adelantarlo): una sola propuesta con su botón «Pasarlo al …».
     if (tarde.ya) {
       const mejor = mejorDiaPara({ route, day, stop: tarde.v.stop, ctx })
-      setPropuestas(mejor ? proponerPasarADia({ route, day, stop: tarde.v.stop, destinoId: mejor.dia.id, ctx }).propuestas : [])
+      setPropuestas(mejor ? proponerPasarADia({ route, day, stop: tarde.v.stop, destinoId: mejor.dia.id, ctx }).propuestas.map(conTextoDeCierre) : [])
     } else {
       setPropuestas(proponerAdelantar({ day, tarde, ctx, ahoraMin, ubicacion, ventanas }))
     }
@@ -94,18 +115,63 @@ export function AvisoDeHorarioEnDirecto({ route, day, dateIso, ubicacion, enCoch
               <span className="-my-2 flex flex-none"><CruzDeAviso onClick={cerrar} /></span>
             </div>
             <button type="button" onClick={ver} data-horario-ver-solucion className="-mb-1 -mt-0.5 ml-7 flex h-11 flex-none items-center self-start text-[12.5px] font-bold underline underline-offset-2" style={{ color: '#8A4F08' }}>
-              Ver solución
+              {tarde.ya ? 'Pasar a otro día' : 'Ver solución'}
             </button>
           </div>
         </AvisoDeHoy>
       )}
-      {abierta && (
+      {abierta && tarde.ya && propuestas.length === 0 && !eligiendo && (
+        // (V50; Design «Aviso Cierre» A3) No cabe en ningún otro día: [Guardarlos en pendientes] (dorado) y, pequeños, [Quitarlos del viaje] y [Dejarlo como está]. La misma hoja que «Pasar a otro día» (HojaV2 + Titulo + BOTON_ORO).
+        <HojaV2 onCerrar={() => setAbierta(false)} etiqueta="Pasar a otro día" fondo="#FBF3E2">
+          <div data-hoy-no-cabe className="flex flex-col gap-3">
+            <Titulo texto="Pasar a otro día" onCerrar={() => setAbierta(false)} />
+            <span className="text-[14.5px] font-medium leading-[1.4]">Hoy ya no llegas {conA(tarde.v.nombre)}, y no {tarde.v.plural ? 'caben' : 'cabe'} en ningún otro día de tu viaje.</span>
+            <button
+              type="button"
+              data-no-cabe-guardar
+              onClick={() => {
+                const { setStopSaltada } = useRouteStore.getState()
+                setStopSaltada(day.id, tarde.v.stop.id, true)
+                avisarAbajo({ id: `saltada:${tarde.v.stop.id}`, texto: `${displayStopName(tarde.v.stop.name)}: la tienes en Lugares pendientes`, accion: { etiqueta: 'Deshacer', alTocar: () => useRouteStore.getState().setStopSaltada(day.id, tarde.v.stop.id, false) } })
+                cerrar()
+                setAbierta(false)
+              }}
+              className="flex min-h-[50px] items-center justify-center rounded-2xl px-3 text-center text-[15px] font-bold"
+              style={BOTON_ORO}
+            >
+              {tarde.v.plural ? 'Guardarlos en pendientes' : 'Guardarlo en pendientes'}
+            </button>
+            <div className="flex flex-col items-center gap-0.5">
+              <button
+                type="button"
+                data-no-cabe-quitar
+                onClick={() => {
+                  const stop = tarde.v.stop
+                  const antes = useRouteStore.getState().route
+                  useRouteStore.getState().removeStop(day.id, stop.id)
+                  avisarAbajo({ id: `quitada:${stop.id}`, texto: `${displayStopName(stop.name)}: fuera de tu viaje`, accion: { etiqueta: 'Deshacer', alTocar: () => { if (antes) useRouteStore.setState({ route: antes }) } } })
+                  cerrar()
+                  setAbierta(false)
+                }}
+                className="flex h-10 items-center text-[13px] font-semibold text-[#1C2230]/70 underline underline-offset-2"
+              >
+                {tarde.v.plural ? 'Quitarlos del viaje' : 'Quitarlo del viaje'}
+              </button>
+              <button type="button" onClick={() => setAbierta(false)} data-propuesta-dejar className="flex h-9 items-center text-[13px] font-semibold text-[#1C2230]/60">
+                Dejarlo como está
+              </button>
+            </div>
+          </div>
+        </HojaV2>
+      )}
+      {abierta && (!tarde.ya || propuestas.length > 0) && !eligiendo && (
         <HojaPropuesta
-          titulo="Una solución"
+          titulo={tarde.ya ? 'Pasar a otro día' : 'Una solución'}
           propuestas={propuestas}
           indice={indice}
           vacio={`Esta vez no hay un cambio pequeño que lo arregle. ${tarde.v.nombre.charAt(0).toUpperCase()}${tarde.v.nombre.slice(1)} ${tarde.v.plural ? 'cierran' : 'cierra'} a las ${aHora(tarde.cierra, false)}: si no llegáis, mejor dejadlo para otro día.`}
           onOtra={() => setIndice((i) => (i + 1) % propuestas.length)}
+          onElegirOtroDia={tarde.ya ? () => setEligiendo(true) : undefined}
           onAplicar={(pr) => {
             aplicarPropuesta(route.id, dateIso, pr)
             cerrar()
@@ -117,6 +183,25 @@ export function AvisoDeHorarioEnDirecto({ route, day, dateIso, ubicacion, enCoch
           }}
           onCerrar={() => setAbierta(false)}
         />
+      )}
+      {abierta && tarde.ya && eligiendo && (
+        // (V50) «Elegir otro día»: la lista de días de Cambiar plan (solo posteriores a hoy; el mejor, destacado; los cerrados, en gris).
+        <HojaV2 onCerrar={() => setEligiendo(false)} etiqueta="Pasar a otro día" fondo="#FBF3E2">
+          <div data-hoy-elegir-dia className="flex flex-col gap-3">
+            <Titulo texto="Pasar a otro día" onCerrar={() => setEligiendo(false)} />
+            <ListaDeDias
+              dias={diasPosibles}
+              ahora={day.dayNumber}
+              recomendado={mejorDiaPara({ route, day, stop: tarde.v.stop, ctx })?.dia.id ?? null}
+              cerrados={new Set(opcionesDeDia({ route, day, stop: tarde.v.stop, ctx }).filter((o) => o.cerrado).map((o) => o.dia.id))}
+              onElegir={(id) => {
+                setPropuestas(proponerPasarADia({ route, day, stop: tarde.v.stop, destinoId: id, ctx }).propuestas.map(conTextoDeCierre))
+                setIndice(0)
+                setEligiendo(false)
+              }}
+            />
+          </div>
+        </HojaV2>
       )}
     </>
   )

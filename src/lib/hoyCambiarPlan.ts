@@ -283,6 +283,8 @@ export interface Propuesta {
   etiquetaOtra?: string
   /** (V43 §1) Las líneas del bloque de resumen (icono + texto): solo las que vienen al caso. Sin ellas, salen de «cambia» y «mantiene». */
   resumen?: { icono: 'mover' | 'quitar' | 'ok' | 'reloj' | 'mas'; texto: string; /** Una frase pequeña debajo (lo que antes era el «detalle»). */ sub?: string }[]
+  /** (V50; Design «Aviso Cierre» A2/A4) «Pasar a otro día»: la tarjeta del sitio (foto pequeña, nombre, cuándo en gris y la fecha en su cuadrado oscuro) y el día de hoy para la franja verde «Sigue igual: el resto de tu martes». */
+  tarjetaDia?: { nombre: string; fotoUrl: string; cuando: string; semanaCorta: string; numero: string; destino: string; diaDeHoy: string }
   /** (V43 §2) Entradas o reservas de hoy cuya hora YA pasó: no se protegen (las ve la hoja para decirlo). */
   entradasPasadas?: { nombre: string; hora: string; freeTour?: boolean }[]
   /** Para la prueba y la nota interna (nunca se enseñan): lo que se quita (con su clase), lo que se corre y a dónde va cada cosa. */
@@ -401,7 +403,14 @@ export function proponerPasarADia(p: { route: Route; day: DayPlan; stop: Stop; d
   const propuestas = colocarEnDia(destino, stop, ctx).slice(0, 1).map((c): Propuesta => {
     const quitadas = c.sale ? [{ id: c.sale.id, nombre: nombre(c.sale), clase: claseDe(c.sale, ctx.fijasDe(destino), ctx.datos), destino: 'otro' as const }] : []
     const resumenDia: NonNullable<Propuesta['resumen']> = [{ icono: 'mover', texto: c.caso === 'c' ? `${n} va al final del ${dest}, en «Si te sobra tiempo»` : `${n} pasa al ${dest}` }, ...(c.sale ? [{ icono: 'quitar' as const, texto: `${nombre(c.sale)} pasa a «Si te sobra tiempo»` }] : []), { icono: 'ok', texto: `Sigue igual: el resto de tu ${hoy}` }]
-    const base = { tipo: 'otro_dia' as const, caso: c.caso, boton: `Pasarlo al ${dest}`, resumen: resumenDia, quitadas, corridas: 0, intactas: items.filter((it) => it.fija).map((it) => it.stop.id), ops: [sacar, ...c.ops] }
+    const iso = ctx.fechaDe?.(destino) ?? null
+    const semanaCorta = iso ? ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'][new Date(`${iso}T12:00:00Z`).getUTCDay()] : `DÍA`
+    const numero = iso ? String(Number(iso.slice(8, 10))) : String(destino.dayNumber)
+    const iDespues = c.despuesDe ? delDia(destino).findIndex((s) => s.id === c.despuesDe?.id) : -1
+    const mitad = Math.max(1, Math.ceil(delDia(destino).length / 2))
+    const cuando = c.caso === 'c' ? `Al final del ${dest.replace(/ \d+$/, '')} · «Si te sobra tiempo»` : iDespues >= mitad ? 'Por la tarde' : 'Por la mañana'
+    const tarjetaDia = { nombre: n, fotoUrl: stop.photoUrl || stop.fixedPhotoUrl || '', cuando, semanaCorta, numero, destino: dest, diaDeHoy: ctx.etiquetaDia(day) }
+    const base = { tarjetaDia, tipo: 'otro_dia' as const, caso: c.caso, boton: `Pasarlo al ${dest}`, resumen: resumenDia, quitadas, corridas: 0, intactas: items.filter((it) => it.fija).map((it) => it.stop.id), ops: [sacar, ...c.ops] }
     if (c.caso === 'a')
       return { ...base, id: `otro-dia-a-${destino.id}`, intro: `Podemos pasarte ${n} al ${dest}${c.despuesDe ? `, después de ${nombre(c.despuesDe)}` : ''}.`, cambia: { titulo: `${n} pasa al ${dest}`, detalle: c.despuesDe ? `Entra después de ${nombre(c.despuesDe)}.` : 'Entra al empezar el día.' }, mantiene: { titulo: `el resto de tu ${hoy}`, detalle: 'Sin cambios.' } }
     if (c.caso === 'b')

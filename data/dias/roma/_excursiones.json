@@ -13,7 +13,7 @@
       },
       "corto": "Pompeya",
       "duracion_h": 13,
-      "vuelta": "20:00",
+      "vuelta": null,
       "medio_dia": false,
       "precio_desde": 98.26,
       "enlace": "",
@@ -33,19 +33,19 @@
       ],
       "paradas": [
         {
-          "hora": "07:00",
+          "hora": "",
           "nombre": "Roma"
         },
         {
-          "hora": "10:30",
+          "hora": "",
           "nombre": "Pompeya"
         },
         {
-          "hora": "14:30",
+          "hora": "",
           "nombre": "Sorrento"
         },
         {
-          "hora": "20:00",
+          "hora": "",
           "nombre": "Roma"
         }
       ],
@@ -56,7 +56,7 @@
       },
       "color": "#B4704A",
       "porcentaje": null,
-      "punto_de_encuentro": "Estación de Termini",
+      "punto_de_encuentro": null,
       "coords": [
         40.7497,
         14.4869
@@ -74,7 +74,7 @@
       },
       "corto": "Tívoli",
       "duracion_h": 6,
-      "vuelta": "14:00",
+      "vuelta": null,
       "medio_dia": true,
       "precio_desde": 118.8,
       "enlace": "",
@@ -94,19 +94,19 @@
       ],
       "paradas": [
         {
-          "hora": "08:00",
+          "hora": "",
           "nombre": "Roma"
         },
         {
-          "hora": "09:00",
+          "hora": "",
           "nombre": "Villa Adriana"
         },
         {
-          "hora": "11:30",
+          "hora": "",
           "nombre": "Villa d’Este"
         },
         {
-          "hora": "14:00",
+          "hora": "",
           "nombre": "Roma"
         }
       ],
@@ -134,7 +134,7 @@
       },
       "corto": "Ostia Antica",
       "duracion_h": 3,
-      "vuelta": "11:00",
+      "vuelta": null,
       "medio_dia": true,
       "precio_desde": 52,
       "enlace": "",
@@ -154,15 +154,15 @@
       ],
       "paradas": [
         {
-          "hora": "08:00",
+          "hora": "",
           "nombre": "Roma"
         },
         {
-          "hora": "08:45",
+          "hora": "",
           "nombre": "Ostia Antica"
         },
         {
-          "hora": "11:00",
+          "hora": "",
           "nombre": "Roma"
         }
       ],
@@ -173,7 +173,7 @@
       },
       "color": "#B98F55",
       "porcentaje": null,
-      "punto_de_encuentro": "Piazzale Ostiense (salida del metro Piramide)",
+      "punto_de_encuentro": null,
       "coords": [
         41.7556,
         12.2917
@@ -191,7 +191,7 @@
       },
       "corto": "Florencia",
       "duracion_h": 13,
-      "vuelta": "20:30",
+      "vuelta": null,
       "medio_dia": false,
       "precio_desde": 149,
       "enlace": "",
@@ -207,15 +207,15 @@
       ],
       "paradas": [
         {
-          "hora": "07:30",
+          "hora": "",
           "nombre": "Roma"
         },
         {
-          "hora": "09:30",
+          "hora": "",
           "nombre": "Florencia"
         },
         {
-          "hora": "20:30",
+          "hora": "",
           "nombre": "Roma"
         }
       ],
@@ -226,7 +226,7 @@
       },
       "color": "#7B6A96",
       "porcentaje": null,
-      "punto_de_encuentro": "Estación de Termini",
+      "punto_de_encuentro": null,
       "coords": [
         43.7696,
         11.2558
@@ -243,7 +243,7 @@
       },
       "corto": "la Costa Amalfitana",
       "duracion_h": 14,
-      "vuelta": "21:00",
+      "vuelta": null,
       "medio_dia": false,
       "precio_desde": 115,
       "enlace": "",
@@ -259,19 +259,19 @@
       ],
       "paradas": [
         {
-          "hora": "06:30",
+          "hora": "",
           "nombre": "Roma"
         },
         {
-          "hora": "11:00",
+          "hora": "",
           "nombre": "Positano"
         },
         {
-          "hora": "14:00",
+          "hora": "",
           "nombre": "Amalfi"
         },
         {
-          "hora": "21:00",
+          "hora": "",
           "nombre": "Roma"
         }
       ],
@@ -282,7 +282,7 @@
       },
       "color": "#3D7A90",
       "porcentaje": null,
-      "punto_de_encuentro": "Estación de Termini",
+      "punto_de_encuentro": null,
       "coords": [
         40.634,
         14.6027
@@ -321,7 +321,7 @@
       },
       "color": "#8A6F4E",
       "porcentaje": null,
-      "punto_de_encuentro": "Estación de Termini",
+      "punto_de_encuentro": null,
       "coords": [
         43.7696,
         11.2558
@@ -360,7 +360,7 @@
       },
       "color": "#A4553F",
       "porcentaje": null,
-      "punto_de_encuentro": "Estación de Termini",
+      "punto_de_encuentro": null,
       "coords": [
         40.8518,
         14.2681
@@ -399,7 +399,7 @@
       },
       "color": "#3F7F8A",
       "porcentaje": null,
-      "punto_de_encuentro": "Via Marsala 46/48 (junto a la estación Termini)",
+      "punto_de_encuentro": null,
       "coords": [
         45.4408,
         12.3155

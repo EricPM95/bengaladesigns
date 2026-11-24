@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { useRouteStore } from '../../../store/useRouteStore'
+import { referenciasDelViaje, type LugarPhoton } from '../../../lib/buscarLugarPhoton'
 import { HojaAbajo } from '../reservas/HojaAbajo'
 import { EliminarTexto } from '../reservas/BloqueReservas'
 import { precioDeAlojamiento, type TuAlojamiento } from '../../../lib/tuAlojamiento'
@@ -10,7 +12,7 @@ import { usePasePintable } from '../../../lib/pago'
 import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { CandadoRedondo, LineaDelPase } from '../../pase/Candado'
 import { BotonComoLlegarAlojamiento } from './BotonComoLlegarAlojamiento'
-import { MapaDelAlojamiento, MapaPequenoDelAlojamiento, type PuntoAlojamiento } from '../reservas/MapaDelAlojamiento'
+import { MapaDelAlojamiento, MapaPequenoDelAlojamiento, ListaDeSugerencias, useBusquedaDeLugares, type PuntoAlojamiento } from '../reservas/MapaDelAlojamiento'
 import { BOTON_ORO } from '../../ui/botonesOro'
 
 export interface ZonaParaElegir {
@@ -86,6 +88,18 @@ export function HojaTuAlojamiento({
   const [punto, setPunto] = useState<PuntoAlojamiento | null>(puntoActual)
   const [puntoTocado, setPuntoTocado] = useState(false)
   const [mapaAbierto, setMapaAbierto] = useState(false)
+  // (V50) Lo que el viajero ESCRIBE en «O escribe la dirección» (no la dirección guardada de antes): solo eso busca. Photon, al dejar de escribir (≥ 700 ms, ≥ 3 letras), ~1-3 KB por búsqueda; ninguna llamada a Supabase.
+  const [consultaDir, setConsultaDir] = useState('')
+  const route = useRouteStore((st) => st.route)
+  const referencias = useMemo(() => referenciasDelViaje(route), [route])
+  const busquedaDir = useBusquedaDeLugares(consultaDir, referencias)
+  const elegirSugerencia = (l: LugarPhoton) => {
+    setPunto({ lat: l.lat, lng: l.lng, direccion: l.direccion })
+    setPuntoTocado(true)
+    setDireccion(l.direccion)
+    setConsultaDir('')
+    busquedaDir.limpiar()
+  }
   const zonaElegidaReal = Boolean(zona) && zona !== 'nose' && zonas.some((z) => z.id === zona)
   const [desplegada, setDesplegada] = useState(false)
   const dinero = useDineroDeReserva({ para, pagado, precio: precioDeAlojamiento(actual), marcarTodos: true, pagadoTodos: true })
@@ -262,9 +276,13 @@ export function HojaTuAlojamiento({
           {!punto && (
             <label className="flex flex-col gap-1.5 rounded-[16px] border border-text/15 bg-white px-3.5 py-2.5">
               <span style={ETIQUETA}>{conMapa ? 'O escribe la dirección' : 'Dirección'}</span>
-              <input value={direccion} onChange={(event) => setDireccion(event.target.value)} maxLength={160} placeholder="Escribe la dirección" autoComplete="street-address" data-alojamiento-direccion className="w-full bg-transparent text-[15px] text-text outline-none placeholder:text-text/35" />
+              <input value={direccion} onChange={(event) => {
+                  setDireccion(event.target.value)
+                  if (conMapa) setConsultaDir(event.target.value)
+                }} maxLength={160} placeholder="Escribe la dirección" autoComplete="street-address" data-alojamiento-direccion className="w-full bg-transparent text-[15px] text-text outline-none placeholder:text-text/35" />
             </label>
           )}
+          {!punto && conMapa && <ListaDeSugerencias resultados={busquedaDir.resultados} buscando={busquedaDir.buscando} sinResultados={busquedaDir.sinResultados} ciudad={route?.destination ?? ''} onElegir={elegirSugerencia} />}
           {mapaAbierto && (
             <MapaDelAlojamiento
               inicial={punto}

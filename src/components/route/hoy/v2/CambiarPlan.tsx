@@ -159,6 +159,36 @@ function ResumenDeCambios({ p }: { p: Propuesta }) {
 }
 
 /**
+ * (V50; Design «Aviso Cierre» A2/A4) «Pasar a otro día»: LA TARJETA DEL SITIO (foto pequeña, nombre, cuándo en gris y la fecha en su cuadrado oscuro; no se pulsa) y la franja verde de lo que sigue igual.
+ * La misma pieza para Cambiar plan › «Pasar a otro día» y para el aviso «Hoy ya no puedes entrar…».
+ */
+export function TarjetaDelSitio({ t }: { t: NonNullable<Propuesta['tarjetaDia']> }) {
+  return (
+    <>
+      <div data-tarjeta-del-sitio className="flex items-center gap-3 rounded-[18px] bg-[#FFFDF8] p-2.5" style={{ border: '1px solid rgba(28,34,48,.1)' }}>
+        <span className="h-[52px] w-[52px] flex-none overflow-hidden rounded-[12px]" style={{ background: 'linear-gradient(150deg,#C9A57A,#8A6A4C)' }}>
+          {t.fotoUrl && <img src={t.fotoUrl} alt="" className="h-full w-full object-cover" />}
+        </span>
+        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <span className="line-clamp-2" style={{ font: "400 19px/1.15 'Instrument Serif',serif" }}>{t.nombre}</span>
+          <span className="text-[12.5px] leading-[1.25] text-[#1C2230]/55">{t.cuando}</span>
+        </span>
+        <span data-tarjeta-fecha className="flex h-[52px] w-[48px] flex-none flex-col items-center justify-center rounded-[12px] bg-[#1C2230]">
+          <span style={{ font: "700 9px 'Geist Mono',monospace", letterSpacing: '.12em', color: '#F3D88F' }}>{t.semanaCorta}</span>
+          <span style={{ font: "400 24px/1 'Instrument Serif',serif", color: '#FBF3E2' }}>{t.numero}</span>
+        </span>
+      </div>
+      <div data-franja-sigue-igual className="flex items-center gap-2.5 rounded-[14px] px-3 py-2.5 text-[13.5px] font-semibold" style={{ background: '#E4F0E2', color: '#25583A' }}>
+        <span className="flex h-[22px] w-[22px] flex-none items-center justify-center rounded-full text-white" style={{ background: '#2E7D4F' }} aria-hidden="true">
+          <Icono nombre="hecho" size={12} grosor={2.8} />
+        </span>
+        Sigue igual: el resto de tu {t.diaDeHoy}
+      </div>
+    </>
+  )
+}
+
+/**
  * La hoja de una propuesta (V43 §1, la regla de TODAS: retraso, comer, otro día, añadir un sitio, plan de lluvia): el texto de arriba, UN bloque de resumen que no se pulsa,
  * el botón dorado que dice lo que hace y, abajo y pequeño, [Dejarlo como está]. Nada de «Propuesta», «Cambia:», [Aplicar] ni «Volver a mi ruta original».
  */
@@ -176,7 +206,7 @@ export function HojaPropuesta({ titulo, propuestas, indice, onOtra, onAplicar, o
                 {p.entradasPasadas.map((e) => (e.freeTour ? `Tu ${e.nombre} de las ${e.hora} ya ha pasado.` : `Tu entrada de las ${e.hora} en ${e.nombre} ya ha pasado.`)).join(' ')}
               </span>
             )}
-            <ResumenDeCambios p={p} />
+            {p.tarjetaDia ? <TarjetaDelSitio t={p.tarjetaDia} /> : <ResumenDeCambios p={p} />}
             {children}
             {extra}
             <button type="button" onClick={() => onAplicar(p)} data-propuesta-aplicar className="flex min-h-[50px] items-center justify-center rounded-2xl px-3 text-center text-[15px] font-bold" style={BOTON_ORO}>

@@ -39,6 +39,67 @@ function IconoPin({ size = 17, color = '#7A5A1E' }: { size?: number; color?: str
 
 type MapaGl = { getCenter: () => { lng: number; lat: number }; flyTo: (o: unknown) => void; remove: () => void; on: (e: string, f: (ev: { originalEvent?: unknown }) => void) => void }
 
+/**
+ * (V50) LA BÚSQUEDA DE SITIOS, compartida por el mapa (M2) y por el campo «O escribe la dirección» de «Tu alojamiento»: Photon cuando el viajero PARA de escribir (≥ 700 ms, ≥ 3 letras, la anterior se cancela).
+ * Cada búsqueda baja ~1-3 KB (1 o 2 peticiones a photon.komoot.io). Ninguna llamada a Supabase.
+ */
+export function useBusquedaDeLugares(consulta: string, referencias: { lat: number; lng: number }[]) {
+  const [resultados, setResultados] = useState<LugarPhoton[]>([])
+  const [buscando, setBuscando] = useState(false)
+  const [sinResultados, setSinResultados] = useState(false)
+  useEffect(() => {
+    setSinResultados(false)
+    if (consulta.trim().length < MIN_LETRAS_PHOTON) {
+      setResultados([])
+      setBuscando(false)
+      return undefined
+    }
+    const ctl = new AbortController()
+    const t = window.setTimeout(() => {
+      setBuscando(true)
+      void buscarLugarPhoton(consulta, referencias[0] ?? null, referencias, ctl.signal).then((r) => {
+        if (ctl.signal.aborted) return
+        setBuscando(false)
+        setResultados(r)
+        setSinResultados(r.length === 0)
+      })
+    }, ESPERA_PHOTON_MS)
+    return () => {
+      window.clearTimeout(t)
+      ctl.abort()
+    }
+  }, [consulta, referencias])
+  const limpiar = () => {
+    setResultados([])
+    setSinResultados(false)
+    setBuscando(false)
+  }
+  return { resultados, buscando, sinResultados, limpiar }
+}
+
+const SOMBRA_LISTA = '0 8px 16px -8px rgba(28,34,48,.5)'
+
+/** La lista de sugerencias de M2 (la misma en el mapa y en la hoja «Tu alojamiento»). */
+export function ListaDeSugerencias({ resultados, buscando, sinResultados, ciudad, onElegir }: { resultados: LugarPhoton[]; buscando: boolean; sinResultados: boolean; ciudad: string; onElegir: (l: LugarPhoton) => void }): ReactNode {
+  if (!(resultados.length > 0 || buscando || sinResultados)) return null
+  return (
+    <div data-sugerencias-alojamiento style={{ borderRadius: 20, background: '#FFFDF8', boxShadow: SOMBRA_LISTA, overflow: 'hidden', border: '1px solid rgba(28,34,48,.06)' }}>
+      {resultados.map((r) => (
+        <button key={`${r.lng},${r.lat},${r.titulo}`} type="button" data-sugerencia-alojamiento onClick={() => onElegir(r)} style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', minHeight: 52, textAlign: 'left', padding: '8px 14px', border: 'none', background: 'transparent', cursor: 'pointer' }}>
+          <span style={{ flex: 'none', width: 32, height: 32, borderRadius: '50%', background: '#F3E3B2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <IconoPin size={16} />
+          </span>
+          <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+            <span style={{ font: "700 14.5px/1.2 'Geist'" }}>{r.titulo}</span>
+            {r.detalle && <span style={{ font: "400 12px/1.3 'Geist'", color: 'rgba(28,34,48,.55)' }}>{r.detalle}</span>}
+          </span>
+        </button>
+      ))}
+      {resultados.length === 0 && <span data-sugerencias-vacio style={{ display: 'block', padding: '14px 16px', font: "400 13.5px 'Geist'", color: 'rgba(28,34,48,.6)' }}>{buscando ? 'Buscando…' : `No encontramos eso en ${ciudad || 'tu destino'}. Prueba con otra calle.`}</span>}
+    </div>
+  )
+}
+
 export function MapaDelAlojamiento({ inicial, onVolver, onElegido }: { inicial: PuntoAlojamiento | null; onVolver: () => void; onElegido: (p: PuntoAlojamiento) => void }): ReactNode {
   const contenedor = useRef<HTMLDivElement>(null)
   const mapaRef = useRef<MapaGl | null>(null)
@@ -49,9 +110,7 @@ export function MapaDelAlojamiento({ inicial, onVolver, onElegido }: { inicial: 
   const [centro, setCentro] = useState<{ lat: number; lng: number }>(() => (inicial ? { lat: inicial.lat, lng: inicial.lng } : arranque))
   const [direccion, setDireccion] = useState<string | null>(inicial?.direccion ?? null)
   const [consulta, setConsulta] = useState('')
-  const [resultados, setResultados] = useState<LugarPhoton[]>([])
-  const [buscando, setBuscando] = useState(false)
-  const [sinResultados, setSinResultados] = useState(false)
+  const { resultados, buscando, sinResultados, limpiar } = useBusquedaDeLugares(consulta, referencias)
   // true mientras el mapa se mueve solo (al tocar una sugerencia): ahí la dirección ya la tenemos y no se pregunta otra vez.
   const programado = useRef(true)
 
@@ -93,37 +152,12 @@ export function MapaDelAlojamiento({ inicial, onVolver, onElegido }: { inicial: 
     }
   }, [centro, direccion])
 
-  // La búsqueda: solo cuando se deja de escribir, con 3 letras y cancelando la anterior.
-  useEffect(() => {
-    setSinResultados(false)
-    if (consulta.trim().length < MIN_LETRAS_PHOTON) {
-      setResultados([])
-      setBuscando(false)
-      return undefined
-    }
-    const ctl = new AbortController()
-    const t = window.setTimeout(() => {
-      setBuscando(true)
-      void buscarLugarPhoton(consulta, referencias[0] ?? null, referencias, ctl.signal).then((r) => {
-        if (ctl.signal.aborted) return
-        setBuscando(false)
-        setResultados(r)
-        setSinResultados(r.length === 0)
-      })
-    }, ESPERA_PHOTON_MS)
-    return () => {
-      window.clearTimeout(t)
-      ctl.abort()
-    }
-  }, [consulta, referencias])
-
   const elegir = (l: LugarPhoton) => {
     programado.current = true
     setCentro({ lat: l.lat, lng: l.lng })
     setDireccion(l.direccion)
     mapaRef.current?.flyTo({ center: [l.lng, l.lat], zoom: 17 })
-    setResultados([])
-    setSinResultados(false)
+    limpiar()
     setConsulta('')
   }
 
@@ -155,22 +189,7 @@ export function MapaDelAlojamiento({ inicial, onVolver, onElegido }: { inicial: 
           </svg>
           <input data-buscar-alojamiento-mapa value={consulta} onChange={(e) => setConsulta(e.target.value)} placeholder={ciudad ? `Busca una calle o un hotel en ${ciudad}` : 'Busca una calle o un hotel'} autoComplete="off" maxLength={80} style={{ flex: 1, minWidth: 0, background: 'transparent', border: 'none', outline: 'none', font: "500 14.5px 'Geist'" }} />
         </label>
-        {(resultados.length > 0 || buscando || sinResultados) && (
-          <div data-sugerencias-alojamiento style={{ borderRadius: 20, background: '#FFFDF8', boxShadow: sombra, overflow: 'hidden', border: '1px solid rgba(28,34,48,.06)' }}>
-            {resultados.map((r) => (
-              <button key={`${r.lng},${r.lat},${r.titulo}`} type="button" data-sugerencia-alojamiento onClick={() => elegir(r)} style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', minHeight: 52, textAlign: 'left', padding: '8px 14px', border: 'none', background: 'transparent', cursor: 'pointer' }}>
-                <span style={{ flex: 'none', width: 32, height: 32, borderRadius: '50%', background: '#F3E3B2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <IconoPin size={16} />
-                </span>
-                <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-                  <span style={{ font: "700 14.5px/1.2 'Geist'" }}>{r.titulo}</span>
-                  {r.detalle && <span style={{ font: "400 12px/1.3 'Geist'", color: 'rgba(28,34,48,.55)' }}>{r.detalle}</span>}
-                </span>
-              </button>
-            ))}
-            {resultados.length === 0 && <span data-sugerencias-vacio style={{ display: 'block', padding: '14px 16px', font: "400 13.5px 'Geist'", color: 'rgba(28,34,48,.6)' }}>{buscando ? 'Buscando…' : `No encontramos eso en ${ciudad || 'tu destino'}. Prueba con otra calle.`}</span>}
-          </div>
-        )}
+        <ListaDeSugerencias resultados={resultados} buscando={buscando} sinResultados={sinResultados} ciudad={ciudad} onElegir={elegir} />
       </div>
       <span data-creditos-mapa style={{ position: 'absolute', left: 16, bottom: 'calc(env(safe-area-inset-bottom,0px) + 186px)', font: "400 9.5px 'Geist'", color: 'rgba(28,34,48,.6)', background: 'rgba(255,253,248,.7)', padding: '1px 5px', borderRadius: 6 }}>
         © OpenStreetMap contributors · © Mapbox

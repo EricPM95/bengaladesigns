@@ -28,7 +28,7 @@ export interface LugarPhoton {
 
 interface FeaturePhoton {
   geometry?: { coordinates?: [number, number] }
-  properties?: { name?: string; street?: string; housenumber?: string; postcode?: string; city?: string; district?: string; locality?: string; county?: string; state?: string; country?: string }
+  properties?: { type?: string; osm_key?: string; name?: string; street?: string; housenumber?: string; postcode?: string; city?: string; district?: string; locality?: string; county?: string; state?: string; country?: string }
 }
 
 const RAD = Math.PI / 180
@@ -65,36 +65,82 @@ export function soloDeLaCiudad(lugares: LugarPhoton[], referencias: Coordinates[
 
 const cache = new Map<string, LugarPhoton[]>()
 
+/** Sin tildes ni mayúsculas, para buscar y comparar («Vía» = «Via»); lo que se ve en pantalla no se toca. */
+export function sinTildes(t: string): string {
+  return t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim()
+}
+
+/** El recuadro de «la ciudad del viaje» (minLon,minLat,maxLon,maxLat) con ~0,27° de margen (~30 km): Photon solo busca dentro. */
+function bboxDe(referencias: Coordinates[]): string | null {
+  if (referencias.length === 0) return null
+  const m = 0.27
+  const lats = referencias.map((r) => r.lat)
+  const lngs = referencias.map((r) => r.lng)
+  return [Math.min(...lngs) - m, Math.min(...lats) - m, Math.max(...lngs) + m, Math.max(...lats) + m].map((n) => n.toFixed(4)).join(',')
+}
+
+/** Pide a Photon y pasa los resultados a lugares, sin repetidos (mismo título + ciudad). */
+async function pedir(params: URLSearchParams, senal?: AbortSignal): Promise<{ lugar: LugarPhoton; calle: boolean; calleDe: string }[]> {
+  const r = await fetch(`https://photon.komoot.io/api/?${params.toString()}`, { signal: senal })
+  if (!r.ok) return []
+  const j = (await r.json()) as { features?: FeaturePhoton[] }
+  const vistos = new Set<string>()
+  return (j.features ?? []).flatMap((f) => {
+    const l = lugarDeFeature(f)
+    if (!l) return []
+    const k = sinTildes(`${l.titulo}|${l.detalle}`)
+    if (vistos.has(k)) return []
+    vistos.add(k)
+    return [{ lugar: l, calle: f.properties?.type === 'street' || f.properties?.osm_key === 'highway', calleDe: sinTildes([f.properties?.street, f.properties?.housenumber].filter(Boolean).join(' ')) }]
+  })
+}
+
 /**
- * Busca `q` cerca de `centro`. Una petición GET a photon.komoot.io/api cada vez que el viajero PARA de escribir (≥ 700 ms, ≥ 3 letras, la anterior se cancela); baja ~1-3 KB (hasta 10 resultados).
- * Ninguna llamada a Supabase. Devuelve [] si falla o se cancela.
+ * Busca `q` en la ciudad del viaje. Orden: PRIMERO las calles (capa «street» de Photon), DESPUÉS los sitios con nombre y portales; sin repetidos. Las tildes se quitan antes de buscar.
+ * Hasta 2 peticiones GET a photon.komoot.io/api (calles + todo) cada vez que el viajero PARA de escribir (≥ 700 ms, ≥ 3 letras, la anterior se cancela); si lo escrito lleva un número («Via Nazionale 22»)
+ * solo se pide lo segundo. Cada una baja ~1-3 KB (hasta 10 resultados), `bbox` limita a la ciudad. Ninguna llamada a Supabase. Devuelve [] si falla o se cancela.
  */
 export async function buscarLugarPhoton(q: string, centro: Coordinates | null, referencias: Coordinates[], senal?: AbortSignal): Promise<LugarPhoton[]> {
-  const texto = q.trim().replace(/\s+/g, ' ')
-  if (texto.length < MIN_LETRAS_PHOTON) return []
-  const clave = `${texto.toLowerCase()}|${centro ? `${centro.lat.toFixed(2)},${centro.lng.toFixed(2)}` : ''}`
+  const mostrado = q.trim().replace(/\s+/g, ' ')
+  if (mostrado.length < MIN_LETRAS_PHOTON) return []
+  const texto = sinTildes(mostrado)
+  const caja = bboxDe(referencias)
+  const clave = `${texto}|${centro ? `${centro.lat.toFixed(2)},${centro.lng.toFixed(2)}` : ''}|${caja ?? ''}`
   const guardado = cache.get(clave)
   if (guardado) return soloDeLaCiudad(guardado, referencias).slice(0, 5)
-  const params = new URLSearchParams({ q: texto, limit: '10', location_bias_scale: '0.6', zoom: '11' })
-  if (centro) {
-    params.set('lat', String(centro.lat))
-    params.set('lon', String(centro.lng))
+  const base = () => {
+    const p = new URLSearchParams({ q: texto, limit: '10', location_bias_scale: '0.6', zoom: '11' })
+    if (centro) {
+      p.set('lat', String(centro.lat))
+      p.set('lon', String(centro.lng))
+    }
+    if (caja) p.set('bbox', caja)
+    return p
   }
   try {
-    const r = await fetch(`https://photon.komoot.io/api/?${params.toString()}`, { signal: senal })
-    if (!r.ok) return []
-    const j = (await r.json()) as { features?: FeaturePhoton[] }
+    const conNumero = /\d/.test(texto)
+    const pCalles = base()
+    pCalles.set('layer', 'street')
+    const [calles, todo] = await Promise.all([conNumero ? Promise.resolve([]) : pedir(pCalles, senal), pedir(base(), senal)])
+    // Las calles que más se parecen a lo escrito, primero (las que empiezan igual, luego las que lo contienen).
+    const empieza = (t: string) => sinTildes(t).startsWith(texto)
+    const callesOrden = [...calles.filter((c) => empieza(c.lugar.titulo)), ...calles.filter((c) => !empieza(c.lugar.titulo))]
+    // Con un número escrito, una calle suelta que no es la que se escribe no sirve (la calle con portal sale como sitio, con su número).
+    const callesDeTodo = conNumero ? [] : todo.filter((t) => t.calle && sinTildes(t.lugar.titulo).includes(texto))
+    // Los sitios: los que llevan lo escrito entero (en su nombre o en su calle y número) primero; el resto solo si no hay nada más.
+    const sitios = todo.filter((t) => !t.calle)
+    const coinciden = sitios.filter((t) => sinTildes(t.lugar.titulo).includes(texto) || t.calleDe.includes(texto))
+    const sitiosOrden = coinciden.length > 0 || callesOrden.length > 0 ? coinciden : sitios
     const vistos = new Set<string>()
-    const todos = (j.features ?? []).flatMap((f) => {
-      const l = lugarDeFeature(f)
-      if (!l) return []
-      const k = `${l.titulo}|${l.detalle}`
-      if (vistos.has(k)) return []
+    const resultado: LugarPhoton[] = []
+    for (const t of [...callesOrden, ...callesDeTodo, ...sitiosOrden]) {
+      const k = sinTildes(`${t.lugar.titulo}|${t.lugar.detalle}`)
+      if (vistos.has(k)) continue
       vistos.add(k)
-      return [l]
-    })
-    cache.set(clave, todos)
-    return soloDeLaCiudad(todos, referencias).slice(0, 5)
+      resultado.push(t.lugar)
+    }
+    cache.set(clave, resultado)
+    return soloDeLaCiudad(resultado, referencias).slice(0, 5)
   } catch {
     return []
   }
