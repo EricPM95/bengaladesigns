@@ -1,13 +1,13 @@
-# Estado de la tanda v44
+# Estado de la tanda v45
 
-**Última actualización: 24/11/26, 14:41**
+**Última actualización: 24/11/26, 14:52**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-TERMINADA: pusheada 0f8fa1c7 (main). Producción: build nueva con los textos de la V44, entrada carga en modo iPhone
+Empiezo la V45: RESERVAS (vuelo, alojamiento, entradas, excursiones) y avisos de toda la app. Solo se AÑADE
 
 ## Qué falta
-Nada. Pendiente de Eric: billete QR (dibujo), sitios nuevos de Roma, mapa del alojamiento (DECISIONES_V44.md)
+Todo: §1 a §7, repaso, push, producción. No apagar el PC
 
 ## Procesos abiertos ahora mismo
 - node: 2
