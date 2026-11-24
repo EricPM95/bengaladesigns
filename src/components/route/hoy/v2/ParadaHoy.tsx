@@ -39,7 +39,7 @@ import { BotonCambiarPlan } from './CambiarPlan'
 import { AvisoMasTiempo } from './MasTiempo'
 import { BOTON_CLARO, BOTON_ORO, DORADO } from '../../../ui/botonesOro'
 import { HojaActivaUbicacion } from './HojaActivaUbicacion'
-import { deDondeADonde, type ZonaUbicacion } from '../../../../lib/ubicacionHoy'
+import { desdeDonde, type ZonaUbicacion } from '../../../../lib/ubicacionHoy'
 
 /** Los colores del diseño «Hoy Estados» (apartado 04): tinta, marfil, oro. */
 const TINTA = '#1C2230'
@@ -276,6 +276,8 @@ export interface PropsParada {
   horario: HorarioDeParada | null
   /** La zona del alojamiento: de dónde sale la primera parada del día. */
   casa?: Coordinates | null
+  /** (V46) El centro de lo que hay hoy: sin alojamiento en el viaje, los minutos de la primera parada se cuentan desde aquí (el centro de su zona). */
+  centroDelDia?: Coordinates | null
   /** (V44 §1) Dónde está el viajero: en la ruta, en el destino pero lejos de ella, fuera del destino (> 50 km) o sin ubicación. */
   zonaUbicacion?: ZonaUbicacion
   /** (V44 §1) Si el viajero ha dado su ubicación (aunque HOY no la use: `ubicacion` solo llega aquí cuando está en la ruta). */
@@ -301,13 +303,15 @@ export function TarjetaParada(p: PropsParada) {
   const tripId = useSyncStore((s) => s.activeTripId) ?? route.id
   const radioAqui = useRadioDeParada(tripId, siguiente.name)
   const aqui = forzada === siguiente.id || estaAqui(ubicacion, siguiente, radioAqui)
-  const trayecto: TrayectoDeParada | null = trayectoHasta({ siguiente, ubicacion, anterior, enCoche, casa: p.casa, ida: day.coche?.activo ? day.coche.ida : null })
+  const trayecto: TrayectoDeParada | null = trayectoHasta({ siguiente, ubicacion, anterior, enCoche, casa: p.casa ?? p.centroDelDia, ida: day.coche?.activo ? day.coche.ida : null })
   const fija = horaFijaDe(siguiente, reservaSiguiente)
   const salida = aqui ? null : avisoDeSalida(ahoraMin, fija, trayecto?.totalMin ?? null)
   const desde = ubicacion ?? (anterior && hasRealCoordinates(anterior.coordinates) ? anterior.coordinates : null) ?? p.casa ?? null
   const comoLlegar = hasRealCoordinates(siguiente.coordinates) ? urlComoLlegar(siguiente.coordinates, ubicacion ? null : desde, enCoche) : null
   const historia = useHistoriaDeParada(route.destination, siguiente)
-  const pedazos = textoDePedazos(usePedazosDeParada(tripId, siguiente, aqui))
+  // (V46) Se pregunta en cuanto esta es la SIGUIENTE parada (no solo al llegar): al llegar ya está en memoria y la línea sale a la vez que la tarjeta.
+  // Consulta: /api/logros/cerca con la coordenada de la parada, UNA vez por parada y viaje cada 2 minutos (`unaSolaVez`); baja ~1-3 KB. No va a Supabase desde el móvil.
+  const pedazos = textoDePedazos(usePedazosDeParada(tripId, siguiente, true))
   const [masTiempo, setMasTiempo] = useState<15 | 30 | null>(null)
 
   // (HOY2b, E; Eric, 5-nov) +15 / +30 NO mueve la ruta: la app solo mira si con ese tiempo de más llegas a algo cerrado o tarde a una reserva (v2/MasTiempo.tsx).
@@ -418,7 +422,7 @@ export function TarjetaParada(p: PropsParada) {
   const modoCaja = trayecto?.modo ?? (enCoche ? 'coche' : 'pie')
   const origenDelPlan = anterior && !anterior.isBreak ? displayStopName(anterior.name) : null
   const minutosCaja = zona === 'fuera' || !trayecto ? '—' : `${trayecto.min} min`
-  const subCaja = zona === 'fuera' ? 'Estás lejos' : zona === 'ruta' ? 'Desde ti' : deDondeADonde(origenDelPlan, nombre)
+  const subCaja = zona === 'fuera' ? 'Estás lejos' : zona === 'ruta' ? 'Desde ti' : desdeDonde(origenDelPlan, !p.casa)
   return (
     <>
       <div data-hoy-siguiente data-hoy-estado="llegar" data-tarjeta="clara" className="flex-none overflow-hidden rounded-[30px]" style={{ background: '#FFFDF8', boxShadow: '0 24px 40px -26px rgba(28,34,48,.55)' }}>
@@ -431,14 +435,14 @@ export function TarjetaParada(p: PropsParada) {
         <div className="flex flex-col gap-3.5 px-4 pb-3.5 pt-4">
           {/* (V44 §1 y §2) Dos cajas, una al lado de otra: «HORARIO» (con «Cerrado ahora · abre a las 9:00») y la de minutos (A PIE / EN COCHE). */}
           <div className="grid grid-cols-2 gap-2.5">
-            {rango && (
-              <div data-hoy-horario className="flex min-h-[78px] flex-col gap-1 rounded-2xl px-3 py-2.5" style={{ background: '#F6F0E2' }}>
-                <span style={{ font: "700 10px 'Geist Mono',monospace", letterSpacing: '.14em', color: '#6F4E37' }}>HORARIO</span>
-                <b className="text-[15px] leading-[1.15]">{rango}</b>
-                {cerrado && <b data-hoy-cerrado-ahora className="text-[12px] font-semibold leading-[1.25]" style={{ color: '#B3321F' }}>{cerrado}</b>}
-              </div>
-            )}
-            <div data-hoy-trayecto={modoCaja} data-hoy-trayecto-zona={zona} className={`flex min-h-[78px] flex-col gap-1 rounded-2xl px-3 py-2.5 ${rango ? '' : 'col-span-2'}`} style={{ background: '#F6F0E2' }}>
+            {/* (V46) La caja HORARIO sale SIEMPRE: en los sitios sin horario (plazas, calles, fuentes) pone solo «Abierto». */}
+            <div data-hoy-horario={rango ? 'con' : 'abierto'} className="flex min-h-[78px] flex-col gap-1 rounded-2xl px-3 py-2.5" style={{ background: '#F6F0E2' }}>
+              <span style={{ font: "700 10px 'Geist Mono',monospace", letterSpacing: '.14em', color: '#6F4E37' }}>HORARIO</span>
+              {/* (V46) El horario («9:00–16:30») en negro; «Abierto» en verde; «Cerrado» (y «Cerrado ahora · abre a las 9:00») en rojo. */}
+              <b data-hoy-horario-texto={p.horario?.cerrado ? 'cerrado' : rango ? 'horario' : 'abierto'} className="text-[15px] leading-[1.15]" style={{ color: p.horario?.cerrado ? '#B3321F' : rango ? '#1C2230' : '#2E7D4F' }}>{p.horario?.cerrado ? 'Cerrado' : (rango ?? 'Abierto')}</b>
+              {cerrado && <b data-hoy-cerrado-ahora className="text-[12px] font-semibold leading-[1.25]" style={{ color: '#B3321F' }}>{cerrado}</b>}
+            </div>
+            <div data-hoy-trayecto={modoCaja} data-hoy-trayecto-zona={zona} className="flex min-h-[78px] flex-col gap-1 rounded-2xl px-3 py-2.5" style={{ background: '#F6F0E2' }}>
               <span className="flex items-center justify-between">
                 <span style={{ font: "700 10px 'Geist Mono',monospace", letterSpacing: '.14em', color: '#6F4E37' }}>{modoCaja === 'coche' ? 'EN COCHE' : 'A PIE'}</span>
                 {zona === 'ruta' && (
@@ -455,6 +459,25 @@ export function TarjetaParada(p: PropsParada) {
             <div data-hoy-salida={salida} className="flex items-center gap-2 rounded-xl px-3 py-2 text-[13px] font-semibold leading-[1.3]" style={salida === 'tarde' ? { background: '#FBE6E2', border: '1px solid #E5766B', color: '#8A2A1F' } : { background: '#F6F0E2', border: '1px solid rgba(181,138,46,.4)', color: '#6E5018' }}>
               <Icono nombre="reloj" size={15} grosor={2} />
               {textoDeSalida(salida, fija)}
+            </div>
+          )}
+          {/* (V46) El recuadro de la ubicación («Estás lejos…» / «Sin tu ubicación…») va DEBAJO de las cajas y ENCIMA de «Escucha su historia» (dibujo T2 y T4). */}
+          {zona === 'fuera' && (
+            <div data-hoy-lejos className="flex flex-col gap-1 rounded-2xl p-3" style={{ background: 'transparent', border: '1.5px dashed rgba(181,138,46,.5)' }}>
+              <span className="text-[13px] font-semibold leading-[1.3]" style={{ color: '#4A3510' }}>Estás lejos de {route.destination}. Cuando llegues, contaremos desde donde estés.</span>
+            </div>
+          )}
+          {zona === 'sin' && (
+            <div data-hoy-sin-ubicacion className="flex flex-col gap-2.5 rounded-2xl p-3" style={{ background: 'transparent', border: '1.5px dashed rgba(181,138,46,.5)' }}>
+              <span className="text-[13px] font-semibold leading-[1.3]" style={{ color: '#4A3510' }}>Sin tu ubicación no sabemos cuándo llegas</span>
+              <div className="flex gap-2">
+                <button type="button" onClick={() => (p.ubicacionEstado === 'no' ? setHojaUbicacion(true) : p.pedirUbicacion())} disabled={p.ubicacionEstado === 'pidiendo'} data-hoy-usar-ubicacion className="flex h-11 flex-1 items-center justify-center rounded-2xl text-[13.5px] font-bold" style={BOTON_ORO}>
+                  {p.ubicacionEstado === 'pidiendo' ? 'Buscando…' : 'Usar mi ubicación'}
+                </button>
+                <button type="button" onClick={() => setForzada(siguiente.id)} data-hoy-ya-he-llegado aria-label={`Ya he llegado a ${nombre}`} className="flex h-11 flex-1 items-center justify-center rounded-2xl text-[13.5px] font-bold" style={BOTON_CLARO}>
+                  Ya he llegado
+                </button>
+              </div>
             </div>
           )}
           {/* (V44 §2) «Escucha su historia por el camino · 3 min», en azul oscuro DESDE EL PRINCIPIO: al darle al play solo cambia ▶ por ❚❚ y se mueven las ondas. */}
@@ -494,28 +517,13 @@ export function TarjetaParada(p: PropsParada) {
           </div>
           <ExtraDeParada parada={siguiente} dayId={day.id} vista={false} contexto="tarjeta" route={route} reserva={reservaSiguiente} />
           {/* (V43 §8) Con ubicación: «¿Ya estás aquí?» y [Ya he llegado]; sin ella, el recuadro «Sin tu ubicación no sabemos cuándo llegas» con [Usar mi ubicación] y [Ya he llegado]. */}
-          {zona === 'fuera' ? (
-            <div data-hoy-lejos className="flex flex-col gap-1 rounded-2xl p-3" style={{ background: 'transparent', border: '1.5px dashed rgba(181,138,46,.5)' }}>
-              <span className="text-[13px] font-semibold leading-[1.3]" style={{ color: '#4A3510' }}>Estás lejos de {route.destination}. Cuando llegues, contaremos desde donde estés.</span>
-            </div>
-          ) : zona === 'ruta' || (zona === 'destino') ? (
+          {/* (V46) «¿Ya estás aquí? Ya he llegado» (con ubicación en la ruta) se queda abajo, como en el dibujo (T1). */}
+          {(zona === 'ruta' || zona === 'destino') && (
             <div className="flex items-center justify-center gap-1 text-center text-[12.5px] font-medium" style={{ color: 'rgba(28,34,48,.55)' }}>
               ¿Ya estás aquí?
               <button type="button" onClick={() => setForzada(siguiente.id)} data-hoy-ya-he-llegado aria-label={`Ya he llegado a ${nombre}`} className="inline-flex min-h-11 items-center px-1 font-bold underline underline-offset-[3px]" style={{ color: ORO_TEXTO }}>
                 Ya he llegado
               </button>
-            </div>
-          ) : (
-            <div data-hoy-sin-ubicacion className="flex flex-col gap-2.5 rounded-2xl p-3" style={{ background: 'transparent', border: '1.5px dashed rgba(181,138,46,.5)' }}>
-              <span className="text-[13px] font-semibold leading-[1.3]" style={{ color: '#4A3510' }}>Sin tu ubicación no sabemos cuándo llegas</span>
-              <div className="flex gap-2">
-                <button type="button" onClick={() => (p.ubicacionEstado === 'no' ? setHojaUbicacion(true) : p.pedirUbicacion())} disabled={p.ubicacionEstado === 'pidiendo'} data-hoy-usar-ubicacion className="flex h-11 flex-1 items-center justify-center rounded-2xl text-[13.5px] font-bold" style={BOTON_ORO}>
-                  {p.ubicacionEstado === 'pidiendo' ? 'Buscando…' : 'Usar mi ubicación'}
-                </button>
-                <button type="button" onClick={() => setForzada(siguiente.id)} data-hoy-ya-he-llegado aria-label={`Ya he llegado a ${nombre}`} className="flex h-11 flex-1 items-center justify-center rounded-2xl text-[13.5px] font-bold" style={BOTON_CLARO}>
-                  Ya he llegado
-                </button>
-              </div>
             </div>
           )}
           {hojaUbicacion && <HojaActivaUbicacion onCerrar={() => setHojaUbicacion(false)} onReintentar={() => { setHojaUbicacion(false); p.pedirUbicacion() }} />}

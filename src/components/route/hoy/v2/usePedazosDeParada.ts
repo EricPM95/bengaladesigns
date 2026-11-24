@@ -9,8 +9,11 @@ import type { RespuestaCerca } from '../useCercaDeAqui'
  * LOS PEDAZOS QUE SE GANAN EN ESTA PARADA (V2, «Aquí ganas 2 pedazos: «…» y «…»»): los nombres de las colecciones donde ese sitio da un pedazo AÚN POR GANAR. Los emblemas ocultos NUNCA se anuncian
  * (el servidor ni los manda en `pedazos_nombres`). Se le pregunta al servidor con la coordenada de la propia parada (no hace falta el GPS) y solo cuando hace falta (`activo`: la tarjeta de «Ya estás aquí»).
  */
+// (V46) Lo ya preguntado, en memoria: al llegar a la parada la línea «Aquí ganas 1 pedazo» sale en el MISMO pintado que la tarjeta (antes se preguntaba al servidor justo al llegar y la línea aparecía un segundo tarde, empujando lo de debajo).
+const guardados = new Map<string, string[]>()
+
 export function usePedazosDeParada(tripId: string | null, parada: Stop, activo: boolean): string[] {
-  const [nombres, setNombres] = useState<{ id: string; lista: string[] } | null>(null)
+  const [nombres, setNombres] = useState<{ id: string; lista: string[] } | null>(() => (guardados.has(`${tripId}:${parada.id}`) ? { id: parada.id, lista: guardados.get(`${tripId}:${parada.id}`) ?? [] } : null))
   useEffect(() => {
     // Solo desarrollo: `window.__pedazosDemo = { 'Plaza de San Pedro': ['A', 'B'] }` pone lo que diría el servidor para esa parada (en la demo no hay servidor que conteste).
     if (import.meta.env.DEV && activo) {
@@ -27,14 +30,22 @@ export function usePedazosDeParada(tripId: string | null, parada: Stop, activo: 
     void unaSolaVez(`pedazos:${tripId}:${parada.id}`, () => llamar<RespuestaCerca>('/api/logros/cerca', { cuerpo }), 120_000).then((r) => {
       if (!vivo || !r?.ok) return
       const aqui = r.cerca.find((c) => c.dentro && c.hay_pedazo)
-      setNombres({ id: parada.id, lista: aqui?.pedazos_nombres ?? (aqui?.coleccion_nombre ? [aqui.coleccion_nombre] : []) })
+      const lista = aqui?.pedazos_nombres ?? (aqui?.coleccion_nombre ? [aqui.coleccion_nombre] : [])
+      guardados.set(`${tripId}:${parada.id}`, lista)
+      setNombres({ id: parada.id, lista })
     })
     return () => {
       vivo = false
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- las coordenadas se miran por sus números (el objeto cambia de identidad con cada pintado de la ruta)
   }, [activo, tripId, parada.id, parada.name, parada.coordinates?.lat, parada.coordinates?.lng])
-  return nombres && nombres.id === parada.id ? nombres.lista : []
+  // Solo desarrollo: lo que diga `window.__pedazosDemo` para esta parada, se ponga cuando se ponga (la tarjeta ya no espera a «Ya estás aquí» para preguntar).
+  if (import.meta.env.DEV && activo) {
+    const falso = (window as unknown as { __pedazosDemo?: Record<string, string[]> }).__pedazosDemo?.[parada.name]
+    if (falso) return falso
+  }
+  const guardado = guardados.get(`${tripId}:${parada.id}`)
+  return nombres && nombres.id === parada.id ? nombres.lista : (guardado ?? [])
 }
 
 /** «Aquí ganas 2 pedazos: «A» y «B»» (null si no hay ninguno). */

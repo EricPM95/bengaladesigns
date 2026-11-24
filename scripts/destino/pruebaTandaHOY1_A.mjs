@@ -172,7 +172,7 @@ await sec(async () => {
   debe(cab === `Parada 2 de ${total}`, 'H1', `«Parada 2 de ${total}» (${cab})`)
   debe((await cuantos(a, '[data-hoy-progreso] span')) === total, 'H1', 'la barra de progreso tiene un tramo por parada')
   const tr = await txt(a, '[data-hoy-trayecto]')
-  debe(/De(l)? .* a /.test(tr ?? ''), 'H1', `«De la parada de antes a esta» (${tr})`)
+  debe(/Desde (el|la|los|las) /.test(tr ?? ''), 'H1', `«Desde la parada de antes» (V46) (${tr})`)
   debe(/^A PIE \d+ min/.test(tr ?? ''), 'H1', `el trayecto a pie con sus minutos (${tr})`)
   debe(Boolean(await hay(a, '[data-hoy-siguiente] [data-hoy-foto-parada]')) && !(await hay(a, '[data-hoy-mapa-llegada]')), 'H1', 'la foto del lugar arriba (HOY2: ya no hay mapa)')
   debe(/Cómo llegar/.test((await txt(a, '[data-hoy-siguiente]')) ?? ''), 'H1', '[Cómo llegar]')

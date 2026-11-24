@@ -146,7 +146,7 @@ try {
     // (la 2.ª parada: con la 1.ª ya vista, el tiempo del plan es «De la 1.ª a la 2.ª»; la primera del día cuenta desde el alojamiento si se sabe dónde está)
     await montar(9 * 60, AEROPUERTO, "const v = r.days[0].stops.filter((s) => !s.isBreak && !s.isArrival); if (v[0]) v[0].checkedInAt = '2026-10-17T08:30:00Z';")
     const caja = (await txt('[data-hoy-trayecto]')) ?? ''
-    debe(/\d+ min/.test(caja) && /De(l| los| la| las)? .* a /.test(caja) && !/Desde ti/.test(caja), 'aeropuerto', `en el aeropuerto, el tiempo del plan «Del … a …» (${caja})`)
+    debe(/\d+ min/.test(caja) && /Desde (el|la|los|las) /.test(caja) && !/Desde ti/.test(caja), 'aeropuerto', `en el aeropuerto, el tiempo del plan «Desde …» (${caja})`)
     debe(!(await hay('[data-hoy-pendientes]')), 'aeropuerto', 'y nada va a pendientes')
     const min = Number(/(\d+) min/.exec(caja)?.[1] ?? 99999)
     debe(min < 120, 'aeropuerto', `los minutos son los del plan, no los de la distancia (${min})`)
@@ -169,7 +169,8 @@ try {
     // Sin ubicación: el tiempo del plan + el recuadro
     await montar(9 * 60, null)
     const caja = (await txt('[data-hoy-trayecto]')) ?? ''
-    debe(/Del alojamiento a|Del .* a /.test(caja), 'sin', `sin ubicación, el tiempo del plan (${caja})`)
+    // (V46) El texto corto: «Desde el alojamiento» (primera parada) o «Desde el Panteón»; con los minutos del plan, nunca «—».
+    debe(/\d+ min/.test(caja) && /Desde (el|la|los|las) /.test(caja) && !/—/.test(caja), 'sin', `sin ubicación, el tiempo del plan con «Desde …» (${caja})`)
     debe((await txt('[data-hoy-sin-ubicacion]'))?.includes('Sin tu ubicación no sabemos cuándo llegas') ?? false, 'sin', 'el recuadro «Sin tu ubicación no sabemos cuándo llegas»')
     // el reproductor, azul oscuro desde el principio
     const fondo = await a.evaluar("getComputedStyle(document.querySelector('[data-hoy-escuchar-camino]') ?? document.body).backgroundColor")

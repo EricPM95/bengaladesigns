@@ -45,6 +45,20 @@ export function deOrigen(nombre: string): string {
   return a.startsWith('al ') ? `del ${a.slice(3)}` : `de ${a.slice(2)}`
 }
 
+/** «el Panteón», «la Fontana de Trevi», «los Museos Vaticanos» (con su artículo, para «Desde el Panteón»). */
+export function conArticulo(nombre: string): string {
+  const a = aDestino(nombre)
+  return a.startsWith('al ') ? `el ${a.slice(3)}` : a.slice(2)
+}
+
+/**
+ * (V46) La línea corta de la caja de minutos cuando se cuenta con el plan (sin ubicación en la ruta): «Desde el alojamiento» en la primera parada del día, «Desde el Panteón» en las demás.
+ * Sin alojamiento en el viaje, los minutos se cuentan desde el centro de su zona: «Desde el centro».
+ */
+export function desdeDonde(origen: string | null, sinAlojamiento = false): string {
+  return origen ? `Desde ${conArticulo(origen)}` : sinAlojamiento ? 'Desde el centro' : 'Desde el alojamiento'
+}
+
 /** La frase de la caja de minutos cuando se cuenta con el plan: «Del alojamiento al Coliseo», «Del Panteón a la Fontana de Trevi». */
 export function deDondeADonde(origen: string | null, destino: string): string {
   const de = origen ? deOrigen(origen) : 'del alojamiento'

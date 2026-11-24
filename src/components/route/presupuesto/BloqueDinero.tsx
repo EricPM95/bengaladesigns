@@ -95,6 +95,7 @@ export function BloqueDinero({
   pregunta,
   sinParaQuien = false,
   sinLineas = false,
+  quienSinPrecio = false,
 }: {
   tipo: TipoDeHoja
   /** Viajando solo: solo el precio. */
@@ -120,6 +121,8 @@ export function BloqueDinero({
   sinParaQuien?: boolean
   /** (V45 §4) Sin las líneas pequeñas en gris («Va a Mi cuenta», «Solo lo ves tú», «Entra directo en el presupuesto»). */
   sinLineas?: boolean
+  /** (V45/V46) «¿Quién la ha pagado?» sale con la cuenta conjunta aunque el precio aún no se haya escrito (el paso «Casi lista» de las entradas y excursiones). */
+  quienSinPrecio?: boolean
 }) {
   const textoPregunta = pregunta ?? preguntaParaQuien(tipo)
   const esGasto = tipo === 'gasto'
@@ -127,7 +130,7 @@ export function BloqueDinero({
   const marcados = esGasto && !soloParaAlgunos ? personas.map((p) => p.id) : paraQuien
   const hayPrecio = precio.importe !== null
   // (V45 §4) En la hoja de dos pasos, con la cuenta conjunta o del grupo, «¿Quién la ha pagado?» sale siempre (con todos los viajeros), aunque el precio aún no se haya escrito.
-  const variosYPrecio = !solo && marcados.length > 1 && (hayPrecio || sinParaQuien)
+  const variosYPrecio = !solo && marcados.length > 1 && (hayPrecio || quienSinPrecio)
   const lineas = lineasDeDestino({ solo, marcados, yoId, precio: precio.importe, cuenta, permiso, nombreAdmin })
   return (
     <div className="flex flex-col gap-5" data-bloque-dinero={tipo}>
@@ -148,8 +151,8 @@ export function BloqueDinero({
       )}
       {variosYPrecio && (
         <div className="flex flex-col gap-2.5" data-quien-lo-ha-pagado>
-          <span style={ESTILO_PREGUNTA}>{sinParaQuien ? '¿Quién la ha pagado?' : '¿Quién lo ha pagado?'}</span>
-          <PersonasCuadradas personas={personas.filter((p) => marcados.includes(p.id) || pagadoPor.includes(p.id))} marcados={pagadoPor} onAlternar={onPagadoPor} grande datos="pagado" etiqueta={sinParaQuien ? '¿Quién la ha pagado?' : '¿Quién lo ha pagado?'} />
+          <span style={ESTILO_PREGUNTA}>{quienSinPrecio ? '¿Quién la ha pagado?' : '¿Quién lo ha pagado?'}</span>
+          <PersonasCuadradas personas={personas.filter((p) => marcados.includes(p.id) || pagadoPor.includes(p.id))} marcados={pagadoPor} onAlternar={onPagadoPor} grande datos="pagado" etiqueta={quienSinPrecio ? '¿Quién la ha pagado?' : '¿Quién lo ha pagado?'} />
         </div>
       )}
       {destino ??

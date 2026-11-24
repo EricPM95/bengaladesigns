@@ -307,6 +307,11 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
         enCoche,
       })
     : null
+  // (V46) Sin alojamiento en el viaje, los minutos de la primera parada se cuentan desde el centro de lo que hay hoy (el centro de su zona).
+  const centroDelDia = (() => {
+    const cs = day.stops.filter((s) => !s.isBreak && hasRealCoordinates(s.coordinates)).map((s) => s.coordinates)
+    return cs.length > 0 ? { lat: cs.reduce((a, c) => a + c.lat, 0) / cs.length, lng: cs.reduce((a, c) => a + c.lng, 0) / cs.length } : null
+  })()
   // (V45) El punto del alojamiento puesto en el mapa manda sobre el centro de la zona.
   const zonaCoords = puntoDelAlojamiento(route) ?? (route.accommodationZone ? info.zonasAlojamiento.find((z) => z.id === route.accommodationZone)?.coordinates : null) ?? null
   // (HOY2, Completa 7) Lo de mañana, SOLO cuando no queda ninguna parada por hacer hoy (antes salía también a la hora de la cena).
@@ -591,6 +596,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
           conPase={conPaseOPrueba}
           onQueVasAVer={() => setFichaCompleta(siguiente)}
           casa={zonaCoords}
+          centroDelDia={centroDelDia}
           horario={horarioDe(siguiente)}
         />
       )}

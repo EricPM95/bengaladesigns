@@ -363,7 +363,8 @@ try {
     await a.esp(700)
     debe(await hay(a, '[data-lista-de-dias]'), `26${casoEsperado} lista`, 'sale la hoja de días de siempre')
     const dias = await a.evaluar(`Array.from(document.querySelectorAll('[data-dia-de-la-lista]')).map((e) => e.getAttribute('data-dia-de-la-lista'))`)
-    debe(dias.length >= 2, `26${casoEsperado} lista`, `con los otros días (${dias.length})`)
+    // (V46) Solo los días POSTERIORES a hoy (la hoja ya no ofrece uno pasado ni el de hoy): en el tercer día del viaje, los que quedan.
+    debe(dias.length >= 1, `26${casoEsperado} lista`, `con los días de después de hoy (${dias.length})`)
     const jueves = await ev(`${R}.getState().route.days.find((d) => d.dayNumber === 5).id`)
     await clic(a, `[data-dia-de-la-lista="${jueves}"]`)
     await a.esp(800)

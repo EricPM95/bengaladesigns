@@ -193,7 +193,8 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
     setSaltadaAviso(null)
     setHojaOtroDia(false)
   }
-  const otrosDias = route.days.filter((candidato) => !candidato.isReturnLeg && candidato.id !== day.id).map((candidato) => ({ id: candidato.id, dayNumber: candidato.dayNumber, city: candidato.city }))
+  // (V46) Solo los días POSTERIORES a hoy: nunca uno pasado ni el de hoy.
+  const otrosDias = route.days.filter((candidato) => !candidato.isReturnLeg && candidato.id !== day.id && candidato.dayNumber > day.dayNumber).map((candidato) => ({ id: candidato.id, dayNumber: candidato.dayNumber, city: candidato.city }))
   const saltadaEsReservada = Boolean(saltadaAviso?.reservedId)
 
   const marcarVisto = () => {

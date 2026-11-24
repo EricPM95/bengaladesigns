@@ -209,7 +209,7 @@ for (const [destino, hoy, coche] of [['roma', '2026-10-17', false], ['lanzarote'
     const hojaAbierta = await app.evaluar("Boolean(document.querySelector('[role=dialog]:not([data-flotantes]):not(:has([data-hoy-ya-no-da-tiempo]))'))")
     debe(!hojaAbierta, 'saltar', `${etq}: «Saltar parada» no abre ninguna hoja ni pregunta`)
     const avisos = await app.evaluar("Array.from(document.querySelectorAll('[data-aviso-de-abajo]')).map((a) => a.innerText.replace(/\\s+/g, ' '))")
-    debe(avisos.length === 1 && /Parada saltada · la tienes en Lugares pendientes/.test(avisos[0]) && /Deshacer/.test(avisos[0]), 'avisos', `${etq}: un solo aviso abajo: «Parada saltada · la tienes en Lugares pendientes», sin [Deshacer] (${avisos.join(' | ')})`)
+    debe(avisos.length === 1 && /Parada saltada/.test(avisos[0]) && /Lugares pendientes/.test(avisos[0]) && /Deshacer/.test(avisos[0]), 'avisos', `${etq}: un solo aviso abajo con [Deshacer] (V44: al saltar se mira todo el día de golpe) (${avisos.join(' | ')})`)
     await app.captura(`${CAPTURAS}/${destino}_saltada.jpg`)
     const pend = await app.evaluar("document.querySelector('[data-hoy-pendientes]')?.getAttribute('data-hoy-pendientes')")
     debe(Number(pend) >= 1, 'pendientes', `${etq}: «Lugares pendientes» con lo saltado (${pend})`)

@@ -1,0 +1,189 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>REPASO V46</title><style>body{font:15px/1.5 system-ui,sans-serif;max-width:980px;margin:24px auto;padding:0 16px;color:#1C2230;background:#FBF6EA}h1{font-size:26px}h2{margin-top:34px;border-top:2px solid #C9A24A;padding-top:12px}figure{margin:10px 14px 10px 0;display:inline-block;vertical-align:top;max-width:300px}figure img{width:100%;border:1px solid #d8cfb8;border-radius:10px}figure.ancha{max-width:100%;display:block}figcaption{font-size:12.5px;color:#6a6657}.falta{color:#a33}pre{background:#fff;padding:12px;border-radius:8px;overflow:auto;font-size:12px}li{margin:4px 0}</style>
+<h1>V46 · Cinco arreglos tras la V45</h1>
+<p>Lo que queda por decidir o no se ha podido hacer está en <code>docs/dias/DECISIONES_V46.md</code>. Capturas en tamaño iPhone (390 × 844).</p>
+
+<h2>Tu lista de comprobación de esta tanda</h2>
+<ol>
+<li>Un viaje de cuatro: en una entrada, [Siguiente] → «Casi lista» trae «¿A qué cuenta lo sumamos?», «¿Para quién son las entradas?» y «¿Quién la ha pagado?».</li>
+<li>Quien la añade sale marcado, pero lo puedes desmarcar; siempre queda alguien marcado.</li>
+<li>Una entrada para Eric y Ana: sale en su ruta y no en la de Luis ni Marta; el gasto solo entre ellos.</li>
+<li>En vuelo, alojamiento y coche sigue «¿Para quién es…?».</li>
+<li>HOY › Cambiar plan › Pasar a otro día: ningún día pasado ni el de hoy.</li>
+<li>El día recomendado, en su tarjeta con borde dorado y «Te lo recomendamos» encima; los cerrados, en gris con «Cerrado ese día».</li>
+<li>La tarjeta de la parada: el recuadro de la ubicación entre las cajas y «Escucha su historia»; la caja HORARIO siempre (en una plaza, «Abierto»).</li>
+<li>La caja de minutos: «Desde el alojamiento» (primera parada), «Desde el Panteón» (las demás), «Desde ti» (con ubicación en la ruta); sin ubicación van los minutos del plan, nunca «—» (la raya es solo para «lejos del destino»).</li>
+<li>La caja HORARIO: el horario en negro, «Abierto» en verde, «Cerrado» en rojo.</li>
+<li>Al llegar a una parada, «Aquí ganas 1 pedazo» sale a la vez que la tarjeta, sin empujar lo de debajo.</li>
+</ol>
+
+<h2>1 · «¿Para quién es?» devuelto</h2>
+<p>La V45 lo quitó porque no estaba en el dibujo; era un error. Ahora está en «Casi lista», con quien la añade marcado (y desmarcable). Si de cuatro amigos solo dos van al Vaticano, la entrada sale solo en la ruta de esos dos y el gasto se reparte solo entre ellos.</p>
+<figure><img src="V46_capturas/v46_casi_lista_cuatro.jpg" alt="Casi lista, cuatro viajeros: Eric marcado"><figcaption>Casi lista, cuatro viajeros: Eric marcado</figcaption></figure>
+<figure><img src="V46_capturas/v46_casi_lista_dos.jpg" alt="Para dos (Eric y Ana), cuenta del grupo y «¿Quién la ha pagado?»"><figcaption>Para dos (Eric y Ana), cuenta del grupo y «¿Quién la ha pagado?»</figcaption></figure>
+
+<h2>2 · «Pasar a otro día»</h2>
+<p>Antes salía el lunes 23 siendo martes 24. Ahora solo salen días posteriores a hoy. El recomendado va como el dibujo 26a.</p>
+<figure><img src="V46_capturas/v46_pasar_a_otro_dia_tercer_dia.jpg" alt="Hoy es el tercer día: no sale ni el 17, ni el 18, ni el de hoy"><figcaption>Hoy es el tercer día: no sale ni el 17, ni el 18, ni el de hoy</figcaption></figure>
+<figure><img src="V46_capturas/v46_pasar_a_otro_dia_recomendado.jpg" alt="El recomendado, en su tarjeta con borde dorado"><figcaption>El recomendado, en su tarjeta con borde dorado</figcaption></figure>
+<figure><img src="V46_capturas/v46_pasar_a_otro_dia_primer_dia.jpg" alt="Un día cerrado (el Vaticano cierra el domingo): en gris con «Cerrado ese día»"><figcaption>Un día cerrado (el Vaticano cierra el domingo): en gris con «Cerrado ese día»</figcaption></figure>
+<figure class="ancha"><img src="V46_design/p26a.jpg" alt="Design: 26a"><figcaption>Design: 26a</figcaption></figure>
+
+<h2>3 · La tarjeta de la parada</h2>
+<p>Sin ubicación: <b>18 min · Desde el centro</b> (este viaje de pruebas no tiene alojamiento, así que se cuenta desde el centro de su zona; con alojamiento pone «Desde el alojamiento»). Antes ponía «—» y «Del alojamiento a la Plaza del Campidoglio». «Abierto» en verde; el horario real va en negro y «Cerrado» en rojo.</p>
+<figure><img src="V46_capturas/v46_parada_plaza.jpg" alt="En una plaza: HORARIO «Abierto» (verde), minutos del plan y el recuadro de la ubicación encima de la historia"><figcaption>En una plaza: HORARIO «Abierto» (verde), minutos del plan y el recuadro de la ubicación encima de la historia</figcaption></figure>
+
+<h2>4 · «Aquí ganas 1 pedazo»</h2>
+<p><b>De dónde venía el retraso:</b> la línea sale de una pregunta al servidor que solo se hacía al llegar; hasta que contestaba, la línea no existía y luego empujaba lo de debajo. Ahora se pregunta en cuanto la parada es la siguiente y se guarda en memoria, así que al llegar sale a la vez que la tarjeta. (No hay captura: depende del tiempo de red; lo vigila la prueba de código.)</p>
+
+<h2>Pruebas</h2>
+<pre>=== pruebaTanda10N_reservas
+exit=0
+Prueba de la Tanda 10N (D1, RESERVAS del invitado): 45 comprobaciones · 0 fallos
+=== pruebaTanda10N10_reservas
+exit=0
+52 comprobaciones, 0 fallos
+=== pruebaTanda10N8_reservas
+exit=0
+24 comprobaciones, 0 fallos
+=== pruebaTanda10S8_D
+exit=0
+83 comprobaciones, 0 fallos
+=== pruebaTanda10S8_C
+exit=0
+107 comprobaciones, 0 fallos
+=== pruebaTanda10S5_L
+exit=0
+78 comprobaciones, 0 fallos
+=== pruebaTanda10S7_T
+exit=0
+86 comprobaciones, 0 fallos
+FIN
+=== pruebaV43
+exit=0
+Prueba de la V43 · 41 comprobaciones · 0 fallos
+=== pruebaV44
+exit=0
+Prueba de la V44: 43 comprobaciones · 0 fallos
+=== pruebaV36_cliente
+exit=0
+Prueba de la Tanda V36 (cliente): 28 comprobaciones · 0 fallos
+=== pruebaTandaHOY1_A
+exit=1
+103 comprobaciones · 1 fallos
+  ✗ [LZ] el viaje de Eric en Lanzarote existe (Roma)
+=== pruebaTandaHOY1_C
+exit=1
+=== pruebaTandaHOY2_A
+exit=1
+20 comprobaciones · 1 fallos
+  ✗ [LZ] el viaje de Eric en Lanzarote existe
+=== pruebaTandaHOY2_B
+exit=1
+=== pruebaTandaHOY2_C
+exit=1
+=== pruebaTandaHOY2b_E
+exit=1
+=== pruebaV2Hoy
+exit=1
+=== pruebaV36C
+exit=0
+Prueba de la Tanda V36C: 122 comprobaciones · 0 fallos
+FIN
+=== pruebaTandaHOY1_A
+exit=0
+116 comprobaciones · 0 fallos
+=== pruebaTandaHOY1_C
+exit=0
+124 comprobaciones · 0 fallos
+=== pruebaTandaHOY2_A
+exit=0
+86 comprobaciones · 0 fallos
+=== pruebaTandaHOY2_B
+exit=1
+126 comprobaciones · 3 fallos
+  ✗ [26a lista] con los otros días (1)
+  ✗ [26b lista] con los otros días (1)
+  ✗ [26c lista] con los otros días (1)
+=== pruebaTandaHOY2_C
+exit=0
+132 comprobaciones · 0 fallos
+=== pruebaTandaHOY2b_E
+exit=0
+142 comprobaciones · 0 fallos
+=== pruebaV2Hoy
+exit=1
+La prueba V2 (HOY): 149 comprobaciones · 3 fallos
+  FALLO [cerrado] el aviso de abajo: «… ya ha cerrado · la tienes en Lugares pendientes» ()
+  FALLO [pedazos] Roma a pie: «Plaza de San Pedro» dice «Aquí ganas 2 pedazos: «El país más pequeño del mundo» y «La Roma de Bernini»»
+  FALLO [pedazos] Roma: en la Plaza de San Pedro sale «Aquí ganas 2 pedazos: «El país más pequeño del mundo» y «La Roma de Bernini»»
+FIN
+=== pruebaV45
+exit=0
+Prueba de la V45: 54 comprobaciones · 0 fallos
+=== pruebaV45_mapa
+exit=0
+45 comprobaciones, 0 fallos
+=== pruebaV46
+exit=0
+Prueba de la V46: 40 comprobaciones · 0 fallos
+FIN
+=== pruebaV46
+exit=0
+Prueba de la V46: 45 comprobaciones · 0 fallos
+=== pruebaV44
+exit=1
+  FALLO [aeropuerto] en el aeropuerto, el tiempo del plan «Del … a …» (A PIE 7 min Desde los Museos Vaticanos y Capilla Sixtina)
+Prueba de la V44: 43 comprobaciones · 1 fallos
+✗ [aeropuerto] en el aeropuerto, el tiempo del plan «Del … a …» (A PIE 7 min Desde los Museos Vaticanos y Capilla Sixtina)
+=== pruebaV43
+exit=0
+Prueba de la V43 · 41 comprobaciones · 0 fallos
+=== pruebaV36_cliente
+exit=0
+Prueba de la Tanda V36 (cliente): 28 comprobaciones · 0 fallos
+=== pruebaV45
+exit=0
+Prueba de la V45: 54 comprobaciones · 0 fallos
+FIN
+=== pruebaV2Hoy
+exit=1
+La prueba V2 (HOY): 149 comprobaciones · 2 fallos
+  FALLO [avisos] Roma a pie: un solo aviso abajo: «Parada saltada · la tienes en Lugares pendientes», sin [Deshacer] (Parada saltada. Basílica de San Pedro ya ha cerrado · las tienes en Lugares pendientes Deshacer)
+  FALLO [cerrado] el aviso de abajo: «… ya ha cerrado · la tienes en Lugares pendientes» ()
+=== pruebaTandaHOY2_B
+exit=0
+126 comprobaciones · 0 fallos
+=== pruebaTandaHOY1_A
+exit=1
+116 comprobaciones · 1 fallos
+  ✗ [H1] «De la parada de antes a esta» (A PIE 7 min Desde los Museos Vaticanos y Capilla Sixtina)
+=== pruebaTandaHOY1_C
+exit=0
+124 comprobaciones · 0 fallos
+=== pruebaTandaHOY2_A
+exit=0
+86 comprobaciones · 0 fallos
+=== pruebaTandaHOY2_C
+exit=0
+132 comprobaciones · 0 fallos
+=== pruebaTandaHOY2b_E
+exit=0
+142 comprobaciones · 0 fallos
+FIN
+=== pruebaV2Hoy
+exit=1
+La prueba V2 (HOY): 149 comprobaciones · 1 fallos
+  FALLO [cerrado] el aviso de abajo: «… ya ha cerrado · la tienes en Lugares pendientes» ()
+=== pruebaV44
+exit=0
+Prueba de la V44: 43 comprobaciones · 0 fallos
+=== pruebaTandaHOY1_A
+exit=0
+116 comprobaciones · 0 fallos
+FIN
+=== pruebaJutrip
+exit=0
+Prueba de JUTRIP: 130 comprobaciones · 0 fallos
+FIN
+</pre>
+</html>

@@ -379,7 +379,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     return antes.length > 0 ? antes : quienReservaId ? [quienReservaId] : []
   })
   const permisos = usePermisosDelViaje()
-  const alternarPersona = (id: string) => setMarcados((previous) => (previous.includes(id) ? previous.filter((other) => other !== id) : [...previous, id]))
+  // (V46) Quien la añade sale marcado, pero se puede desmarcar (si la compra para otros). Siempre queda al menos una persona marcada.
+  const alternarPersona = (id: string) => setMarcados((previous) => (previous.includes(id) ? (previous.length > 1 ? previous.filter((other) => other !== id) : previous) : [...previous, id]))
   // (V45) «Reservar la mía a la misma hora» (día y hora ya elegidos): una sola pantalla, como antes (quien compra decide para quién).
   const enDosPasos = paraQuienVisible && !soloDatos && igual?.modo !== 'comprar'
   const verDias = !soloDatos && (!enDosPasos || pasoGrupo === 1)
@@ -811,7 +812,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                 <div className="mt-7" data-para-quien={paraQuienVisible ? '' : undefined}>
                   <BloqueDinero
                     sinLineas
-                    sinParaQuien={enDosPasos}
+                    quienSinPrecio={enDosPasos}
                     tipo={isExcursion ? 'excursion' : 'entradas'}
                     solo={!paraQuienVisible}
                     personas={personasDelViaje.map((p) => ({ id: p.id, nombre: nombreDe(p) }))}

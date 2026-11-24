@@ -302,7 +302,9 @@ export function BotonCambiarPlan(p: PropsCambiarPlan) {
     const r = proponerPasarADia({ route, day, stop: siguiente, destinoId, ctx })
     mostrar('Pasar a otro día', r.propuestas, 'otro_dia', r.razon === 'fija' ? 'Esta parada tiene su entrada reservada: la reserva fija el día, así que no la pasamos a otro.' : 'No podemos pasarla a ese día.')
   }
-  const diasPosibles = route.days.filter((d) => d.id !== day.id && diaAdmite(d)).map((d) => ({ id: d.id, dayNumber: d.dayNumber, city: d.city }))
+  // (V46) Solo los días POSTERIORES a hoy: nunca uno que ya pasó (el lunes 23 siendo martes 24) ni el de hoy.
+  const iHoy = route.days.findIndex((d) => d.id === day.id)
+  const diasPosibles = route.days.filter((d, i) => i > iHoy && d.id !== day.id && diaAdmite(d) && (ctx.fechaDe?.(d) ?? null) !== dateIso && !((ctx.fechaDe?.(d) ?? '') && (ctx.fechaDe?.(d) ?? '') < dateIso)).map((d) => ({ id: d.id, dayNumber: d.dayNumber, city: d.city }))
   // (V43 §4) La lista de días como la de DÍAS al mover una parada: el mejor día, con «Te lo recomendamos»; los días en que está cerrado, en gris («Cerrado ese día»).
   const opcionesDias = paso === 'dias' ? opcionesDeDia({ route, day, stop: siguiente, ctx }) : []
   const mejorDia = paso === 'dias' ? mejorDiaPara({ route, day, stop: siguiente, ctx }) : null

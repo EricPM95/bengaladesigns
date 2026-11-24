@@ -45,6 +45,8 @@ function ListaDeDiasDeLaRuta({ route, dias, onElegir, ahora, recomendado, cerrad
         const excursion = (day ? esDiaDeExcursion(day) : false) || cerrado
         const ficha = fichaDelDia(route, dia.dayNumber)
         const titulo = day ? nombreDe(day).titulo || tituloSimpleDelDia(route, day) : dia.city
+        // (V46, dibujo 26a) El día recomendado, en su PROPIA tarjeta destacada (borde dorado), con «Te lo recomendamos» encima del nombre y su flecha.
+        const destacado = !excursion && recomendado === dia.id
         return (
           <button
             key={dia.id}
@@ -55,7 +57,9 @@ function ListaDeDiasDeLaRuta({ route, dias, onElegir, ahora, recomendado, cerrad
             disabled={excursion}
             aria-disabled={excursion}
             onClick={() => onElegir(dia.id)}
-            className={`flex min-h-[58px] w-full items-center gap-3 rounded-2xl px-2 py-[7px] text-left ${excursion ? 'cursor-not-allowed' : 'hover:bg-bg-hover'}`}
+            data-dia-destacado={destacado ? '1' : undefined}
+            className={`flex w-full items-center gap-3 text-left ${destacado ? 'mb-1.5 min-h-[72px] rounded-[18px] px-3 py-2.5' : 'min-h-[58px] rounded-2xl px-2 py-[7px]'} ${excursion ? 'cursor-not-allowed' : destacado ? '' : 'hover:bg-bg-hover'}`}
+            style={destacado ? { background: '#FFFDF8', border: '1.5px solid #B58A2E', boxShadow: '0 10px 18px -14px rgba(110,80,24,.55)' } : undefined}
           >
             <span className={`flex h-[46px] w-11 shrink-0 flex-col items-center justify-center rounded-xl border border-text/[.08] bg-bg-hover ${excursion ? 'opacity-50' : ''}`}>
               {ficha ? (
@@ -68,21 +72,29 @@ function ListaDeDiasDeLaRuta({ route, dias, onElegir, ahora, recomendado, cerrad
               )}
             </span>
             <span className={`flex min-w-0 flex-1 flex-col gap-0.5 ${excursion ? 'opacity-60' : ''}`}>
+              {destacado && (
+                <span data-dia-recomendado="1" className="self-start rounded-full px-2 py-[3px] text-[10.5px] font-bold leading-none text-white" style={{ background: '#B58A2E' }}>
+                  Te lo recomendamos
+                </span>
+              )}
               {/* Tanda 10O: «Jue 26 Nov · Roma antigua y Centro histórico» (la fecha en negrita, el nombre del día detrás). */}
               <span data-dia-etiqueta="1" className="flex items-start gap-[5px] text-[13.5px] leading-[1.3]">
-                {excursion && <Icono nombre="montana" size={12} className="mt-[3px] shrink-0" />}
+                {excursion && !cerrado && <Icono nombre="montana" size={12} className="mt-[3px] shrink-0" />}
                 <span className="min-w-0">
                   <span className="font-semibold">{diaConFecha(route, dia.dayNumber)}</span>
                   {titulo && <span className="text-text/60"> · {titulo}</span>}
                 </span>
               </span>
+              {cerrado && (
+                <span data-dia-cerrado-texto="1" className="text-[11.5px] leading-none" style={{ color: '#B5704A' }}>
+                  Cerrado ese día
+                </span>
+              )}
             </span>
             {excursion ? (
-              <span className="shrink-0 rounded-full border border-text/15 px-2 py-[3px] text-[10.5px] font-medium leading-none text-text/60">{cerrado ? 'Cerrado ese día' : ETIQUETA_DIA_DE_EXCURSION}</span>
-            ) : recomendado === dia.id ? (
-              <span data-dia-recomendado="1" className="shrink-0 rounded-full px-2 py-[3px] text-[10.5px] font-semibold leading-none" style={{ background: 'rgba(181,138,46,.2)', color: '#6E5018' }}>Te lo recomendamos</span>
+              cerrado ? null : <span className="shrink-0 rounded-full border border-text/15 px-2 py-[3px] text-[10.5px] font-medium leading-none text-text/60">{ETIQUETA_DIA_DE_EXCURSION}</span>
             ) : (
-              <Icono nombre="adelante" size={14} className="shrink-0 text-text/35" />
+              <Icono nombre="adelante" size={14} className={`shrink-0 ${destacado ? 'text-accent' : 'text-text/35'}`} />
             )}
           </button>
         )
