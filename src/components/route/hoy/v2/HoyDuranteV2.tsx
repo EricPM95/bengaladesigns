@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { logrosActivos } from '../../../../lib/logros'
 import type { Coordinates, DayPlan, Route, Stop } from '../../../../lib/types'
 import { useRouteStore } from '../../../../store/useRouteStore'
@@ -59,9 +59,13 @@ import { AvisoDeAbajoHost } from './AvisoDeAbajo'
 import { LugaresPendientes } from './LugaresPendientes'
 import { VolverAlAlojamiento } from './VolverAlAlojamiento'
 import { avisarAbajo } from '../../../../store/useAvisoDeAbajo'
+import { marcarDicho, yaDicho } from '../../../../lib/avisosUnaVez'
 import { AVISO_SALTADA, avisoDeCerrada, cerradasDeHoy, lugaresPendientes } from '../../../../lib/hoyPendientes'
 import { AvisoDeHoy, CruzDeAviso, ZonaDeAvisos } from './AvisosHoy'
-import { AvisoPlanActualizadoGlobal } from './CambiarPlan'
+import { AvisoPlanActualizadoGlobal, useContexto } from './CambiarPlan'
+import { HoyYaNoDaTiempo } from './HoyYaNoDaTiempo'
+import { UbicacionDeHoy } from './UbicacionDeHoy'
+import { yaNoDaTiempo } from '../../../../lib/hoyCambiarPlan'
 import { TarjetaDeComida, useComidaDeAhora } from './ComerAhora'
 import { SitioDeAtardecer } from './SitioDeAtardecer'
 import { ATuAire } from './ATuAire'
@@ -71,6 +75,7 @@ import { ComoVais } from './ComoVais'
 import { QueHagoAhora } from './QueHagoAhora'
 import { RetoDelDia } from './RetoDelDia'
 import { FichaCompletaDeHoy, HastaAquiHoy, SiTeSobraTiempoHoy, TarjetaBienvenida, TarjetaMananaOscura, fraseDeCierre } from './BloquesHoy'
+import { DORADO } from '../../../ui/botonesOro'
 
 
 /** Los avisos cerrados con la cruz: por viaje y día, en el móvil; no vuelven a salir ESE día. */
@@ -188,7 +193,7 @@ function EscucharCompacta({ variante, candado, destino, estado, hayVoz, escuchar
   }
   return (
     <button type="button" onClick={alPulsar} data-hoy-pastilla="escuchar" data-escuchar={candado ? 'candado' : estado} className="flex min-h-[50px] items-center gap-[9px] rounded-2xl px-2.5 py-2 text-left" style={{ background: 'rgba(251,243,226,.08)', border: '1px solid rgba(243,216,143,.38)', color: '#FBF3E2', font: "600 12.5px/1.2 'Geist'" }}>
-      <span className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-full" style={{ background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510' }}>
+      <span className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-full" style={{ background: DORADO, color: '#4A3510' }}>
         <Icono nombre={estado === 'hablando' ? 'pausa' : candado ? 'candado' : 'altavoz'} size={16} grosor={1.9} />
       </span>
       {estado === 'parado' ? 'Escuchar historia' : estado === 'hablando' ? 'Pausar' : 'Seguir escuchando'}
@@ -227,7 +232,6 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const sumaDelVisto = useUltimaSuma(ultimoVisto?.id ?? null)
   const ahoraMinHoy = useAhoraMin()
   const conPaseOPrueba0 = pagoActivo()
-  const anunciadas = useRef<Set<string>>(new Set())
   const [ofrecerFoto, setOfrecerFoto] = useState<Stop | null>(null)
 
   const explorar = (categoria: 'banos' | 'fuentes' | 'restaurantes' | 'atracciones', origen: Coordinates | null, cerca = false) => {
@@ -243,9 +247,10 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const vigentes = paradas.filter((s) => !s.saltada)
   useEffect(() => {
     for (const st of paradasDelDia) {
-      if (cerradas.has(st.id) && !anunciadas.current.has(st.id)) {
-        anunciadas.current.add(st.id)
-        avisarAbajo({ id: `cerrada:${st.id}`, texto: avisoDeCerrada(displayStopName(st.name)) })
+      // V43 §6: una vez por viaje, día y sitio (guardado en el móvil, se apunta al irse el aviso), no por visita a la pestaña. Sin `useRef`: el almacén ya descarta el que está a la vista o esperando.
+      if (cerradas.has(st.id)) {
+        if (yaDicho(route.id, dateIso, `cerrada:${st.id}`)) continue
+        avisarAbajo({ id: `cerrada:${st.id}`, texto: avisoDeCerrada(displayStopName(st.name)), alIrse: () => marcarDicho(route.id, dateIso, `cerrada:${st.id}`) })
       }
     }
   })
@@ -266,6 +271,14 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const reservaDe = (stop: Stop) => reservations.find((r) => r.id === stop.reservedId) ?? entradasDeHoy.find((r) => r.placeNames.includes(stop.name)) ?? null
   const esLlegada = esDiaDeLlegada(route, day)
   const esVuelta = Boolean(day.isReturnLeg)
+  // (V43 §2) «Hoy ya no da tiempo a todo»: con más de una hora de retraso o con la mañana pasada sin nada hecho; UNA vez al día.
+  const ctxYaNo = useContexto(route, enCoche)
+  const [yaNoAbierta, setYaNoAbierta] = useState(false)
+  const yaNo = conPaseOPrueba0 && !esLlegada && !esVuelta ? yaNoDaTiempo({ day: diaVivo, ahoraMin: ahoraMinHoy, ctx: ctxYaNo, vistas }) : null
+  const hayYaNo = yaNo != null
+  useEffect(() => {
+    if (hayYaNo && !yaDicho(route.id, dateIso, 'ya-no-da-tiempo')) setYaNoAbierta(true)
+  }, [hayYaNo, route.id, dateIso])
   const sinParadasDeVuelta = esVuelta && paradas.length === 0
   const tarjetaVuelve = tarjetaHoyVuelvesDelDia(route, day)
   const diaCompleto = esDiaCompleto(route, day, reservations)
@@ -540,6 +553,9 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {/* HOY1 (H4): la línea dorada del logro que acaba de ganar */}
       {ultimoVisto && siguiente && sumaDelVisto && <LineaDelLogro texto={`+1 en ${sumaDelVisto}`} />}
 
+      {/* (V43 §8) La ubicación en todo HOY: la tarjeta de la parada ya la lleva; aquí, en el resto de estados. */}
+      {conPaseOPrueba0 && !esVuelta && (!siguiente || Boolean(comidaDeAhora) || bienvenida) && <UbicacionDeHoy hay={Boolean(ubicacion)} estado={ubicacionEstado} pedir={pedirUbicacion} />}
+
       {/* HOY2 (Completa 4): a la hora de comer, la tarjeta de la comida en lugar de la de la parada */}
       {!sinParadasDeVuelta && !bienvenida && siguiente && comidaDeAhora && !esVuelta && (
         <TarjetaDeComida route={route} day={day} dateIso={dateIso} meal={comidaDeAhora} siguiente={siguiente} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMinHoy} onHecha={comidaHecha} />
@@ -675,6 +691,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
           }}
         />
       )}
+      {yaNoAbierta && yaNo && <HoyYaNoDaTiempo route={route} day={day} dateIso={dateIso} info={yaNo} enCoche={enCoche} ahoraMin={ahoraMinHoy} onCerrar={() => { marcarDicho(route.id, dateIso, 'ya-no-da-tiempo'); setYaNoAbierta(false) }} />}
       {fichaCompleta && <FichaCompletaDeHoy route={route} day={day} dateIso={dateIso} parada={fichaCompleta} onCerrar={() => setFichaCompleta(null)} />}
     </>
   )

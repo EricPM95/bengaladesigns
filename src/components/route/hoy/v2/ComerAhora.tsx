@@ -5,7 +5,8 @@ import { hasRealCoordinates } from '../../../../lib/distanceMock'
 import { displayStopName } from '../../../../lib/format'
 import { numberedStopsOf } from '../../../../lib/stopKind'
 import { urlComoLlegar } from '../../../../lib/hoyParada'
-import { viajeMin, type Propuesta } from '../../../../lib/hoyCambiarPlan'
+import { aHora, viajeMin, type Propuesta } from '../../../../lib/hoyCambiarPlan'
+import { RESTAURANT_SUB_CATEGORIES } from '../../../../lib/placeCategories'
 import { comidaActiva, horarioDeComer, proponerComerAhora, restaurantesAbiertos, type RestauranteCerca } from '../../../../lib/hoyComer'
 import { aplicarPropuesta, volverALaRutaOriginal } from '../../../../lib/hoyCambiarPlanAplicar'
 import { useDestinationPool } from '../../../../lib/useDestinationPool'
@@ -13,6 +14,7 @@ import { StopsMapView, type StopsMapMarker } from '../../../map/StopsMapView'
 import { Icono } from '../../../ui/Icono'
 import { AvisoPlanActualizado, HojaPropuesta, Titulo, useContexto } from './CambiarPlan'
 import { HojaV2 } from './HojasV2'
+import { BOTON_ORO, BOTON_CLARO } from '../../../ui/botonesOro'
 
 /**
  * HOY2 (agente C, apartado 3): «Quiero comer ahora» (pantalla 24) y «A la hora de comer» (Completa 4).
@@ -24,17 +26,16 @@ const TINTA = '#1C2230'
 const MARFIL = '#FBF3E2'
 const ORO_CLARO = '#F3D88F'
 const ORO_TEXTO = '#8E6820'
-const BOTON_ORO = { background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510', boxShadow: '0 10px 20px -14px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55)' }
-const BOTON_MARFIL = { background: MARFIL, border: '1px solid rgba(181,138,46,.55)', color: '#4A3510' }
+const BOTON_MARFIL = BOTON_CLARO
 const normaliza = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
 
 /** De dónde cuenta las distancias: tu ubicación; sin ella, donde estabas (la última parada vista) o, si no, tu siguiente parada. */
-export function origenDeComer(day: DayPlan, siguiente: Stop, ubicacion: Coordinates | null): { origen: Coordinates | null; exacto: boolean } {
-  if (ubicacion && hasRealCoordinates(ubicacion)) return { origen: ubicacion, exacto: true }
+export function origenDeComer(day: DayPlan, siguiente: Stop, ubicacion: Coordinates | null): { origen: Coordinates | null; exacto: boolean; desde: string | null } {
+  if (ubicacion && hasRealCoordinates(ubicacion)) return { origen: ubicacion, exacto: true, desde: null }
   const vistas = numberedStopsOf(day).filter((s) => s.checkedInAt && hasRealCoordinates(s.coordinates))
   const ultima = vistas[vistas.length - 1]
-  if (ultima) return { origen: ultima.coordinates, exacto: false }
-  return { origen: hasRealCoordinates(siguiente.coordinates) ? siguiente.coordinates : null, exacto: false }
+  if (ultima) return { origen: ultima.coordinates, exacto: false, desde: displayStopName(ultima.name) }
+  return { origen: hasRealCoordinates(siguiente.coordinates) ? siguiente.coordinates : null, exacto: false, desde: displayStopName(siguiente.name) }
 }
 
 const textoMin = (min: number, modo: 'coche' | 'pie') => `${modo === 'coche' ? 'En coche' : 'A pie'} · ${min} min`
@@ -52,8 +53,11 @@ export function HojaComerAhora({ route, day, dateIso, siguiente, ubicacion, enCo
   const [indice, setIndice] = useState(0)
   const [activo, setActivo] = useState<string | null>(null)
   const [textoVuelta, setTextoVuelta] = useState<string | null>(null)
-  const { origen, exacto } = origenDeComer(day, siguiente, ubicacion)
-  const abiertos = useMemo(() => (resolved ? restaurantesAbiertos({ restaurantes: places, origen, dateIso, ahoraMin, enCoche }) : []), [resolved, places, origen?.lat, origen?.lng, dateIso, ahoraMin, enCoche]) // eslint-disable-line react-hooks/exhaustive-deps
+  const [sub, setSub] = useState<string | null>(null)
+  const { origen, exacto, desde } = origenDeComer(day, siguiente, ubicacion)
+  // (V43 §3) El título dice «comer» o «cenar» (desde las 17:00).
+  const tituloHoja = ahoraMin >= 17 * 60 ? 'Quiero cenar ahora' : 'Quiero comer ahora'
+  const abiertos = useMemo(() => (resolved ? restaurantesAbiertos({ restaurantes: places, origen, dateIso, ahoraMin, enCoche, sub }) : []), [resolved, places, origen?.lat, origen?.lng, dateIso, ahoraMin, enCoche, sub]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!textoVuelta) return undefined
@@ -77,14 +81,22 @@ export function HojaComerAhora({ route, day, dateIso, siguiente, ubicacion, enCo
   if (paso === 'propuesta')
     return (
       <>
-        <HojaPropuesta titulo="Quiero comer ahora" propuestas={propuestas} indice={indice} vacio={`Hoy no cabe comer en ${elegido ? elegido.nombre : 'ese sitio'} sin quitar algo importante.`} onOtra={() => setIndice((i) => (i + 1) % propuestas.length)} onAplicar={aplicar} onOriginal={() => { const n = volverALaRutaOriginal(); setPaso('lista'); setTextoVuelta(n > 0 ? 'Tu ruta vuelve a ser la original.' : 'Tu ruta ya es la original.') }} onCerrar={() => setPaso('lista')} />
+        <HojaPropuesta titulo={tituloHoja} propuestas={propuestas} indice={indice} vacio={`Hoy no cabe comer en ${elegido ? elegido.nombre : 'ese sitio'} sin quitar algo importante.`} onOtra={() => setIndice((i) => (i + 1) % propuestas.length)} onAplicar={aplicar} onOriginal={() => { const n = volverALaRutaOriginal(); setPaso('lista'); setTextoVuelta(n > 0 ? 'Tu ruta vuelve a ser la original.' : 'Tu ruta ya es la original.') }} onCerrar={() => setPaso('lista')} />
       </>
     )
   return (
     <>
-      <HojaV2 onCerrar={onCerrar} etiqueta="Quiero comer ahora" fondo={MARFIL}>
+      <HojaV2 onCerrar={onCerrar} etiqueta={tituloHoja} fondo={MARFIL}>
         <div data-comer-hoja="lista" className="flex flex-col gap-3">
-          <Titulo texto="Quiero comer ahora" onCerrar={onCerrar} />
+          <Titulo texto={tituloHoja} onCerrar={onCerrar} />
+          <div data-comer-filtros className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-0.5">
+            {[{ id: null, label: 'Todos' }, ...RESTAURANT_SUB_CATEGORIES].map((c) => (
+              <button key={String(c.id)} type="button" onClick={() => setSub(c.id)} data-comer-filtro={c.id ?? 'todos'} aria-pressed={sub === c.id} className="flex h-9 flex-none items-center rounded-full px-3.5 text-[13px] font-bold" style={sub === c.id ? { background: TINTA, color: '#F3D88F' } : { background: '#FFFDF8', border: '1px solid rgba(28,34,48,.14)', color: TINTA }}>
+                {c.label}
+              </button>
+            ))}
+          </div>
+          <span data-comer-ubicacion className="text-[12.5px] text-[#1C2230]/60">{exacto ? 'Cerca de ti' : `Sin tu ubicación, contamos desde ${desde ?? 'tu siguiente parada'}`}</span>
           {abiertos.length > 0 && (
             <div data-comer-mapa className="h-[190px] flex-none overflow-hidden rounded-[22px]" style={{ border: '1px solid rgba(28,34,48,.12)' }}>
               <StopsMapView markers={marcadores} activeStopId={activo} onSelectStop={(id) => setActivo(id)} userPosition={ubicacion} />
@@ -96,22 +108,30 @@ export function HojaComerAhora({ route, day, dateIso, siguiente, ubicacion, enCo
               Ahora no hay ninguno de nuestros restaurantes abierto cerca de ti. Prueba con «Comer» en «Cerca de ti».
             </span>
           )}
-          {resolved && abiertos.length > 0 && !exacto && <span className="text-[12.5px] text-[#1C2230]/60">Sin tu ubicación, contamos desde donde estabas.</span>}
-          {abiertos.map((r) => (
-            <div key={r.nombre} data-comer-fila={r.nombre} onClick={() => setActivo(r.nombre)} className="flex items-center gap-3 rounded-[20px] py-2.5 pl-3.5 pr-2.5" style={{ background: '#FFFDF8', border: activo === r.nombre ? '1.5px solid #B58A2E' : '1px solid rgba(28,34,48,.12)' }}>
-              <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
-                <b className="truncate" style={{ font: "400 20px/1.1 'Instrument Serif',serif" }}>{displayStopName(r.nombre)}</b>
-                <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12.5px] text-[#1C2230]/65">
-                  <span data-comer-minutos>{r.minutos} min</span>
-                  {r.precio && <span>{r.precio}</span>}
-                  <span data-comer-abierto className="rounded-full px-2 py-px text-[11px] font-bold" style={{ background: 'oklch(0.96 0.035 150)', border: '1px solid oklch(0.55 0.11 150 / .3)', color: 'oklch(0.38 0.1 150)' }}>Abierto</span>
+          {abiertos.map((r, i) => {
+            const cierraPronto = r.cierraMin != null && r.cierraMin - ahoraMin < 60
+            return (
+              <div key={r.nombre} data-comer-fila={r.nombre} onClick={() => setActivo(r.nombre)} className="flex items-center gap-3 rounded-[20px] py-2.5 pl-3 pr-2.5" style={{ background: '#FFFDF8', border: activo === r.nombre ? '1.5px solid #B58A2E' : '1px solid rgba(28,34,48,.12)' }}>
+                <span data-comer-numero className="flex h-7 w-7 flex-none items-center justify-center rounded-full text-[13px] font-bold" style={{ background: activo === r.nombre ? '#B58A2E' : TINTA, color: '#fff' }}>{i + 1}</span>
+                <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
+                  <b className="truncate" style={{ font: "400 20px/1.1 'Instrument Serif',serif" }}>{displayStopName(r.nombre)}</b>
+                  <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[12.5px] text-[#1C2230]/65">
+                    {r.cocina && <span data-comer-cocina>{r.cocina}</span>}
+                    <span data-comer-minutos>{r.minutos} min {r.modo === 'coche' ? 'en coche' : 'a pie'}</span>
+                    {r.precio && <span>{r.precio}</span>}
+                  </span>
+                  {cierraPronto ? (
+                    <span data-comer-cierra-pronto className="text-[12px] font-bold" style={{ color: '#C2581C' }}>Cierra pronto</span>
+                  ) : (
+                    <span data-comer-abierto className="text-[12px] font-semibold" style={{ color: 'oklch(0.38 0.1 150)' }}>{r.cierraMin != null ? `Abierto hasta las ${aHora(r.cierraMin, false)}` : 'Abierto ahora'}</span>
+                  )}
                 </span>
-              </span>
-              <button type="button" onClick={(e) => { e.stopPropagation(); irAqui(r) }} data-comer-ir-aqui className="flex h-11 flex-none items-center rounded-2xl px-4 text-[13.5px] font-bold" style={BOTON_ORO}>
-                Ir aquí
-              </button>
-            </div>
-          ))}
+                <button type="button" onClick={(e) => { e.stopPropagation(); irAqui(r) }} data-comer-ir-aqui className="flex h-11 flex-none items-center rounded-2xl px-4 text-[13.5px] font-bold" style={BOTON_ORO}>
+                  Elegir
+                </button>
+              </div>
+            )
+          })}
         </div>
       </HojaV2>
       {textoVuelta && <AvisoPlanActualizado texto={textoVuelta} conDeshacer={false} />}

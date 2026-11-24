@@ -218,7 +218,6 @@ await sec(async () => {
   await a.esp(1500)
   const av = await a.evaluar("Array.from(document.querySelectorAll('[data-aviso-tiempo]')).map((e) => e.getAttribute('data-aviso-tiempo'))")
   const nAvisos = await cuantos(a, '[data-hoy-avisos] [data-hoy-aviso-x]')
-  if (av.length < 1) console.log('DEBUG avisos', JSON.stringify(await a.evaluar(`(async () => { const A = await import('/src/lib/avisosDelTiempo.ts'); const d = ${R}.getState().route.days[${idxMartes}]; return { stops: d.stops.map((s) => [s.name, s.time, s.durationMinutes, Boolean(s.reservedId), Boolean(s.checkedInAt)]), avisos: A.calcularAvisos(d, window.__hoy1Tiempo, true).map((x) => x.id), meteo: Object.keys(window.__hoy1Tiempo || {}), html: document.querySelector('[data-hoy-v2]').innerHTML.length } })()`)))
   debe(av.length >= 1, 'avisos', `con lluvia, nubes y viento hay avisos del tiempo (${av.join(', ')})`)
   const masTxt = await txt(a, '[data-hoy-aviso-mas]')
   const visibles = av.length
@@ -338,9 +337,12 @@ await sec(async () => {
   debe(!(await hay(a, '[data-hoy-fila-estado="saltada"]')), 'sobra', 'lo saltado ya no se queda tachado en «Tu día»')
   await clic(a, '[data-hoy-pendientes-cabecera]')
   await a.esp(500)
-  debe((await cuantos(a, '[data-hoy-pendiente="saltada"]')) === 1 && (await cuantos(a, '[data-hoy-pendiente] [data-hoy-pendiente-recuperar]')) === 1 && (await cuantos(a, '[data-hoy-pendiente] [data-hoy-pendiente-pasar]')) === 1, 'sobra', 'lo saltado está en «Lugares pendientes», con [Recuperar] y [Pasar a otro día]')
+  debe((await cuantos(a, '[data-hoy-pendiente="saltada"]')) === 1 && (await cuantos(a, '[data-hoy-pendiente] [data-hoy-pendiente-mas]')) === 1 && (await cuantos(a, '[data-hoy-pendiente] [data-hoy-pendiente-pasar]')) === 1, 'sobra', 'lo saltado está en «Lugares pendientes», con [Recuperar] y [Pasar a otro día]')
   await capturaEntera(a, '10_lz_sobra_tiempo_abierta')
-  await clic(a, '[data-hoy-pendiente="saltada"] [data-hoy-pendiente-recuperar]')
+  // V43 §7 (antes → ahora): [Recuperar hoy] está dentro del «···» de la fila.
+  await clic(a, '[data-hoy-pendiente="saltada"] [data-hoy-pendiente-mas]')
+  await a.esp(500)
+  await clic(a, '[data-hoy-pendiente-recuperar]')
   await a.esp(600)
   const trasRec = await paradasDe(a, idxMartes)
   debe(trasRec.every((s) => !s.saltada) && !(await hay(a, '[data-hoy-pendientes]')), 'sobra', '[Recuperar] devuelve lo saltado a su sitio y «Lugares pendientes» desaparece al quedarse vacía')

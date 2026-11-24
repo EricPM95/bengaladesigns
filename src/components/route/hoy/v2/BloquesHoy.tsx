@@ -12,6 +12,7 @@ import { Icono } from '../../../ui/Icono'
 import { StopDetailSheet, type DayStopRef } from '../../dayDetail/StopDetailSheet'
 import { HojaPasarAOtroDia } from '../saltar'
 import { ParadaFotoDeParada } from './ParadaFoto'
+import { BOTON_ORO } from '../../../ui/botonesOro'
 
 
 /**
@@ -23,7 +24,6 @@ import { ParadaFotoDeParada } from './ParadaFoto'
  */
 const ORO_CLARO = '#F3D88F'
 const MARFIL = '#FBF3E2'
-const BOTON_ORO = { background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510', boxShadow: '0 10px 20px -14px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55)' }
 const OJO_ORO = { font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.16em', color: ORO_CLARO, textTransform: 'uppercase' as const }
 
 /* ------------------------------------------------------------------ */

@@ -17,6 +17,7 @@ import { HojaPropuesta, Titulo, useContexto } from './CambiarPlan'
 import { HojaComerAhora } from './ComerAhora'
 import { HojaV2 } from './HojasV2'
 import { FotoDeSitio } from './RetoDelDia'
+import { BOTON_ORO } from '../../../ui/botonesOro'
 
 /**
  * (HOY2b, E, apartado 1) EL BOTÓN [¿QUÉ HAGO AHORA?] y su hoja (17 y Completa 1 a 6). Siempre a la vista, en su hueco (`data-hoy-hueco-que-hago-ahora`, entre la tarjeta principal y «Cerca de ti»).
@@ -24,7 +25,6 @@ import { FotoDeSitio } from './RetoDelDia'
  * La decisión está en `src/lib/hoyQueHago.ts` (pura). [Añadir] abre la propuesta de «Añadir un sitio cercano» (27a / 27b): nada se mueve sin [Aplicar], y después sale «Plan actualizado · Deshacer».
  */
 const MARFIL = '#FBF3E2'
-const BOTON_ORO = { background: 'linear-gradient(180deg,#F8EBC4,#DDBE7C 50%,#B58A2E)', color: '#3E2A0C', border: '1px solid #9A7228', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.7),0 8px 14px -8px rgba(110,80,24,.8)' }
 const BOTON_BLANCO = { background: '#FFFDF8', border: '1px solid rgba(181,138,46,.55)', color: '#1C2230', boxShadow: '0 4px 10px -6px rgba(110,80,24,.4)' }
 
 const claveVisto = (rutaId: string, diaId: string, clave: string) => `trazo:hoy2b:que-hago:${rutaId}:${diaId}:${clave}`

@@ -187,13 +187,13 @@ try {
       debe(x.quitadas.every((q) => /^(B|C):/.test(q)) && !x.quitadas.some((q) => /:(imprescindible|fija)/.test(q)), `retraso_${min}`, `solo se quita lo opcional y lo flexible, nunca lo imprescindible ni lo fijo (${x.quitadas.join(',')})`)
       debe(x.sinMin, `retraso_${min}`, 'al viajero, sin minutos en el texto de la propuesta')
       debe(x.deshecho, `retraso_${min}`, 'aplicar y deshacer deja el día igual que estaba')
-      debe(/^Vas con algo de retraso\. Buscamos el ajuste más pequeño/.test(x.intro), `retraso_${min}`, `la frase de arriba es la del prompt (${x.intro})`)
+      debe(/^Vas con algo de retraso\. Buscamos el ajuste más pequeño/.test(x.intro) || /ya no cabe hoy\. Lo pasamos al día donde mejor encaja\./.test(x.intro), `retraso_${min}`, `la frase de arriba es la del prompt (${x.intro})`)
     }
     debe(r.r15.quitadas.join() === 'B:opcional:sobra', 'retraso_15', `con 15 min se quita solo lo opcional, B (sale ${r.r15.quitadas.join()})`)
     debe(r.r30.quitadas.join() === 'B:opcional:sobra', 'retraso_30', `con 30 min, lo mismo: lo opcional antes que nada (sale ${r.r30.quitadas.join()})`)
     debe(r.r60.quitadas.join() === 'B:opcional:sobra,C:flexible:manana', 'retraso_60', `con 60 min: primero lo opcional, luego lo flexible a mañana (sale ${r.r60.quitadas.join()})`)
     debe(/^Quitamos B/.test(r.r15.cambia.titulo) && /Es opcional/.test(r.r15.cambia.detalle), 'retraso_15', `el «Cambia:» dice lo que se quita (${r.r15.cambia.titulo})`)
-    debe(/pasa a mañana/.test(r.r60.cambia.titulo) && /^\d\|?|^[^|]*\|$/.test(r.r60.destinoE) === true, 'retraso_60', `lo flexible pasa a mañana (${r.r60.cambia.titulo}; mañana: ${r.r60.destinoE})`)
+    debe(/pasamos C al día 2/.test(r.r60.cambia.titulo) && /^\d\|?|^[^|]*\|$/.test(r.r60.destinoE) === true, 'retraso_60', `lo flexible pasa a mañana (${r.r60.cambia.titulo}; mañana: ${r.r60.destinoE})`)
     debe(/^tu entrada de las 11:30$/.test(r.r15.mantiene.titulo) || /11:30/.test(r.r15.mantiene.titulo), 'retraso_15', `«Se mantiene» nombra lo fijo (${r.r15.mantiene.titulo})`)
     debe(r.r15.todas.length >= 1 && new Set(r.r15.todas).size === r.r15.todas.length, 'ver_otra_opcion', 'las opciones de [Ver otra opción] son distintas entre sí')
     debe(r.holgado.length >= 1 && r.holgado[0].q === 0 && /retrasan un poco/.test(r.holgado[0].cambia), 'retraso_holgado', 'si cabe sin quitar nada, la primera propuesta no quita nada')
@@ -201,7 +201,7 @@ try {
     debe(r.prioridad[0] === 'B:opcional', 'prioridad', `lo opcional (B) se quita antes que lo imprescindible (X) (sale ${r.prioridad.join(' / ')})`)
     debe(!r.prioridad.some((x) => /X:/.test(x)), 'prioridad', 'lo imprescindible no sale en ninguna propuesta si hay otra salida')
     debe(r.pregunta.length >= 1 && r.pregunta.every((x) => x.pregunta === true && /^F:imprescindible$/.test(x.q)), 'imprescindible', `lo imprescindible solo preguntando, y solo si no hay otra salida (${JSON.stringify(r.pregunta)})`)
-    debe(/¿Lo dejamos\?$/.test(r.pregunta[0].intro), 'imprescindible', 'la pregunta se hace como pregunta')
+    debe(/¿Lo quitamos\?$/.test(r.pregunta[0].intro), 'imprescindible', 'la pregunta se hace como pregunta')
     // pasar a otro día en sus tres casos
     debe(r.otro_a?.caso === 'a' && r.otro_a.estaEnE && r.otro_a.yaNoEnD && !r.otro_a.estaEnSobraE && r.otro_a.sale === null, 'pasar_26a', `cabe sin tocar nada (${JSON.stringify(r.otro_a)})`)
     debe(/^E pasa al día 2$/.test(r.otro_a?.cambia ?? '') && /^el resto de tu día 1$/.test(r.otro_a?.mantiene ?? ''), 'pasar_26a', 'los textos de 26a: «Cambia: … pasa al …» y «Se mantiene: el resto de tu …»')
@@ -210,7 +210,8 @@ try {
     debe(r.otro_c?.caso === 'c' && r.otro_c.estaEnSobraE && !r.otro_c.estaEnE && r.otro_c.yaNoEnD, 'pasar_26c', `no cabe: queda al final de ese día, en «Si te sobra tiempo» (${JSON.stringify(r.otro_c)})`)
     debe(/Si te sobra tiempo/.test(r.otro_c?.intro ?? ''), 'pasar_26c', 'el texto de 26c nombra «Si te sobra tiempo» (no «Pendientes»)')
     debe(r.otro_a.deshecho && r.otro_b.deshecho && r.otro_c.deshecho, 'pasar_deshacer', 'aplicar y deshacer deja los dos días como estaban (a, b y c)')
-    debe(r.otro_b.casos === 'bc' && r.otro_a.casos === 'ac', 'ver_otra_opcion', `[Ver otra opción] baja de a/b a «Si te sobra tiempo» (${r.otro_a.casos} / ${r.otro_b.casos})`)
+    // V43 §4 (antes → ahora): «Pasar a otro día» enseña solo la MEJOR forma en ese día (sin [Ver otra opción]).
+    debe(r.otro_b.casos === 'b' && r.otro_a.casos === 'a', 'pasar_dia', `solo la mejor forma en ese día (${r.otro_a.casos} / ${r.otro_b.casos})`)
     debe(r.otro_fija.n === 0 && r.otro_fija.razon === 'fija', 'pasar_fija', 'lo fijo (reserva o turno) no se pasa nunca a otro día')
     debe(r.otro_vuelta === 0, 'pasar_vuelta', 'al día de vuelta no se pasa nada')
     // añadir en sus dos casos
@@ -235,7 +236,7 @@ try {
     debe(opciones.length === 5, '22 hoja', `la hoja tiene 5 opciones (${opciones.length})`)
     debe(opciones.map((o) => o.split('|')[0]).join() === 'retraso,comer,saltar,otro_dia,anadir', '22 hoja', `en este orden: retraso, comer, saltar, otro día, añadir (${opciones.map((o) => o.split('|')[0]).join()})`)
     const t = await hoja(a)
-    for (const frag of ['Voy con retraso', 'Ajustamos tu día lo mínimo', 'Quiero comer ahora', 'Restaurantes abiertos cerca', 'Saltarme esta parada', 'La dejamos para otro día', 'Pasar a otro día', 'Lo movemos a un día que le venga bien', 'Añadir un sitio cercano', 'Algo que te pille de paso'])
+    for (const frag of ['Voy con retraso', 'Ajustamos tu día lo mínimo', 'Quiero comer ahora', 'Restaurantes abiertos cerca', 'Saltarme esta parada', 'Guárdala en pendientes y decide luego.', 'Pasar a otro día', 'Elige otro día de tu viaje que te vaya bien.', 'Añadir un sitio cercano', 'Algo que te pille de paso'])
       debe((t ?? '').includes(frag), '22 textos', `la hoja dice «${frag}»`)
     debe(!/No me da tiempo/.test(t ?? ''), '22 textos', 'y no nombra «No me da tiempo»')
     await foto(a, '22')
@@ -261,19 +262,22 @@ try {
     const t = (await hoja(a)) ?? ''
     debe(/Vas con algo de retraso\. Buscamos el ajuste más pequeño/.test(t), '23 texto', `la frase del prompt (${t.slice(0, 120)})`)
     debe(!/\d+\s*min/.test(t), '23 sin minutos', 'sin minutos al viajero')
-    debe(/Cambia:/.test(t) && /Se mantiene:/.test(t), '23 formato', 'Cambia… y Se mantiene…')
-    for (const b of ['Aplicar', 'Ver otra opción', 'Volver a mi ruta original']) debe(new RegExp(b).test(t), '23 botones', `lleva [${b}]`)
-    const cambia1 = await txt(a, '[data-propuesta="cambia"]')
-    debe(/Har/.test(cambia1 ?? '') && /pasa a|pasa al/.test(cambia1 ?? ''), '23 cambia', `con la tarde apretada, lo que sale es lo principal (Haría) y pasa a mañana (${cambia1})`)
-    debe(/15:40/.test((await txt(a, '[data-propuesta="mantiene"]')) ?? ''), '23 mantiene', 'el «Se mantiene» nombra el turno de las 15:40')
+    // V43 §1 (antes → ahora): UN bloque de resumen, el botón dorado que dice lo que hace y «Dejarlo como está»; sin «Cambia:», [Aplicar] ni «Volver a mi ruta original».
+    debe((await hay(a, '[data-propuesta-resumen]')) && !/Cambia:|Se mantiene:/.test(t), '23 formato', 'un bloque de resumen, sin «Cambia:» ni «Se mantiene:»')
+    for (const b of ['Dejarlo como está']) debe(new RegExp(b).test(t), '23 botones', `lleva [${b}]`)
+    debe(!/Aplicar|Volver a mi ruta original/.test(t), '23 botones', 'no lleva [Aplicar] ni «Volver a mi ruta original»')
+    const cambia1 = await txt(a, '[data-propuesta-resumen]')
+    // V43 §2: a otro día solo si cabe en alguno; en este viaje ningún día admite paradas (excursión y vuelta) y se queda en «quitar», diciéndolo.
+    debe(/Har/.test(cambia1 ?? '') && /pasa a|pasa al|Sale de hoy/.test(cambia1 ?? ''), '23 cambia', `con la tarde apretada, lo que sale es lo principal (Haría) y pasa a otro día o, si no cabe en ninguno, sale de hoy (${cambia1})`)
+    debe(/15:40/.test((await txt(a, '[data-propuesta-resumen]')) ?? ''), '23 mantiene', 'el resumen nombra el turno de las 15:40')
     await foto(a, '23')
     await clic(a, '[data-propuesta-otra]')
     await a.esp(500)
-    const cambia2 = await txt(a, '[data-propuesta="cambia"]')
+    const cambia2 = await txt(a, '[data-propuesta-resumen]')
     debe(cambia2 !== cambia1 || (await cuantos(a, '[data-propuesta-otra]')) === 0, 'ver_otra', `[Ver otra opción] enseña otra propuesta (${cambia1} → ${cambia2})`)
     await clic(a, '[data-propuesta-otra]')
     await a.esp(400)
-    debe((await txt(a, '[data-propuesta="cambia"]')) === cambia1 || true, 'ver_otra', 'y da la vuelta')
+    debe((await txt(a, '[data-propuesta-resumen]')) === cambia1 || true, 'ver_otra', 'y da la vuelta')
     // Aplicar: el turno no se mueve; el aviso «Plan actualizado · Deshacer»
     await clic(a, '[data-propuesta-aplicar]')
     await a.esp(900)
@@ -281,7 +285,8 @@ try {
     const casa = await ev(`(async () => { const d = ${R}.getState().route.days.find((x) => x.dayNumber === 3); const s = d.stops.find((x) => x.name.startsWith('Casa-Museo')); return [s.time, s.reservationTime, Boolean(s.saltada)] })()`)
     debe(casa[0] === '15:40' && casa[1] === '15:40' && casa[2] === false, 'aplicar', `el turno de las 15:40 sigue donde estaba (${casa})`)
     const aviso = (await txt(a, '[data-aviso-de-abajo]')) ?? ''
-    debe(/Plan actualizado/.test(aviso) && /Deshacer/.test(aviso), '30 aviso', `«Plan actualizado · Deshacer» (${aviso})`)
+    // V43 §6 (antes → ahora): el aviso con [Deshacer] dice QUÉ ha pasado, no «Plan actualizado».
+    debe(aviso.replace(/Deshacer/, '').trim().length > 8 && /Deshacer/.test(aviso), '30 aviso', `un aviso con lo que ha pasado y su [Deshacer] (${aviso})`)
     await foto(a, '30')
     const cambiado = await foto3(a, 0)
     debe(cambiado !== inicio, 'aplicar', 'el día ha cambiado de verdad')
@@ -289,8 +294,8 @@ try {
     await a.esp(700)
     debe((await foto3(a, 0)) === inicio, 'deshacer', '[Deshacer] deja el día (y los demás) como estaba')
     // V2: el aviso es el de la cola única de abajo (data-aviso-de-abajo, un solo aviso a la vez) y su [Deshacer] es data-aviso-de-abajo-accion (antes data-plan-actualizado / data-plan-deshacer).
-    debe(!/Plan actualizado/.test((await txt(a, '[data-aviso-de-abajo]')) ?? ''), 'deshacer', 'y quita el aviso')
-    // Dos cambios seguidos y «Volver a mi ruta original»
+    debe(!/Deshacer/.test((await txt(a, '[data-aviso-de-abajo]')) ?? ''), 'deshacer', 'y quita el aviso')
+    // Dos cambios seguidos; V43 §1: el botón «Volver a mi ruta original» ya no está en las hojas de HOY, pero deshacer TODO lo de hoy sigue existiendo en el almacén (volverALaRutaOriginal).
     for (let i = 0; i < 2; i++) {
       await clic(a, '[data-hoy-cambiar-plan]')
       await a.esp(500)
@@ -300,31 +305,25 @@ try {
       await a.esp(700)
     }
     debe((await foto3(a, 0)) !== inicio, 'original', 'hay cambios aplicados hoy antes de volver a la original')
-    await clic(a, '[data-hoy-cambiar-plan]')
-    await a.esp(500)
-    await clic(a, '[data-cambiar-opcion="retraso"]')
-    await a.esp(600)
-    await clic(a, '[data-propuesta-original]')
+    await ev("(await import('/src/lib/hoyCambiarPlanAplicar.ts')).volverALaRutaOriginal()")
     await a.esp(800)
-    debe((await foto3(a, 0)) === inicio, 'original', '«Volver a mi ruta original» deja todos los días como estaban al empezar')
-    // V2: el aviso «has vuelto a tu ruta original» entra en la cola única de avisos de abajo y espera su turno detrás del «Plan actualizado» que aún se ve (hasta 12 s); se espera a que salga.
-    const dicho = await a.hasta("/original/.test(document.querySelector('[data-aviso-de-abajo]')?.innerText ?? '')", { segundos: 16 })
-    debe(dicho, 'original', 'y lo dice (V2: en la cola de avisos de abajo, tras el «Plan actualizado» que ya se veía)')
+    debe((await foto3(a, 0)) === inicio, 'original', 'deshacer todo lo de hoy deja todos los días como estaban al empezar')
   })
 
   /* ───────────── 3. Saltarme esta parada (25) ───────────── */
   await sec(async () => {
-    await ir(a, { min: 715, mut: MUT_CUEVA })
+    // V43 §4: con una reserva POR LLEGAR (a las 13:00; a las 11:55 aún no ha llegado) pregunta; si ya pasó, no pregunta.
+    await ir(a, { min: 715, mut: MUT_CUEVA.replace("'11:30'", "'13:00'") })
     await clic(a, '[data-hoy-cambiar-plan]')
     await a.esp(500)
     await clic(a, '[data-cambiar-opcion="saltar"]')
     await a.esp(600)
     const t = (await hoja(a)) ?? ''
-    debe(/Tienes la entrada reservada/.test(t) && /Saltar igual/.test(t) && /Cancelar/.test(t), '25 reserva', `con la entrada reservada, antes se pregunta (${t.slice(0, 100)})`)
+    debe(/Tienes reserva/.test(t) && /Saltarlo igual/.test(t) && /No, lo mantengo/.test(t), '25 reserva', `con la reserva por llegar, antes se pregunta (${t.slice(0, 100)})`)
     await clic(a, '[data-saltar-cancelar]')
     await a.esp(400)
     const sinTocar = await ev(`${R}.getState().route.days[2].stops.find((s) => s.name.startsWith('Cueva')).saltada ? 1 : 0`)
-    debe(sinTocar === 0, '25 reserva', '[Cancelar] no salta nada')
+    debe(sinTocar === 0, '25 reserva', '[No, lo mantengo] no salta nada')
     await clic(a, '[data-hoy-cambiar-plan]')
     await a.esp(500)
     await clic(a, '[data-cambiar-opcion="saltar"]')
@@ -340,6 +339,8 @@ try {
     await foto(a, '25')
     await clic(a, '[data-hoy-pendientes-cabecera]')
     await a.esp(400)
+    await clic(a, '[data-hoy-pendiente-mas]')
+    await a.esp(500)
     await clic(a, '[data-hoy-pendiente-recuperar]')
     await a.esp(600)
     debe((await ev(`${R}.getState().route.days[2].stops.find((s) => s.name.startsWith('Cueva')).saltada ? 1 : 0`)) === 0, '25 deshacer', '[Recuperar] de «Lugares pendientes» la trae de vuelta (V2: la parada saltada ya no lleva [Deshacer])')
@@ -369,7 +370,8 @@ try {
     const caso = await a.evaluar(`document.querySelector('[data-cambiar-hoja="propuesta"]')?.getAttribute('data-propuesta-caso') ?? null`)
     debe(caso === casoEsperado, `26${casoEsperado} caso`, `sale el caso ${casoEsperado} (sale ${caso})`)
     const t = (await hoja(a)) ?? ''
-    debe(/Cambia:/.test(t) && /Se mantiene:/.test(t) && /Aplicar/.test(t) && (casoEsperado === 'c' || /Ver otra opción/.test(t)) && /Volver a mi ruta original/.test(t), `26${casoEsperado} formato`, 'con el formato común')
+    // V43 §4 (antes → ahora): el resumen único, [Pasarlo al {día}] y [Elegir otro día]; sin [Ver otra opción] ni «Volver a mi ruta original».
+    debe((await hay(a, '[data-propuesta-resumen]')) && /Pasarlo al/.test(t) && /Elegir otro día/.test(t) && !/Ver otra opción|Volver a mi ruta original|Cambia:|Aplicar/.test(t), `26${casoEsperado} formato`, 'con el formato nuevo')
     await foto(a, `26${casoEsperado}`)
     return { t, jueves }
   }
@@ -382,7 +384,7 @@ try {
     const enJueves = await ev(`${R}.getState().route.days.find((d) => d.id === ${JSON.stringify(jueves)}).stops.some((s) => s.name.startsWith('Mirador del R'))`)
     const enMartes = await ev(`${R}.getState().route.days[2].stops.some((s) => s.name.startsWith('Mirador del R'))`)
     debe(enJueves && !enMartes, '26a aplicar', 'la parada pasa al jueves y deja el martes')
-    debe(/Plan actualizado/.test((await txt(a, '[data-aviso-de-abajo]')) ?? ''), '26a aviso', '«Plan actualizado · Deshacer»')
+    debe(/Deshacer/.test((await txt(a, '[data-aviso-de-abajo]')) ?? ''), '26a aviso', 'el aviso con su [Deshacer] (V43: dice lo que ha pasado)')
     await clic(a, '[data-aviso-de-abajo-accion]')
     await a.esp(700)
     debe(!(await ev(`${R}.getState().route.days.find((d) => d.id === ${JSON.stringify(jueves)}).stops.some((s) => s.name.startsWith('Mirador del R'))`)) && (await ev(`${R}.getState().route.days[2].stops.some((s) => s.name.startsWith('Mirador del R'))`)), '26a deshacer', '[Deshacer] la devuelve al martes')
@@ -428,22 +430,22 @@ try {
     await a.esp(1500)
     const cand = await a.evaluar(`Array.from(document.querySelectorAll('[data-anadir-candidato]')).map((e) => [e.getAttribute('data-anadir-candidato'), e.getAttribute('data-anadir-logro') === '1', e.innerText.replace(/\\s+/g, ' ').trim()])`)
     debe(cand.length >= 1, '27 lista', `salen sitios fuera de la ruta (${cand.length})`)
-    const enRuta = await ev(`(async () => { const r = ${R}.getState().route; const n = new Set(r.days.flatMap((d) => d.stops.map((s) => s.name.toLowerCase()))); return Array.from(document.querySelectorAll('[data-anadir-candidato]')).filter((e) => n.has(e.getAttribute('data-anadir-candidato').toLowerCase())).length })()`)
-    debe(enRuta === 0, '27 lista', 'ninguno es de la ruta')
+    const enRuta = await ev(`(async () => { const r = ${R}.getState().route; const n = new Set(r.days.flatMap((d) => d.stops.map((s) => s.name.toLowerCase()))); return Array.from(document.querySelectorAll('[data-anadir-candidato]')).filter((e) => n.has(e.getAttribute('data-anadir-candidato').toLowerCase()) && !e.querySelector('[data-anadir-otro-dia]')).length })()`)
+    debe(enRuta === 0, '27 lista', 'ninguno es de la ruta (salvo los de otro día, con su «Lo tienes el…»)')
     const orden = cand.map((c) => c[1])
     debe(!orden.some((v, i) => v && orden.slice(0, i).some((w) => !w)), '27 lista', 'los de logro, primero')
     debe(!cand.some((c) => ROMA.test(c[2])), 'sin_roma', 'sin sitios de Roma en la lista de Lanzarote')
     const t0 = (await hoja(a)) ?? ''
     await foto(a, '27lista')
     if (cand.length) {
-      await clic(a, '[data-anadir-candidato]')
+      await clic(a, '[data-anadir-candidato] [data-anadir-elegir]')
       await a.esp(900)
       const caso = await a.evaluar(`document.querySelector('[data-cambiar-hoja="propuesta"]')?.getAttribute('data-propuesta-caso') ?? null`)
       const t = (await hoja(a)) ?? ''
       debe(caso === 'a' || caso === 'b' || /Hoy no cabe/.test(t), '27 propuesta', `sale una propuesta (caso ${caso})`)
       debe(!ROMA.test(t0 + t), 'sin_roma', 'ni en la propuesta')
       if (caso === 'a') {
-        debe(/encaja/.test(t) && /Cambia: se añade/i.test(t) && /Se mantiene: todo lo que ya tenías/.test(t), '27a texto', `los textos de 27a (${t.slice(0, 160)})`)
+        debe(/encaja/.test(t) && /Se añade/i.test(t) && /Sigue igual: todo lo que ya tenías/.test(t), '27a texto', `los textos de 27a (${t.slice(0, 160)})`)
         await foto(a, '27a')
         const antes = await foto3(a, 0)
         await clic(a, '[data-propuesta-aplicar]')
@@ -468,7 +470,7 @@ try {
     // se prueban los candidatos hasta dar con uno que obligue a mover algo
     let visto = null
     for (let i = 0; i < Math.min(hayLista, 6) && !visto; i++) {
-      await a.evaluar(`(() => { const e = document.querySelectorAll('[data-anadir-candidato]')[${i}]; if (e) e.click(); return true })()`)
+      await a.evaluar(`(() => { const e = document.querySelectorAll('[data-anadir-candidato] [data-anadir-elegir]')[${i}]; if (e) e.click(); return true })()`)
       await a.esp(800)
       const caso = await a.evaluar(`document.querySelector('[data-cambiar-hoja="propuesta"]')?.getAttribute('data-propuesta-caso') ?? null`)
       if (caso === 'b') visto = (await hoja(a)) ?? ''
@@ -483,7 +485,7 @@ try {
     }
     debe(visto !== null, '27b caso', 'con la tarde apretada y un turno detrás, algún sitio obliga a mover algo (caso b)')
     if (visto !== null) {
-      debe(/tendríamos que mover/.test(visto) && /Se mantiene: tus reservas/.test(visto), '27b texto', `los textos de 27b (${visto.slice(0, 200)})`)
+      debe(/tendríamos que mover/.test(visto) && /Sigue igual: tus reservas|Se mantiene: tus reservas|tus reservas/.test(visto), '27b texto', `los textos de 27b (${visto.slice(0, 200)})`)
       await foto(a, '27b')
       await clic(a, '[data-propuesta-aplicar]')
       await a.esp(800)

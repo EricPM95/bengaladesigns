@@ -6,6 +6,7 @@ import { pagoActivo } from '../../../../lib/pago'
 import { useAlojamientoUi } from '../../../../store/useAlojamientoUi'
 import { Icono } from '../../../ui/Icono'
 import { useAlojamientoDelViaje } from '../../alojamiento/useAlojamientoDelViaje'
+import { BOTON_ORO } from '../../../ui/botonesOro'
 
 /**
  * LA FILA «VOLVER AL ALOJAMIENTO» (V2, H4 y H4b). Sustituye al botón de la cama de arriba de HOY (fuera):
@@ -37,7 +38,7 @@ export function VolverAlAlojamiento({ route, desde, casa, enCoche }: { route: Ro
           <span className="truncate text-[14.5px] font-semibold">{viaje.nombre ?? direccion}</span>
           {minutos != null && <span className="text-[12.5px] text-[#1C2230]/60">{minutos} min {enCoche ? 'en coche' : 'a pie'}</span>}
         </span>
-        <a href={enlace} target="_blank" rel="noopener noreferrer" aria-label="Cómo llegar a tu alojamiento" data-alojamiento-hoy-como-llegar className="flex h-11 flex-none items-center gap-1.5 rounded-full px-4 text-[13px] font-bold no-underline" style={{ background: 'linear-gradient(180deg,#F8EBC4,#DDBE7C 50%,#B58A2E)', color: '#3E2A0C', border: '1px solid #9A7228' }}>
+        <a href={enlace} target="_blank" rel="noopener noreferrer" aria-label="Cómo llegar a tu alojamiento" data-alojamiento-hoy-como-llegar className="flex h-11 flex-none items-center gap-1.5 rounded-full px-4 text-[13px] font-bold no-underline" style={BOTON_ORO}>
           <Icono nombre="localizar" size={15} grosor={1.9} />
           Cómo llegar
         </a>

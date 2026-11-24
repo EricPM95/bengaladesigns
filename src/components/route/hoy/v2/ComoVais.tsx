@@ -11,6 +11,7 @@ import { AvisoDeHoy, CruzDeAviso } from './AvisosHoy'
 import { HojaPropuesta, Titulo, useContexto } from './CambiarPlan'
 import { HojaV2 } from './HojasV2'
 import { AvisoMasTiempo } from './MasTiempo'
+import { BOTON_ORO } from '../../../ui/botonesOro'
 
 /**
  * (HOY2b, E, apartado 2) «¿CÓMO VAIS?» (16) Y «CANSADOS» (16b). UNA vez al día, después de comer, si quedan 2 paradas o más: [Con fuerzas] / [Cansados]. Se apaga con «Sugerencias del compañero».
@@ -18,7 +19,6 @@ import { AvisoMasTiempo } from './MasTiempo'
  * «¿Y si por hoy lo dejáis aquí?» (solo queda lo opcional) o «Tomaos un respiro» (+15 / +30, que no mueven la ruta). Todo es una propuesta con vista previa: nada se mueve sin [Aplicar] y después sale «Plan actualizado · Deshacer».
  */
 const MARFIL = '#FBF3E2'
-const BOTON_ORO = { background: 'linear-gradient(180deg,#F8EBC4,#DDBE7C 50%,#B58A2E)', color: '#3E2A0C', border: '1px solid #9A7228', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.7),0 8px 14px -8px rgba(110,80,24,.8)' }
 const BOTON_BLANCO = { background: '#FFFDF8', border: '1px solid rgba(181,138,46,.55)', color: '#1C2230', boxShadow: '0 4px 10px -6px rgba(110,80,24,.4)' }
 
 const clave = (rutaId: string, diaId: string) => `trazo:hoy2b:como-vais:${rutaId}:${diaId}`
@@ -87,7 +87,7 @@ export function ComoVais({ route, day, dateIso, ubicacion, enCoche, ahoraMin, co
           titulo={hoja.caso === 'calma' ? 'Vamos con calma' : 'Aguantad un poco'}
           propuestas={[hoja.propuesta]}
           indice={indice}
-          etiquetaAplicar={hoja.caso === 'reserva' ? 'Pasar a otro día' : 'Aplicar'}
+          etiquetaAplicar={hoja.caso === 'reserva' ? 'Pasar a otro día' : 'Hacerlo así'}
           extra={
             pausa && hoja.caso === 'calma' ? (
               <div data-cansados-pausa={pausa.tipo} className="flex items-center gap-3 rounded-[18px] p-3" style={{ background: '#FFFDF8', border: '1px solid rgba(28,34,48,.12)' }}>

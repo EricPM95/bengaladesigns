@@ -302,10 +302,13 @@ await sec(async () => {
   // V2 (antes → ahora): lo saltado ya no va a «Si te sobra tiempo» sino a «Lugares pendientes» (data-hoy-pendientes, plegado); el aviso de abajo es de la cola única (data-aviso-de-abajo) y SIN [Deshacer].
   await clic(a, '[data-hoy-pendientes-cabecera]')
   await a.esp(400)
-  debe(/Recuperar/.test((await txt(a, '[data-hoy-pendiente="saltada"]')) ?? ''), 'H5', 'en «Lugares pendientes», con [Recuperar]')
+  // V43 §7 (antes → ahora): la fila es compacta, con [Otro día] y «···»; [Recuperar hoy] vive en el «···».
+  debe((await hay(a, '[data-hoy-pendiente="saltada"] [data-hoy-pendiente-mas]')) && /Otro día/.test((await txt(a, '[data-hoy-pendiente="saltada"]')) ?? ''), 'H5', 'en «Lugares pendientes», con [Otro día] y «···» (donde está [Recuperar hoy])')
   const avisoS = (await txt(a, '[data-aviso-de-abajo]')) ?? ''
   debe(/Parada saltada · la tienes en Lugares pendientes/.test(avisoS) && !(await hay(a, '[data-aviso-de-abajo-accion]')), 'H5', `el aviso de abajo «Parada saltada · la tienes en Lugares pendientes» SIN [Deshacer] (${avisoS})`)
   await captura(a, 'H5_saltada', '[data-hoy-pendientes]')
+  await clic(a, '[data-hoy-pendiente-mas]')
+  await a.esp(500)
   await clic(a, '[data-hoy-pendiente-recuperar]')
   await a.esp(700)
   debe(!(await paradasDe(a))[1].saltada, 'H5', '[Recuperar] de «Lugares pendientes» la trae de vuelta')
@@ -314,6 +317,8 @@ await sec(async () => {
   if (!(await hay(a, '[data-hoy-pendientes-lista]'))) await clic(a, '[data-hoy-pendientes-cabecera]')
   await a.esp(300)
   debe((await paradasDe(a))[1].saltada, 'H5', 'saltada otra vez, queda en «Lugares pendientes»')
+  await clic(a, '[data-hoy-pendiente-mas]')
+  await a.esp(500)
   await clic(a, '[data-hoy-pendiente-recuperar]')
   await a.esp(600)
   debe(!(await paradasDe(a))[1].saltada, 'H5', '[Recuperar] otra vez la trae de vuelta')

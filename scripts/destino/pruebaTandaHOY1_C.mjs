@@ -186,11 +186,12 @@ if (PARTE === 'todas' || PARTE === '2') {
       await a.esp(500)
       // HOY2 (C, 5-nov): antes → ahora → decisión de Eric: la pantalla C14 con «Entra» y «Sale» → «Plan de lluvia» con el formato común (Cambia: X sale; entra Y / Se mantiene…).
       debe(await hay(ev, '[data-cambiar-hoja=propuesta][data-propuesta-tipo=lluvia]'), 'lanzarote: 32 — «Plan de lluvia» con Cambia y Se mantiene')
-      const sale = await texto(ev, '[data-propuesta=cambia]')
+      // V43 §1 (antes → ahora): el «Cambia:» pasa al bloque de resumen único.
+      const sale = await texto(ev, '[data-propuesta-resumen]')
       const entra = sale
       debe(/Haría/.test(sale) && !/Casa-Museo César Manrique/.test(sale) && !/Valle de las Mil Palmeras/.test(sale), `lanzarote: C14 «Sale» las paradas al aire libre con lluvia (Haría…), no el museo (sale «${sale}»)`)
       debe(/Fundación|Campesino|Castillo/.test(entra), `lanzarote: C14 «Entra» un sitio a cubierto cerca (sale «${entra}»)`)
-      debe(/Aplicar/.test(await texto(ev, '[data-cambiar-hoja=propuesta]')) && /Ver otra opción/.test(await texto(ev, '[data-cambiar-hoja=propuesta]')) && /Volver a mi ruta original/.test(await texto(ev, '[data-cambiar-hoja=propuesta]')), 'lanzarote: 32 [Aplicar] · [Ver otra opción] (hoy toca descansar) · «Volver a mi ruta original»')
+      debe(/Usar el plan de lluvia/.test(await texto(ev, '[data-cambiar-hoja=propuesta]')) && /Ver otra opción/.test(await texto(ev, '[data-cambiar-hoja=propuesta]')) && /Dejarlo como está/.test(await texto(ev, '[data-cambiar-hoja=propuesta]')) && !/Aplicar|Volver a mi ruta original/.test(await texto(ev, '[data-cambiar-hoja=propuesta]')), 'lanzarote: 32 [Usar el plan de lluvia] · [Ver otra opción] (hoy toca descansar) · «Dejarlo como está» (V43: sin Aplicar ni «Volver a mi ruta original»)')
       debe(JSON.stringify((await dia(ev, 2)).stops) === JSON.stringify(antes.stops), 'lanzarote: ver la alternativa NO cambia el día (nada se mueve solo)')
       await cap(a, 'lanzarote_c14_alternativa')
       await clic(ev, '[data-propuesta-aplicar]')

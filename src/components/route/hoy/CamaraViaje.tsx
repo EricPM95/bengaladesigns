@@ -16,6 +16,7 @@ import { EstilosDelVisto } from '../../logros/visto/Hojas'
 import { AvisoSobreLaBarra } from '../../ui/AvisoSobreLaBarra'
 import { BotonGuardarEnGaleria } from '../fotos/BotonGuardarEnGaleria'
 import { ESTILO_FLOTANTE, SOBRE_LOS_LOGROS, useFlotantes } from '../../flotantes/flotantes'
+import { DORADO } from '../../ui/botonesOro'
 
 /**
  * LA CÁMARA DE VIAJE EN HOY (Tanda HOY1, K1 a K4; Design «Hoy Estados», apartado 04). El botón redondo de la cabecera de HOY se ve SIEMPRE (antes, durante y después del viaje, con y sin pase);
@@ -27,7 +28,7 @@ const ORO = '#B58A2E'
 const ORO_CLARO = '#F3D88F'
 const SERIF = "'Instrument Serif',serif"
 const MONO = "'Geist Mono',monospace"
-const DEGRADADO_ORO = 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)'
+const DEGRADADO_ORO = DORADO
 const CAMARA = 'M4 8h3l2-3h6l2 3h3v11H4zM12 11a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z'
 const CANDADO = 'M7 11V8a5 5 0 0 1 10 0v3M6 11h12v9H6z'
 const CALENDARIO = 'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4'

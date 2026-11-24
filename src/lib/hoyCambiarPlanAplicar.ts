@@ -13,6 +13,8 @@ export interface Entrada {
   id: string
   tipo: Propuesta['tipo']
   ops: Op[]
+  /** (V43 §6) Lo que dice el aviso con [Deshacer]: qué ha pasado («Piazza Navona, añadida a tu día»). */
+  texto?: string
 }
 
 interface Estado {
@@ -57,7 +59,7 @@ const escribir = (ops: Op[], dir: 'adelante' | 'atras') => useRouteStore.setStat
 export function aplicarPropuesta(rutaId: string, fecha: string, p: Propuesta): void {
   abrirHistorial(rutaId, fecha)
   escribir(p.ops, 'adelante')
-  const entrada: Entrada = { id: p.id, tipo: p.tipo, ops: p.ops }
+  const entrada: Entrada = { id: p.id, tipo: p.tipo, ops: p.ops, texto: p.avisoTexto ?? p.resumen?.[0]?.texto }
   useCambiarPlanStore.setState((s) => ({ historial: [...s.historial, entrada], aviso: entrada }))
   guardar()
 }

@@ -21,13 +21,13 @@ interface DiaDeLaLista {
  *
  * `ahora`: el número del día en el que está la parada hoy (para el «Ahora: …» de arriba).
  */
-export function ListaDeDias({ dias, onElegir, ahora }: { dias: DiaDeLaLista[]; onElegir: (dayId: string) => void; ahora?: number }) {
+export function ListaDeDias({ dias, onElegir, ahora, recomendado, cerrados }: { dias: DiaDeLaLista[]; onElegir: (dayId: string) => void; ahora?: number; recomendado?: string | null; cerrados?: Set<string> }) {
   const route = useRouteStore((state) => state.route)
   if (!route) return null
-  return <ListaDeDiasDeLaRuta route={route} dias={dias} onElegir={onElegir} ahora={ahora} />
+  return <ListaDeDiasDeLaRuta route={route} dias={dias} onElegir={onElegir} ahora={ahora} recomendado={recomendado} cerrados={cerrados} />
 }
 
-function ListaDeDiasDeLaRuta({ route, dias, onElegir, ahora }: { route: Route; dias: DiaDeLaLista[]; onElegir: (dayId: string) => void; ahora?: number }) {
+function ListaDeDiasDeLaRuta({ route, dias, onElegir, ahora, recomendado, cerrados }: { route: Route; dias: DiaDeLaLista[]; onElegir: (dayId: string) => void; ahora?: number; recomendado?: string | null; cerrados?: Set<string> }) {
   const nombreDe = useNombreDeDias(route)
   return (
     <div data-lista-de-dias="1" className="flex flex-col gap-0.5 text-text">
@@ -40,7 +40,9 @@ function ListaDeDiasDeLaRuta({ route, dias, onElegir, ahora }: { route: Route; d
         const day = route.days.find((candidate) => candidate.id === dia.id)
         // El día de vuelta no sale (no lleva paradas).
         if (day?.isReturnLeg) return null
-        const excursion = day ? esDiaDeExcursion(day) : false
+        // (V43 §4) «Cerrado ese día»: en gris y sin poder elegirlo; el mejor día va con «Te lo recomendamos».
+        const cerrado = Boolean(cerrados?.has(dia.id))
+        const excursion = (day ? esDiaDeExcursion(day) : false) || cerrado
         const ficha = fichaDelDia(route, dia.dayNumber)
         const titulo = day ? nombreDe(day).titulo || tituloSimpleDelDia(route, day) : dia.city
         return (
@@ -49,6 +51,7 @@ function ListaDeDiasDeLaRuta({ route, dias, onElegir, ahora }: { route: Route; d
             type="button"
             data-dia-de-la-lista={dia.id}
             data-excursion={excursion ? '1' : undefined}
+            data-dia-cerrado={cerrado ? '1' : undefined}
             disabled={excursion}
             aria-disabled={excursion}
             onClick={() => onElegir(dia.id)}
@@ -75,7 +78,9 @@ function ListaDeDiasDeLaRuta({ route, dias, onElegir, ahora }: { route: Route; d
               </span>
             </span>
             {excursion ? (
-              <span className="shrink-0 rounded-full border border-text/15 px-2 py-[3px] text-[10.5px] font-medium leading-none text-text/60">{ETIQUETA_DIA_DE_EXCURSION}</span>
+              <span className="shrink-0 rounded-full border border-text/15 px-2 py-[3px] text-[10.5px] font-medium leading-none text-text/60">{cerrado ? 'Cerrado ese día' : ETIQUETA_DIA_DE_EXCURSION}</span>
+            ) : recomendado === dia.id ? (
+              <span data-dia-recomendado="1" className="shrink-0 rounded-full px-2 py-[3px] text-[10.5px] font-semibold leading-none" style={{ background: 'rgba(181,138,46,.2)', color: '#6E5018' }}>Te lo recomendamos</span>
             ) : (
               <Icono nombre="adelante" size={14} className="shrink-0 text-text/35" />
             )}

@@ -4,8 +4,11 @@ import { filasDelDia } from './hoyParada'
 import {
   aHora,
   ancho,
+  aplicarOpADia,
   cabe,
+  claseDe,
   conMeal as _conMeal,
+  mejorDiaPara,
   itemsDe,
   mantieneDe,
   minDe,
@@ -147,7 +150,12 @@ export interface RestauranteCerca {
   cocina: string | null
   direccion: string | null
   cierraMin: number | null
+  /** (V43 §3) El tipo de sitio (trattoria, pizza, gelato…) para los filtros de arriba. */
+  sub: string | null
 }
+
+/** (V43 §3) [Todos] enseña solo sitios para COMER: los de gelato, café y aperitivo, solo con su filtro. */
+export const SOLO_CON_SU_FILTRO = new Set(['gelato', 'cafe', 'aperitivo'])
 
 const cocinaCorta = (t: string | null | undefined): string | null => {
   const s = (t ?? '').replace(/\s*Precio sin confirmar\.?/i, '').trim()
@@ -156,7 +164,7 @@ const cocinaCorta = (t: string | null | undefined): string | null => {
 }
 
 /** Los restaurantes ABIERTOS AHORA más cercanos (los nuestros: los del catálogo del destino, que son los mismos de «Cerca de ti › Comer»). Sin ubicación ni sitio de referencia, nada. */
-export function restaurantesAbiertos(p: { restaurantes: DestinationPlace[]; origen: Coordinates | null; dateIso: string; ahoraMin: number; enCoche: boolean; limite?: number; maxMin?: number }): RestauranteCerca[] {
+export function restaurantesAbiertos(p: { restaurantes: DestinationPlace[]; origen: Coordinates | null; dateIso: string; ahoraMin: number; enCoche: boolean; limite?: number; maxMin?: number; sub?: string | null }): RestauranteCerca[] {
   const { origen } = p
   const tope = p.maxMin ?? (p.enCoche ? 30 : 20)
   const salida: RestauranteCerca[] = []
@@ -164,10 +172,12 @@ export function restaurantesAbiertos(p: { restaurantes: DestinationPlace[]; orig
     if (r.kind !== 'restaurant' || !hasRealCoordinates(r.coordinates)) continue
     const h = horarioDeComer(r, p.dateIso, p.ahoraMin)
     if (h.abierto !== true) continue
+    const sub = r.sub_category ?? null
+    if (p.sub ? sub !== p.sub : sub != null && SOLO_CON_SU_FILTRO.has(sub)) continue
     const metros = origen && hasRealCoordinates(origen) ? haversineMeters(origen, r.coordinates) : 0
     const minutos = viajeMin(origen ? { coordinates: origen } : null, { coordinates: r.coordinates }, p.enCoche)
     if (origen && minutos > tope) continue
-    salida.push({ nombre: r.name, coordinates: r.coordinates, metros, minutos, modo: p.enCoche ? 'coche' : 'pie', precio: r.price_range ?? null, cocina: cocinaCorta(r.what_to_order), direccion: r.address ?? null, cierraMin: h.cierraMin })
+    salida.push({ nombre: r.name, coordinates: r.coordinates, metros, minutos, modo: p.enCoche ? 'coche' : 'pie', precio: r.price_range ?? null, cocina: cocinaCorta(r.what_to_order), direccion: r.address ?? null, cierraMin: h.cierraMin, sub })
   }
   salida.sort((a, b) => a.metros - b.metros || a.nombre.localeCompare(b.nombre))
   return salida.slice(0, p.limite ?? 5)
@@ -215,7 +225,9 @@ export function proponerComerAhora(p: { route: Route; day: DayPlan; restaurante:
   const k = vigentes.findIndex((s) => s.id === siguiente.id)
   if (k < 0) return []
   const fijas = ctx.fijasDe(day)
-  const restantes = vigentes.slice(k).filter((s) => !s.checkedInAt)
+  // (V43 §1) Una entrada o reserva cuya hora ya pasó no se protege: no cuenta para el reloj.
+  const horaDe = (s: Stop) => ctx.horaFijaMin?.(s) ?? minDe(s.time)
+  const restantes = vigentes.slice(k).filter((s) => !s.checkedInAt && !(claseDe(s, fijas, ctx.datos) === 'fija' && (horaDe(s) ?? 24 * 60) < p.ahoraMin))
   const items = itemsDe(restantes, fijas, ctx.datos)
   const anterior = k > 0 ? vigentes[k - 1] : null
   const origenStop = p.desde ? ({ coordinates: p.desde } as Stop) : anterior
@@ -253,11 +265,26 @@ export function proponerComerAhora(p: { route: Route; day: DayPlan; restaurante:
       })
     }
     const quitadas: Propuesta['quitadas'] = []
+    // (V43 §3) Lo que cierra o choca con una entrada por llegar pasa al mejor OTRO DÍA donde quepa (y se dice); si no cabe en ninguno, a «Lugares pendientes».
+    let trabajoHoy = day
+    let trabajoDias: DayPlan[] = p.route.days
     for (const id of [...v.quitados].sort((x, y) => ORDEN_DE_QUITAR.indexOf((items.find((q) => q.stop.id === x)?.clase ?? 'principal') as never) - ORDEN_DE_QUITAR.indexOf((items.find((q) => q.stop.id === y)?.clase ?? 'principal') as never))) {
       const it = items.find((x) => x.stop.id === id)
       if (!it) continue
-      ops.push({ t: 'campo', dia: day.id, id, antes: { time: it.stop.time, saltada: Boolean(it.stop.saltada) }, despues: { time: it.stop.time, saltada: true } })
-      quitadas.push({ id, nombre: nombre(it.stop), clase: it.clase, destino: 'sobra' })
+      const mejor = it.clase !== 'opcional' ? mejorDiaPara({ route: p.route, day, stop: it.stop, ctx, dias: trabajoDias }) : null
+      if (mejor) {
+        const iy = trabajoHoy.stops.findIndex((s) => s.id === it.stop.id)
+        const o: Op[] = [{ t: 'sacar', dia: day.id, stop: it.stop, indice: iy, ..._conMeal(trabajoHoy, iy, false) }, ...mejor.col.ops]
+        for (const op of o) {
+          if (op.dia === day.id) trabajoHoy = aplicarOpADia(trabajoHoy, op, 'adelante')
+          else trabajoDias = trabajoDias.map((d) => (d.id === op.dia ? aplicarOpADia(d, op, 'adelante') : d))
+        }
+        ops.push(...o)
+        quitadas.push({ id, nombre: nombre(it.stop), clase: it.clase, destino: 'manana', aDia: mejor.etiqueta })
+      } else {
+        ops.push({ t: 'campo', dia: day.id, id, antes: { time: it.stop.time, saltada: Boolean(it.stop.saltada) }, despues: { time: it.stop.time, saltada: true } })
+        quitadas.push({ id, nombre: nombre(it.stop), clase: it.clase, destino: 'sobra' })
+      }
     }
     for (const [id, min] of sim.nuevas) {
       const s = day.stops.find((x) => x.id === id)
@@ -266,13 +293,21 @@ export function proponerComerAhora(p: { route: Route; day: DayPlan; restaurante:
     }
     const nombres = quitadas.map((q) => q.nombre)
     const pregunta = v.pregunta
+    const aOtroDia = quitadas.filter((q) => q.destino === 'manana')
+    const aPendientes = quitadas.filter((q) => q.destino === 'sobra')
+    const resumen: NonNullable<Propuesta['resumen']> = [{ icono: 'mas', texto: `La ${meal?.mealTime === 'dinner' ? 'cena' : 'comida'} pasa a ahora, en ${n}` }]
+    for (const q of aOtroDia) resumen.push({ icono: 'mover', texto: `${q.nombre} pasa al ${q.aDia}` })
+    if (aPendientes.length) resumen.push({ icono: 'quitar', texto: `${unir(aPendientes.map((q) => q.nombre))} pasa${aPendientes.length > 1 ? 'n' : ''} a «Lugares pendientes»: no cabe en otro día` })
+    resumen.push({ icono: 'ok', texto: nombres.length ? 'Lo demás sigue igual' : 'El resto de tu día sigue igual: solo cambia el orden' })
     return {
       id: `comer-${restaurante.nombre}-${i}`,
       tipo: 'comer',
-      intro: pregunta ? `Para comer ahora tendríamos que dejar ${unir(nombres)}, que es de lo más importante. ¿Lo dejamos?` : `Vas a comer en ${n}. Recolocamos el resto del día para que todo siga cabiendo.`,
+      boton: `Comer en ${n}`,
+      resumen,
+      intro: pregunta ? `Para comer ahora tendríamos que quitar ${unir(nombres)}, que es de lo más importante. ¿Lo quitamos?` : `Vas a ${meal?.mealTime === 'dinner' ? 'cenar' : 'comer'} en ${n}. Recolocamos el resto del día para que todo siga cabiendo.`,
       cambia: {
-        titulo: nombres.length ? `La comida pasa a ahora, en ${n}, y ${unir(nombres)} pasa${nombres.length > 1 ? 'n' : ''} a «Lugares pendientes»` : `La comida pasa a ahora, en ${n}`,
-        detalle: pregunta ? 'Es de lo más importante: solo lo hacemos si tú quieres.' : nombres.length ? 'Así llegas bien al resto del día. Lo puedes recuperar cuando quieras.' : sim.nuevas.size ? 'Lo que queda se recoloca un poco, después de comer.' : 'Lo que queda del día sigue como estaba.',
+        titulo: nombres.length ? `La comida pasa a ahora, en ${n}, y ${unir(nombres)} sale de hoy` : `La comida pasa a ahora, en ${n}`,
+        detalle: pregunta ? 'Es de lo más importante: solo lo quitamos si tú quieres.' : nombres.length ? 'Así llegas bien al resto del día.' : sim.nuevas.size ? 'Lo que queda se recoloca un poco, después de comer.' : 'El resto de tu día sigue igual: solo cambia el orden.',
       },
       mantiene: mantieneDe(items, ctx),
       ops,

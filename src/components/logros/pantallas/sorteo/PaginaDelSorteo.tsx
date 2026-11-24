@@ -93,7 +93,7 @@ export default function PaginaDelSorteo({ pantalla: _pantalla }: { pantalla: Pan
           {datos && (
             <div className="flex flex-col gap-3 px-4 pt-3.5">
               <div className="flex items-center gap-3.5 rounded-[22px] bg-[#FFFDF8] px-4 py-3.5" style={{ border: '1.5px solid #D2A845', boxShadow: '0 12px 22px -16px rgba(139,101,24,.7)' }}>
-                <span className="flex h-[50px] w-[50px] flex-none items-center justify-center rounded-[15px]" style={{ background: 'linear-gradient(145deg,#FFF6DC,#E9C77A 45%,#9A7228)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.8),inset 0 -3px 6px rgba(110,80,24,.4)' }}>
+                <span className="flex h-[50px] w-[50px] flex-none items-center justify-center rounded-[15px]" style={{ background: 'linear-gradient(145deg,#FFF6DC,#E9C77A 45%,#B58A2E)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.8),inset 0 -3px 6px rgba(110,80,24,.4)' }}>
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4A3510" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <path d="M3 9a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v1.5a1.5 1.5 0 0 0 0 3V15a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2zM12 8.5l1.2 2.5 2.7.4-2 1.9.5 2.7-2.4-1.3-2.4 1.3.5-2.7-2-1.9 2.7-.4z" />
                   </svg>

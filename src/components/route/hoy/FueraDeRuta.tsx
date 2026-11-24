@@ -8,6 +8,7 @@ import { alDia } from '../../../lib/nombreDeDia'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { withUndo } from '../../../store/useAddFlowStore'
 import type { SitioCerca } from './useCercaDeAqui'
+import { BOTON_ORO } from '../../ui/botonesOro'
 
 /**
  * «CERCA DE TI» FUERA DE RUTA (Tanda HOY1, H8 y H8b; Design «Hoy Estados»).
@@ -72,7 +73,7 @@ export function FueraDeRuta({ sitio, tipo, route, day, tripId, fecha, onCerrar }
       ? `Haz tu foto para ganar «${sitio.emblema_nombre}».`
       : `Haz tu foto para ganar tu pedazo de «${sitio.coleccion_nombre}».`
   const boton = 'flex h-[52px] min-h-[52px] flex-none items-center justify-center gap-1.5 whitespace-nowrap rounded-2xl px-2.5 text-[13.5px] font-bold'
-  const oro = { background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510', boxShadow: '0 10px 20px -14px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55)' }
+  const oro = BOTON_ORO
   return (
     <>
       <div data-fuera-de-ruta={tipo} data-sitio={sitio.sitio} className="flex-none overflow-hidden" style={{ borderRadius: 26, background: '#1C2230', color: '#FBF3E2' }}>

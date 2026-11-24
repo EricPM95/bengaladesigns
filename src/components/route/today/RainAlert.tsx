@@ -5,12 +5,13 @@ import { hasRealCoordinates } from '../../../lib/distanceMock'
 import { fetchHourlyRain, rainsInHours, type HourlyRain } from '../../../lib/rainForecast'
 import { haParadoDeLlover } from '../../../lib/avisosDelTiempo'
 import type { Propuesta } from '../../../lib/hoyCambiarPlan'
-import { aplicarPropuesta, volverALaRutaOriginal } from '../../../lib/hoyCambiarPlanAplicar'
+import { aplicarPropuesta } from '../../../lib/hoyCambiarPlanAplicar'
 import { proponerSiLlueveRoma, proponerVolverAlPlan } from '../../../lib/hoyLluvia'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { Icono } from '../../ui/Icono'
 import { AvisoDeHoy, CruzDeAviso, useAvisoCerrado } from '../hoy/v2/AvisosHoy'
 import { HojaPropuesta, useContexto } from '../hoy/v2/CambiarPlan'
+import { useAhoraMin } from '../hoy/v2/ParadaHoy'
 
 interface RainAlertProps {
   day: DayPlan
@@ -51,8 +52,11 @@ export function RainAlert({ day, dateIso, when }: RainAlertProps) {
   // (HOY1, apartado 6) En Lanzarote la lluvia la cuentan los avisos del tiempo en directo (AvisosDelTiempo), no este aviso: así no salen dos.
   const enLanzarote = (route?.destination ?? '').toLowerCase().includes('lanzarote')
   const note = enLanzarote ? null : (day.rainPlan?.text ?? day.rainPlanB?.note ?? null)
+  const ahoraMin = useAhoraMin()
 
-  const relevantStops = (when === 'hoy' ? day.stops.filter((stop) => !stop.checkedInAt && !stop.saltada) : day.stops).filter((stop) => !stop.isArrival && !stop.isBreak)
+  // (V43 §8) El aviso no sale si esa parte del día ya ha pasado: hoy solo cuentan las paradas que aún no han terminado.
+  const sinTerminar = (stop: Stop) => !/^\d{1,2}:\d{2}$/.test(stop.time ?? '') || parseTimeToMinutes(stop.time) + Math.max(30, stop.durationMinutes || 60) > ahoraMin
+  const relevantStops = (when === 'hoy' ? day.stops.filter((stop) => !stop.checkedInAt && !stop.saltada && sinTerminar(stop)) : day.stops).filter((stop) => !stop.isArrival && !stop.isBreak)
   const hoursKey = hoursOf(relevantStops).join(',')
   const at = day.stops.find((stop) => hasRealCoordinates(stop.coordinates))?.coordinates
 
@@ -100,7 +104,7 @@ export function RainAlert({ day, dateIso, when }: RainAlertProps) {
             <Icono nombre="lluvia" size={18} className="shrink-0 text-text/60" />
           </span>
           <span className="min-w-0 flex-1 pt-1 text-[13.5px] font-medium leading-[1.35]">
-            {applied ? (paro ? 'Ha parado de llover.' : 'Estás usando la alternativa para la lluvia.') : `Hay previsión de lluvia ${when_}. Si llueve, aquí tienes una alternativa.`}
+            {applied ? (paro ? 'Ha parado de llover.' : 'Estás usando la alternativa para la lluvia.') : canApply ? `Hay previsión de lluvia ${when_}. Si llueve, aquí tienes una alternativa.` : `Hay previsión de lluvia ${when_}. Lleva paraguas o chubasquero.`}
           </span>
           {(!applied || paro) && <CruzDeAviso onClick={applied ? cerrarParo : cerrar} />}
         </div>
@@ -124,10 +128,6 @@ export function RainAlert({ day, dateIso, when }: RainAlertProps) {
           onOtra={() => setIndice((i) => (i + 1) % propuestas.length)}
           onAplicar={(pr) => {
             aplicarPropuesta(route.id, dateIso, pr)
-            setHoja(null)
-          }}
-          onOriginal={() => {
-            volverALaRutaOriginal()
             setHoja(null)
           }}
           onCerrar={() => setHoja(null)}

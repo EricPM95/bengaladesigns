@@ -37,6 +37,8 @@ import { useFotoDeParada } from './useFotoDeParada'
 import { ExtraDeParada } from './ExtraDeParada'
 import { BotonCambiarPlan } from './CambiarPlan'
 import { AvisoMasTiempo } from './MasTiempo'
+import { BOTON_CLARO, BOTON_ORO, DORADO } from '../../../ui/botonesOro'
+import { HojaActivaUbicacion } from './HojaActivaUbicacion'
 
 /** Los colores del diseño «Hoy Estados» (apartado 04): tinta, marfil, oro. */
 const TINTA = '#1C2230'
@@ -45,7 +47,6 @@ const ORO_CLARO = '#F3D88F'
 const ORO = '#B58A2E'
 const ORO_TEXTO = '#8E6820'
 const OJO_MONO = { font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.16em', color: '#6F4E37', textTransform: 'uppercase' as const }
-const BOTON_ORO = { background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510', boxShadow: '0 10px 20px -14px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55)' }
 
 /** La hora de ahora en minutos, al día (se refresca cada 30 s). */
 export function useAhoraMin(): number {
@@ -142,7 +143,7 @@ function FotoDeLaParada({ parada, ciudad, dateIso, alto, children }: { parada: S
 
 const PILDORA_FOTO = { background: 'rgba(28,34,48,.5)', border: '1px solid rgba(255,255,255,.28)', backdropFilter: 'blur(10px)', color: '#fff' } as const
 const NOMBRE_SOBRE_FOTO = { font: "400 38px/1 'Instrument Serif',serif", color: '#fff', textShadow: '0 2px 16px rgba(0,0,0,.55)', textWrap: 'balance' as never }
-const BOTON_ORO_A = { background: 'linear-gradient(180deg,#F8EBC4,#DDBE7C 50%,#B58A2E)', color: '#3E2A0C', border: '1px solid #9A7228', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.7),0 10px 16px -10px rgba(110,80,24,.8)' }
+const BOTON_ORO_A = BOTON_ORO
 const BOTON_BLANCO_A = { background: '#fff', border: '1px solid rgba(28,34,48,.2)', color: TINTA }
 const BOTON_ICONO = { background: 'linear-gradient(180deg,#FFFDF8,#F3EBDB)', border: '1px solid rgba(181,138,46,.4)', boxShadow: 'inset 0 1px 0 #fff,0 6px 10px -8px rgba(110,80,24,.5)' }
 
@@ -150,6 +151,22 @@ const BOTON_ICONO = { background: 'linear-gradient(180deg,#FFFDF8,#F3EBDB)', bor
 export function rangoDeHorario(h: HorarioDeParada | null): string | null {
   if (!h || h.cerrado || h.tramos.length === 0) return null
   return `${h.tramos[0].abre}–${h.tramos[h.tramos.length - 1].cierra}`
+}
+
+/** (V43 §8) «Cerrado ahora · abre a las 8:30» si ahora está cerrado (fuera de todos los tramos del día); null si está abierto o no hay horario. */
+export function cerradoAhora(h: HorarioDeParada | null, ahoraMin: number): string | null {
+  if (!h || h.cerrado || h.tramos.length === 0) return null
+  const aMin = (t: string) => {
+    const m = /^(\d{1,2}):(\d{2})$/.exec(t)
+    return m ? Number(m[1]) * 60 + Number(m[2]) : null
+  }
+  for (const t of h.tramos) {
+    const a = aMin(t.abre)
+    const c = aMin(t.cierra)
+    if (a != null && c != null && a <= ahoraMin && ahoraMin < c) return null
+  }
+  const proxima = h.tramos.find((t) => (aMin(t.abre) ?? 0) > ahoraMin)
+  return proxima ? `Cerrado ahora · abre a las ${proxima.abre}` : 'Cerrado ahora'
 }
 
 /** Minutos que faltan para que cierre (el cierre del tramo en el que estamos, o la última entrada si ya solo queda esa); null si no se sabe o ya cerró. */
@@ -196,7 +213,7 @@ function BarraDeHistoria({ h }: { h: HistoriaDeParada }) {
 /** Un icono de acción SIN texto (decisión de Eric): lleva su `aria-label`. */
 function BotonIcono({ icono, etiqueta, dato, onClick, oro = false, candado = false }: { icono: Parameters<typeof Icono>[0]['nombre']; etiqueta: string; dato: string; onClick: () => void; oro?: boolean; candado?: boolean }) {
   return (
-    <button type="button" onClick={onClick} aria-label={etiqueta} data-hoy-icono={dato} className="relative flex h-[60px] min-w-0 flex-1 items-center justify-center rounded-[18px]" style={oro ? { background: 'linear-gradient(180deg,#F8EBC4,#DDBE7C 50%,#B58A2E)', border: '1px solid #9A7228', color: '#3E2A0C', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.75),0 10px 16px -10px rgba(110,80,24,.85)' } : { ...BOTON_ICONO, color: TINTA }}>
+    <button type="button" onClick={onClick} aria-label={etiqueta} data-hoy-icono={dato} className="relative flex h-[60px] min-w-0 flex-1 items-center justify-center rounded-[18px]" style={oro ? BOTON_ORO : { ...BOTON_ICONO, color: TINTA }}>
       <Icono nombre={icono} size={26} grosor={1.6} />
       {candado && (
         <span className="absolute right-1.5 top-1.5 flex h-[18px] w-[18px] items-center justify-center rounded-full" style={{ background: TINTA, color: ORO_CLARO }}>
@@ -271,6 +288,7 @@ export interface PropsParada {
 export function TarjetaParada(p: PropsParada) {
   const { route, day, dateIso, siguiente, anterior, reservaSiguiente, ubicacion, enCoche } = p
   const [forzada, setForzada] = useState<string | null>(null)
+  const [hojaUbicacion, setHojaUbicacion] = useState(false)
   const [hojaTiempo, setHojaTiempo] = useState(false)
   const [verEntrada, setVerEntrada] = useState(false)
   const ahoraMin = useAhoraMin()
@@ -389,7 +407,9 @@ export function TarjetaParada(p: PropsParada) {
 
   const etiqueta = anterior ? 'SIGUIENTE PARADA' : 'PRIMERA PARADA'
   const rango = rangoDeHorario(p.horario)
-  const lineaTrayecto = trayecto ? [trayecto.titulo, trayecto.detalle].filter(Boolean).join(' · ') : null
+  const cerrado = cerradoAhora(p.horario, ahoraMin)
+  // (V43 §8) Con ubicación: «A pie · 12 min desde ti»; sin ella, «… desde tu alojamiento» (o desde la parada de antes).
+  const lineaTrayecto = trayecto ? [trayecto.titulo, trayecto.detalle ?? (ubicacion ? 'desde ti' : null)].filter(Boolean).join(' · ') : null
   return (
     <>
       <div data-hoy-siguiente data-hoy-estado="llegar" data-tarjeta="clara" className="flex-none overflow-hidden rounded-[30px]" style={{ background: '#FFFDF8', boxShadow: '0 24px 40px -26px rgba(28,34,48,.55)' }}>
@@ -404,7 +424,10 @@ export function TarjetaParada(p: PropsParada) {
             {rango && (
               <div data-hoy-horario className="flex items-center gap-[9px] text-[13.5px] font-medium" style={{ color: 'rgba(28,34,48,.72)' }}>
                 <Icono nombre="reloj" size={17} grosor={1.7} />
-                {rango}
+                <span>
+                  {rango}
+                  {cerrado && <b data-hoy-cerrado-ahora style={{ color: '#B3321F' }}>{` · ${cerrado}`}</b>}
+                </span>
               </div>
             )}
             {lineaTrayecto && trayecto && (
@@ -412,14 +435,6 @@ export function TarjetaParada(p: PropsParada) {
                 <Icono nombre={trayecto.modo === 'coche' ? 'coche' : 'andando'} size={17} grosor={1.7} />
                 <span className="min-w-0 flex-1">
                   {lineaTrayecto}
-                  {!ubicacion && p.ubicacionEstado !== 'no' && (
-                    <>
-                      {' · '}
-                      <button type="button" onClick={p.pedirUbicacion} disabled={p.ubicacionEstado === 'pidiendo'} data-hoy-usar-ubicacion className="inline-flex min-h-6 items-center text-[12px] font-medium underline underline-offset-2" style={{ color: ORO_TEXTO }}>
-                        {p.ubicacionEstado === 'pidiendo' ? 'Buscando…' : 'usar mi ubicación'}
-                      </button>
-                    </>
-                  )}
                 </span>
               </div>
             )}
@@ -434,9 +449,19 @@ export function TarjetaParada(p: PropsParada) {
             <BarraDeHistoria h={historia} />
           ) : (
             historia.hay && (
-              <button type="button" onClick={alEscuchar} data-hoy-escuchar-camino data-escuchar={historia.candado ? 'candado' : historia.estado} className="flex min-h-11 items-center gap-2 text-left text-[13px] font-medium" style={{ color: '#6E5018' }}>
-                <Icono nombre="altavoz" size={18} grosor={1.7} />
-                <span>Escucha su historia por el camino · {historia.minutos} min</span>
+              <button type="button" onClick={alEscuchar} data-hoy-escuchar-camino data-escuchar={historia.candado ? 'candado' : historia.estado} className="flex min-h-[58px] items-center gap-3 rounded-2xl px-3 text-left" style={{ background: '#F6F0E2', border: '1px solid rgba(181,138,46,.3)', color: '#4A3510' }}>
+                <span aria-hidden="true" className="flex h-10 w-10 flex-none items-center justify-center rounded-full" style={{ background: DORADO }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#4A3510"><path d="M8 5v14l11-7z" /></svg>
+                </span>
+                <span className="flex min-w-0 flex-1 flex-col text-[13px] font-semibold leading-[1.25]">
+                  <span>Escucha su historia por el camino</span>
+                  <span className="text-[12px] font-medium opacity-70">{historia.minutos} min</span>
+                </span>
+                <span aria-hidden="true" className="flex h-5 flex-none items-center gap-[2.5px]">
+                  {[8, 14, 10, 18, 12, 16, 9].map((h, i) => (
+                    <i key={i} style={{ display: 'block', width: 2.5, height: h, borderRadius: 2, background: 'rgba(110,80,24,.55)' }} />
+                  ))}
+                </span>
                 {historia.candado && <Icono nombre="candado" size={13} grosor={2} />}
               </button>
             )
@@ -454,13 +479,31 @@ export function TarjetaParada(p: PropsParada) {
             <BotonCambiarPlan route={route} day={day} dateIso={dateIso} siguiente={siguiente} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMin} onSaltar={p.onSaltar} />
           </div>
           <ExtraDeParada parada={siguiente} dayId={day.id} vista={false} contexto="tarjeta" route={route} reserva={reservaSiguiente} />
-          {/* (LG1) Si el GPS no lo detecta, una línea pequeña para pasar a mano a «Ya estás aquí». */}
-          <div className="text-center text-[12.5px] font-medium" style={{ color: 'rgba(28,34,48,.55)' }}>
-            ¿No te detecta el GPS?{' '}
-            <button type="button" onClick={() => setForzada(siguiente.id)} data-hoy-ya-he-llegado aria-label={`Ya he llegado a ${nombre}`} className="inline-flex min-h-11 items-center font-bold underline underline-offset-[3px]" style={{ color: ORO_TEXTO }}>
-              Ya he llegado
-            </button>
-          </div>
+          {/* (V43 §8) Con ubicación: «¿Ya estás aquí?» y [Ya he llegado]; sin ella, el recuadro «Sin tu ubicación no sabemos cuándo llegas» con [Usar mi ubicación] y [Ya he llegado]. */}
+          {ubicacion ? (
+            <div className="flex items-center justify-center gap-1 text-center text-[12.5px] font-medium" style={{ color: 'rgba(28,34,48,.55)' }}>
+              ¿Ya estás aquí?
+              <button type="button" onClick={() => setForzada(siguiente.id)} data-hoy-ya-he-llegado aria-label={`Ya he llegado a ${nombre}`} className="inline-flex min-h-11 items-center px-1 font-bold underline underline-offset-[3px]" style={{ color: ORO_TEXTO }}>
+                Ya he llegado
+              </button>
+              <button type="button" onClick={p.pedirUbicacion} data-hoy-actualizar-ubicacion className="inline-flex min-h-11 items-center px-1 font-bold underline underline-offset-[3px]" style={{ color: ORO_TEXTO }}>
+                Actualizar
+              </button>
+            </div>
+          ) : (
+            <div data-hoy-sin-ubicacion className="flex flex-col gap-2.5 rounded-2xl p-3" style={{ background: '#F6F0E2', border: '1px solid rgba(181,138,46,.35)' }}>
+              <span className="text-[13px] font-semibold leading-[1.3]" style={{ color: '#4A3510' }}>Sin tu ubicación no sabemos cuándo llegas</span>
+              <div className="flex gap-2">
+                <button type="button" onClick={() => (p.ubicacionEstado === 'no' ? setHojaUbicacion(true) : p.pedirUbicacion())} disabled={p.ubicacionEstado === 'pidiendo'} data-hoy-usar-ubicacion className="flex h-11 flex-1 items-center justify-center rounded-2xl text-[13.5px] font-bold" style={BOTON_ORO}>
+                  {p.ubicacionEstado === 'pidiendo' ? 'Buscando…' : 'Usar mi ubicación'}
+                </button>
+                <button type="button" onClick={() => setForzada(siguiente.id)} data-hoy-ya-he-llegado aria-label={`Ya he llegado a ${nombre}`} className="flex h-11 flex-1 items-center justify-center rounded-2xl text-[13.5px] font-bold" style={BOTON_CLARO}>
+                  Ya he llegado
+                </button>
+              </div>
+            </div>
+          )}
+          {hojaUbicacion && <HojaActivaUbicacion onCerrar={() => setHojaUbicacion(false)} onReintentar={() => { setHojaUbicacion(false); p.pedirUbicacion() }} />}
         </div>
       </div>
       {dialogos}

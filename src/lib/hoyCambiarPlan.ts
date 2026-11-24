@@ -1,4 +1,6 @@
+import { seasonFit } from '../../shared/routeEngine/availability.js'
 import { hasRealCoordinates, haversineMeters } from './distanceMock'
+import { horarioDeParada } from './horarioDeParada'
 import { displayStopName } from './format'
 import { posicionDeMenosRodeo, primerHuecoLibre, pesoDe, type DatosDeImportancia } from './masVisitas'
 import { numberedStopsOf } from './stopKind'
@@ -121,6 +123,10 @@ export interface Contexto {
   etiquetaDia: (day: DayPlan) => string
   /** La hora fija de una parada, en minutos (su turno o reserva). Sin ella, la hora del propio dato. */
   horaFijaMin?: (stop: Stop) => number | null
+  /** (V43) La fecha ISO de un día del viaje (sin fechas, null). */
+  fechaDe?: (day: DayPlan) => string | null
+  /** (V43) El horario de un sitio ese día (los datos reales del destino): sin horario en los datos, null. */
+  horarioEn?: (stop: Stop, fechaIso: string | null) => { cerrado: boolean; abre: number | null; cierra: number | null } | null
 }
 
 export function claseDe(stop: Stop, fijas: Set<string>, datos: DatosDeImportancia): Clase {
@@ -269,8 +275,18 @@ export interface Propuesta {
   pregunta?: boolean
   /** Pasar a otro día / añadir: cabe sin tocar nada (a), cabe quitando algo (b) o no cabe (c, «Si te sobra tiempo»). */
   caso?: 'a' | 'b' | 'c'
+  /** (V43 §6) El aviso que sale al aplicarla, con [Deshacer]: qué ha pasado. */
+  avisoTexto?: string
+  /** (V43 §1) Lo que dice el botón dorado («Pasarlo al viernes 27»); sin él, uno según el tipo. */
+  boton?: string
+  /** (V43 §2) Lo que dice [Ver otra opción] en esta propuesta («Mejor pasarlo al viernes 27»). */
+  etiquetaOtra?: string
+  /** (V43 §1) Las líneas del bloque de resumen (icono + texto): solo las que vienen al caso. Sin ellas, salen de «cambia» y «mantiene». */
+  resumen?: { icono: 'mover' | 'quitar' | 'ok' | 'reloj' | 'mas'; texto: string; /** Una frase pequeña debajo (lo que antes era el «detalle»). */ sub?: string }[]
+  /** (V43 §2) Entradas o reservas de hoy cuya hora YA pasó: no se protegen (las ve la hoja para decirlo). */
+  entradasPasadas?: { nombre: string; hora: string }[]
   /** Para la prueba y la nota interna (nunca se enseñan): lo que se quita (con su clase), lo que se corre y a dónde va cada cosa. */
-  quitadas: { id: string; nombre: string; clase: Clase; destino: 'sobra' | 'manana' | 'manana_sobra' | 'otro' }[]
+  quitadas: { id: string; nombre: string; clase: Clase; destino: 'sobra' | 'manana' | 'manana_sobra' | 'otro'; /** (V43) Si pasa a otro día: ese día («viernes 27»). */ aDia?: string }[]
   corridas: number
   /** Los ids de las paradas fijas que la propuesta NO toca (todas las del día). */
   intactas: string[]
@@ -381,9 +397,11 @@ export function proponerPasarADia(p: { route: Route; day: DayPlan; stop: Stop; d
     const f = items.find((it) => it.fija)
     return f ? { titulo: `tus reservas del ${dest}`, detalle: 'Las horas fijas no se tocan.' } : { titulo: `lo importante del ${dest}`, detalle: 'Lo imprescindible no se toca.' }
   }
-  const propuestas = colocarEnDia(destino, stop, ctx).map((c): Propuesta => {
+  // (V43 §4) Solo la MEJOR forma en ESE día (cabe · cabe quitando algo flexible · al final, en «Si te sobra tiempo»): el viajero no ve [Ver otra opción], sino [Elegir otro día].
+  const propuestas = colocarEnDia(destino, stop, ctx).slice(0, 1).map((c): Propuesta => {
     const quitadas = c.sale ? [{ id: c.sale.id, nombre: nombre(c.sale), clase: claseDe(c.sale, ctx.fijasDe(destino), ctx.datos), destino: 'otro' as const }] : []
-    const base = { tipo: 'otro_dia' as const, caso: c.caso, quitadas, corridas: 0, intactas: items.filter((it) => it.fija).map((it) => it.stop.id), ops: [sacar, ...c.ops] }
+    const resumenDia: NonNullable<Propuesta['resumen']> = [{ icono: 'mover', texto: c.caso === 'c' ? `${n} va al final del ${dest}, en «Si te sobra tiempo»` : `${n} pasa al ${dest}` }, ...(c.sale ? [{ icono: 'quitar' as const, texto: `${nombre(c.sale)} pasa a «Si te sobra tiempo»` }] : []), { icono: 'ok', texto: `Sigue igual: el resto de tu ${hoy}` }]
+    const base = { tipo: 'otro_dia' as const, caso: c.caso, boton: `Pasarlo al ${dest}`, resumen: resumenDia, quitadas, corridas: 0, intactas: items.filter((it) => it.fija).map((it) => it.stop.id), ops: [sacar, ...c.ops] }
     if (c.caso === 'a')
       return { ...base, id: `otro-dia-a-${destino.id}`, intro: `Podemos pasarte ${n} al ${dest}${c.despuesDe ? `, después de ${nombre(c.despuesDe)}` : ''}.`, cambia: { titulo: `${n} pasa al ${dest}`, detalle: c.despuesDe ? `Entra después de ${nombre(c.despuesDe)}.` : 'Entra al empezar el día.' }, mantiene: { titulo: `el resto de tu ${hoy}`, detalle: 'Sin cambios.' } }
     if (c.caso === 'b')
@@ -391,6 +409,135 @@ export function proponerPasarADia(p: { route: Route; day: DayPlan; stop: Stop; d
     return { ...base, id: `otro-dia-c-${destino.id}`, intro: `No cabe en tus otros días sin estropearlos. Si te hace ilusión, lo dejamos al final del ${dest}, como «Si te sobra tiempo».`, cambia: { titulo: `${n}, al final del ${dest}`, detalle: 'Va aparte, en «Si te sobra tiempo».' }, mantiene: { titulo: 'todo lo demás', detalle: 'Tu ruta sigue igual.' } }
   })
   return { propuestas }
+}
+
+/* ---------- el mejor día para una parada (V43 §2 y §4) ---------- */
+
+/** «viernes 27»: el día de la semana y el número (sin fechas, solo el nombre que dé el contexto). */
+export const etiquetaConNumero = (ctx: Contexto, d: DayPlan): string => {
+  const iso = ctx.fechaDe?.(d) ?? null
+  return iso ? `${ctx.etiquetaDia(d)} ${Number(iso.slice(8, 10))}` : ctx.etiquetaDia(d)
+}
+
+export interface MejorDia {
+  dia: DayPlan
+  col: Colocacion
+  etiqueta: string
+  /** Metros hasta lo más cercano de ese día (para ordenar). */
+  metros: number
+}
+
+export interface OpcionDeDia {
+  dia: DayPlan
+  /** null si ese día está cerrado para esta parada. */
+  col: Colocacion | null
+  cerrado: boolean
+  etiqueta: string
+  metros: number
+  /** Cuántas visitas lleva ya ese día. */
+  visitas: number
+}
+
+/** Todos los días POSTERIORES a hoy que admiten paradas, con cómo encaja la parada en cada uno (cabe, quitando algo flexible, o al final en «Si te sobra tiempo»). */
+export function opcionesDeDia(p: { route: Route; day: DayPlan; stop: Stop; ctx: Contexto; dias?: DayPlan[] }): OpcionDeDia[] {
+  const { route, day, stop, ctx } = p
+  const lista = p.dias ?? route.days
+  const hoy = route.days.findIndex((d) => d.id === day.id)
+  const salida: OpcionDeDia[] = []
+  for (const d of lista) {
+    if (route.days.findIndex((x) => x.id === d.id) <= hoy || !diaAdmite(d)) continue
+    const fecha = ctx.fechaDe?.(d) ?? null
+    const h = ctx.horarioEn?.(stop, fecha) ?? null
+    const visitas = delDia(d)
+    const metros = hasRealCoordinates(stop.coordinates) ? Math.min(...visitas.filter((v) => hasRealCoordinates(v.coordinates)).map((v) => haversineMeters(stop.coordinates, v.coordinates)), 8000) : 8000
+    if (h?.cerrado) {
+      salida.push({ dia: d, col: null, cerrado: true, etiqueta: etiquetaConNumero(ctx, d), metros, visitas: visitas.length })
+      continue
+    }
+    salida.push({ dia: d, col: colocarEnDia(d, stop, ctx)[0] ?? null, cerrado: false, etiqueta: etiquetaConNumero(ctx, d), metros, visitas: visitas.length })
+  }
+  return salida
+}
+
+/** El mejor día donde la parada CABE sin quitar nada: abierto, cerca y sin llenarlo (hasta 7 visitas). Nada si no cabe en ninguno. */
+export function mejorDiaPara(p: { route: Route; day: DayPlan; stop: Stop; ctx: Contexto; dias?: DayPlan[] }): MejorDia | null {
+  const buenas = opcionesDeDia(p).filter((o): o is OpcionDeDia & { col: Colocacion } => !o.cerrado && o.col?.caso === 'a' && o.visitas < 7)
+  if (buenas.length === 0) return null
+  buenas.sort((a, b) => a.metros + a.visitas * 120 - (b.metros + b.visitas * 120))
+  const m = buenas[0]
+  return { dia: m.dia, col: m.col, etiqueta: m.etiqueta, metros: m.metros }
+}
+
+/* ---------- «Hoy ya no da tiempo a todo» (V43 §2) ---------- */
+
+export interface YaNoDaTiempo {
+  /** Si había una entrada o reserva que ya pasó. */
+  entrada: { nombre: string; hora: string } | null
+}
+
+/**
+ * ¿Sale la hoja «Hoy ya no da tiempo a todo»? Con más de una hora de retraso sobre la siguiente parada, o al abrir HOY con la mañana ya pasada y nada hecho.
+ * Pura: la hoja sale UNA vez al día (lo guarda `avisosUnaVez`).
+ */
+export function yaNoDaTiempo(p: { day: DayPlan; ahoraMin: number; ctx: Contexto; vistas: number }): YaNoDaTiempo | null {
+  const { day, ahoraMin, ctx } = p
+  const pendientes = delDia(day).filter((s) => !s.checkedInAt)
+  if (pendientes.length === 0) return null
+  const siguiente = pendientes[0]
+  const t = minDe(siguiente.time)
+  const retrasoGrande = t != null && ahoraMin - t > 60
+  const mananaPasada = p.vistas === 0 && ahoraMin >= 13 * 60 && pendientes.some((s) => (minDe(s.time) ?? 24 * 60) < 13 * 60)
+  if (!retrasoGrande && !mananaPasada) return null
+  const fijas = ctx.fijasDe(day)
+  const e = pendientes.find((s) => claseDe(s, fijas, ctx.datos) === 'fija' && (ctx.horaFijaMin?.(s) ?? minDe(s.time) ?? 24 * 60) < ahoraMin)
+  return { entrada: e ? { nombre: nombre(e), hora: aHora((ctx.horaFijaMin?.(e) ?? minDe(e.time)) as number, false) } : null }
+}
+
+/** «Pasar lo que falta a otro día» (V43 §2): cada parada pendiente que no es fija, al mejor día donde quepa; lo que no cabe en ninguno se queda en «Lugares pendientes» (no se pierde). Una sola propuesta. */
+export function proponerPasarLoQueFalta(p: { route: Route; day: DayPlan; ctx: Contexto; ahoraMin: number }): Propuesta | null {
+  const { route, day, ctx } = p
+  const fijas = ctx.fijasDe(day)
+  const pendientes = delDia(day).filter((s) => !s.checkedInAt && claseDe(s, fijas, ctx.datos) !== 'fija')
+  if (pendientes.length === 0) return null
+  const ops: Op[] = []
+  const quitadas: Propuesta['quitadas'] = []
+  let trabajoHoy = day
+  let dias: DayPlan[] = route.days
+  for (const s of pendientes) {
+    const mejor = mejorDiaPara({ route, day, stop: s, ctx, dias })
+    const clase = claseDe(s, fijas, ctx.datos)
+    if (mejor) {
+      const iy = trabajoHoy.stops.findIndex((x) => x.id === s.id)
+      const o: Op[] = [{ t: 'sacar', dia: day.id, stop: s, indice: iy, ...conMeal(trabajoHoy, iy, false) }, ...mejor.col.ops]
+      for (const op of o) {
+        if (op.dia === day.id) trabajoHoy = aplicarOpADia(trabajoHoy, op, 'adelante')
+        else dias = dias.map((d) => (d.id === op.dia ? aplicarOpADia(d, op, 'adelante') : d))
+      }
+      ops.push(...o)
+      quitadas.push({ id: s.id, nombre: nombre(s), clase, destino: 'manana', aDia: mejor.etiqueta })
+    } else {
+      ops.push({ t: 'campo', dia: day.id, id: s.id, antes: { time: s.time, saltada: Boolean(s.saltada) }, despues: { time: s.time, saltada: true } })
+      quitadas.push({ id: s.id, nombre: nombre(s), clase, destino: 'sobra' })
+    }
+  }
+  const movidas = quitadas.filter((q) => q.destino === 'manana')
+  const sinDia = quitadas.filter((q) => q.destino === 'sobra')
+  const resumen: NonNullable<Propuesta['resumen']> = movidas.map((q) => ({ icono: 'mover' as const, texto: `${q.nombre} pasa al ${q.aDia}` }))
+  if (sinDia.length) resumen.push({ icono: 'quitar', texto: `${unir(sinDia.map((q) => q.nombre))} se queda en «Lugares pendientes»: no cabe en otro día` })
+  resumen.push({ icono: 'ok', texto: 'Lo que tienes reservado no se toca' })
+  return {
+    id: 'pasar-lo-que-falta',
+    tipo: 'retraso',
+    intro: 'Pasamos a otros días lo que hoy ya no te da tiempo a hacer, cada cosa donde mejor encaja.',
+    cambia: { titulo: `${unir(quitadas.map((q) => q.nombre))} sale de hoy`, detalle: 'Cada parada, a su mejor día.' },
+    mantiene: { titulo: 'tus reservas', detalle: 'Las horas fijas no se tocan.' },
+    ops,
+    boton: 'Pasar lo que falta a otros días',
+    resumen,
+    quitadas,
+    corridas: 0,
+    intactas: [],
+  }
 }
 
 /* ---------- voy con retraso (23) ---------- */
@@ -419,13 +566,18 @@ export function proponerRetraso(p: { route: Route; day: DayPlan; paradaId: strin
   if (i < 0 || p.minutos <= 0) return []
   const actual = orden[i]
   const fijas = ctx.fijasDe(day)
-  const restantes = orden.slice(i + 1).filter((s) => !s.saltada && !s.checkedInAt)
+  // (V43 §1) NUNCA se protege una entrada o reserva cuya hora ya pasó: no cuenta para el reloj del día (se avisa en la hoja).
+  const horaDe = (s: Stop) => ctx.horaFijaMin?.(s) ?? minDe(s.time)
+  const esPasada = (s: Stop) => p.ahoraMin != null && claseDe(s, fijas, ctx.datos) === 'fija' && (horaDe(s) ?? 24 * 60) < p.ahoraMin
+  const pasadas = orden.slice(i).filter((s) => !s.saltada && !s.checkedInAt && esPasada(s)).map((s) => ({ nombre: nombre(s), hora: aHora(horaDe(s) as number, false) }))
+  const restantes = orden.slice(i + 1).filter((s) => !s.saltada && !s.checkedInAt && !esPasada(s))
   const items = itemsDe(restantes, fijas, ctx.datos)
   if (items.length === 0) return []
   const t0 = minDe(actual.time)
   const fin0 = (t0 ?? p.ahoraMin ?? 12 * 60) + (actual.durationMinutes || 0)
   const base = simularBase(items, fin0, actual, ctx.enCoche)
-  const cur0 = fin0 + p.minutos
+  // (V43) Con la hora de ahora, nunca se cuenta desde antes de ahora (a las 21:19 no se empieza a las 10:00).
+  const cur0 = Math.max(fin0 + p.minutos, p.ahoraMin ?? 0)
   const variantes: { quitados: Set<string>; pregunta: boolean }[] = []
   const vistas = new Set<string>()
   const meter = (q: Set<string> | null, pregunta = false) => {
@@ -451,38 +603,44 @@ export function proponerRetraso(p: { route: Route; day: DayPlan; paradaId: strin
     const q = minimoAQuitar(items, cur0, actual, ctx.enCoche, base, 3, 'tarde', [...ORDEN_DE_QUITAR, 'imprescindible'])
     meter(q, true)
   }
-  const despuesDeHoy = route.days.slice(route.days.findIndex((d) => d.id === day.id) + 1)
-  // A mañana, o al primer día que admita paradas (si mañana es una excursión o la vuelta).
-  const manana = despuesDeHoy.find((d) => diaAdmite(d))
-  const aDia = manana && despuesDeHoy[0] && manana.id === despuesDeHoy[0].id ? 'a mañana' : manana ? `al ${etiquetaPara(ctx, manana)}` : 'a mañana'
-  const posibles = variantes.flatMap((v) => (v.quitados.size && [...v.quitados].some((id) => items.find((x) => x.stop.id === id)?.clase !== 'opcional') && manana ? [{ v, modo: 'manana' as const }, { v, modo: 'sobra' as const }] : [{ v, modo: 'manana' as const }]))
-  return posibles.map(({ v, modo }, k): Propuesta => {
+  const posibles = variantes.flatMap((v) => (v.quitados.size && [...v.quitados].some((id) => items.find((x) => x.stop.id === id)?.clase !== 'opcional') ? [{ v, modo: 'dia' as const }, { v, modo: 'quitar' as const }] : [{ v, modo: 'quitar' as const }]))
+  const construidas = posibles.map(({ v, modo }, k): Propuesta | null => {
     const sim = cabe(items, cur0, actual, v.quitados, ctx.enCoche, base).sim
     const ops: Op[] = []
     const destinos: DestinoRetraso[] = []
     let trabajoHoy = day
-    let trabajoManana = manana
+    // (V43 §2) Los demás días, con lo que ya se les ha metido en esta propuesta.
+    let trabajoDias: DayPlan[] = route.days
     const quitadas: Propuesta['quitadas'] = []
+    let algunoSinDia = false
+    let algunoConDia: string | null = null
     for (const id of [...v.quitados].sort((x, y) => ORDEN_DE_QUITAR.indexOf((items.find((q) => q.stop.id === x) as Item).clase) - ORDEN_DE_QUITAR.indexOf((items.find((q) => q.stop.id === y) as Item).clase))) {
       const it = items.find((x) => x.stop.id === id) as Item
       let destino: DestinoRetraso['destino'] = 'sobra'
+      let aDia: string | undefined
       let opsDe: Op[] = []
-      if (it.clase !== 'opcional' && modo === 'manana' && manana && diaAdmite(trabajoManana)) {
-        const c = colocarEnDia(trabajoManana as DayPlan, it.stop, ctx, { permitirB: false })[0]
+      const mejor = it.clase !== 'opcional' ? mejorDiaPara({ route, day, stop: it.stop, ctx, dias: trabajoDias }) : null
+      if (it.clase !== 'opcional' && !mejor) algunoSinDia = true
+      if (it.clase !== 'opcional' && modo === 'dia' && mejor) {
         const iy = trabajoHoy.stops.findIndex((s) => s.id === it.stop.id)
-        opsDe = [{ t: 'sacar', dia: day.id, stop: it.stop, indice: iy, ...conMeal(trabajoHoy, iy, false) }, ...c.ops]
-        destino = c.caso === 'a' ? 'manana' : 'manana_sobra'
+        opsDe = [{ t: 'sacar', dia: day.id, stop: it.stop, indice: iy, ...conMeal(trabajoHoy, iy, false) }, ...mejor.col.ops]
+        destino = 'manana'
+        aDia = mejor.etiqueta
+        algunoConDia = mejor.etiqueta
         for (const op of opsDe) {
-          trabajoHoy = op.dia === day.id ? aplicarOpADia(trabajoHoy, op, 'adelante') : trabajoHoy
-          if (trabajoManana && op.dia === trabajoManana.id) trabajoManana = aplicarOpADia(trabajoManana, op, 'adelante')
+          if (op.dia === day.id) trabajoHoy = aplicarOpADia(trabajoHoy, op, 'adelante')
+          else trabajoDias = trabajoDias.map((d) => (d.id === op.dia ? aplicarOpADia(d, op, 'adelante') : d))
         }
       } else {
+        if (it.clase !== 'opcional' && mejor) algunoConDia = mejor.etiqueta
         opsDe = [{ t: 'campo', dia: day.id, id: it.stop.id, antes: { time: it.stop.time, saltada: Boolean(it.stop.saltada) }, despues: { time: it.stop.time, saltada: true } }]
       }
       ops.push(...opsDe)
       destinos.push({ id, destino })
-      quitadas.push({ id, nombre: nombre(it.stop), clase: it.clase, destino })
+      quitadas.push({ id, nombre: nombre(it.stop), clase: it.clase, destino, ...(aDia ? { aDia } : {}) })
     }
+    // Si «pasarlo» no lleva a ningún sitio (no cabe en ningún otro día), esta propuesta es igual que quitarlo: se queda solo esa.
+    if (modo === 'dia' && quitadas.every((q) => q.destino === 'sobra')) return null
     for (const [id, min] of sim.nuevas) {
       const s = day.stops.find((x) => x.id === id)
       if (!s || v.quitados.has(id)) continue
@@ -506,32 +664,61 @@ export function proponerRetraso(p: { route: Route; day: DayPlan; paradaId: strin
     }
     const soloOpc = quitadas.filter((q) => q.destino === 'sobra' && q.clase === 'opcional').map((q) => q.nombre)
     const aSobraHoy = quitadas.filter((q) => q.destino === 'sobra' && q.clase !== 'opcional').map((q) => q.nombre)
-    const aManana = quitadas.filter((q) => q.destino === 'manana').map((q) => q.nombre)
-    const aSobraM = quitadas.filter((q) => q.destino === 'manana_sobra').map((q) => q.nombre)
+    const aDiaQ = quitadas.filter((q) => q.destino === 'manana')
+    const diasDe = [...new Set(aDiaQ.map((q) => q.aDia as string))]
     const partes: string[] = []
     if (soloOpc.length) partes.push(`quitamos ${unir(soloOpc)}`)
-    if (aManana.length) partes.push(`${unir(aManana)} pasa${aManana.length > 1 ? 'n' : ''} ${aDia}`)
-    if (aSobraM.length) partes.push(`${unir(aSobraM)} pasa${aSobraM.length > 1 ? 'n' : ''} a «Si te sobra tiempo» ${aDia.replace('a mañana', 'de mañana').replace(/^al /, 'del ')}`)
-    if (aSobraHoy.length) partes.push(`${unir(aSobraHoy)} pasa${aSobraHoy.length > 1 ? 'n' : ''} a «Lugares pendientes»`)
+    if (aDiaQ.length) partes.push(`pasamos ${unir(aDiaQ.map((q) => q.nombre))} al ${diasDe.join(' y al ')}`)
+    if (aSobraHoy.length) partes.push(`quitamos ${unir(aSobraHoy)} de hoy`)
     const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
     const titulo = partes.length ? cap(partes.join(' y ')) : 'Tus siguientes paradas se retrasan un poco'
-    const detalle = v.pregunta ? 'Es de lo más importante: solo lo hacemos si tú quieres.' : soloOpc.length && !aManana.length && !aSobraM.length && !aSobraHoy.length ? 'Es opcional: queda en «Si te sobra tiempo».' : aSobraHoy.length && !aManana.length && !aSobraM.length ? 'La puedes recuperar de «Si te sobra tiempo» cuando quieras.' : partes.length ? 'Así llegas bien al resto de la tarde.' : 'Todo cabe: no quitamos nada.'
-    const mantiene = mantieneDe(items, ctx)
     const pregunta = v.pregunta
+    const detalle = pregunta
+      ? 'Es de lo más importante: solo lo quitamos si tú quieres.'
+      : aSobraHoy.length && algunoSinDia
+        ? 'No cabe en ningún otro día de tu viaje.'
+        : aSobraHoy.length
+          ? 'Lo puedes recuperar desde «Lugares pendientes» cuando quieras.'
+          : aDiaQ.length
+            ? 'Ese día cabe sin llenarlo y está abierto.'
+            : soloOpc.length
+              ? 'Es opcional: queda en «Si te sobra tiempo».'
+              : 'Todo cabe: no quitamos nada.'
+    const mantiene = mantieneDe(items, ctx)
     const cambiaTitulo = pregunta ? `Dejamos ${unir(quitadas.map((q) => q.nombre))}` : titulo
+    const plural = quitadas.length > 1
+    const boton = aDiaQ.length ? `${plural ? 'Pasarlos' : 'Pasarlo'} al ${diasDe[0]}` : quitadas.length ? `${plural ? 'Quitarlos' : 'Quitarlo'} de hoy` : 'Ajustar mi día'
+    const resumen: NonNullable<Propuesta['resumen']> = []
+    if (aDiaQ.length) resumen.push({ icono: 'mover', texto: `${cap(unir(aDiaQ.map((q) => q.nombre)))} pasa${aDiaQ.length > 1 ? 'n' : ''} al ${diasDe.join(' y al ')}` })
+    if (soloOpc.length || aSobraHoy.length) resumen.push({ icono: 'quitar', texto: `Sale de hoy: ${unir([...soloOpc, ...aSobraHoy])}` })
+    // (V43 §2) 23c: «no cabe en ningún otro día de tu viaje»; con imprescindibles: «Es de lo más importante: solo lo quitamos si tú quieres».
+    if (aSobraHoy.length && algunoSinDia && !pregunta) resumen.push({ icono: 'quitar', texto: 'No cabe en ningún otro día de tu viaje' })
+    if (pregunta) resumen.push({ icono: 'quitar', texto: 'Es de lo más importante: solo lo quitamos si tú quieres' })
+    if (sim.nuevas.size > 0) resumen.push({ icono: 'reloj', texto: 'Lo que sigue se retrasa un poco' })
+    resumen.push({ icono: 'ok', texto: `Sigue igual: ${mantiene.titulo}` })
     return {
       id: `retraso-${p.minutos}-${k}`,
       tipo: 'retraso',
-      intro: pregunta ? `Para no perder lo que tienes fijo tendríamos que dejar ${unir(quitadas.map((q) => q.nombre))}, que es de lo más importante. ¿Lo dejamos?` : INTRO_RETRASO,
+      intro: pregunta
+        ? `Para no perder lo que tienes fijo tendríamos que quitar ${unir(quitadas.map((q) => q.nombre))}, que es de lo más importante. ¿Lo quitamos?`
+        : aDiaQ.length
+          ? `Con el retraso, ${unir(aDiaQ.map((q) => q.nombre))} ya no cabe hoy. Lo pasamos al día donde mejor encaja.`
+          : INTRO_RETRASO,
       cambia: { titulo: cambiaTitulo, detalle },
       mantiene,
       ops,
       pregunta: pregunta || undefined,
+      boton,
+      ...(modo === 'quitar' && algunoConDia ? { etiquetaOtra: `Mejor pasarlo al ${algunoConDia}` } : {}),
+      resumen,
+      entradasPasadas: pasadas,
       quitadas,
       corridas: sim.nuevas.size,
       intactas: items.filter((it) => it.fija).map((it) => it.stop.id),
     }
   })
+  // «Pasarlo a otro día» va antes que «Quitarlo»; sin ningún día posible, solo queda quitarlo (23c).
+  return construidas.filter((x): x is Propuesta => x !== null)
 }
 
 /* ---------- añadir un sitio cercano (27a / 27b) ---------- */
@@ -546,29 +733,131 @@ export interface Candidato {
   logro: boolean
   /** Lo que el catálogo sabe de él (para la ficha y la foto). */
   lugar?: { photoUrl?: string; category_label?: string }
+  /** (V43 §5) Cómo está ahora mismo: «Abierto · cierra a las 19:00», «Cierra pronto», «Al aire libre». */
+  estado?: { texto: string; cierraPronto: boolean; alAireLibre: boolean }
+  /** (V43 §5) El escalón del que sale: 1 cerca · 2 de otro día · 3 más lejos · 4 de noche. */
+  escalon?: 1 | 2 | 3 | 4
+  /** (V43 §5) Si ya lo tienes en otro día del viaje: ese día («viernes 27») y de qué día es (se añade hoy y el otro día NO se toca). */
+  deOtroDia?: { etiqueta: string; diaId: string; stopId: string }
+  /** (V43 §5) Tiene entrada: hoy se ve por fuera (15-20 min). */
+  porFuera?: boolean
 }
 
-/** Los sitios fuera de tu ruta que se pueden añadir: del catálogo de EXPLORAR (y los de «Cerca de ti» entran por `logros`), los de logro primero y luego los más cercanos. */
-export function candidatosParaAnadir(p: { route: Route; lugares: { kind: string; name: string; coordinates: Coordinates; duration_min: number | null; fuera_de_lista?: boolean; solo_entradas?: boolean }[]; desde: Coordinates | null; logros: Set<string>; enCoche: boolean; maxMetros?: number; limite?: number }): Candidato[] {
-  const usados = new Set<string>()
-  for (const d of p.route.days) for (const s of [...d.stops, ...(d.spareStops ?? [])]) usados.add(s.name.toLowerCase())
-  const tope = p.maxMetros ?? (p.enCoche ? 25000 : 2500)
-  const lista: Candidato[] = []
-  for (const l of p.lugares) {
-    if (l.kind !== 'place' || l.fuera_de_lista || l.solo_entradas || usados.has(l.name.toLowerCase()) || !hasRealCoordinates(l.coordinates)) continue
-    const metros = p.desde && hasRealCoordinates(p.desde) ? haversineMeters(p.desde, l.coordinates) : 0
-    if (metros > tope) continue
-    lista.push({ nombre: l.name, coordinates: l.coordinates, duracionMin: l.duration_min ?? 45, metros, logro: p.logros.has(l.name) })
+export type LugarCatalogo = { kind: string; name: string; coordinates: Coordinates; duration_min: number | null; fuera_de_lista?: boolean; solo_entradas?: boolean; photoUrl?: string; category_label?: string; hours_data?: Record<string, unknown> | null; available?: unknown; capa_de?: string | null; night_experience?: boolean; requires_ticket?: boolean }
+
+const PALABRAS_SUELTAS = new Set(['piazza', 'plaza', 'piazzale', 'place', 'via', 'calle', 'de', 'del', 'di', 'della', 'la', 'el', 'il', 'lo', 'the', 'of'])
+const normalizar = (t: string) => t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]/g, ' ').split(' ').filter((w) => w && !PALABRAS_SUELTAS.has(w)).join(' ')
+/** (V43 §5) ¿Es el MISMO sitio? Se compara el sitio, no el texto: «Piazza Navona» = «Navona» = «Plaza Navona (mercadillo)». */
+export function mismoSitio(a: string, b: string): boolean {
+  const x = normalizar(a)
+  const y = normalizar(b)
+  if (!x || !y) return false
+  if (x === y) return true
+  const [corto, largo] = x.length <= y.length ? [x, y] : [y, x]
+  return corto.length >= 6 && ` ${largo} `.includes(` ${corto} `)
+}
+
+/**
+ * (V43 §5) ¿Está abierto AHORA, según los horarios de los datos? Sin horario en los datos solo vale lo que lleva `abierto_24h`, lo nocturno de noche y, de día (7:00-20:00), un sitio al aire libre sin puertas.
+ * De noche nunca sale un parque o un sitio con horario que ya cerró. Null = no vale.
+ */
+export function estadoAhora(l: Pick<LugarCatalogo, 'hours_data' | 'night_experience'>, ahoraMin: number, fechaIso: string | null, mes: number | null): Candidato['estado'] | null {
+  void mes
+  const datos = l.hours_data ?? null
+  const tieneHorario = datos != null && ['windows', 'by_day', 'by_season', 'by_period', 'special_hours', 'schedule'].some((k) => datos[k] != null)
+  if (tieneHorario) {
+    const h = horarioDeParada({ hoursData: datos }, fechaIso, null)
+    if (h && h.tramos.length > 0) {
+      if (h.cerrado) return null
+      const tramo = h.tramos.map((t) => ({ a: minDe(t.abre), c: minDe(t.cierra) })).find((t) => t.a != null && t.c != null && t.a <= ahoraMin && ahoraMin < t.c)
+      if (!tramo) return null
+      const resta = (tramo.c as number) - ahoraMin
+      if (resta < 15) return null
+      return resta < 60 ? { texto: 'Cierra pronto', cierraPronto: true, alAireLibre: false } : { texto: `Abierto · cierra a las ${aHora(tramo.c as number, false)}`, cierraPronto: false, alAireLibre: false }
+    }
+    if (h?.cerrado) return null
   }
-  lista.sort((a, b) => Number(b.logro) - Number(a.logro) || a.metros - b.metros || a.nombre.localeCompare(b.nombre))
-  return lista.slice(0, p.limite ?? 6)
+  if (datos?.abierto_24h === true) return { texto: 'Al aire libre', cierraPronto: false, alAireLibre: true }
+  const noche = ahoraMin >= 20 * 60 || ahoraMin < 7 * 60
+  if (noche) return l.night_experience ? { texto: 'Se ve de noche', cierraPronto: false, alAireLibre: true } : null
+  return tieneHorario ? null : { texto: 'Al aire libre', cierraPronto: false, alAireLibre: true }
+}
+
+/**
+ * Los sitios que se pueden añadir a hoy (V43 §5), de EXPLORAR. Solo lo que está ABIERTO ahora; nunca uno que ya está en el viaje (se compara el sitio); con su foto; con recompensa primero y luego por cercanía.
+ * Escalones, hasta tener al menos 3: 1) fuera de la ruta, hasta 15 min a pie · 2) sitios de OTROS días del viaje («Lo tienes el viernes»; se añaden hoy y el otro día no se toca; con entrada, por fuera)
+ * · 3) hasta 30 min a pie, metro o bus · 4) de noche, lo al aire libre y lo nocturno, aunque esté más lejos. Si no hay nada: lista vacía (la pantalla dice «A esta hora no queda nada abierto cerca.»).
+ * Sin `ahoraMin` (las demás pantallas que lo usan, como «¿Qué hago ahora?») no se mira el horario: como antes, solo por cercanía.
+ */
+export function candidatosParaAnadir(p: { route: Route; lugares: LugarCatalogo[]; desde: Coordinates | null; logros: Set<string>; enCoche: boolean; maxMetros?: number; limite?: number; ahoraMin?: number; day?: DayPlan; fechaIso?: string | null; mes?: number | null; ctx?: Contexto }): Candidato[] {
+  const enRuta: { nombre: string; dia: DayPlan | null }[] = []
+  for (const d of p.route.days) for (const s of [...d.stops, ...(d.spareStops ?? [])]) if (!s.isBreak && !s.isArrival && !s.passThrough) enRuta.push({ nombre: s.name, dia: d })
+  const hoyId = p.day?.id ?? null
+  const yaEstaHoy = (n: string) => enRuta.some((u) => (hoyId ? u.dia?.id === hoyId : true) && mismoSitio(u.nombre, n))
+  const yaEstaEnElViaje = (n: string) => enRuta.some((u) => mismoSitio(u.nombre, n))
+  const limiteM = p.maxMetros ?? (p.enCoche ? 25000 : 2500)
+  const mHasta = (c: Coordinates) => (p.desde && hasRealCoordinates(p.desde) ? haversineMeters(p.desde, c) : 0)
+  const conHorario = p.ahoraMin != null
+  const mes = p.mes ?? null
+  const dentroDeTemporada = (l: LugarCatalogo) => {
+    if (!l.available || typeof l.available !== 'object') return true
+    return seasonFit(l.available, { hasDates: Boolean(p.fechaIso), month: mes }, p.fechaIso ?? null).enters
+  }
+  const valen = p.lugares.filter((l) => l.kind === 'place' && !l.fuera_de_lista && !l.solo_entradas && !l.capa_de && hasRealCoordinates(l.coordinates) && dentroDeTemporada(l))
+  const aCandidato = (l: LugarCatalogo, extra: Partial<Candidato> = {}): Candidato | null => {
+    const estado = conHorario ? estadoAhora(l, p.ahoraMin as number, p.fechaIso ?? null, mes) : null
+    if (conHorario && !estado) return null
+    return { nombre: l.name, coordinates: l.coordinates, duracionMin: extra.porFuera ? 20 : (l.duration_min ?? 45), metros: mHasta(l.coordinates), logro: p.logros.has(l.name), lugar: { photoUrl: l.photoUrl, category_label: l.category_label }, ...(estado ? { estado } : {}), ...extra }
+  }
+  const ordenar = (l: Candidato[]) => l.sort((a, b) => Number(b.logro) - Number(a.logro) || a.metros - b.metros || a.nombre.localeCompare(b.nombre))
+  const unico = (lista: Candidato[]) => {
+    const vistos: Candidato[] = []
+    for (const c of lista) if (!vistos.some((v) => mismoSitio(v.nombre, c.nombre))) vistos.push(c)
+    return vistos
+  }
+  const tope = p.limite ?? 6
+  // Sin horario (otras pantallas): como siempre, lo de fuera de la ruta por cercanía.
+  if (!conHorario) {
+    const lista = valen.filter((l) => !yaEstaEnElViaje(l.name) && mHasta(l.coordinates) <= limiteM).map((l) => aCandidato(l)).filter((c): c is Candidato => c !== null)
+    return ordenar(unico(lista)).slice(0, tope)
+  }
+  const piePorMin = p.enCoche ? 667 / 1.35 : 80
+  const m15 = 15 * piePorMin
+  const m30 = 30 * piePorMin
+  let salida: Candidato[] = []
+  const nuevos = (lista: Candidato[]) => unico([...salida, ...lista])
+  // 1) Fuera de la ruta, hasta 15 min.
+  const fuera = valen.filter((l) => !yaEstaEnElViaje(l.name)).map((l) => aCandidato(l, { escalon: 1 })).filter((c): c is Candidato => c !== null)
+  salida = nuevos(fuera.filter((c) => c.metros <= m15))
+  // 2) Lo que ya tienes en otro día: se añade hoy y el otro día no se toca.
+  if (salida.length < 3 && p.day) {
+    const otros: Candidato[] = []
+    for (const d of p.route.days) {
+      if (d.id === p.day.id || !diaAdmite(d)) continue
+      for (const s of d.stops) {
+        if (s.saltada || s.checkedInAt || s.isBreak || s.isArrival || s.passThrough || yaEstaHoy(s.name)) continue
+        const l = valen.find((x) => mismoSitio(x.name, s.name)) ?? p.lugares.find((x) => x.kind === 'place' && mismoSitio(x.name, s.name) && hasRealCoordinates(x.coordinates))
+        if (!l || !dentroDeTemporada(l)) continue
+        const porFuera = Boolean(l.requires_ticket) || Boolean(s.reservedId)
+        const c = aCandidato({ ...l, name: s.name }, { escalon: 2, porFuera, deOtroDia: { etiqueta: p.ctx ? etiquetaConNumero(p.ctx, d) : `día ${d.dayNumber}`, diaId: d.id, stopId: s.id } })
+        if (c && c.metros <= m30) otros.push(c)
+      }
+    }
+    salida = nuevos(otros)
+  }
+  // 3) Hasta 30 min a pie (o metro y bus).
+  if (salida.length < 3) salida = nuevos(fuera.filter((c) => c.metros <= m30).map((c) => ({ ...c, escalon: 3 as const })))
+  // 4) De noche, lo al aire libre y lo nocturno, aunque esté más lejos.
+  const esNoche = (p.ahoraMin as number) >= 20 * 60 || (p.ahoraMin as number) < 7 * 60
+  if (salida.length < 3 && esNoche) salida = nuevos(fuera.filter((c) => c.estado?.alAireLibre && c.metros <= 6000).map((c) => ({ ...c, escalon: 4 as const })))
+  return ordenar(salida).slice(0, tope)
 }
 
 export const stopDeCandidato = (c: Candidato, id?: string): Stop => ({
   id: id ?? `anadido-${c.nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
   time: '',
   name: c.nombre,
-  description: '',
+  description: c.porFuera ? 'Lo ves por fuera.' : '',
   durationMinutes: c.duracionMin,
   coordinates: c.coordinates,
   photoUrl: c.lugar?.photoUrl ?? '',

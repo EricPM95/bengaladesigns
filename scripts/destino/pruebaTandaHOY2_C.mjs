@@ -211,8 +211,8 @@ try {
     })()`)
     debe(JSON.parse(cierto).every(([, ab]) => ab === true), '24 abiertos', `todos los que salen están abiertos a las 12:50 (${cierto})`)
     debe(!nombres.some((n) => /Casa de la Playa|El Amanecer|Brisa Marina|Punta Fariones|Dunas de Famara|Villa Toledo|Carmencita/.test(n)), '24 abiertos', 'ninguno cerrado (martes), sin horario o que abre más tarde')
-    debe((await cuantos(a, '[data-comer-abierto]')) === nombres.length, '24 abiertos', 'cada fila dice «Abierto»')
-    debe((await cuantos(a, '[data-comer-ir-aqui]')) === nombres.length, '24 ir aquí', 'cada fila lleva [Ir aquí]')
+    debe((await cuantos(a, '[data-comer-abierto], [data-comer-cierra-pronto]')) === nombres.length, '24 abiertos', 'cada fila dice «Abierto hasta…» o «Cierra pronto» (V43)')
+    debe((await cuantos(a, '[data-comer-ir-aqui]')) === nombres.length && /Elegir/.test(await txt(a, '[data-comer-ir-aqui]') ?? ''), '24 elegir', 'cada fila lleva [Elegir] (V43: antes [Ir aquí])')
     debe(await hay(a, '[data-comer-mapa]'), '24 mapa', 'la hoja lleva el mapa')
     debe(!ROMA.test(t), 'sin_roma', 'la hoja no habla de Roma')
     // Orden por cercanía
@@ -225,22 +225,22 @@ try {
     await a.esp(800)
     const p = (await hoja(a)) ?? ''
     debe((await dia3()).meals.find((m) => m.id === 'meal-3-lunch').sitio === antesMeal.sitio, '24 propuesta', 'elegir un sitio no mueve nada: antes hay propuesta')
-    debe(/Cambia:/.test(p) && /Se mantiene:/.test(p) && /Aplicar/.test(p) && /Volver a mi ruta original/.test(p), '24 formato', `con el formato común (${p.slice(0, 220)})`)
+    debe((await hay(a, '[data-propuesta-resumen]')) && /Comer en/.test(p) && /Dejarlo como está/.test(p) && !/Cambia:|Aplicar|Volver a mi ruta original/.test(p), '24 formato', `con el formato nuevo (${p.slice(0, 220)})`)
     debe(/La comida pasa a ahora, en/.test(p), '24 cambia', 'dice que la comida pasa a ahora')
-    debe(/Casa-Museo|4:30|16:30|tu entrada/i.test((await txt(a, '[data-propuesta="mantiene"]')) ?? ''), '24 mantiene', `«Se mantiene» nombra lo fijo (${await txt(a, '[data-propuesta="mantiene"]')})`)
+    debe(/Casa-Museo|4:30|16:30|tu entrada|sigue igual/i.test((await txt(a, '[data-propuesta-resumen]')) ?? ''), '24 mantiene', `«Se mantiene» nombra lo fijo (${await txt(a, '[data-propuesta-resumen]')})`)
     debe(!/\d+\s*min/.test(p.replace(/\d+:\d+/g, '')), '24 sin minutos', 'sin minutos crudos en la propuesta')
     await capturaHoja(a, 'comer_24_propuesta')
     // [Ver otra opción] si hay
     const hayOtra = await hay(a, '[data-propuesta-otra]')
     if (hayOtra) {
-      const c1 = await txt(a, '[data-propuesta="cambia"]')
+      const c1 = await txt(a, '[data-propuesta-resumen]')
       await clic(a, '[data-propuesta-otra]')
       await a.esp(500)
-      debe((await txt(a, '[data-propuesta="cambia"]')) !== c1, '24 otra', '[Ver otra opción] enseña otra propuesta')
+      debe((await txt(a, '[data-propuesta-resumen]')) !== c1, '24 otra', '[Ver otra opción] enseña otra propuesta')
       await clic(a, '[data-propuesta-otra]')
       await a.esp(400)
     }
-    const sitioElegido = ((await txt(a, '[data-propuesta="cambia"]')) ?? '').match(/en ([^,]+?)(?: y |$)/)?.[1] ?? ''
+    const sitioElegido = ((await txt(a, '[data-propuesta-resumen]')) ?? '').match(/en ([^,]+?)(?: y |$)/)?.[1] ?? ''
     await clic(a, '[data-propuesta-aplicar]')
     await a.esp(1000)
     const d = await dia3()
@@ -254,7 +254,7 @@ try {
     const quitadas = d.stops.filter((s) => s.saltada).map((s) => s.n)
     debe(!quitadas.some((n) => /Mirador del R[ií]o/.test(n)), '24 prioridad', `lo que se quita no es lo imprescindible (${quitadas.join(', ') || 'nada'})`)
     const aviso = (await txt(a, '[data-aviso-de-abajo]')) ?? ''
-    debe(/Plan actualizado/.test(aviso) && /Deshacer/.test(aviso), '30 aviso', `«Plan actualizado · Deshacer» (${aviso})`)
+    debe(aviso.replace(/Deshacer/, '').trim().length > 8 && /Deshacer/.test(aviso), '30 aviso', `un aviso con lo que ha pasado y su [Deshacer] (${aviso})`)
     debe((await cuantos(a, '[data-aviso-de-abajo]')) === 1, '30 aviso', 'y solo uno')
     await clic(a, '[data-aviso-de-abajo-accion]')
     await a.esp(800)
@@ -269,13 +269,10 @@ try {
       await a.esp(900)
     }
     debe((await snap()) !== inicio, 'original', 'hay cambios hechos antes de volver a la original')
-    await abrirComer(a)
-    await a.esp(1800)
-    await clic(a, '[data-comer-ir-aqui]')
-    await a.esp(700)
-    await clic(a, '[data-propuesta-original]')
+    // V43 §1: el botón «Volver a mi ruta original» ya no está en las hojas; deshacer todo lo de hoy sigue en el almacén.
+    await a.evaluar("(async () => { (await import('/src/lib/hoyCambiarPlanAplicar.ts')).volverALaRutaOriginal(); return true })()")
     await a.esp(900)
-    debe((await snap()) === inicio, 'original', '«Volver a mi ruta original» deja el día como estaba')
+    debe((await snap()) === inicio, 'original', 'deshacer todo lo de hoy deja el día como estaba')
   })
 
   /* ───────────── 1b. Si no hay ningún restaurante abierto cerca ───────────── */
@@ -404,9 +401,9 @@ try {
     if (!/Cambia:/.test(t)) console.log('DEBUG 29b', t)
     debe(/Una solución/.test(t), '29b titulo', '«Una solución»')
     debe(/Llegarás tarde a tu entrada de las 11:30\./.test(t) || /tendríamos que dejar/.test(t), '29b intro', `«Llegarás tarde a tu entrada de las 11:30» (${t.slice(0, 160)})`)
-    debe(/Cambia:/.test(t) && /Se mantiene:/.test(t) && /Aplicar|Sí, dejarlo/.test(t) && /Volver a mi ruta original/.test(t), '29b formato', 'Cambia… / Se mantiene… / [Aplicar] / «Volver a mi ruta original»')
-    debe(/11:30/.test((await txt(a, '[data-propuesta="mantiene"]')) ?? ''), '29b mantiene', `«Se mantiene» nombra el turno (${await txt(a, '[data-propuesta="mantiene"]')})`)
-    debe(/Jameos/.test((await txt(a, '[data-propuesta="cambia"]')) ?? ''), '29b cambia', `lo que sale es lo de antes del turno (${await txt(a, '[data-propuesta="cambia"]')})`)
+    debe(!/Cambia:|Se mantiene:|Aplicar|Volver a mi ruta original/.test(t) && /Dejarlo como está/.test(t) && (await hay(a, '[data-propuesta-resumen]')), '29b formato', 'formato nuevo: resumen / botón dorado / «Dejarlo como está» (V43)')
+    debe(/11:30/.test((await txt(a, '[data-propuesta-resumen]')) ?? ''), '29b mantiene', `«Se mantiene» nombra el turno (${await txt(a, '[data-propuesta-resumen]')})`)
+    debe(/Jameos/.test((await txt(a, '[data-propuesta-resumen]')) ?? ''), '29b cambia', `lo que sale es lo de antes del turno (${await txt(a, '[data-propuesta-resumen]')})`)
     debe(!/\d+\s*min\b/.test(t), '29b sin minutos', 'sin minutos crudos')
     debe((await dia3()).stops.find((s) => s.n.startsWith('Jameos')).saltada === false && (await snap()) === inicio, '29b nada solo', 'ver la solución no mueve nada')
     await capturaHoja(a, 'peligro_29b_solucion')
@@ -419,7 +416,7 @@ try {
     const jameos = d.stops.find((s) => s.n.startsWith('Jameos'))
     debe(jameos.saltada || jameos.t !== '10:00' || d.spare.length > 0, '29b aplicar', `Jameos ya no estorba antes del turno (${jameos.t}, saltada ${jameos.saltada}; spare ${d.spare.join(',')}; pregunta ${pregunta})`)
     debe(!(await hay(a, '[data-hoy-peligro]')), '29b resuelto', 'tras aplicarlo, el peligro se va')
-    debe(/Plan actualizado/.test((await txt(a, '[data-aviso-de-abajo]')) ?? ''), '30 aviso', '«Plan actualizado · Deshacer»')
+    debe(/Deshacer/.test((await txt(a, '[data-aviso-de-abajo]')) ?? ''), '30 aviso', '«Plan actualizado · Deshacer»')
     await clic(a, '[data-aviso-de-abajo-accion]')
     await a.esp(800)
     debe((await snap()) === inicio, 'deshacer', '[Deshacer] deja el día como estaba')
@@ -458,16 +455,16 @@ try {
     const t = (await hoja(a)) ?? ''
     debe(/Plan de lluvia/.test(t), '32 titulo', '«Plan de lluvia»')
     debe(/Va a llover esta tarde\. Te proponemos un plan a cubierto\./.test(t), '32 intro', `«Va a llover esta tarde. Te proponemos un plan a cubierto.» (${t.slice(0, 140)})`)
-    debe(/Cambia:/.test(t) && /Se mantiene:/.test(t) && /Aplicar/.test(t) && /Ver otra opción/.test(t) && /Volver a mi ruta original/.test(t), '32 formato', 'Cambia… / Se mantiene… / [Aplicar] / [Ver otra opción] / «Volver a mi ruta original»')
-    debe(/sale|salen/.test((await txt(a, '[data-propuesta="cambia"]')) ?? '') && /entra|entran/.test((await txt(a, '[data-propuesta="cambia"]')) ?? ''), '32 cambia', `lo que sale y lo que entra (${await txt(a, '[data-propuesta="cambia"]')})`)
-    debe(/Las reservas no se tocan/.test((await txt(a, '[data-propuesta="mantiene"]')) ?? ''), '32 mantiene', 'las reservas no se tocan')
+    debe(!/Cambia:|Se mantiene:|Aplicar|Volver a mi ruta original/.test(t) && /Dejarlo como está/.test(t) && /Usar el plan de lluvia/.test(t) && /Ver otra opción/.test(t), '32 formato', 'formato nuevo: resumen / [Usar el plan de lluvia] / [Ver otra opción] / «Dejarlo como está» (V43)')
+    debe(/sale|salen/.test((await txt(a, '[data-propuesta-resumen]')) ?? '') && /entra|entran/.test((await txt(a, '[data-propuesta-resumen]')) ?? ''), '32 cambia', `lo que sale y lo que entra (${await txt(a, '[data-propuesta-resumen]')})`)
+    debe(/Las reservas no se tocan/.test((await txt(a, '[data-propuesta-resumen]')) ?? ''), '32 mantiene', 'las reservas no se tocan')
     debe(!ROMA.test(t), 'sin_roma', 'sin textos de Roma')
     debe((await snap()) === inicio, '32 nada solo', 'ver la alternativa no mueve nada')
     await capturaHoja(a, 'lluvia_32_plan')
     // Otra opción: hoy toca descansar
     await clic(a, '[data-propuesta-otra]')
     await a.esp(500)
-    debe(/descansar/.test((await txt(a, '[data-propuesta="cambia"]')) ?? ''), '32 otra', `[Ver otra opción]: hoy toca descansar (${await txt(a, '[data-propuesta="cambia"]')})`)
+    debe(/descansar/.test((await txt(a, '[data-propuesta-resumen]')) ?? ''), '32 otra', `[Ver otra opción]: hoy toca descansar (${await txt(a, '[data-propuesta-resumen]')})`)
     await clic(a, '[data-propuesta-otra]')
     await a.esp(400)
     await clic(a, '[data-propuesta-aplicar]')
@@ -476,7 +473,7 @@ try {
     debe(d.backup === 'lluvia', '32 aplicar', `se guarda la copia del día (${d.backup})`)
     debe(d.stops.find((s) => s.n.startsWith('Casa-Museo')).t === '16:14' && !d.stops.find((s) => s.n.startsWith('Casa-Museo')).saltada, '32 fija', 'la entrada reservada no se toca')
     debe(!d.stops.some((s) => /Har[ií]a y el Valle/.test(s.n)), '32 aplicar', 'lo que estaba al aire libre sale')
-    debe(/Plan actualizado/.test((await txt(a, '[data-aviso-de-abajo]')) ?? ''), '30 aviso', '«Plan actualizado · Deshacer»')
+    debe(/Deshacer/.test((await txt(a, '[data-aviso-de-abajo]')) ?? ''), '30 aviso', '«Plan actualizado · Deshacer»')
     debe(await hay(a, '[data-tiempo-cambiado="lluvia"]'), '32 usando', 'y el aviso «Estás usando el plan de lluvia»')
     await clic(a, '[data-aviso-de-abajo-accion]')
     await a.esp(800)
@@ -499,8 +496,8 @@ try {
     await a.esp(700)
     const v = (await hoja(a)) ?? ''
     debe(/¿Volvemos al plan\?/.test(v), '32b titulo', '«¿Volvemos al plan?»')
-    debe(/Ha parado de llover\./.test(v) && /Cambia:/.test(v) && /vuelve|vuelven/.test(v) && /para otro día/.test(v), '32b texto', `«Cambia: … vuelve a tu ruta / … se queda para otro día» (${v.slice(0, 220)})`)
-    debe(/Se mantiene:/.test(v) && /Las reservas no se tocan/.test(v) && /Aplicar/.test(v) && /Volver a mi ruta original/.test(v), '32b formato', 'Se mantiene… / [Aplicar] / «Volver a mi ruta original»')
+    debe(/Ha parado de llover\./.test(v) && /vuelve|vuelven/.test(v) && /para otro día/.test(v), '32b texto', `lo que vuelve a tu ruta y lo que se queda para otro día (${v.slice(0, 220)})`)
+    debe(!/Cambia:|Se mantiene:|Aplicar|Volver a mi ruta original/.test(v) && /Las reservas no se tocan/.test(v) && /Volver a mi plan/.test(v) && /Dejarlo como está/.test(v), '32b formato', 'formato nuevo: [Volver a mi plan] / «Dejarlo como está» (V43)')
     debe((await snap()) === conLluvia, '32b nada solo', 'ver el plan no mueve nada')
     await capturaHoja(a, 'lluvia_32b_volvemos')
     await clic(a, '[data-propuesta-aplicar]')
@@ -511,9 +508,8 @@ try {
     await a.esp(800)
     debe((await snap()) === conLluvia, '32b deshacer', '[Deshacer] vuelve al plan de lluvia')
     // «Volver a mi ruta original» deja el día como estaba al empezar
-    await clic(a, '[data-ver-plan]')
-    await a.esp(600)
-    await clic(a, '[data-propuesta-original]')
+    // V43 §1: sin botón «Volver a mi ruta original» en la hoja; se usa deshacer-todo del almacén.
+    await a.evaluar("(async () => { (await import('/src/lib/hoyCambiarPlanAplicar.ts')).volverALaRutaOriginal(); return true })()")
     await a.esp(900)
     debe((await snap()) === inicio, 'original', '«Volver a mi ruta original» deja el día como estaba antes de la lluvia')
     // Nubes sobre un mirador
@@ -524,7 +520,7 @@ try {
     await clic(a, '[data-aviso-tiempo="nubes"] [data-ver-alternativa]')
     await a.esp(700)
     const n = (await hoja(a)) ?? ''
-    debe(/Cambia:/.test(n) && /Se mantiene:/.test(n) && /Aplicar/.test(n), '31 nubes', `la alternativa de las nubes, con el formato común (${n.slice(0, 160)})`)
+    debe(!/Cambia:|Se mantiene:|Aplicar/.test(n) && /Sigue igual/.test(n), '31 nubes', `la alternativa de las nubes, con el formato común (${n.slice(0, 160)})`)
     await clic(a, '[data-propuesta-cerrar], [aria-label="Cerrar"]')
   })
 
@@ -568,14 +564,14 @@ try {
     await clic(a, '[data-aviso-lluvia] [data-ver-alternativa]')
     await a.esp(700)
     const t = (await hojaSinRegistrar(a)) ?? ''
-    debe(/Plan de lluvia/.test(t) && /Cambia:/.test(t) && /Se mantiene:/.test(t) && /Aplicar/.test(t) && /Volver a mi ruta original/.test(t), 'roma 32', `«Plan de lluvia» con el formato común (${t.slice(0, 200)})`)
+    debe(/Plan de lluvia/.test(t) && !/Cambia:|Se mantiene:|Aplicar|Volver a mi ruta original/.test(t) && /Usar el plan de lluvia/.test(t) && /Dejarlo como está/.test(t), 'roma 32', `«Plan de lluvia» con el formato común (${t.slice(0, 200)})`)
     debe(/Museo de prueba cubierto/.test(t), 'roma 32', 'lo que entra es lo del «Si llueve»')
     debe((await snap()) === roma0, 'roma 32', 'ver la alternativa no mueve nada')
     await clic(a, '[data-propuesta-aplicar]')
     await a.esp(900)
     const cambiado = await ev(`(async () => { const r = ${R}.getState().route; return JSON.stringify({ b: Boolean(r.days[0].rainBackup), n: r.days[0].stops.map((s) => s.name) }) })()`).then((x) => JSON.parse(x))
     debe(cambiado.b && cambiado.n.includes('Museo de prueba cubierto') && !cambiado.n.includes(await ev('window.__romaSale')), 'roma aplicar', 'Aplicar cambia el día y guarda la copia')
-    debe(/Plan actualizado/.test((await txt(a, '[data-aviso-de-abajo]')) ?? ''), 'roma 30', '«Plan actualizado · Deshacer»')
+    debe(/Deshacer/.test((await txt(a, '[data-aviso-de-abajo]')) ?? ''), 'roma 30', '«Plan actualizado · Deshacer»')
     debe((await a.evaluar("document.querySelector('[data-aviso-lluvia]')?.getAttribute('data-aviso-lluvia-estado')")) === 'usando', 'roma usando', '«Estás usando la alternativa para la lluvia»')
     await clic(a, '[data-aviso-de-abajo-accion]')
     await a.esp(800)
@@ -593,9 +589,8 @@ try {
     debe((await ev(`${R}.getState().route.days[0].rainBackup ? 1 : 0`)) === 0 && (await ev(`${R}.getState().route.days[0].stops.map((s) => s.name).includes(window.__romaSale)`)), 'roma 32b', 'el plan de antes vuelve')
     await clic(a, '[data-aviso-de-abajo-accion]')
     await a.esp(700)
-    await clic(a, '[data-ver-plan]')
-    await a.esp(600)
-    await clic(a, '[data-propuesta-original]')
+    // V43 §1: sin botón «Volver a mi ruta original» en la hoja; se usa deshacer-todo del almacén.
+    await a.evaluar("(async () => { (await import('/src/lib/hoyCambiarPlanAplicar.ts')).volverALaRutaOriginal(); return true })()")
     await a.esp(900)
     debe((await snap()) === roma0, 'roma original', '«Volver a mi ruta original» deja el día como estaba')
     await a.evaluar("sessionStorage.removeItem('trazo:lluvia-de-prueba')")

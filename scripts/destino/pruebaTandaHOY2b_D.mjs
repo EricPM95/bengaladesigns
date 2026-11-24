@@ -210,10 +210,11 @@ await sec('3. HOY en directo: «A este ritmo llegarías…»', async () => {
   const intro = await txt('[data-propuesta-intro]')
   console.log('   solución:', intro)
   debe(Boolean(intro) && /antes de que cierre, a las 16:45/.test(intro), '8b', `la propuesta dice la hora de cierre: «${intro}»`)
-  debe((await hay('[data-propuesta-aplicar]')) && (await hay('[data-propuesta-original]')), '8b', 'con [Aplicar] y «Volver a mi ruta original» (el formato de la 23)')
+  // V43 §1 (antes → ahora): el botón dorado que dice lo que hace, el resumen único y «Dejarlo como está».
+  debe((await hay('[data-propuesta-aplicar]')) && (await hay('[data-propuesta-resumen]')) && (await hay('[data-propuesta-dejar]')) && !(await hay('[data-propuesta-original]')), '8b', 'con su botón dorado, el resumen y «Dejarlo como está» (el formato nuevo)')
   const hoja = await txt('[data-cambiar-hoja="propuesta"]')
   debe(!/tu entrada de las/.test(hoja ?? ''), '8b', 'en «Se mantiene» no sale una entrada que no existe')
-  debe(/Jameos del Agua/.test(hoja ?? '') && /Cambia/i.test(hoja ?? '') && /Se mantiene/i.test(hoja ?? ''), '8b', `lo que se quita es lo opcional de ANTES (Jameos del Agua), con Cambia… / Se mantiene…: «${(hoja ?? '').slice(0, 160)}»`)
+  debe(/Jameos del Agua/.test(hoja ?? '') && (await hay('[data-propuesta-resumen]')), '8b', `lo que se quita es lo opcional de ANTES (Jameos del Agua), con Cambia… / Se mantiene…: «${(hoja ?? '').slice(0, 160)}»`)
   await a.captura(path.join(SALIDA, 'hoy2b_en_directo_solucion_1.jpg'))
   const antes = await ev(`(async () => { const { numberedStopsOf } = await import('/src/lib/stopKind.ts'); return numberedStopsOf(${R}.getState().route.days[2]).map((s) => [s.name, s.time, Boolean(s.saltada)]) })()`)
   debe(antes[0][2] === false, '8b', 'hasta que se toca [Aplicar], nada se mueve solo')

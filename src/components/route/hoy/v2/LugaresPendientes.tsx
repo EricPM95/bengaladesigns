@@ -1,29 +1,46 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { DayPlan, Route } from '../../../../lib/types'
 import { displayStopName } from '../../../../lib/format'
+import { esDestinoDeCoche } from '../../../../lib/experienceCategoryBank'
+import { mejorDiaPara } from '../../../../lib/hoyCambiarPlan'
 import type { Pendiente } from '../../../../lib/hoyPendientes'
+import { avisarAbajo } from '../../../../store/useAvisoDeAbajo'
 import { useRouteStore } from '../../../../store/useRouteStore'
 import { Icono } from '../../../ui/Icono'
 import { HojaPasarAOtroDia } from '../saltar'
+import { HojaV2 } from './HojasV2'
+import { Titulo, useContexto } from './CambiarPlan'
 import { ParadaFotoDeParada } from './ParadaFoto'
+import { BOTON_CLARO, BOTON_ORO } from '../../../ui/botonesOro'
 
 /**
- * «LUGARES PENDIENTES» (V2, A8, H2, H6): lo SALTADO y lo que no dio tiempo o ya ha cerrado, aparte de «Si te sobra tiempo». Va al final de HOY, cerrado con su número (H6) o abierto (H2).
- * Cada sitio, como Design (V2b): su FOTO grande, el nombre, una pastilla con el motivo («Saltada hoy», «Ya ha cerrado») y 4 botones en dos filas, mitad y mitad:
- *   [Pasar a otro día] (oro) · [Recuperar hoy] (no si ya ha cerrado)  /  [Ya lo visité] · [Quitar].
- * Al acabar el día, lo que quedó sin ver pasa solo y sigue saliendo los días siguientes hasta que el viajero decide (`lugaresPendientes` en `src/lib/hoyPendientes.ts`).
+ * «LUGARES PENDIENTES» (V2 y V43 §7): lo SALTADO y lo que no dio tiempo o ya ha cerrado, aparte de «Si te sobra tiempo». Va al final de HOY, cerrado con su número o abierto, y la lista se ve ENTERA (se baja con la página).
+ * Filas COMPACTAS: la foto pequeña, el nombre, la pastilla del motivo, [Otro día] y «···». El «···» abre: Recuperar hoy (solo si sigue abierto), Ya lo visité y Quitar (en rojo, con [Deshacer]).
+ * [Pasar todos a otros días] va en azul oscuro con dorado, a propósito: así destaca sobre los botones de cada fila. Antes enseña el resumen (L4): cada uno a su mejor día; los que no caben se quedan en pendientes.
  */
 const ORO_TEXTO = '#8E6820'
+const TINTA = '#1C2230'
+const ORO_CLARO = '#F3D88F'
 
 export function LugaresPendientes({ route, day, dateIso, pendientes }: { route: Route; day: DayPlan; dateIso: string; pendientes: Pendiente[] }) {
   const [abierta, setAbierta] = useState(false)
   const [pasando, setPasando] = useState<Pendiente | null>(null)
+  const [menu, setMenu] = useState<Pendiente | null>(null)
+  const [resumen, setResumen] = useState(false)
   const setStopSaltada = useRouteStore((s) => s.setStopSaltada)
   const setStopVisto = useRouteStore((s) => s.setStopVisto)
   const moveStopToDay = useRouteStore((s) => s.moveStopToDay)
   const removeStop = useRouteStore((s) => s.removeStop)
+  const insertStopAt = useRouteStore((s) => s.insertStopAt)
+  const ctx = useContexto(route, esDestinoDeCoche(route.destination))
+  // L4: el mejor día de cada pendiente (abierto, cerca, sin llenarlo). Se calcula al abrir el resumen, no en cada pintado.
+  const reparto = useMemo(
+    () => (resumen ? pendientes.filter((p) => !p.stop.reservedId).map((p) => ({ p, mejor: mejorDiaPara({ route, day, stop: p.stop, ctx }) })) : []),
+    [resumen, pendientes, route, day, ctx],
+  )
   if (pendientes.length === 0) return null
-  const diasPara = (p: Pendiente) => route.days.filter((d) => !d.isReturnLeg && d.id !== p.dayId).map((d) => ({ id: d.id, dayNumber: d.dayNumber, city: d.city }))
+  // (V43) Solo días de DESPUÉS de hoy: lo de un día pasado no se toca (la app no deja mover a ni desde un día pasado).
+  const diasPara = (p: Pendiente) => route.days.filter((d) => !d.isReturnLeg && d.id !== p.dayId && d.dayNumber > day.dayNumber).map((d) => ({ id: d.id, dayNumber: d.dayNumber, city: d.city }))
   const recuperar = (p: Pendiente) => {
     if (p.dayId !== day.id) moveStopToDay(p.stop.id, p.dayId, day.id)
     setStopSaltada(day.id, p.stop.id, false)
@@ -33,57 +50,113 @@ export function LugaresPendientes({ route, day, dateIso, pendientes }: { route: 
     setStopSaltada(aDayId, p.stop.id, false)
     setPasando(null)
   }
-  const boton = 'flex h-[46px] items-center justify-center gap-2 rounded-full px-3 text-[13.5px] font-bold'
-  const blanco = { border: '1px solid rgba(28,34,48,.2)', background: '#fff', color: '#1C2230' }
+  const quitar = (p: Pendiente) => {
+    const d = route.days.find((x) => x.id === p.dayId)
+    const indice = d ? d.stops.findIndex((s) => s.id === p.stop.id) : -1
+    removeStop(p.dayId, p.stop.id)
+    // Quitar se puede deshacer: el aviso con [Deshacer] vuelve a poner el sitio donde estaba.
+    avisarAbajo({ id: `quitar:${p.stop.id}`, texto: `${displayStopName(p.stop.name)}, quitada de tu ruta`, accion: { etiqueta: 'Deshacer', alTocar: () => insertStopAt(p.dayId, Math.max(indice, 0), p.stop) } })
+  }
+  const pasarTodos = () => {
+    for (const { p, mejor } of reparto) {
+      if (!mejor) continue
+      moveStopToDay(p.stop.id, p.dayId, mejor.dia.id)
+      setStopSaltada(mejor.dia.id, p.stop.id, false)
+    }
+    setResumen(false)
+  }
+  const caben = reparto.filter((x) => x.mejor)
+  const noCaben = reparto.filter((x) => !x.mejor)
   return (
     <div data-hoy-pendientes={pendientes.length} data-hoy-pendientes-estado={abierta ? 'abierta' : 'cerrada'} className="flex flex-none flex-col rounded-[24px]" style={{ background: '#FFFDF8', border: '1px solid rgba(181,138,46,.4)', boxShadow: abierta ? '0 24px 40px -28px rgba(28,34,48,.5)' : 'none' }}>
       <button type="button" onClick={() => setAbierta((v) => !v)} aria-expanded={abierta} data-hoy-pendientes-cabecera className="flex min-h-12 items-center gap-2.5 px-4 text-left">
         <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.16em', color: '#6F4E37', textTransform: 'uppercase' }}>Lugares pendientes</span>
-        <span className="flex h-6 min-w-6 items-center justify-center rounded-full px-1.5 text-[12px] font-bold" style={{ background: '#1C2230', color: '#fff' }}>{pendientes.length}</span>
+        <span className="flex h-6 min-w-6 items-center justify-center rounded-full px-1.5 text-[12px] font-bold" style={{ background: TINTA, color: '#fff' }}>{pendientes.length}</span>
         <span className="flex-1" />
         <Icono nombre={abierta ? 'arriba' : 'abajo'} size={15} grosor={2} style={{ color: ORO_TEXTO }} />
       </button>
       {abierta && (
-        <ul data-hoy-pendientes-lista className="m-0 flex list-none flex-col divide-y p-0" style={{ borderTop: '1px solid rgba(28,34,48,.08)', borderColor: 'rgba(28,34,48,.08)' }}>
-          {pendientes.map((p) => (
-            <li key={`${p.dayId}-${p.stop.id}`} data-hoy-pendiente={p.motivo} data-hoy-pendiente-id={p.stop.id} className="flex flex-col gap-3.5 px-4 py-4">
-              <div className="flex items-center gap-3.5">
+        <div style={{ borderTop: '1px solid rgba(28,34,48,.08)' }}>
+          {pendientes.some((p) => !p.stop.reservedId) && (
+            <div className="px-4 pt-3">
+              <button type="button" onClick={() => setResumen(true)} data-hoy-pendientes-pasar-todos className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-[14px] font-bold" style={{ background: TINTA, color: ORO_CLARO }}>
+                <Icono nombre="dias" size={16} grosor={1.8} />
+                Pasar todos a otros días
+              </button>
+            </div>
+          )}
+          <ul data-hoy-pendientes-lista className="m-0 flex list-none flex-col divide-y p-0" style={{ borderColor: 'rgba(28,34,48,.08)' }}>
+            {pendientes.map((p) => (
+              <li key={`${p.dayId}-${p.stop.id}`} data-hoy-pendiente={p.motivo} data-hoy-pendiente-id={p.stop.id} className="flex items-center gap-3 px-4 py-3">
                 <span data-hoy-pendiente-foto className="flex flex-none">
-                  <ParadaFotoDeParada parada={p.stop} ciudad={day.city} dateIso={dateIso} vista marca={false} size={92} carga="eager" />
+                  <ParadaFotoDeParada parada={p.stop} ciudad={day.city} dateIso={dateIso} vista marca={false} size={56} carga="eager" />
                 </span>
-                <div className="flex min-w-0 flex-1 flex-col items-start gap-2">
-                  <p className="m-0 text-[24px] leading-[1.05] text-[#1C2230]" style={{ fontFamily: "'Instrument Serif',serif" }}>{displayStopName(p.stop.name)}</p>
-                  <span data-hoy-pendiente-pastilla className="flex h-7 items-center gap-1.5 rounded-full px-3 text-[12.5px] font-bold" style={{ background: '#F6F0E2', color: '#6E5018' }}>
-                    <Icono nombre={p.motivo === 'cerrada' ? 'reloj' : 'seguir'} size={13} grosor={1.9} />
+                <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
+                  <p className="m-0 w-full text-[20px] leading-[1.05] text-[#1C2230]" style={{ fontFamily: "'Instrument Serif',serif", display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{displayStopName(p.stop.name)}</p>
+                  <span data-hoy-pendiente-pastilla className="flex h-6 items-center gap-1.5 rounded-full px-2.5 text-[11.5px] font-bold" style={{ background: '#F6F0E2', color: '#6E5018' }}>
+                    <Icono nombre={p.motivo === 'cerrada' ? 'reloj' : 'seguir'} size={12} grosor={1.9} />
                     {p.texto}
                   </span>
                 </div>
-              </div>
-              <div data-hoy-pendiente-botones className="grid grid-cols-2 gap-2.5">
                 {diasPara(p).length > 0 && !p.stop.reservedId && (
-                  <button type="button" onClick={() => setPasando(p)} data-hoy-pendiente-pasar className={`${boton} ${p.motivo === 'cerrada' ? 'col-span-2' : ''}`} style={{ background: 'linear-gradient(180deg,#F8EBC4,#DDBE7C 50%,#B58A2E)', border: '1px solid #9A7228', color: '#3E2A0C' }}>
-                    <Icono nombre="dias" size={16} grosor={1.8} />
-                    Pasar a otro día
+                  <button type="button" onClick={() => setPasando(p)} data-hoy-pendiente-pasar className="flex h-11 flex-none items-center rounded-2xl px-3.5 text-[13px] font-bold" style={BOTON_ORO}>
+                    Otro día
                   </button>
                 )}
-                {p.motivo !== 'cerrada' && (
-                  <button type="button" onClick={() => recuperar(p)} data-hoy-pendiente-recuperar className={boton} style={blanco}>
-                    <Icono nombre="recuperar" size={16} grosor={1.8} />
-                    Recuperar hoy
-                  </button>
-                )}
-                <button type="button" onClick={() => setStopVisto(p.dayId, p.stop.id, true)} data-hoy-pendiente-visitado className={boton} style={blanco}>
-                  <Icono nombre="hecho" size={16} grosor={2} />
-                  Ya lo visité
+                <button type="button" onClick={() => setMenu(p)} aria-label="Más opciones" data-hoy-pendiente-mas className="flex h-11 w-11 flex-none items-center justify-center rounded-2xl text-[20px] font-bold" style={BOTON_CLARO}>
+                  ···
                 </button>
-                <button type="button" onClick={() => removeStop(p.dayId, p.stop.id)} data-hoy-pendiente-quitar className={boton} style={blanco}>
-                  <Icono nombre="cerrar" size={15} grosor={2} />
-                  Quitar
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {menu && (
+        <HojaV2 onCerrar={() => setMenu(null)} etiqueta={displayStopName(menu.stop.name)} fondo="#FBF3E2">
+          <div data-hoy-pendiente-menu className="flex flex-col gap-2.5">
+            <Titulo texto={displayStopName(menu.stop.name)} onCerrar={() => setMenu(null)} />
+            {menu.motivo !== 'cerrada' && (
+              <button type="button" onClick={() => { recuperar(menu); setMenu(null) }} data-hoy-pendiente-recuperar className="flex h-12 items-center justify-center gap-2 rounded-2xl text-[14px] font-bold" style={BOTON_CLARO}>
+                <Icono nombre="recuperar" size={16} grosor={1.8} />
+                Recuperar hoy
+              </button>
+            )}
+            <button type="button" onClick={() => { setStopVisto(menu.dayId, menu.stop.id, true); setMenu(null) }} data-hoy-pendiente-visitado className="flex h-12 items-center justify-center gap-2 rounded-2xl text-[14px] font-bold" style={BOTON_CLARO}>
+              <Icono nombre="hecho" size={16} grosor={2} />
+              Ya lo visité
+            </button>
+            <button type="button" onClick={() => { quitar(menu); setMenu(null) }} data-hoy-pendiente-quitar className="flex h-12 items-center justify-center gap-2 rounded-2xl text-[14px] font-bold" style={{ background: '#FFFDF8', border: '1px solid rgba(194,60,40,.4)', color: '#B3321F' }}>
+              <Icono nombre="cerrar" size={15} grosor={2} />
+              Quitar
+            </button>
+          </div>
+        </HojaV2>
+      )}
+      {resumen && (
+        <HojaV2 onCerrar={() => setResumen(false)} etiqueta="Pasar todos a otros días" fondo="#FBF3E2">
+          <div data-hoy-pendientes-resumen className="flex flex-col gap-3">
+            <Titulo texto="Pasar todos a otros días" onCerrar={() => setResumen(false)} />
+            <span className="text-[14.5px] font-medium leading-[1.4]">Cada sitio va al día donde mejor encaja.</span>
+            <div className="flex flex-col gap-2 rounded-[18px] p-3.5" style={{ background: 'rgba(181,138,46,.1)' }}>
+              {caben.map(({ p, mejor }) => (
+                <span key={p.stop.id} className="text-[14px] font-medium leading-[1.35]">{displayStopName(p.stop.name)} pasa al {mejor?.etiqueta}</span>
+              ))}
+              {noCaben.map(({ p }) => (
+                <span key={p.stop.id} className="text-[14px] leading-[1.35] text-[#1C2230]/65">{displayStopName(p.stop.name)} se queda en pendientes: no cabe en otro día</span>
+              ))}
+            </div>
+            {caben.length > 0 ? (
+              <button type="button" onClick={pasarTodos} data-hoy-pendientes-confirmar className="flex min-h-[50px] items-center justify-center rounded-2xl px-3 text-center text-[15px] font-bold" style={BOTON_ORO}>
+                {caben.length === 1 ? 'Pasarlo' : 'Pasarlos'} a su día
+              </button>
+            ) : (
+              <span className="text-[14px] font-medium">Ninguno cabe en otro día: se quedan aquí.</span>
+            )}
+            <button type="button" onClick={() => setResumen(false)} className="flex h-9 items-center justify-center text-[13px] font-semibold text-[#1C2230]/60">
+              Dejarlo como está
+            </button>
+          </div>
+        </HojaV2>
       )}
       {pasando && <HojaPasarAOtroDia dias={diasPara(pasando)} ahora={day.dayNumber} onElegir={(id) => pasar(pasando, id)} onCerrar={() => setPasando(null)} />}
     </div>

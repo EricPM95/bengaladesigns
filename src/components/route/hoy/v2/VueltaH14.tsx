@@ -8,9 +8,9 @@ import { Marca } from '../../../pase/Marca'
 import { Icono } from '../../../ui/Icono'
 import { CandadoRedondo } from '../../../pase/Candado'
 import type { MitadDeHoy } from '../llegadaVuelta'
+import { BOTON_ORO } from '../../../ui/botonesOro'
 
 const ORO_CLARO = '#F3D88F'
-const BOTON_ORO = { background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510', boxShadow: '0 10px 20px -14px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55)' }
 
 /** Lo que Lanzarote trae del motor en `planVuelta` (la hora del vuelo, la hora límite del coche en la T1, a qué hora se sale de la zona y a cuál se llega a la T1). */
 function datosDeCoche(route: Route, day: DayPlan): { hora: string | null; hasta: string | null; trayectoMin: number | null; limiteT1: string | null } {
