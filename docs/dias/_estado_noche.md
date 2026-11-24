@@ -1,13 +1,13 @@
-# Estado de la tanda v50
+# Estado de la tanda noche
 
-**Última actualización: 24/11/26, 22:44**
+**Última actualización: 24/11/26, 22:50**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-TERMINADA: pusheada 789fa6a4; build sin errores; produccion carga en iPhone (solo 403); sin pruebas por orden de Eric
+Empezando la noche: repaso de diseno, una sola forma, todas las pruebas, catalogo de avisos y checklist
 
 ## Qué falta
-nada
+todo
 
 ## Procesos abiertos ahora mismo
 - node: 2
