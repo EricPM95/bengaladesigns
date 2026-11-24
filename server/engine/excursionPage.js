@@ -66,7 +66,8 @@ export function excursionPagePayload(destKey, destData = null) {
         photo: photoOf(excursion, folder) ?? (op?.photo_url_big || op?.photo_url ? { url: op.photo_url_big ?? op.photo_url, credit: '' } : null),
         color: excursion.color ?? '#B4704A',
         percentage: Number.isFinite(excursion.porcentaje) ? excursion.porcentaje : null,
-        meeting_point: op?.meeting_point ?? excursion.punto_de_encuentro ?? null,
+        // (V49) SOLO el de la API de consulta: el `punto_de_encuentro` de `_excursiones.json` (p. ej. «Estación de Termini») no es un dato verificado y sus `coords` eran las del destino de la excursión. Nunca se enseña.
+        meeting_point: op?.meeting_point ?? null,
         coords: Array.isArray(excursion.coords) ? { lat: excursion.coords[0], lng: excursion.coords[1] } : null,
       }
     })

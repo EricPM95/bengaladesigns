@@ -150,6 +150,8 @@ export function CajaDia({ rotulo, grande, pequeno = false }: { rotulo: string; g
 
 /** La caja azul noche de la hora («HORA 09:15»). */
 export function CajaHora({ hora }: { hora: string }) {
+  // (V49) Nunca se enseña lo que el viajero no escribió: sin hora, la caja no sale.
+  if (!/^\d{1,2}:\d{2}$/.test(hora ?? '')) return null
   return (
     <div className="flex flex-none flex-col items-start justify-center gap-0.5 rounded-[16px] px-3.5 py-[9px]" style={{ background: '#1C2230' }} data-caja-hora>
       <span className="flex items-center gap-[5px]" style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.16em', color: '#F3D88F' }}>

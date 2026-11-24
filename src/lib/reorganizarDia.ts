@@ -99,6 +99,14 @@ export function sePuedeReorganizar(day: DayPlan): boolean {
   return day.stops.length >= 2 && !day.isReturnLeg && day.dayType !== 'excursion'
 }
 
+// (V49) EL BOTÓN NO VUELVE SOLO. Reorganizar mete en el día lo que el motor monta; el motor, con ese día ya puesto, puede dar otro orden distinto la vez siguiente (depende de lo que ya hay) y el botón volvía a salir una y otra vez.
+// Se apunta la «firma» del día tal como QUEDÓ al reorganizar; mientras el día siga con esa firma, no se vuelve a calcular. En cuanto el viajero cambia algo de verdad (añade, quita o mueve una parada, cambia una hora…),
+// la firma cambia y el botón puede volver a salir. (Deshacer también cambia el día: vuelve el botón.)
+const reorganizados = new Map<string, string>()
+const firmaDeUnDia = (day: DayPlan): string => JSON.stringify([day.stops.map((s) => [s.id, s.name, s.time, s.saltada ? 1 : 0]), day.meals.map((m) => [m.mealTime, m.time]), (day.spareStops ?? []).map((s) => s.name)])
+export const marcarDiaReorganizado = (day: DayPlan): void => void reorganizados.set(day.id, firmaDeUnDia(day))
+export const esDiaRecienReorganizado = (day: DayPlan | undefined): boolean => Boolean(day && reorganizados.get(day.id) === firmaDeUnDia(day))
+
 export interface CambioDeUnDia {
   dayId: string
   dayNumber: number
@@ -159,6 +167,11 @@ export async function reorganizarDias(dayIds: string[], { avisar = false }: { av
     const despues = useRouteStore.getState().route
     if (despues) useRouteStore.setState({ route: conUltimoCambio(antes, despues, { tipo: 'reorganizar', dia_n: primero.dayNumber, fecha: fechaDelDia(despues, primero.dayNumber), n: cambian.length }) })
   })
+  // (V49) El día queda como quedó: el botón no vuelve hasta que el viajero cambie algo de verdad.
+  for (const cambio of cambian) {
+    const queda = useRouteStore.getState().route?.days.find((other) => other.id === cambio.dayId)
+    if (queda) marcarDiaReorganizado(queda)
+  }
   useReorganizarStore.getState().iluminar(cambian.flatMap((cambio) => cambio.movidas))
   useReorganizarStore.getState().ponerNoCaben(cambian.flatMap((cambio) => cambio.noCaben ?? []))
   return cambian

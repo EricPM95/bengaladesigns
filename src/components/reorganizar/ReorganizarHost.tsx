@@ -2,7 +2,7 @@ import { useEffect, useId, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { pagoActivo, usePagoActivo } from '../../lib/pago'
 import { diasPuestosEnDuda } from '../../lib/diasEnDuda'
-import { diasQueCambian, reorganizarDias } from '../../lib/reorganizarDia'
+import { diasQueCambian, esDiaRecienReorganizado, reorganizarDias } from '../../lib/reorganizarDia'
 import { useRouteStore } from '../../store/useRouteStore'
 import { useReorganizarStore } from '../../store/useReorganizarStore'
 import { useResumenVueloStore } from '../../store/useResumenVueloStore'
@@ -71,7 +71,10 @@ export function ReorganizarHost(): ReactNode {
       const ids = [...pendientes]
       pendientes = new Set()
       if (ids.length === 0 || !pagoActivo()) return
-      const cambian = await diasQueCambian(ids)
+      // (V49) Un día que se acaba de reorganizar y no ha cambiado desde entonces no se vuelve a calcular: el botón no vuelve solo.
+      const dias = useRouteStore.getState().route?.days ?? []
+      const aCalcular = ids.filter((id) => !esDiaRecienReorganizado(dias.find((d) => d.id === id)))
+      const cambian = await diasQueCambian(aCalcular)
       useReorganizarStore.getState().poner(cambian.map((c) => c.dayId), ids)
     }
     const anular = useRouteStore.subscribe((estado, previo) => {

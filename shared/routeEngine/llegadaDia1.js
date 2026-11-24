@@ -174,6 +174,12 @@ export function aplicarOpsLlegada(trabajo, ops, dias = {}) {
     out.manana = quitarParadas(out.manana ?? [], ops.quitar)
     out.tarde = quitarParadas(out.tarde ?? [], ops.quitar)
   }
+  // (V49) Paradas que se añaden al FINAL de la tarde (detrás del Free Tour de la tarde, antes de la cena): las que aún no están.
+  if (ops.rellenar_tarde?.length) {
+    const hay = new Set([...(out.manana ?? []), ...(out.tarde ?? [])].map((s) => s.lugar))
+    out.tarde = [...(out.tarde ?? []), ...clone(ops.rellenar_tarde.filter((s) => !hay.has(s.lugar)))]
+    out.franjas.tarde = true
+  }
   if (ops.cena_y_noche_de) {
     const origen = dias[ops.cena_y_noche_de]?.partes?.unica
     if (origen) {
@@ -686,6 +692,15 @@ function decidirConFreeTour(x) {
     if (franjaDelFreeTour(hora) !== 'manana') {
       if (libre <= COMIDA_HASTA_MIN) opsTour.comida_al_llegar = { min: 60, titulo: 'Comida, cerca de tu alojamiento' }
       else opsTour.sin_comida = true
+    }
+    // (V49) Con el tour por la TARDE, la parte del tour (el tour, el Panteón y la noche) dejaba el día en 3 paradas con la tarde vacía. Se llena con lo del centro de la lista «D1-centro» de la zona (los sitios que aún no están y que no son
+    // caminos), detrás del tour y antes de la cena: el motor recorta lo que no cabe antes de la cena (los cortes de la tarde), así que nunca se pasa de hora. Con el tour por la mañana no hace falta: sigue la tarde del día.
+    if (franjaDelFreeTour(hora) !== 'manana') {
+      const centro = Object.values(dias).filter((d) => /^D1-centro-/.test(d?.id ?? '') && !/entera/.test(d.id))
+      const lista = centro.find((d) => d.inicio === x.inicioZona) ?? centro[0]
+      const yaEsta = new Set([...(dias[dia3]?.partes?.unica?.manana ?? []), ...(dias[dia3]?.partes?.unica?.tarde ?? [])].map((s) => s.lugar))
+      const relleno = (lista?.partes?.unica?.tarde ?? []).filter((s) => s.tipo === 'parada' && s.modo !== 'camino' && s.modo !== 'fuera' && !yaEsta.has(s.lugar)).slice(0, 5)
+      if (relleno.length > 0) opsTour.rellenar_tarde = relleno
     }
     conOps(dias, extraDays, dia3, opsTour)
     publico.pasa_al_dia_2 = true

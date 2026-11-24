@@ -27,7 +27,10 @@ export function enlaceComoLlegarPunto(punto: string | null | undefined, ciudad?:
 
 /** [Cómo llegar al punto de encuentro]: el botón azul noche con letra dorada del alojamiento (A2p). SIN pase: el candado pequeño de siempre. Sin punto de encuentro no sale. */
 export function BotonComoLlegarPuntoDeEncuentro({ punto, ciudad, className = '' }: { punto: string | null | undefined; ciudad?: string; className?: string }) {
-  const enlace = enlaceComoLlegarPunto(punto, ciudad)
+  // (V49) Fuera [Cómo llegar al punto de encuentro] de la tarjeta de la excursión: el punto no se verifica y el camino salía hacia las coordenadas del destino de la excursión.
+  if (punto === '__nunca__') return null
+  const enlace = null as string | null
+  void ciudad
   const pago = usePagoActivo()
   if (!enlace) return null
   if (!pago) return <Candado datos="como-llegar-punto-encuentro" titulo="Cómo llegar al punto de encuentro" texto="Con el {pase}, llegas al punto de encuentro de tu excursión en un toque." />

@@ -1,0 +1,18 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>REPASO V49</title><style>body{font:15px/1.5 system-ui,sans-serif;max-width:900px;margin:24px auto;padding:0 16px;color:#1C2230;background:#FBF6EA}h2{margin-top:28px;border-top:2px solid #C9A24A;padding-top:10px}figure{margin:10px 14px 10px 0;display:inline-block;vertical-align:top;max-width:280px}figure img{width:100%;border:1px solid #d8cfb8;border-radius:10px}figcaption{font-size:12.5px;color:#6a6657}li{margin:4px 0}</style>
+<h1>V49 · El día de llegada al reorganizar y la excursión en otro día</h1>
+<p>Capturas en modo iPhone. Sin pruebas (tanda de pruebas esta noche): solo <code>npm run build</code> y estas capturas. Detalle en <code>docs/dias/DECISIONES_V49.md</code>.</p>
+<h2>1 · El día de llegada al reorganizar</h2>
+<p><b>Reproducido:</b> con el Free Tour por la tarde, el motor dejaba el día en el tour, el Panteón y la noche (3 paradas). Ahora, detrás del tour, se añaden los sitios del centro y queda en <b>7</b> (con la comida antes del tour y la cena). [Reorganizar] se va a la primera y solo vuelve si el viajero cambia algo.</p>
+<figure><img src="V49_capturas/v49_dia1_antes.jpg" alt=""><figcaption>Día 1 antes (13 paradas desde la mañana).</figcaption></figure>
+<figure><img src="V49_capturas/v49_dia1_despues.jpg" alt=""><figcaption>Día 1 después de [Reorganizar] (7 paradas).</figcaption></figure>
+<h2>2 · La excursión en otro día</h2>
+<figure><img src="V49_capturas/v49_excursion_hoja.jpg" alt=""><figcaption>Salen todos los días completos (jue 26, vie 27, sáb 28 «En tu ruta») y el texto de día entero.</figcaption></figure>
+<figure><img src="V49_capturas/v49_aviso_e1.jpg" alt=""><figcaption>El aviso E1 con fechas: el día elegido arriba y los demás con «Antes, el …».</figcaption></figure>
+<figure><img src="V49_capturas/v49_tras_guardar.jpg" alt=""><figcaption>Tras [De acuerdo]: un solo día de excursión, y el aviso de abajo con [Deshacer].</figcaption></figure>
+<h2>3 · Solo datos verdaderos</h2>
+<p>«Estación de Termini» (y cualquier punto del archivo de datos) ya no se enseña: solo el que traiga la API de Civitatis o el que escriba el viajero. Fuera [Cómo llegar al punto de encuentro]. La hora gris de ejemplo (07:00) ya no se guarda: el ✓ de la rueda no guarda un ejemplo sin tocar, y la hora de recogida de una excursión es opcional (sin ella, la tarjeta no la enseña).</p>
+<h2>Tu lista de comprobación</h2>
+<ol><li>Viaje del 1 al 5 de diciembre con Free Tour y vuelo 11:15: [Reorganizar] deja el día 1 lleno hasta la cena, y el botón no vuelve.</li><li>Excursión en la ruta el sábado 28: la hoja ofrece jueves, viernes y sábado («En tu ruta»).</li><li>Guardarla el viernes: el aviso con fechas, y después un solo día de excursión.</li><li>La tarjeta de la excursión: sin «Estación de Termini», sin [Cómo llegar al punto de encuentro], sin hora si no la escribiste.</li><li>Una entrada en otro día: el mismo aviso, con fechas (no visto en pantalla).</li></ol>
+<h2>No he podido comprobar</h2>
+<p>Ninguna prueba. No he visto en pantalla el aviso E1 de una entrada (mismo componente) ni el [Deshacer] de las entradas (no añadido). No he revisado ficha a ficha todas las excursiones de Roma y Lanzarote.</p>
+</html>

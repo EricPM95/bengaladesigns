@@ -3,12 +3,14 @@ import { createPortal } from 'react-dom'
 import { conDe, sitioConArticulo } from '../../../../shared/avisos/textos.js'
 import type { Excursion, Route } from '../../../lib/types'
 import { repartirEnFilas } from '../../../lib/repartirEnFilas'
-import { dateOfDay, dayLineOf, dayOfReservation, dayOnDate, fechaDeLista, isDayPinned, shortDateEs, type Reservation } from '../../../lib/bookings'
+import type { DayPlan } from '../../../lib/types'
+import { dateOfDay, dayLineOf, dayOnDate, fechaDeLista, isDayPinned, shortDateEs, type Reservation } from '../../../lib/bookings'
 import { alDia, ElDia, elDia } from '../../../lib/nombreDeDia'
 import { reservasParaMotor } from '../../../lib/engineReservas'
 import { excursionTargetDays } from '../../../lib/excursionOffer'
 import { useRouteStore } from '../../../store/useRouteStore'
-import { removeReservationWithUndo } from '../../../store/useAddFlowStore'
+import { removeReservationWithUndo, withUndo } from '../../../store/useAddFlowStore'
+import { conMayuscula, fechaCorta, movimientoDeExcursion, type FilaDeCambio } from '../../../lib/excursionMove'
 import { useNoticesStore } from '../../../store/useNoticesStore'
 import { DateField } from '../../ui/DateField'
 import { TimeField } from '../../ui/TimeField'
@@ -89,6 +91,10 @@ interface ReservationPlan {
   motivos: string[]
   sinMover: { motivo: string } | null
   cambios: { dayNumber: number; de: string | null; a: string | null }[]
+  /** (V49) El orden de los días antes y después, y el sitio que manda (el servidor ya los manda): con ellos se escribe el aviso de los días que cambian. */
+  antes?: { dayNumber: number; curatedId?: string | null; name?: string | null }[]
+  despues?: { dayNumber: number; curatedId?: string | null; name?: string | null }[]
+  principal?: { sitio: string; dayNumber: number; dateIso: string | null } | null
 }
 
 type Tab = 'email' | 'file' | 'manual'
@@ -247,7 +253,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const resolvedDay = hasDates ? (fields.dateIso ? dayOnDate(route, fields.dateIso) : null) : (days.find((day) => String(day.dayNumber) === fields.dayNumber) ?? null)
   const outside = hasDates && Boolean(fields.dateIso) && !resolvedDay
   const validTime = /^\d{1,2}:\d{2}$/.test(fields.time)
-  const ready = Boolean(resolvedDay && validTime)
+  // (V49) La hora de recogida de una excursión es opcional: sin hora, la tarjeta no la enseña (nunca se guarda una que el viajero no escribió).
+  const ready = Boolean(resolvedDay && (validTime || isExcursion))
   const bigPlace = target.placeNames.find((name) => sitiosGrandes.includes(name)) ?? null
   const isFreeTour = target.refId === 'Free Tour'
   // El sitio cuyas horas de entrada se piden al servidor: el grande, o el primero que cubre la entrada (el Free Tour no tiene: sus cinco horas son fijas).
@@ -267,7 +274,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   // Los días en que ese sitio está cerrado (con los horarios de los datos): la ficha sale apagada con «Cerrado». Sin fechas no se sabe qué día de la semana es: ninguno.
   const [closedIsos, setClosedIsos] = useState<Set<string>>(() => new Set())
   const tripIsos = useMemo(() => (hasDates ? days.map((day) => dateOfDay(route, day)).filter((iso): iso is string => Boolean(iso)) : []), [days, hasDates, route])
-  const chipDays = isExcursion ? excursionTargetDays(route).filter((day) => !isDayPinned(route, reservations, day) || existing?.id === reservations.find((item) => item.kind === 'excursion' && dayOfReservation(route, item)?.id === day.id)?.id) : days
+  // (V49) Excursión: TODOS los días completos del viaje (no el de llegada ni el de vuelta), con el de la ruta marcado «En tu ruta»; solo se quita uno que ya tiene OTRA excursión reservada.
+  const chipDays = isExcursion ? excursionTargetDays(route).filter((day) => day.id === target.currentDayId || !isDayPinned(route, reservations.filter((item) => item.id !== existing?.id && item.refId !== target.refId), day)) : days
   const closedKey = hoursPlace && tripIsos.length > 0 ? `${hoursPlace}|${tripIsos.join(',')}` : null
   useEffect(() => {
     if (!closedKey || !hoursPlace) {
@@ -510,6 +518,9 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   }
 
   /** Guardar: la hora que elige el viajero se queda, siempre (Tanda 6v: la app nunca propone otra hora; el día usa la lista escrita de esa hora y, si no la hay, manda la reserva, sin preguntar). Antes, la hoja que explica qué día se mueve; si no se puede mover, la reserva se guarda en su día con un aviso (y en la campana). */
+  // (V49) La excursión guardada en otro día MUEVE el día de excursión a ese día (aviso E1 con los días que cambian).
+  const movExc = isExcursion && resolvedDay && !esInvitado ? movimientoDeExcursion(route, resolvedDay.id, (otro) => isDayPinned(route, reservations.filter((item) => item.id !== existing?.id && item.refId !== target.refId), otro)) : null
+  const nombreDeLaExcursion = (target.excursion?.title ?? target.name).replace(/^Excursión (a la|a los|a las|al|a)\s+/i, 'excursión a ').replace(/^(?!excursión)/i, 'excursión: ')
   const save = (stage: 'inicio' | 'mover' = 'inicio') => {
     if (!resolvedDay || !ready) return
     // Tanda 10N §8: la entrada de quien está en el viaje de otra persona es SUYA: va a su lista, no toca la ruta del dueño ni sus reservas.
@@ -519,6 +530,10 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
       useMisReservas.getState().anadir(propia)
       guardarBilleteDeEntrada()
       onClose()
+      return
+    }
+    if (movExc && stage !== 'mover') {
+      setConfirming(true)
       return
     }
     const blocked = plan?.cambia ? blockedDay() : null
@@ -555,7 +570,9 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     const sitioDeLaParada = (stop: { name: string; isFreeTour?: boolean }) => (reservation.refId === FREE_TOUR_REF ? Boolean(stop.isFreeTour) : reservation.placeNames.includes(stop.name))
     const diaAntes = !llevarA && reservation.kind === 'entrada' && !esLibre ? (useRouteStore.getState().route?.days.find((day) => day.stops.some(sitioDeLaParada))?.id ?? null) : null
     try {
-      addReservation(reservation, target.excursion ?? null, freeTourEntry)
+      // (V49) Con el día de excursión movido, el aviso de abajo con [Deshacer].
+      if (movExc) withUndo(`Tu ${nombreDeLaExcursion}, el ${fechaCorta(dateOfDay(route, resolvedDay), resolvedDay.dayNumber)}`, () => addReservation(reservation, target.excursion ?? null, freeTourEntry))
+      else addReservation(reservation, target.excursion ?? null, freeTourEntry)
     } catch (error) {
       // Si algo falla al moverla, la reserva se guarda en su día, sale un aviso y la app sigue.
       console.error('[AddReservationSheet] no se pudo mover', error)
@@ -638,6 +655,10 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               <h2 id="add-reservation-heading" className={soloDatos ? "mt-1.5 font-display text-[30px] leading-none text-text" : "mt-1.5 font-display text-[24px] leading-[1.05] text-text"} data-hoja-titulo={soloDatos ? "datos-entrada" : undefined}>
                 {soloDatos ? "Datos de la entrada" : target.name}
               </h2>
+              {/* (V49) Las de día entero: solo caben en un día completo del viaje. */}
+              {isExcursion && !soloDatos && target.excursion && !/medio/i.test(target.excursion.durationLabel ?? "") && (target.excursion.durationHours ?? 8) > 5 && (
+                <p data-excursion-dia-entero className="mt-1.5 text-[13.5px] leading-[1.35] text-text/65">Es una excursión de día entero: solo se puede hacer un día completo del viaje.</p>
+              )}
               {igual && (
                 <p className="mt-2 text-[13.5px] leading-snug text-text/70" data-igual-que>
                   {igual.quien || 'El dueño'} {/ y |,/.test(igual.quien) ? 'van' : 'va'} el {diaDeLaReservaEnPalabras(route, igual.reserva)} a las {horaCorta(igual.reserva.time)}.{' '}
@@ -1058,20 +1079,57 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
           </div>
         )}
       </div>
-      {confirming && plan?.cambia && (
-        <div className="absolute inset-0 z-[5] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="move-day-heading">
-          <div className="absolute inset-0 bg-text/25" onClick={() => setConfirming(false)} />
-          <div className="trazo-notice-panel relative w-full rounded-t-[28px] bg-bg-card px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[440px] md:rounded-[28px]">
-            <h2 id="move-day-heading" className="font-display text-[22px] leading-[1.2] text-text">
-              {plan.mensaje}
-            </h2>
-            {plan.motivos.length > 0 && <p className="mt-3 text-[14.5px] leading-snug text-text-soft">{plan.motivos.join(' ')}</p>}
-            <button type="button" onClick={() => save('mover')} className="mt-5 h-12 w-full rounded-full btn-champan text-[15px] font-medium transition-transform active:scale-[.98]">
-              De acuerdo
-            </button>
+      {confirming && (movExc || plan?.cambia) && (() => {
+        // (V49; Design «Entrada Cambio Dias», E1) «Tu Coliseo, el jueves 26. Para que encaje, cambiamos estos días:» y una fila por día (sin pulsar): el elegido arriba con borde dorado; los demás con «Antes, el …». Siempre fechas, nunca «día 3».
+        const filas: FilaDeCambio[] = movExc
+          ? movExc.filas
+          : (() => {
+              const antes = plan?.antes ?? []
+              const despues = plan?.despues ?? []
+              const fechaDe = (n: number) => dateOfDay(route, { dayNumber: n } as DayPlan)
+              return despues
+                .map((entry, i) => ({ entry, i }))
+                .filter(({ entry, i }) => entry.curatedId !== antes[i]?.curatedId)
+                .map(({ entry }) => {
+                  const principal = entry.dayNumber === plan?.principal?.dayNumber
+                  const previo = antes.find((a) => a.curatedId === entry.curatedId)?.dayNumber ?? null
+                  return { dayNumber: entry.dayNumber, fechaIso: fechaDe(entry.dayNumber), nombre: String(entry.name ?? '').replace(/^D[ií]a /i, '') || `Día ${entry.dayNumber}`, antesIso: principal || previo == null ? null : fechaDe(previo), antesNumero: principal ? null : previo, principal }
+                })
+                .sort((a, b) => Number(b.principal) - Number(a.principal) || a.dayNumber - b.dayNumber)
+            })()
+        const principal = filas.find((fila) => fila.principal)
+        const dondeCae = principal ? fechaCorta(principal.fechaIso, principal.dayNumber) : fechaCorta(dateOfDay(route, resolvedDay ?? ({ dayNumber: 1 } as DayPlan)), resolvedDay?.dayNumber ?? 1)
+        const titulo = movExc ? `Tu ${nombreDeLaExcursion}, el ${dondeCae}.` : `Tu ${plan?.principal?.sitio ?? target.name}, el ${dondeCae}.`
+        return (
+          <div className="absolute inset-0 z-[5] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="move-day-heading">
+            <div className="absolute inset-0 bg-text/25" onClick={() => setConfirming(false)} />
+            <div data-aviso-dias-cambian className="trazo-notice-panel relative w-full rounded-t-[28px] bg-bg-card px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[440px] md:rounded-[28px]">
+              <h2 id="move-day-heading" className="font-display text-[24px] leading-[1.15] text-text">
+                {titulo} Para que encaje, cambiamos estos días:
+              </h2>
+              <div className="mt-4 flex flex-col gap-2">
+                {filas.map((fila) => (
+                  <div key={fila.dayNumber} data-dia-que-cambia={fila.principal ? 'elegido' : 'otro'} className="flex items-start gap-3 rounded-[14px] px-3 py-2.5" style={fila.principal ? { background: '#F9EFD3', border: '1px solid #D9B65F' } : { background: '#F6F0E2', border: '1px solid rgba(28,34,48,.08)' }}>
+                    <span className="flex h-9 w-9 flex-none items-center justify-center rounded-[11px]" style={{ background: fila.principal ? '#F1DFA8' : '#fff', color: '#7A5A18' }}>
+                      <Icono nombre="dias" size={17} grosor={1.8} />
+                    </span>
+                    <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                      <span className="text-[14px] leading-[1.3] text-text">
+                        <b className="font-bold">{conMayuscula(fechaCorta(fila.fechaIso, fila.dayNumber))}</b> · <span className="font-semibold">{fila.nombre}</span>
+                      </span>
+                      {!fila.principal && fila.antesNumero != null && <span className="text-[12.5px] text-text/55">Antes, el {fechaCorta(fila.antesIso, fila.antesNumero)}</span>}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              {!movExc && plan && plan.motivos.length > 0 && <p className="mt-3 text-[13px] leading-snug text-text-soft">{plan.motivos.join(' ')}</p>}
+              <button type="button" onClick={() => save('mover')} data-aviso-de-acuerdo className="mt-5 h-12 w-full rounded-full btn-champan text-[15px] font-medium transition-transform active:scale-[.98]">
+                De acuerdo
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )
+      })()}
     </div>,
     document.body,
   )

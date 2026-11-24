@@ -1,3 +1,4 @@
+import { movimientoDeExcursion, rutaConElMovimiento } from '../lib/excursionMove'
 import { create } from 'zustand'
 import { diaPasado, ordenRespetaLosPasados } from '../lib/diasPasados'
 import { dayCountryCode } from '../lib/flagColors'
@@ -1080,7 +1081,19 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     // (El día 4 lleva su interruptor: la excursión reservada se queda elegida en su página, sin cambiar el día por otro.)
     if (day?.interruptor && excursion) set({ route: withExcursionOnSwitchDay(route, day.id, excursion) })
     // (En una ruta a mano, la excursión reservada solo entra en un día en blanco: nunca borra las paradas del viajero.)
-    else if (day && excursion && !(isManualRoute(route) && !isEmptyDay(day))) get().placeExcursion(excursion, { dayId: day.id })
+    else if (day && excursion && !(isManualRoute(route) && !isEmptyDay(day))) {
+      // (V49) La excursión de la ruta guardada en OTRO día: el día de excursión se MUEVE a ese día y los demás se recolocan (como una entrada grande en otra fecha); nunca quedan dos días de excursión.
+      const mov = movimientoDeExcursion(route, day.id, (otro) => isDayPinned(route, get().reservations.filter((r) => r.id !== reservation.id), otro))
+      if (mov) {
+        const movida = reapplyReservations(rutaConElMovimiento(route, mov), get().reservations)
+        const dia = movida.days.find((d) => d.id === mov.diaDeExcursionId)
+        if (dia?.interruptor) set({ route: withExcursionOnSwitchDay(movida, dia.id, excursion) })
+        else {
+          set({ route: movida })
+          get().placeExcursion(excursion, { dayId: mov.diaDeExcursionId })
+        }
+      } else get().placeExcursion(excursion, { dayId: day.id })
+    }
   },
   removeReservation: (id) => {
     const removed = get().reservations.find((reservation) => reservation.id === id)

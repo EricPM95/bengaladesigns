@@ -50,8 +50,9 @@ export function HojaDeHora({
   const guardar = (conTick = false) => {
     if (cierre.current) return
     cierre.current = true
-    // (10S9) El ✓ guarda lo que se ve en la rueda, esté o no movida. Vacía y sin tocar la rueda, tocar fuera (que no es elegir) no inventa una hora.
-    if (conTick || valida || tocada.current) onElegir(elegidaRef.current)
+    // (V49) Nunca se guarda lo que el viajero no escribe: vacía y sin tocar la rueda, ni el ✓ ni tocar fuera inventan una hora (la hora de ejemplo, en gris, no cuenta). Con una hora ya puesta, o tocada la rueda, se guarda lo que se ve.
+    void conTick
+    if (valida || tocada.current) onElegir(elegidaRef.current)
     onCerrar()
   }
   const quitar = () => {
