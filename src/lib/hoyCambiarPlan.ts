@@ -284,7 +284,7 @@ export interface Propuesta {
   /** (V43 §1) Las líneas del bloque de resumen (icono + texto): solo las que vienen al caso. Sin ellas, salen de «cambia» y «mantiene». */
   resumen?: { icono: 'mover' | 'quitar' | 'ok' | 'reloj' | 'mas'; texto: string; /** Una frase pequeña debajo (lo que antes era el «detalle»). */ sub?: string }[]
   /** (V43 §2) Entradas o reservas de hoy cuya hora YA pasó: no se protegen (las ve la hoja para decirlo). */
-  entradasPasadas?: { nombre: string; hora: string }[]
+  entradasPasadas?: { nombre: string; hora: string; freeTour?: boolean }[]
   /** Para la prueba y la nota interna (nunca se enseñan): lo que se quita (con su clase), lo que se corre y a dónde va cada cosa. */
   quitadas: { id: string; nombre: string; clase: Clase; destino: 'sobra' | 'manana' | 'manana_sobra' | 'otro'; /** (V43) Si pasa a otro día: ese día («viernes 27»). */ aDia?: string }[]
   corridas: number
@@ -472,7 +472,7 @@ export function mejorDiaPara(p: { route: Route; day: DayPlan; stop: Stop; ctx: C
 
 export interface YaNoDaTiempo {
   /** Si había una entrada o reserva que ya pasó. */
-  entrada: { nombre: string; hora: string } | null
+  entrada: { nombre: string; hora: string; /** (V48) Un free tour no tiene «entrada»: «Tu Free Tour por Roma de las 10:00 ya ha pasado». */ freeTour?: boolean } | null
 }
 
 /**
@@ -486,11 +486,13 @@ export function yaNoDaTiempo(p: { day: DayPlan; ahoraMin: number; ctx: Contexto;
   const siguiente = pendientes[0]
   const t = minDe(siguiente.time)
   const retrasoGrande = t != null && ahoraMin - t > 60
-  const mananaPasada = p.vistas === 0 && ahoraMin >= 13 * 60 && pendientes.some((s) => (minDe(s.time) ?? 24 * 60) < 13 * 60)
+  // (V48) Al abrir HOY cuando han pasado 1 h 30 desde la hora PREVISTA de la primera parada del día y no se ha hecho ninguna (antes: «después de las 13:00», que salía el día de llegada antes de empezar).
+  const primeraDelDia = minDe(delDia(day)[0]?.time)
+  const mananaPasada = p.vistas === 0 && primeraDelDia != null && ahoraMin - primeraDelDia > 90
   if (!retrasoGrande && !mananaPasada) return null
   const fijas = ctx.fijasDe(day)
   const e = pendientes.find((s) => claseDe(s, fijas, ctx.datos) === 'fija' && (ctx.horaFijaMin?.(s) ?? minDe(s.time) ?? 24 * 60) < ahoraMin)
-  return { entrada: e ? { nombre: nombre(e), hora: aHora((ctx.horaFijaMin?.(e) ?? minDe(e.time)) as number, false) } : null }
+  return { entrada: e ? { nombre: nombre(e), hora: aHora((ctx.horaFijaMin?.(e) ?? minDe(e.time)) as number, false), freeTour: Boolean(e.isFreeTour) } : null }
 }
 
 /** «Pasar lo que falta a otro día» (V43 §2): cada parada pendiente que no es fija, al mejor día donde quepa; lo que no cabe en ninguno se queda en «Lugares pendientes» (no se pierde). Una sola propuesta. */
@@ -569,7 +571,7 @@ export function proponerRetraso(p: { route: Route; day: DayPlan; paradaId: strin
   // (V43 §1) NUNCA se protege una entrada o reserva cuya hora ya pasó: no cuenta para el reloj del día (se avisa en la hoja).
   const horaDe = (s: Stop) => ctx.horaFijaMin?.(s) ?? minDe(s.time)
   const esPasada = (s: Stop) => p.ahoraMin != null && claseDe(s, fijas, ctx.datos) === 'fija' && (horaDe(s) ?? 24 * 60) < p.ahoraMin
-  const pasadas = orden.slice(i).filter((s) => !s.saltada && !s.checkedInAt && esPasada(s)).map((s) => ({ nombre: nombre(s), hora: aHora(horaDe(s) as number, false) }))
+  const pasadas = orden.slice(i).filter((s) => !s.saltada && !s.checkedInAt && esPasada(s)).map((s) => ({ nombre: nombre(s), hora: aHora(horaDe(s) as number, false), freeTour: Boolean(s.isFreeTour) }))
   const restantes = orden.slice(i + 1).filter((s) => !s.saltada && !s.checkedInAt && !esPasada(s))
   const items = itemsDe(restantes, fijas, ctx.datos)
   if (items.length === 0) return []

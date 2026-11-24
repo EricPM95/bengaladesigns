@@ -3,7 +3,7 @@ import type { Coordinates, DayPlan, Route } from '../../../../lib/types'
 import { useDatosDeHorario } from '../../../../lib/horarioDeParada'
 import { numberedStopsOf } from '../../../../lib/stopKind'
 import { aplicarPropuesta, volverALaRutaOriginal } from '../../../../lib/hoyCambiarPlanAplicar'
-import { aHora, type Propuesta } from '../../../../lib/hoyCambiarPlan'
+import { aHora, mejorDiaPara, proponerPasarADia, type Propuesta } from '../../../../lib/hoyCambiarPlan'
 import { paradasJustasDeHoy, parrafoDeHoy, proponerAdelantar, quienLlegaTarde, textoDelAviso, ventanaDeHorario, type VentanaDeHorario } from '../../../../lib/hoyHorarios'
 import { useRouteStore } from '../../../../store/useRouteStore'
 import { Icono } from '../../../ui/Icono'
@@ -67,7 +67,13 @@ export function AvisoDeHorarioEnDirecto({ route, day, dateIso, ubicacion, enCoch
   if (!tarde) return null
   const { titulo, hora } = textoDelAviso(tarde)
   const ver = () => {
-    setPropuestas(proponerAdelantar({ day, tarde, ctx, ahoraMin, ubicacion, ventanas }))
+    // (V48) Si ya no se puede entrar hoy, la solución es pasarlo al mejor otro día (no adelantarlo): una sola propuesta con su botón «Pasarlo al …».
+    if (tarde.ya) {
+      const mejor = mejorDiaPara({ route, day, stop: tarde.v.stop, ctx })
+      setPropuestas(mejor ? proponerPasarADia({ route, day, stop: tarde.v.stop, destinoId: mejor.dia.id, ctx }).propuestas : [])
+    } else {
+      setPropuestas(proponerAdelantar({ day, tarde, ctx, ahoraMin, ubicacion, ventanas }))
+    }
     setIndice(0)
     setAbierta(true)
   }
@@ -83,7 +89,7 @@ export function AvisoDeHorarioEnDirecto({ route, day, dateIso, ubicacion, enCoch
               </svg>
               <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <span data-hoy-horario-vivo-texto className="text-[13px] font-medium leading-[1.35]">{titulo}</span>
-                <span data-hoy-horario-vivo-hora className="text-[12px] leading-[1.3]" style={{ color: 'rgba(138,79,8,.8)' }}>{hora}</span>
+                {hora && <span data-hoy-horario-vivo-hora className="text-[12px] leading-[1.3]" style={{ color: 'rgba(138,79,8,.8)' }}>{hora}</span>}
               </span>
               <span className="-my-2 flex flex-none"><CruzDeAviso onClick={cerrar} /></span>
             </div>

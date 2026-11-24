@@ -173,7 +173,7 @@ export function HojaPropuesta({ titulo, propuestas, indice, onOtra, onAplicar, o
             <span data-propuesta-intro className="text-[14.5px] font-medium leading-[1.4]">{p.intro}</span>
             {p.entradasPasadas && p.entradasPasadas.length > 0 && (
               <span data-propuesta-entrada-pasada className="text-[13.5px] leading-[1.4] text-[#1C2230]/70">
-                {p.entradasPasadas.map((e) => `Tu entrada de las ${e.hora} en ${e.nombre} ya ha pasado.`).join(' ')}
+                {p.entradasPasadas.map((e) => (e.freeTour ? `Tu ${e.nombre} de las ${e.hora} ya ha pasado.` : `Tu entrada de las ${e.hora} en ${e.nombre} ya ha pasado.`)).join(' ')}
               </span>
             )}
             <ResumenDeCambios p={p} />

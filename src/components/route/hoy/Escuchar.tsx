@@ -18,7 +18,7 @@ import { useAudioDeHistoria } from '../../../lib/escucharAudio'
  * `barra` (Tanda 6y4, diseño «Ficha Lugar»): la barra oscura fija de abajo de la ficha, «Escuchar historia» (Tanda 6y5: lee la historia, no el Resumen), con el botón redondo ámbar de play/pausa, lo que se lleva leído y [Parar]; `abajo`
  * sube la barra cuando la ficha lleva un botón fijo debajo («Añadir a Día 2»).
  */
-export function Escuchar({ texto, clave, oscuro = false, barra = false, abajo = false, etiqueta: nombreBoton = 'Escuchar', libre = false, sitio, destino }: { texto: string; clave: string; oscuro?: boolean; barra?: boolean; abajo?: boolean; etiqueta?: string; libre?: boolean; sitio?: { destino: string; nombre: string }; destino?: string }) {
+export function Escuchar({ texto, clave, oscuro = false, barra = false, abajo = false, enFlujo = false, etiqueta: nombreBoton = 'Escuchar', libre = false, sitio, destino }: { texto: string; clave: string; oscuro?: boolean; barra?: boolean; abajo?: boolean; /** (V48) La barra va EN el flujo, encima del botón fijo de abajo, en lugar de flotar sobre él: nunca lo tapa. */ enFlujo?: boolean; etiqueta?: string; libre?: boolean; sitio?: { destino: string; nombre: string }; destino?: string }) {
   // `sitio` (solo la historia): si ese sitio tiene su audio guardado, suena ese; si no, la voz del aparato. Lo decide useEscuchar.
   const audio = useAudioDeHistoria(sitio)
   const { hayVoz, estado, progreso, escuchar, pausar, seguir, parar } = useEscuchar(texto, clave, audio)
@@ -46,7 +46,7 @@ export function Escuchar({ texto, clave, oscuro = false, barra = false, abajo = 
   }
   if (!permitido && barra) {
     return (
-      <div data-escuchar="candado" data-escuchar-barra className={`pointer-events-auto absolute inset-x-3 z-[6] ${abajo ? 'bottom-[76px]' : 'bottom-[max(1rem,env(safe-area-inset-bottom))]'}`}>
+      <div data-escuchar="candado" data-escuchar-barra className={`pointer-events-auto z-[6] ${enFlujo ? 'relative mx-3 mb-2 shrink-0' : `absolute inset-x-3 ${abajo ? 'bottom-[76px]' : 'bottom-[max(1rem,env(safe-area-inset-bottom))]'}`}`}>
         <button
           type="button"
           onClick={alTocarCerrado}
@@ -104,7 +104,7 @@ export function Escuchar({ texto, clave, oscuro = false, barra = false, abajo = 
       <div
         data-escuchar={estado}
         data-escuchar-barra
-        className={`pointer-events-auto absolute inset-x-3 z-[6] flex h-[64px] items-center gap-3.5 rounded-[22px] bg-[#1C2230] pl-2 pr-3 text-[#FFFDF8] shadow-[0_16px_30px_-14px_rgba(28,34,48,.7)] ${abajo ? 'bottom-[76px]' : 'bottom-[max(1rem,env(safe-area-inset-bottom))]'}`}
+        className={`pointer-events-auto z-[6] flex h-[64px] items-center gap-3.5 rounded-[22px] bg-[#1C2230] pl-2 pr-3 text-[#FFFDF8] shadow-[0_16px_30px_-14px_rgba(28,34,48,.7)] ${enFlujo ? 'relative mx-3 mb-2 shrink-0' : `absolute inset-x-3 ${abajo ? 'bottom-[76px]' : 'bottom-[max(1rem,env(safe-area-inset-bottom))]'}`}`}
       >
         <button type="button" onClick={alPulsar} aria-label={etiqueta} className="flex h-[46px] w-[46px] flex-none items-center justify-center rounded-full text-[#17120a]" style={{ background: 'oklch(0.8 0.14 70)' }}>
           <Icono nombre={estado === 'hablando' ? 'pausa' : 'seguir'} size={estado === 'hablando' ? 18 : 17} grosor={estado === 'hablando' ? 2.4 : 2} relleno={estado !== 'hablando'} />

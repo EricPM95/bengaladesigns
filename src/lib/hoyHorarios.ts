@@ -142,6 +142,8 @@ export interface LlegadaTarde {
   cierra: number
   /** 'cerrado': llegarías cuando ya no se puede entrar; 'justo': llegarías a menos de 20 min de la última entrada. */
   tipo: 'cerrado' | 'justo'
+  /** (V48) Ya es la hora de la última entrada (o más tarde): hoy no se puede entrar; el aviso lo dice así y la solución es pasarlo a otro día. */
+  ya?: boolean
 }
 
 /** ¿A qué visita por dentro llegarías tarde a tu ritmo (desde donde estás y a la hora de ahora)? La primera por orden; null si a todas llegas bien o se ven por fuera. */
@@ -167,12 +169,12 @@ export function quienLlegaTarde(p: { day: DayPlan; ctx: Contexto; ahoraMin: numb
     const k2 = v.tramos.findIndex((t) => llegada >= t.abre && llegada <= t.cierra)
     if (k2 < 0) {
       // Después del último cierre: llegarías con todo cerrado. Antes de un tramo (la pausa de mediodía): esperarías, sin más.
-      if (llegada > ultimoTramo.cierra) return { v, llegada, prevista: it.t, limite: limiteFinal, cierra: ultimoTramo.cierra, tipo: 'cerrado' }
+      if (llegada > ultimoTramo.cierra) return { v, llegada, prevista: it.t, limite: limiteFinal, cierra: ultimoTramo.cierra, tipo: 'cerrado', ya: p.ahoraMin >= limiteFinal }
       continue
     }
     const limite = limiteDeEntrada(v, llegada)!
     const cierra = v.tramos[k2].cierra
-    if (k2 === v.tramos.length - 1 && v.ultimaEntrada != null && llegada > v.ultimaEntrada) return { v, llegada, prevista: it.t, limite: v.ultimaEntrada, cierra, tipo: 'cerrado' }
+    if (k2 === v.tramos.length - 1 && v.ultimaEntrada != null && llegada > v.ultimaEntrada) return { v, llegada, prevista: it.t, limite: v.ultimaEntrada, cierra, tipo: 'cerrado', ya: p.ahoraMin >= v.ultimaEntrada }
     if (limite - llegada < JUSTO_EN_DIRECTO_MIN) return { v, llegada, prevista: it.t, limite, cierra, tipo: 'justo' }
   }
   return null
@@ -183,6 +185,11 @@ export const conA = (nombre: string): string => nombre.replace(/^el /, 'al ').re
 
 /** El aviso de arriba (con la hora de cierre a la vista; nunca «a esta hora»). */
 export function textoDelAviso(t: LlegadaTarde): { titulo: string; hora: string } {
+  // (V48) Con la última entrada (o el cierre) ya pasada: «Hoy ya no puedes entrar a los Museos Vaticanos: la última entrada era a las 18:00».
+  if (t.tipo === 'cerrado' && t.ya) {
+    const porUltimaEntrada = t.v.ultimaEntrada != null && t.limite === t.v.ultimaEntrada && t.v.ultimaEntrada < t.cierra
+    return { titulo: `Hoy ya no puedes entrar ${conA(t.v.nombre)}: ${porUltimaEntrada ? `la última entrada era a las ${horaCorta(t.limite)}` : `${t.v.plural ? 'cerraron' : 'cerró'} a las ${horaCorta(t.cierra)}`}`, hora: '' }
+  }
   const ya = t.v.plural ? 'han' : 'ha'
   const titulo = t.tipo === 'cerrado' ? `A este ritmo llegarías ${conA(t.v.nombre)} cuando ya ${ya} cerrado` : `A este ritmo llegarías ${conA(t.v.nombre)} justo antes de que ${t.v.plural ? 'cierren' : 'cierre'}`
   const hora = t.v.ultimaEntrada != null && t.limite === t.v.ultimaEntrada && t.v.ultimaEntrada < t.cierra ? `${t.v.plural ? 'Cierran' : 'Cierra'} a las ${horaCorta(t.cierra)} y la última entrada es a las ${horaCorta(t.v.ultimaEntrada)}.` : `${t.v.plural ? 'Cierran' : 'Cierra'} a las ${horaCorta(t.cierra)}.`

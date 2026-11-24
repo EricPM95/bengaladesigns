@@ -61,7 +61,6 @@ import { useReservasFocusStore } from '../../../store/useReservasFocusStore'
 import { usePagoActivo, pedirPago } from '../../../lib/pago'
 import { ArrivalReturnSheet } from './ArrivalReturnSheet'
 import { BilleteDeVuelo } from './BilleteDeVuelo'
-import { TarjetaLlegadaDias } from './TarjetaLlegadaDias'
 import { TarjetaTuUltimoDia } from './TarjetaTuUltimoDia'
 import { datosDelDiaDeVuelta, textosDelDiaDeVuelta } from '../../../lib/diaDeVuelta'
 import { TarjetaHoyVuelves } from './TarjetaHoyVuelves'
@@ -1405,7 +1404,8 @@ export function DayDetailPanel({
             // (Hasta «MAÑANA», los 28 px de la cabecera: PROMPT_UI_REPASO_3, 2.)
             <div className="space-y-1.5 pt-2">
               {billeteLlegada ? (
-                <TarjetaLlegadaDias billete={billeteLlegada} point={arrivalChosen} origen={origin} destino={destinoNombre} onOpen={() => setArrivalSheet('llegada')} onVer={() => { setArrivalSheet(null); setMode('bookings'); pedirReservas('llegada', undefined, true) }} />
+                // (V48; Design «Billete QR» Q1-Q4) El billete blanco con su QR; al tocar el resto se abre la ficha de llegada de siempre (con «Cómo llegar desde el aeropuerto»).
+                <BilleteDeVuelo billete={billeteLlegada} onOpen={() => setArrivalSheet('llegada')} />
               ) : (
                 <ArrivalReturnBar mode={modes.arrival} text={arrivalBarText} onOpen={() => setArrivalSheet('llegada')} onAdd={() => goToBooking('llegada')} />
               )}

@@ -82,7 +82,7 @@ export function BilleteDeVuelo({ billete, onOpen }: { billete: DatosBillete; onO
         data-billete={billete.kind}
         data-billete-qr={hay ? 'si' : 'falta'}
         aria-label={`${billete.encabezado} · ${billete.horaRoma} ${billete.codigoRoma}`}
-        className="relative flex w-full cursor-pointer flex-col overflow-hidden rounded-[22px]"
+        className="relative flex w-full shrink-0 cursor-pointer flex-col overflow-hidden rounded-[22px]"
         style={{ border: '1px solid rgba(181,138,46,.35)', background: '#FFFDF8', boxShadow: '0 14px 26px -18px rgba(28,34,48,.5)' }}
       >
         <span className="absolute inset-y-0 left-0 w-[5px]" style={{ background: AZUL }} aria-hidden="true" />

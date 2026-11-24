@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 30% at 50% 0%,#F1E8D6 0%,#E0D3BA 75%);padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">APP · RESERVAS · ENTRADAS</span><span style="font:400 40px/1 'Instrument Serif',serif">Al guardar una entrada en otro día</span></div>
+  <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+    <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.08em;color:#6F4E37">E1 · El aviso de los días que cambian</span>
+    <div style="position:relative;width:375px;height:812px;flex:none;border-radius:48px;overflow:hidden;background:#F5EFE4;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45)">
+      <span style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:112px;height:32px;border-radius:20px;background:#0E1118;z-index:60"></span>
+      <div style="position:absolute;left:0;right:0;top:150px;bottom:0;border-radius:32px 32px 0 0;background:#FBF3E2;padding:12px 18px;display:flex;flex-direction:column;gap:12px">
+        <span style="align-self:center;width:44px;height:4px;border-radius:2px;background:rgba(28,34,48,.25)"></span>
+        <span style="font:600 10.5px 'Geist Mono',monospace;letter-spacing:.14em;color:rgba(28,34,48,.55)">ENTRADA · ELIGE DÍA Y HORA</span>
+        <span style="font:400 28px/1 'Instrument Serif',serif">Coliseo, Foro y Palatino</span>
+        <div style="display:flex;gap:8px"><sc-for list="{{ chips }}" as="c" hint-placeholder-count="4"><span style="flex:1;height:54px;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;font:700 14px 'Geist';background:{{ c.bg }};color:{{ c.fg }};border:1px solid rgba(28,34,48,.14)">{{ c.t }}</span></sc-for></div>
+      </div>
+      <div style="position:absolute;inset:0;background:rgba(20,16,10,.45);z-index:20"></div>
+      <div style="position:absolute;left:0;right:0;bottom:0;z-index:30;border-radius:32px 32px 0 0;background:#FFFDF8;padding:26px 20px 30px;display:flex;flex-direction:column;gap:16px;box-shadow:0 -20px 40px rgba(0,0,0,.25)">
+        <span style="font:400 28px/1.12 'Instrument Serif',serif;text-wrap:balance">Tu Coliseo, el jueves 26. Para que encaje, cambiamos estos días:</span>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ rows }}" as="r" hint-placeholder-count="3"><div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px 12px 12px;border-radius:18px;background:{{ r.bg }};border:1px solid {{ r.bd }}">
+            <span style="width:36px;height:36px;border-radius:12px;flex:none;background:{{ r.tile }};display:flex;align-items:center;justify-content:center"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#6E5018" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v3M17 3v3M4 8h16v12H4zM8 13h3"></path></svg></span>
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:600 14.5px/1.3 'Geist'"><b style="font-weight:800">{{ r.d }}</b> · {{ r.n }}</span><sc-if value="{{ r.was }}" hint-placeholder-val="{{ false }}"><span style="font:500 12.5px 'Geist';color:rgba(28,34,48,.55)">{{ r.was }}</span></sc-if></span></div></sc-for>
+        </div>
+        <span style="height:54px;border-radius:16px;display:flex;align-items:center;justify-content:center;font:700 16px 'Geist';background:linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E);color:#4A3510;box-shadow:0 10px 20px -14px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55)">De acuerdo</span>
+      </div>
+    </div>
+    <span style="font:400 14px/1.45 'Geist';color:rgba(28,34,48,.72);max-width:375px;text-wrap:pretty">El viajero ha elegido el día, y el aviso lo dice así. Los días que se mueven llevan, en gris, de dónde vienen. Siempre fechas, nunca «día 3».</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals(){
+    const on=(t)=>({t,bg:'#1C2230',fg:'#F3D88F'}),off=(t)=>({t,bg:'#FFFDF8',fg:'#1C2230'});
+    return{chips:[off('Mar 24'),off('Mié 25'),on('Jue 26'),off('Vie 27')],rows:[
+      {d:'Jueves 26',n:'Coliseo, Foro y Palatino',was:'',bg:'#FBF3E2',bd:'rgba(181,138,46,.55)',tile:'#F3E3B2'},
+      {d:'Miércoles 25',n:'Villa Borghese, el Popolo y Plaza de España',was:'Antes, el jueves 26',bg:'#F7F1E4',bd:'rgba(28,34,48,.08)',tile:'#FFFDF8'},
+      {d:'Viernes 27',n:'Basílicas y el Aventino',was:'Antes, el miércoles 25',bg:'#F7F1E4',bd:'rgba(28,34,48,.08)',tile:'#FFFDF8'}]};
+  }
+}
+</script>
+</body>
+</html>

@@ -69,7 +69,8 @@ export function billeteDe(input: {
   return {
     kind,
     mode,
-    encabezado: `${llegada ? 'LLEGADA' : 'VUELTA'} · ${PALABRA[mode]}${codigo ? ` ${codigo}` : ''}`,
+    // (V48) Con número: «LLEGADA · VUELO IB3214»; sin número: «LLEGADA · FIUMICINO» (el punto); sin punto, «LLEGADA · VUELO».
+    encabezado: `${llegada ? 'LLEGADA' : 'VUELTA'} · ${codigo ? `${PALABRA[mode]} ${codigo}` : point ? puntoCorto(point).toUpperCase() : PALABRA[mode]}`,
     horaRoma,
     codigoRoma: codigoDeRoma(point),
     horaOtra: otraHora,

@@ -16,6 +16,7 @@ import { destinoDelPunto, tituloDeVuelta } from '../../../../lib/llegadaVueltaHo
 import { esDiaCompleto, TEXTO_DIA_COMPLETO } from '../../../../lib/diaCompleto'
 import { tarjetaHoyVuelvesDelDia } from '../../../../lib/planLlegadaVuelta'
 import { horaUtilDeBillete } from '../../../../../shared/arrival/horaUtil.js'
+import { seasonCardPending } from '../../../../lib/seasonCard'
 import { useHorarioDeParadas, useProximaApertura } from '../../../../lib/horarioDeParada'
 import { textoResumenDeParada, useEscuchar } from '../../../../lib/useEscuchar'
 import { useAudioDeHistoria } from '../../../../lib/escucharAudio'
@@ -281,7 +282,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   // (V43 §2) «Hoy ya no da tiempo a todo»: con más de una hora de retraso o con la mañana pasada sin nada hecho; UNA vez al día.
   const ctxYaNo = useContexto(route, enCoche)
   const [yaNoAbierta, setYaNoAbierta] = useState(false)
-  const yaNo = conPaseOPrueba0 && !esLlegada && !esVuelta ? yaNoDaTiempo({ day: diaVivo, ahoraMin: ahoraMinHoy, ctx: ctxYaNo, vistas }) : null
+  const yaNo = conPaseOPrueba0 && !esVuelta ? yaNoDaTiempo({ day: diaVivo, ahoraMin: ahoraMinHoy, ctx: ctxYaNo, vistas }) : null
   const hayYaNo = yaNo != null
   useEffect(() => {
     if (hayYaNo && !yaDicho(route.id, dateIso, 'ya-no-da-tiempo')) setYaNoAbierta(true)
@@ -487,6 +488,9 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const principal = (
     <>
       {diaCompleto && <p className="flex-none px-1 text-[12.5px] leading-[1.35] text-text/60">{TEXTO_DIA_COMPLETO}</p>}
+
+      {/* (V48) El billete de la llegada, arriba del día de llegada, antes de la primera parada (el mismo de DÍAS; al tocarlo, la ficha de llegada). */}
+      {esLlegada && !esVuelta && fichas.llegada.billete && <BilleteDeVuelo billete={fichas.llegada.billete} onOpen={() => fichas.abrir('llegada')} />}
 
       {/* 5: el día de vuelta sin paradas, «Hoy vuelves a casa» */}
       {sinParadasDeVuelta && tarjetaVuelve && vuelveH14(true)}
@@ -714,7 +718,8 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
           }}
         />
       )}
-      {yaNoAbierta && yaNo && <HoyYaNoDaTiempo route={route} day={day} dateIso={dateIso} info={yaNo} enCoche={enCoche} ahoraMin={ahoraMinHoy} onCerrar={() => { marcarDicho(route.id, dateIso, 'ya-no-da-tiempo'); setYaNoAbierta(false) }} />}
+      {/* (V48) Una sola hoja cada vez: primero la tarjeta de temporada («Navidad en Roma») y, al cerrarla, esta. */}
+      {yaNoAbierta && yaNo && !seasonCardPending(route) && <HoyYaNoDaTiempo route={route} day={day} dateIso={dateIso} info={yaNo} enCoche={enCoche} ahoraMin={ahoraMinHoy} onCerrar={() => { marcarDicho(route.id, dateIso, 'ya-no-da-tiempo'); setYaNoAbierta(false) }} />}
       {fichaCompleta && <FichaCompletaDeHoy route={route} day={day} dateIso={dateIso} parada={fichaCompleta} onCerrar={() => setFichaCompleta(null)} />}
     </>
   )
@@ -726,6 +731,18 @@ function TarjetaVueltaV2({ route, mitad, onVerComoIr }: { route: Route; mitad: M
   const titulo = tituloDeVuelta(mitad.mode, mitad.point)
   if (!titulo) return null
   const enlace = buildGoogleMapsUrlToPlaceTransit(destinoDelPunto(mitad.mode, mitad.point, route.destination))
+  // (V48) Con la hora del viajero, el billete blanco con su QR (Design «Billete QR») en lugar de «Llegada al aeropuerto»; [Cómo llegar] se queda debajo.
+  if (mitad.billete) {
+    return (
+      <div data-hoy-vuelta="1" className="flex flex-none flex-col gap-2">
+        <BilleteDeVuelo billete={mitad.billete} onOpen={onVerComoIr} />
+        <a href={enlace} target="_blank" rel="noopener noreferrer" data-hoy-vuelta-como-llegar className="flex h-11 items-center gap-[7px] self-start rounded-full pl-3 pr-4 text-[13px] font-semibold text-white no-underline" style={{ background: 'oklch(0.5 0.12 245)' }}>
+          <Icono nombre="explorar" size={14} grosor={1.8} />
+          Cómo llegar
+        </a>
+      </div>
+    )
+  }
   return (
     <TarjetaAzul>
       <span data-hoy-vuelta="1" className="flex items-center gap-2.5">
