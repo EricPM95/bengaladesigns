@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { avisarAbajo } from '../../../../store/useAvisoDeAbajo'
+import { CuadradoFecha } from '../../../ui/CuadradoFecha'
 import type { Coordinates, DayPlan, Route, Stop } from '../../../../lib/types'
 import { catalogoEnMemoria } from '../../../../lib/destinationPlacesApi'
 import { addDaysToIso } from '../../../../lib/dateRange'
@@ -173,10 +174,7 @@ export function TarjetaDelSitio({ t }: { t: NonNullable<Propuesta['tarjetaDia']>
           <span className="line-clamp-2" style={{ font: "400 19px/1.15 'Instrument Serif',serif" }}>{t.nombre}</span>
           <span className="text-[12.5px] leading-[1.25] text-[#1C2230]/55">{t.cuando}</span>
         </span>
-        <span data-tarjeta-fecha className="flex h-[52px] w-[48px] flex-none flex-col items-center justify-center rounded-[12px] bg-[#1C2230]">
-          <span style={{ font: "700 9px 'Geist Mono',monospace", letterSpacing: '.12em', color: '#F3D88F' }}>{t.semanaCorta}</span>
-          <span style={{ font: "400 24px/1 'Instrument Serif',serif", color: '#FBF3E2' }}>{t.numero}</span>
-        </span>
+        <CuadradoFecha semana={t.semanaCorta} numero={t.numero} datos={{ 'data-tarjeta-fecha': '1' }} />
       </div>
       <div data-franja-sigue-igual className="flex items-center gap-2.5 rounded-[14px] px-3 py-2.5 text-[13.5px] font-semibold" style={{ background: '#E4F0E2', color: '#25583A' }}>
         <span className="flex h-[22px] w-[22px] flex-none items-center justify-center rounded-full text-white" style={{ background: '#2E7D4F' }} aria-hidden="true">

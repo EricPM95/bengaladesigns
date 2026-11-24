@@ -103,3 +103,11 @@ El plan gratis de Supabase tiene 5 GB de «egress» al mes; la app llegó a 10 G
 
 ## Toda pantalla, hoja o aviso nuevo usa las piezas que ya existen (Eric, 24-nov, V50: «a veces hace las cosas horribles»)
 **Nunca se inventa un diseño.** Toda pantalla, hoja o aviso nuevo usa las piezas que YA existen (`HojaPropuesta`, `BOTON_ORO` / `BOTON_CLARO`, las tarjetas de HOY, la hoja de opciones de DÍAS…) y el mismo diseño que su pantalla hermana. **Si no hay dibujo, se copia la pantalla más parecida que ya existe y se dice en el REPASO** (qué pantalla se copió). Ante la duda, se pregunta a Eric. Un botón dorado nuevo, un degradado, una tarjeta con otro borde o una hoja con otra forma son un diseño inventado.
+
+## Una sola forma para cada cosa; la app tiene DOS mundos (Eric, noche 24-25 nov)
+- **HOY tiene su propio estilo** (sus botones, tarjetas y hojas, los de los dibujos de HOY de Design); **el resto** (RUTA, DÍAS, EXPLORAR, RESERVAS, Perfil, logros, pase) tiene el suyo. **No se convierte HOY en el resto ni al revés.** Lo que se iguala es DENTRO de cada mundo. Lo que es exactamente lo mismo en los dos (la X de cerrar una hoja, el cuadrado de la fecha), una sola pieza. Ante la duda, como el dibujo de Design de ese mundo.
+- **El cuadrado de la fecha: uno solo en toda la app** — `src/components/ui/CuadradoFecha.tsx` (fondo azul oscuro, día de la semana pequeño en mayúsculas y número grande, los dos en dorado; `marcado` = borde dorado para el día abierto de DÍAS). Nunca se escribe otro. Los botones para elegir día en las hojas («Mar 24», «Jue 26») no son cuadrados de fecha.
+- **Cada elemento que se repite, UNA pieza** (la X de cerrar y el tirador, las hojas, los botones dorado/claro/de borde/azul/enlace/papelera/lápiz, las etiquetas, los iconos y sus círculos, las tarjetas, los avisos, los recuadros de puntos). La tabla «elemento → pieza (archivo y nombre)» está justo debajo y se actualiza cada vez que se añade o cambia una pieza.
+
+### Piezas (elemento → archivo · nombre · mundo)
+- Cuadrado de la fecha → `src/components/ui/CuadradoFecha.tsx` · `CuadradoFecha` · los dos.
