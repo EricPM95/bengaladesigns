@@ -1,15 +1,15 @@
-# Estado de la tanda v43
+# Estado de la tanda v44
 
-**Última actualización: 24/11/26, 2:28**
+**Última actualización: 24/11/26, 13:06**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-TERMINADA: pusheada 2061c5c4 (main). Producción: carga nueva build, RouteScreen con el texto de la V43. Servidores cerrados salvo la API
+Empiezo la V44: ubicación lejos del destino (§1), tarjeta de parada, avisos con Deshacer, pendientes, comer, mejor día, globo y DÍAS
 
 ## Qué falta
-Nada: solo apagar el PC (lo pidió Eric en esta tanda) y mirar DECISIONES_V43.md mañana
+Todo: §1 a §9, pruebaV44, repaso, push, producción
 
 ## Procesos abiertos ahora mismo
-- node: 2
+- node: 1
 - esbuild: 0
 - Chrome de prueba (con remote-debugging-port): 0
