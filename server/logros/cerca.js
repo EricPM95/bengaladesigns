@@ -93,6 +93,8 @@ export function sitiosCerca({ datos, catalogos, destino, ubicacion, items, sitio
       coleccion_nombre: pedazos[0]?.nombre ?? null,
       // (Tanda V2) los nombres de TODAS las colecciones donde este sitio da un pedazo por ganar, en su orden. Sin emblemas: los ocultos nunca se anuncian.
       pedazos_nombres: pedazos.map((p) => p.nombre),
+      // (V47) Los ids de esas mismas colecciones (en el mismo orden): con `sitio`, el cliente dibuja el trozo de ESE sitio en la franja «Aquí ganas 1 pedazo».
+      pedazos_colecciones: pedazos.map((p) => p.coleccion),
     })
   }
   return salida.sort((a, b) => a.al_borde_m - b.al_borde_m || a.metros - b.metros)

@@ -1,3 +1,4 @@
+import { proximaApertura, sumarDias } from './horarioDeLaCaja'
 /**
  * El horario de una parada UN día concreto (Tanda 6z5, tarea A): lo que sale en pequeño debajo del nombre de la tarjeta,
  * en DÍAS y en HOY — «Abre 9:00 – 19:15 · Última entrada 18:15», «Abre 9:00 – 13:00 y 15:00 – 19:00» o «Cerrado este día».
@@ -200,4 +201,15 @@ export function useHorarioDeParadas(destino: string, fechaIso: string | null): (
 export function useAbierto24h(destino: string | undefined): (nombre: string) => boolean {
   const datos = useDatosDeHorario(destino)
   return (nombre) => datos.get(normaliza(nombre))?.abierto_24h === true
+}
+
+/**
+ * (V47) Cuándo vuelve a abrir una parada que ya cerró (o que cierra hoy): «mañana a las 9:00» o «el jueves a las 9:00» (el próximo día que abre, mirando los 3 siguientes).
+ * Sin consultas de red: son los mismos horarios del destino que ya están en memoria (`useDatosDeHorario`).
+ */
+export function useProximaApertura(destino: string, fechaIso: string | null): (parada: LugarConHorario & { name: string; fullName?: string; passThrough?: boolean }) => string | null {
+  const m1 = useHorarioDeParadas(destino, sumarDias(fechaIso, 1))
+  const m2 = useHorarioDeParadas(destino, sumarDias(fechaIso, 2))
+  const m3 = useHorarioDeParadas(destino, sumarDias(fechaIso, 3))
+  return (parada) => proximaApertura(fechaIso, [m1(parada), m2(parada), m3(parada)])
 }

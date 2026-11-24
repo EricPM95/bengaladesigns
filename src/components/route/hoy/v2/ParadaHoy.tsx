@@ -28,7 +28,7 @@ import type { HorarioDeParada } from '../../../../lib/horarioDeParada'
 import { abrirAvisoPase } from '../../../../lib/avisoPase'
 import { avisarAbajo } from '../../../../store/useAvisoDeAbajo'
 import { useHistoriaDeParada, type HistoriaDeParada } from './useHistoriaDeParada'
-import { textoDePedazos, usePedazosDeParada } from './usePedazosDeParada'
+import { etiquetaDePedazos, nombreDePedazos, piezaDeParada, usePedazosDeParada } from './usePedazosDeParada'
 import { fotoDeParada } from '../../../logros/visto/VistoFlujo'
 import { TuEntradaEnHoy } from '../TuEntradaEnHoy'
 import { HojaV2 } from './HojasV2'
@@ -40,6 +40,8 @@ import { AvisoMasTiempo } from './MasTiempo'
 import { BOTON_CLARO, BOTON_ORO, DORADO } from '../../../ui/botonesOro'
 import { HojaActivaUbicacion } from './HojaActivaUbicacion'
 import { desdeDonde, type ZonaUbicacion } from '../../../../lib/ubicacionHoy'
+import { estadoDelHorario, type TonoDeCaja } from '../../../../lib/horarioDeLaCaja'
+import { InsigniaPartes } from '../../../logros/dibujos/InsigniaPartes'
 
 /** Los colores del diseño «Hoy Estados» (apartado 04): tinta, marfil, oro. */
 const TINTA = '#1C2230'
@@ -212,10 +214,31 @@ function BarraDeHistoria({ h }: { h: HistoriaDeParada }) {
 }
 
 /** Un icono de acción SIN texto (decisión de Eric): lleva su `aria-label`. */
-function BotonIcono({ icono, etiqueta, dato, onClick, oro = false, candado = false }: { icono: Parameters<typeof Icono>[0]['nombre']; etiqueta: string; dato: string; onClick: () => void; oro?: boolean; candado?: boolean }) {
+const COLOR_CAJA: Record<TonoDeCaja | 'gris', string> = { negro: '#1C2230', verde: '#2E7D4F', rojo: '#B3321F', gris: 'rgba(28,34,48,.65)' }
+
+/**
+ * (V47; Design «Parada Tarjeta» T1-T3) UNA caja de las tres de la tarjeta de la parada: la etiqueta con su icono (HORARIO, A PIE / EN COCHE, VISITA), lo grande y la línea pequeña de debajo.
+ * Tres en una fila: a 375 px caben sin cortar texto (lo largo baja a otra línea).
+ */
+function CajaDeParada({ icono, etiqueta, grande, tono = 'negro', sub, subTono = 'gris', dato, extra, datos }: { icono: Parameters<typeof Icono>[0]['nombre']; etiqueta: string; grande: string; tono?: TonoDeCaja; sub: string; subTono?: TonoDeCaja | 'gris'; dato: string; extra?: ReactNode; datos?: Record<string, string | undefined> }) {
   return (
-    <button type="button" onClick={onClick} aria-label={etiqueta} data-hoy-icono={dato} className="relative flex h-[60px] min-w-0 flex-1 items-center justify-center rounded-[18px]" style={oro ? BOTON_ORO : { ...BOTON_ICONO, color: TINTA }}>
-      <Icono nombre={icono} size={26} grosor={1.6} />
+    <div data-caja-parada={dato} {...datos} className="flex min-h-[98px] min-w-0 flex-col gap-1 rounded-2xl px-2 py-2.5" style={{ background: '#F6F0E2' }}>
+      <span className="flex items-center gap-1" style={{ color: '#6F4E37' }}>
+        <Icono nombre={icono} size={12} grosor={1.9} />
+        <span style={{ font: "700 9.5px 'Geist Mono',monospace", letterSpacing: '.1em' }}>{etiqueta}</span>
+      </span>
+      <b data-caja-grande className="whitespace-nowrap text-[14.5px] leading-[1.15]" style={{ color: COLOR_CAJA[tono] }}>{grande}</b>
+      <span data-caja-sub className="text-[11px] font-medium leading-[1.25]" style={{ color: COLOR_CAJA[subTono] }}>{sub}</span>
+      {extra}
+    </div>
+  )
+}
+
+function BotonIcono({ icono, etiqueta, dato, onClick, oro = false, candado = false, texto }: { icono: Parameters<typeof Icono>[0]['nombre']; etiqueta: string; dato: string; onClick: () => void; oro?: boolean; candado?: boolean; /** (V47) El nombre debajo del icono («Qué ver», «Escuchar historia», «Hacer foto»). */ texto?: string }) {
+  return (
+    <button type="button" onClick={onClick} aria-label={etiqueta} data-hoy-icono={dato} className={`relative flex min-w-0 flex-1 items-center justify-center rounded-[18px] ${texto ? 'h-[72px] flex-col gap-1' : 'h-[60px]'}`} style={oro ? BOTON_ORO : { ...BOTON_ICONO, color: TINTA }}>
+      <Icono nombre={icono} size={texto ? 22 : 26} grosor={1.6} />
+      {texto && <span data-boton-nombre className="px-1 text-center text-[12px] font-bold leading-[1.1]">{texto}</span>}
       {candado && (
         <span className="absolute right-1.5 top-1.5 flex h-[18px] w-[18px] items-center justify-center rounded-full" style={{ background: TINTA, color: ORO_CLARO }}>
           <Icono nombre="candado" size={10} grosor={2.2} />
@@ -278,6 +301,8 @@ export interface PropsParada {
   casa?: Coordinates | null
   /** (V46) El centro de lo que hay hoy: sin alojamiento en el viaje, los minutos de la primera parada se cuentan desde aquí (el centro de su zona). */
   centroDelDia?: Coordinates | null
+  /** (V47) Cuándo vuelve a abrir esta parada si ya cerró: «mañana a las 9:00» / «el jueves a las 9:00». */
+  proximaApertura?: string | null
   /** (V44 §1) Dónde está el viajero: en la ruta, en el destino pero lejos de ella, fuera del destino (> 50 km) o sin ubicación. */
   zonaUbicacion?: ZonaUbicacion
   /** (V44 §1) Si el viajero ha dado su ubicación (aunque HOY no la use: `ubicacion` solo llega aquí cuando está en la ruta). */
@@ -311,7 +336,9 @@ export function TarjetaParada(p: PropsParada) {
   const historia = useHistoriaDeParada(route.destination, siguiente)
   // (V46) Se pregunta en cuanto esta es la SIGUIENTE parada (no solo al llegar): al llegar ya está en memoria y la línea sale a la vez que la tarjeta.
   // Consulta: /api/logros/cerca con la coordenada de la parada, UNA vez por parada y viaje cada 2 minutos (`unaSolaVez`); baja ~1-3 KB. No va a Supabase desde el móvil.
-  const pedazos = textoDePedazos(usePedazosDeParada(tripId, siguiente, true))
+  const nombresPedazos = usePedazosDeParada(tripId, siguiente, true)
+  const pedazos = nombresPedazos.length > 0 ? nombresPedazos : null
+  const pieza = piezaDeParada(tripId, siguiente.id)
   const [masTiempo, setMasTiempo] = useState<15 | 30 | null>(null)
 
   // (HOY2b, E; Eric, 5-nov) +15 / +30 NO mueve la ruta: la app solo mira si con ese tiempo de más llegas a algo cerrado o tarde a una reserva (v2/MasTiempo.tsx).
@@ -334,10 +361,13 @@ export function TarjetaParada(p: PropsParada) {
     else if (historia.estado === 'hablando') historia.pausar()
     else historia.seguir()
   }
-  const duracion = siguiente.durationMinutes > 0 ? `Visita de unos ${Math.round(siguiente.durationMinutes)} min` : null
   const cierraEn = aqui ? minutosParaCerrar(p.horario, ahoraMin) : null
   const nombre = displayStopName(siguiente.name)
 
+  // (V47) Las tres cajas (HORARIO, A PIE / EN COCHE, VISITA): lo que dice cada una según la hora real y el sitio de salida.
+  const estadoH = estadoDelHorario(p.horario, ahoraMin, p.proximaApertura ?? null)
+  const modoCaja = trayecto?.modo ?? (enCoche ? 'coche' : 'pie')
+  const minutosVisita = siguiente.durationMinutes > 0 ? `${Math.round(siguiente.durationMinutes)} min` : '—'
   const dialogos = (
     <>
       {masTiempo && <AvisoMasTiempo route={route} day={day} dateIso={dateIso} paradaId={siguiente.id} minutos={masTiempo} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMin} onCerrar={() => setMasTiempo(null)} />}
@@ -361,37 +391,40 @@ export function TarjetaParada(p: PropsParada) {
             </div>
           </FotoDeLaParada>
           <div className="flex flex-col gap-3.5 px-4 pb-4 pt-[18px]">
-            {(duracion || cierraEn != null) && (
-              <>
-                <div className="flex flex-nowrap gap-1.5">
-                  {duracion && (
-                    <span data-hoy-visita className="inline-flex h-8 min-w-0 items-center gap-1.5 whitespace-nowrap rounded-full pl-2 pr-2.5 text-[12px] font-semibold" style={{ background: '#F6F0E2', border: '1px solid rgba(181,138,46,.3)', color: '#3A2E1A' }}>
-                      <Icono nombre="reloj" size={14} grosor={1.8} />
-                      {duracion}
-                    </span>
-                  )}
-                  {cierraEn != null && cierraEn < 45 && (
-                    <span data-hoy-cierra-pronto className="inline-flex h-8 min-w-0 items-center gap-1.5 whitespace-nowrap rounded-full pl-2 pr-2.5 text-[12px] font-semibold" style={{ background: '#FBE6E2', border: '1px solid #E5766B', color: '#8A2A1F' }}>
-                      <Icono nombre="alerta" size={14} grosor={1.9} />
-                      Cierra en {cierraEn} min
-                    </span>
-                  )}
-                </div>
-                <span className="h-px" style={{ background: 'rgba(28,34,48,.1)' }} />
-              </>
+            {/* (V47) Las mismas tres cajas que antes de llegar; en la de minutos, «Aquí · Ya has llegado». */}
+            <div data-hoy-cajas className="grid grid-cols-3 gap-2">
+              <CajaDeParada dato="horario" icono="reloj" etiqueta="HORARIO" grande={estadoH.grande} tono={estadoH.tono} sub={estadoH.sub} subTono={estadoH.subTono} datos={{ 'data-hoy-horario': estadoH.caso }} />
+              <CajaDeParada dato="minutos" icono={modoCaja === 'coche' ? 'coche' : 'andando'} etiqueta={modoCaja === 'coche' ? 'EN COCHE' : 'A PIE'} grande="Aquí" sub="Ya has llegado" datos={{ 'data-hoy-trayecto': modoCaja, 'data-hoy-trayecto-zona': 'aqui' }} />
+              <CajaDeParada dato="visita" icono="arena" etiqueta="VISITA" grande={minutosVisita} sub="Lo que recomendamos" datos={{ 'data-hoy-visita': '1' }} />
+            </div>
+            {cierraEn != null && cierraEn < 45 && (
+              <span data-hoy-cierra-pronto className="inline-flex h-8 min-w-0 items-center gap-1.5 self-start whitespace-nowrap rounded-full pl-2 pr-2.5 text-[12px] font-semibold" style={{ background: '#FBE6E2', border: '1px solid #E5766B', color: '#8A2A1F' }}>
+                <Icono nombre="alerta" size={14} grosor={1.9} />
+                Cierra en {cierraEn} min
+              </span>
             )}
             {pedazos && (
               <div data-hoy-pedazos className="flex items-center gap-3 rounded-[20px] px-3.5 py-3" style={{ background: 'linear-gradient(135deg,#FBF1D2,#F2DEA6)', border: '1px solid #D2B26A' }}>
-                <Icono nombre="estrella" size={20} grosor={1.8} style={{ color: '#8E6820', flex: 'none' }} />
-                <span className="flex-1 text-[13px] font-semibold leading-[1.3]" style={{ color: '#5A3E0C' }}>{pedazos}</span>
+                {/* (V47) El icono es el trozo de ESE sitio, en color, sobre su círculo blanco (la misma pieza que se gana al terminar); sin ids del servidor, la estrella de siempre. */}
+                {pieza ? (
+                  <span data-hoy-pedazo-icono={pieza.coleccion} className="flex h-[46px] w-[46px] flex-none items-center justify-center rounded-full" style={{ background: '#fff', border: '2px solid #1C2230' }}>
+                    <InsigniaPartes coleccion={pieza.coleccion} ganados={[pieza.sitio]} tam={36} />
+                  </span>
+                ) : (
+                  <Icono nombre="estrella" size={20} grosor={1.8} style={{ color: '#8E6820', flex: 'none' }} />
+                )}
+                <span className="flex min-w-0 flex-1 flex-col gap-0.5" style={{ color: '#5A3E0C' }}>
+                  <span data-hoy-pedazos-etiqueta style={{ font: "700 10px 'Geist Mono',monospace", letterSpacing: '.12em', textTransform: 'uppercase' }}>{etiquetaDePedazos(pedazos)}</span>
+                  <span data-hoy-pedazos-nombre style={{ font: "400 19px/1.15 'Instrument Serif',serif" }}>{nombreDePedazos(pedazos)}</span>
+                </span>
               </div>
             )}
             {historia.hay && !historia.candado && historia.estado !== 'parado' && <BarraDeHistoria h={historia} />}
             <div className="flex gap-[9px]">
-              <BotonIcono icono="ojo" etiqueta="Qué vas a ver" dato="que-vas-a-ver" onClick={p.onQueVasAVer} />
-              {historia.hay && <BotonIcono icono={historia.estado === 'hablando' ? 'pausa' : 'altavoz'} etiqueta={historia.estado === 'parado' ? 'Escuchar historia' : historia.estado === 'hablando' ? 'Pausar la historia' : 'Seguir con la historia'} dato="escuchar" candado={historia.candado} onClick={alEscuchar} />}
-              {reservaSiguiente && <BotonIcono icono="reservas" etiqueta="Tu entrada" dato="entrada" onClick={() => setVerEntrada((v) => !v)} />}
-              <BotonIcono icono="camara" etiqueta="Haz tu foto" dato="haz-tu-foto" oro onClick={hacerFoto} />
+              <BotonIcono icono="ojo" etiqueta="Qué vas a ver" dato="que-vas-a-ver" texto="Qué ver" onClick={p.onQueVasAVer} />
+              {historia.hay && <BotonIcono icono={historia.estado === 'hablando' ? 'pausa' : 'altavoz'} etiqueta={historia.estado === 'parado' ? 'Escuchar historia' : historia.estado === 'hablando' ? 'Pausar la historia' : 'Seguir con la historia'} dato="escuchar" texto={historia.estado === 'hablando' ? 'Pausar historia' : 'Escuchar historia'} candado={historia.candado} onClick={alEscuchar} />}
+              {reservaSiguiente && <BotonIcono icono="reservas" etiqueta="Tu entrada" dato="entrada" texto="Tu entrada" onClick={() => setVerEntrada((v) => !v)} />}
+              <BotonIcono icono="camara" etiqueta="Haz tu foto" dato="haz-tu-foto" texto="Hacer foto" oro onClick={hacerFoto} />
             </div>
             {verEntrada && reservaSiguiente && <TuEntradaEnHoy route={route} reserva={reservaSiguiente} />}
             <div className="flex gap-[9px]">
@@ -415,11 +448,8 @@ export function TarjetaParada(p: PropsParada) {
   }
 
   const etiqueta = anterior ? 'SIGUIENTE PARADA' : 'PRIMERA PARADA'
-  const rango = rangoDeHorario(p.horario)
-  const cerrado = cerradoAhora(p.horario, ahoraMin)
   // (V44 §1) La caja de minutos: en la ruta, «12 min · Desde ti»; en el destino pero lejos de la ruta (el aeropuerto) o sin ubicación, el tiempo del plan («Del alojamiento al Coliseo», «Del Panteón a la Fontana de Trevi»); fuera del destino, «—» y «Estás lejos».
   const zona: ZonaUbicacion = p.zonaUbicacion ?? (ubicacion ? 'ruta' : 'sin')
-  const modoCaja = trayecto?.modo ?? (enCoche ? 'coche' : 'pie')
   const origenDelPlan = anterior && !anterior.isBreak ? displayStopName(anterior.name) : null
   const minutosCaja = zona === 'fuera' || !trayecto ? '—' : `${trayecto.min} min`
   const subCaja = zona === 'fuera' ? 'Estás lejos' : zona === 'ruta' ? 'Desde ti' : desdeDonde(origenDelPlan, !p.casa)
@@ -433,27 +463,25 @@ export function TarjetaParada(p: PropsParada) {
           </FotoDeLaParada>
         </div>
         <div className="flex flex-col gap-3.5 px-4 pb-3.5 pt-4">
-          {/* (V44 §1 y §2) Dos cajas, una al lado de otra: «HORARIO» (con «Cerrado ahora · abre a las 9:00») y la de minutos (A PIE / EN COCHE). */}
-          <div className="grid grid-cols-2 gap-2.5">
-            {/* (V46) La caja HORARIO sale SIEMPRE: en los sitios sin horario (plazas, calles, fuentes) pone solo «Abierto». */}
-            <div data-hoy-horario={rango ? 'con' : 'abierto'} className="flex min-h-[78px] flex-col gap-1 rounded-2xl px-3 py-2.5" style={{ background: '#F6F0E2' }}>
-              <span style={{ font: "700 10px 'Geist Mono',monospace", letterSpacing: '.14em', color: '#6F4E37' }}>HORARIO</span>
-              {/* (V46) El horario («9:00–16:30») en negro; «Abierto» en verde; «Cerrado» (y «Cerrado ahora · abre a las 9:00») en rojo. */}
-              <b data-hoy-horario-texto={p.horario?.cerrado ? 'cerrado' : rango ? 'horario' : 'abierto'} className="text-[15px] leading-[1.15]" style={{ color: p.horario?.cerrado ? '#B3321F' : rango ? '#1C2230' : '#2E7D4F' }}>{p.horario?.cerrado ? 'Cerrado' : (rango ?? 'Abierto')}</b>
-              {cerrado && <b data-hoy-cerrado-ahora className="text-[12px] font-semibold leading-[1.25]" style={{ color: '#B3321F' }}>{cerrado}</b>}
-            </div>
-            <div data-hoy-trayecto={modoCaja} data-hoy-trayecto-zona={zona} className="flex min-h-[78px] flex-col gap-1 rounded-2xl px-3 py-2.5" style={{ background: '#F6F0E2' }}>
-              <span className="flex items-center justify-between">
-                <span style={{ font: "700 10px 'Geist Mono',monospace", letterSpacing: '.14em', color: '#6F4E37' }}>{modoCaja === 'coche' ? 'EN COCHE' : 'A PIE'}</span>
-                {zona === 'ruta' && (
-                  <button type="button" onClick={p.pedirUbicacion} data-hoy-actualizar-ubicacion className="-my-2 flex min-h-11 items-center px-1 text-[11.5px] font-bold underline underline-offset-[3px]" style={{ color: ORO_TEXTO }}>
+          {/* (V47) Tres cajas en una fila: HORARIO (según la hora real), A PIE / EN COCHE («Desde el alojamiento», «Desde el Panteón», «Desde ti») y VISITA (el tiempo que recomendamos). */}
+          <div data-hoy-cajas className="grid grid-cols-3 gap-2">
+            <CajaDeParada dato="horario" icono="reloj" etiqueta="HORARIO" grande={estadoH.grande} tono={estadoH.tono} sub={estadoH.sub} subTono={estadoH.subTono} datos={{ 'data-hoy-horario': estadoH.caso }} />
+            <CajaDeParada
+              dato="minutos"
+              icono={modoCaja === 'coche' ? 'coche' : 'andando'}
+              etiqueta={modoCaja === 'coche' ? 'EN COCHE' : 'A PIE'}
+              grande={minutosCaja}
+              sub={subCaja}
+              datos={{ 'data-hoy-trayecto': modoCaja, 'data-hoy-trayecto-zona': zona }}
+              extra={
+                zona === 'ruta' ? (
+                  <button type="button" onClick={p.pedirUbicacion} data-hoy-actualizar-ubicacion className="-mb-1 flex min-h-11 items-center self-start text-[11px] font-bold underline underline-offset-[3px]" style={{ color: ORO_TEXTO }}>
                     {p.ubicacionEstado === 'pidiendo' ? 'Buscando…' : 'Actualizar'}
                   </button>
-                )}
-              </span>
-              <b data-hoy-trayecto-min className="text-[22px] leading-[1.05]" style={{ fontFamily: "'Instrument Serif',serif", fontWeight: 400 }}>{minutosCaja}</b>
-              <span data-hoy-trayecto-sub className="text-[12px] font-medium leading-[1.25]" style={{ color: 'rgba(28,34,48,.65)' }}>{subCaja}</span>
-            </div>
+                ) : null
+              }
+            />
+            <CajaDeParada dato="visita" icono="arena" etiqueta="VISITA" grande={minutosVisita} sub="Lo que recomendamos" datos={{ 'data-hoy-visita': '1' }} />
           </div>
           {salida && fija != null && (
             <div data-hoy-salida={salida} className="flex items-center gap-2 rounded-xl px-3 py-2 text-[13px] font-semibold leading-[1.3]" style={salida === 'tarde' ? { background: '#FBE6E2', border: '1px solid #E5766B', color: '#8A2A1F' } : { background: '#F6F0E2', border: '1px solid rgba(181,138,46,.4)', color: '#6E5018' }}>

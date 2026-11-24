@@ -25,6 +25,8 @@ export interface SitioCerca {
   coleccion_nombre: string | null
   /** Los nombres de todas las colecciones donde este sitio da un pedazo por ganar (sin emblemas). */
   pedazos_nombres?: string[]
+  /** (V47) Los ids de esas colecciones, en el mismo orden (con `sitio`, el trozo de este sitio). */
+  pedazos_colecciones?: string[]
 }
 
 export interface RetoDelDia {

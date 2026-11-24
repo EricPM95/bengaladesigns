@@ -1,0 +1,19 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>REPASO V47</title><style>body{font:15px/1.5 system-ui,sans-serif;max-width:900px;margin:24px auto;padding:0 16px;color:#1C2230;background:#FBF6EA}h2{margin-top:28px;border-top:2px solid #C9A24A;padding-top:10px}figure{margin:10px 14px 10px 0;display:inline-block;vertical-align:top;max-width:300px}figure img{width:100%;border:1px solid #d8cfb8;border-radius:10px}figcaption{font-size:12.5px;color:#6a6657}li{margin:4px 0}</style>
+<h1>V47 · La tarjeta de la parada, antes de llegar y al llegar</h1>
+<p>Capturas en modo iPhone. No se ha pasado ninguna prueba (tanda de pruebas esta noche); solo <code>npm run build</code> sin errores y estas capturas. Detalle en <code>docs/dias/DECISIONES_V47.md</code>.</p>
+<h2>Qué ha cambiado</h2>
+<ul>
+<li><b>Antes de llegar:</b> tres cajas en una fila: HORARIO (según la hora real), A PIE / EN COCHE («Desde el alojamiento», «Desde el Panteón», «Desde ti») y VISITA («Lo que recomendamos»). Debajo, el recuadro de la ubicación, la historia y los botones.</li>
+<li><b>Al llegar:</b> las mismas tres cajas («Aquí · Ya has llegado»), la franja «AQUÍ GANAS 1 PEDAZO» con el trozo de ese sitio, y tres botones con nombre: Qué ver, Escuchar historia y Hacer foto (dorado).</li>
+<li><b>La foto de los Museos Vaticanos en la «Plaza del Campidoglio» (captura de la V46):</b> venía de mi montaje, no de la app: cambié solo el nombre de una parada y su foto (guardada en su propio campo) se quedó. Una parada nunca coge la foto por el nombre de otra.</li>
+</ul>
+<h2>Antes de llegar</h2>
+<figure><img src="V47_capturas/v47_antes_375_cerrado_ahora.jpg" alt=""><figcaption>375 px, el caso más largo: cerrado ahora y sin ubicación. Caben las tres cajas sin cortar texto.</figcaption></figure>
+<figure><img src="V47_capturas/v47_antes_plaza.jpg" alt=""><figcaption>Una plaza sin horario: «Abierto · Sin horario».</figcaption></figure>
+<h2>Al llegar</h2>
+<figure><img src="V47_capturas/v47_al_llegar.jpg" alt=""><figcaption>«Ya estás aquí»: tres cajas, franja del pedazo con su trozo y tres botones con nombre.</figcaption></figure>
+<h2>Tu lista de comprobación</h2>
+<ol><li>Primera parada cerrada ahora: HORARIO en negro con «Cerrado ahora · abre a las…» en rojo, sin cortar a 375 px.</li><li>Una plaza: «Abierto» en verde y «Sin horario».</li><li>«Desde el alojamiento» en la primera parada y «Desde el Panteón» en las demás.</li><li>Al llegar: «Aquí · Ya has llegado», la franja dorada con el trozo del sitio y [Qué ver] [Escuchar historia] [Hacer foto].</li><li>Después del cierre: «Cerrado · abre mañana a las…» (no visto en pantalla).</li></ol>
+<h2>No he podido comprobar</h2>
+<p>Ninguna prueba (por tu orden). No he visto en pantalla «Cerrado · abre mañana…» ni «Desde el Panteón». Pruebas viejas que esperaban lo de antes fallarán hasta la tanda de pruebas; <code>pruebaV2Hoy</code> sigue con su fallo.</p>
+</html>

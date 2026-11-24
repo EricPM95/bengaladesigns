@@ -16,7 +16,7 @@ import { destinoDelPunto, tituloDeVuelta } from '../../../../lib/llegadaVueltaHo
 import { esDiaCompleto, TEXTO_DIA_COMPLETO } from '../../../../lib/diaCompleto'
 import { tarjetaHoyVuelvesDelDia } from '../../../../lib/planLlegadaVuelta'
 import { horaUtilDeBillete } from '../../../../../shared/arrival/horaUtil.js'
-import { useHorarioDeParadas } from '../../../../lib/horarioDeParada'
+import { useHorarioDeParadas, useProximaApertura } from '../../../../lib/horarioDeParada'
 import { textoResumenDeParada, useEscuchar } from '../../../../lib/useEscuchar'
 import { useAudioDeHistoria } from '../../../../lib/escucharAudio'
 import { accesoHistoria, textoHistoria, useFichaDeSitio } from '../../../../lib/historia'
@@ -222,6 +222,8 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const info = useDestinationExcursions(route.destination)
   const infoLlegada = useArrivalInfo(route.destination, day.city, route.origin)
   const horarioDe = useHorarioDeParadas(day.city, dateIso)
+  // (V47) Cuándo vuelve a abrir la parada si ya cerró (los mismos horarios del destino, en memoria: 0 KB de red).
+  const proximaAperturaDe = useProximaApertura(day.city, dateIso)
   const fichas = useFichasDeHoy(route, day, dateIso)
   const masVisitas = useMasVisitas(route, day)
   const [hojaMas, setHojaMas] = useState<MasVisita[] | null>(null)
@@ -598,6 +600,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
           casa={zonaCoords}
           centroDelDia={centroDelDia}
           horario={horarioDe(siguiente)}
+          proximaApertura={proximaAperturaDe(siguiente)}
         />
       )}
 
