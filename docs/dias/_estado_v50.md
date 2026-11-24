@@ -1,13 +1,13 @@
 # Estado de la tanda v50
 
-**Última actualización: 24/11/26, 22:25**
+**Última actualización: 24/11/26, 22:44**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-Empezando: aviso ya no puedes entrar (A1-A3), llegada y vuelta sin vuelos, buscador del alojamiento, pequenos de RESERVAS
+TERMINADA: pusheada 789fa6a4; build sin errores; produccion carga en iPhone (solo 403); sin pruebas por orden de Eric
 
 ## Qué falta
-todo
+nada
 
 ## Procesos abiertos ahora mismo
 - node: 2
