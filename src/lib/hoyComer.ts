@@ -152,6 +152,30 @@ export interface RestauranteCerca {
   cierraMin: number | null
   /** (V43 §3) El tipo de sitio (trattoria, pizza, gelato…) para los filtros de arriba. */
   sub: string | null
+  /** (V44 §5) Lo que se enseña bajo el nombre: «Cafetería», «Trattoria», «Heladería»… (el `tipo_local` de los datos), no el plato ni el nombre repetido. */
+  tipo: string | null
+  /** (V44 §5) Solo en «los más cercanos» cuando aún no ha abierto nada: a qué hora abre hoy (minutos). */
+  abreMin?: number | null
+}
+
+const TIPOS_DE_LOCAL: Record<string, string> = { restaurante: 'Restaurante', horno: 'Horno', pizzeria: 'Pizzería', heladeria: 'Heladería', cafeteria: 'Cafetería', bar_de_vinos: 'Bar de vinos', comida_rapida: 'Comida rápida', pub: 'Pub' }
+/** «Trattoria» (un restaurante de la sub-categoría trattoria), «Cafetería»…: del `tipo_local` y la sub-categoría de los datos. */
+export function tipoDeLocal(r: Pick<DestinationPlace, 'tipo_local' | 'sub_category'>): string | null {
+  const sub = r.sub_category ?? null
+  if (r.tipo_local === 'restaurante' && sub && /^trattoria/.test(sub)) return 'Trattoria'
+  const t = r.tipo_local ? (TIPOS_DE_LOCAL[r.tipo_local] ?? `${r.tipo_local.charAt(0).toUpperCase()}${r.tipo_local.slice(1).replace(/_/g, ' ')}`) : null
+  return t
+}
+
+/** (V44 §5) A qué hora abre HOY un restaurante que ahora está cerrado (minutos), o null si hoy no vuelve a abrir. */
+export function aperturaDeHoy(r: Pick<DestinationPlace, 'schedule' | 'hours_data'>, dateIso: string, ahoraMin: number): number | null {
+  const dia = new Date(`${dateIso}T12:00:00Z`).getUTCDay()
+  const hd = (r.hours_data ?? {}) as Record<string, unknown>
+  const cierraOn = (Array.isArray(hd.closed_on) ? hd.closed_on : typeof hd.closed_on === 'string' ? hd.closed_on.split(',') : []).map((x) => DIA_DE_NOMBRE[norm(String(x)).trim()]).filter((x): x is number => x != null)
+  if (cierraOn.includes(dia)) return null
+  const rangos = ventanasDeHorario(r.schedule, cierraOn)?.get(dia)
+  const siguiente = rangos?.map(([ini]) => ini).filter((ini) => ini > ahoraMin).sort((x, y) => x - y)[0]
+  return siguiente ?? null
 }
 
 /** (V43 §3) [Todos] enseña solo sitios para COMER: los de gelato, café y aperitivo, solo con su filtro. */
@@ -177,9 +201,30 @@ export function restaurantesAbiertos(p: { restaurantes: DestinationPlace[]; orig
     const metros = origen && hasRealCoordinates(origen) ? haversineMeters(origen, r.coordinates) : 0
     const minutos = viajeMin(origen ? { coordinates: origen } : null, { coordinates: r.coordinates }, p.enCoche)
     if (origen && minutos > tope) continue
-    salida.push({ nombre: r.name, coordinates: r.coordinates, metros, minutos, modo: p.enCoche ? 'coche' : 'pie', precio: r.price_range ?? null, cocina: cocinaCorta(r.what_to_order), direccion: r.address ?? null, cierraMin: h.cierraMin, sub })
+    salida.push({ nombre: r.name, coordinates: r.coordinates, metros, minutos, modo: p.enCoche ? 'coche' : 'pie', precio: r.price_range ?? null, cocina: cocinaCorta(r.what_to_order), direccion: r.address ?? null, cierraMin: h.cierraMin, sub, tipo: tipoDeLocal(r) })
   }
   salida.sort((a, b) => a.metros - b.metros || a.nombre.localeCompare(b.nombre))
+  return salida.slice(0, p.limite ?? 5)
+}
+
+/**
+ * (V44 §5) «A esta hora aún no han abierto. Los más cercanos:» — NUNCA vacío ni mandar a otra pantalla: si no hay nada abierto, los más cercanos (con «Abre a las 12:00»; si hoy no abren más, sin hora).
+ * Sin tope de distancia: cuenta desde el origen que haya (tu ubicación si estás en la ruta; si no, la parada de ahora).
+ */
+export function restaurantesMasCercanos(p: { restaurantes: DestinationPlace[]; origen: Coordinates | null; dateIso: string; ahoraMin: number; enCoche: boolean; limite?: number; sub?: string | null }): RestauranteCerca[] {
+  const { origen } = p
+  const salida: RestauranteCerca[] = []
+  for (const r of p.restaurantes) {
+    if (r.kind !== 'restaurant' || !hasRealCoordinates(r.coordinates)) continue
+    const sub = r.sub_category ?? null
+    if (p.sub ? sub !== p.sub : sub != null && SOLO_CON_SU_FILTRO.has(sub)) continue
+    const h = horarioDeComer(r, p.dateIso, p.ahoraMin)
+    const metros = origen && hasRealCoordinates(origen) ? haversineMeters(origen, r.coordinates) : 0
+    const minutos = viajeMin(origen ? { coordinates: origen } : null, { coordinates: r.coordinates }, p.enCoche)
+    salida.push({ nombre: r.name, coordinates: r.coordinates, metros, minutos, modo: p.enCoche ? 'coche' : 'pie', precio: r.price_range ?? null, cocina: cocinaCorta(r.what_to_order), direccion: r.address ?? null, cierraMin: h.cierraMin, sub, tipo: tipoDeLocal(r), abreMin: h.abierto === true ? null : aperturaDeHoy(r, p.dateIso, p.ahoraMin) })
+  }
+  // Primero los que abren hoy más tarde (con hora), luego el resto; cada grupo, por cercanía.
+  salida.sort((a, b) => Number(b.abreMin != null) - Number(a.abreMin != null) || a.metros - b.metros || a.nombre.localeCompare(b.nombre))
   return salida.slice(0, p.limite ?? 5)
 }
 

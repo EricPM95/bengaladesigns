@@ -138,7 +138,8 @@ try {
   const titulo = await app.evaluar(`document.querySelector('[data-titulo-explorador]')?.textContent ?? ''`)
   debe(/Añadir parada/.test(titulo), 'entre_dos', `se abre la pantalla «Añadir parada» (${titulo})`)
   {
-    const sinCirculo = await app.evaluar(`Array.from(document.querySelectorAll('button[aria-label^="Añadir "]')).filter((b) => (b.textContent || '').trim() !== '+').length`)
+    // (V44: ni la entrada del Free Tour ni el botón «Añadir alojamiento en Roma» (el de los hoteles) son restaurantes: se dejan fuera de «otros».)
+    const sinCirculo = await app.evaluar(`Array.from(document.querySelectorAll('button[aria-label^="Añadir "]')).filter((b) => (b.textContent || '').trim() !== '+' && !/Free Tour|alojamiento/i.test(b.getAttribute('aria-label') || '')).length`)
     const conCirculo = await app.evaluar(`Array.from(document.querySelectorAll('button[aria-label^="Añadir "]')).filter((b) => (b.textContent || '').trim() === '+' && !b.hasAttribute('data-mas-restaurante')).length`)
     const restau = await app.evaluar(`document.querySelectorAll('[data-mas-restaurante]').length`)
     debe(conCirculo > 0, 'visitar', `al abrir salen sitios para visitar con su «+» (${conCirculo})`)

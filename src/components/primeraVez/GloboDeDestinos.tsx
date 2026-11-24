@@ -111,6 +111,8 @@ export default function GloboDeDestinos({ destinos, estados, onCerrar, onMas }: 
   const hojaRef = useRef<Hoja>('baja')
   hojaRef.current = hoja
   const tarjeta = usePrimeraVezUi((s) => s.tarjeta)
+  // (V44 §9) [Ver destino]: la página del destino (z-80) se abre ENCIMA del globo; mientras está abierta, el globo baja por debajo (z-70) y, al cerrarla, vuelve a z-90 tal como lo dejaste.
+  const paginaAbierta = usePrimeraVezUi((s) => s.pagina !== null)
   const abrirTarjeta = usePrimeraVezUi((s) => s.abrirTarjeta)
   const destinosRef = useRef(destinos)
   destinosRef.current = destinos
@@ -269,7 +271,7 @@ export default function GloboDeDestinos({ destinos, estados, onCerrar, onMas }: 
   const asa = { onPointerDown: empezarArrastre }
 
   return createPortal(
-    <div ref={raiz} data-globo-destinos data-hoja={hoja} className="fixed inset-0 z-[90] overflow-hidden" role="dialog" aria-modal="true" aria-label="¿A dónde te apetece ir?" style={{ background: 'radial-gradient(120% 70% at 50% 28%,#FBF7EC 0%,#EFE5CE 100%)', touchAction: 'none' }}>
+    <div ref={raiz} data-globo-destinos data-hoja={hoja} className="fixed inset-0 overflow-hidden" role="dialog" aria-modal="true" aria-label="¿A dónde te apetece ir?" style={{ background: 'radial-gradient(120% 70% at 50% 28%,#FBF7EC 0%,#EFE5CE 100%)', touchAction: 'none', zIndex: paginaAbierta ? 70 : 90 }}>
       <style>{`@keyframes gdPulso{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.3);opacity:.35}}@media (prefers-reduced-motion: reduce){[data-globo-destinos] *{animation:none!important}}`}</style>
       <div ref={lugarDelMapa} data-globo-mapa style={{ position: 'absolute', inset: 0 }} />
       {/* Pines y nombres: encima del globo, sin coger el dedo (el globo se arrastra desde cualquier sitio). */}

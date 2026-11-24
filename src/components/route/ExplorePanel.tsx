@@ -207,6 +207,8 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
   const [origenApertura, setOrigenApertura] = useState<Coordinates | null>(null)
   /** EXPLORAR se abre directamente en «Cerca de mí» (la tarjeta «Hoy vuelves a casa», Tanda 7). */
   const [aperturaCerca, setAperturaCerca] = useState(false)
+  /** (V44 §5) El subfiltro de restaurantes con el que se abre EXPLORAR desde «Ver todos en Explorar». */
+  const [aperturaSub, setAperturaSub] = useState<string | null>(null)
   // (Tanda 10N5 §0.2) Mientras no se sabe si hay pase, Baños y Fuentes no se pintan (ni cerradas ni abiertas); al llegar la respuesta se repintan solas.
   const estadoPase = usePasePintable()
   const banosYFuentes = estadoPase === 'con'
@@ -219,6 +221,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
     if ((apertura.categoria === 'banos' || apertura.categoria === 'fuentes') && !banosYFuentes) return
     setOrigenApertura(apertura.origen)
     setAperturaCerca(Boolean(apertura.cerca))
+    setAperturaSub(apertura.subfiltro ?? null)
     setActiveCard(apertura.categoria)
   }, [pedido, banosYFuentes])
 
@@ -365,6 +368,7 @@ export function ExplorePanel({ route, defaultCity, onMarkersChange, activeResult
         pinsDeLaLista={categoriasLzMarcadas.length > 0}
         initialOrigin={origenApertura}
         initialNearby={aperturaCerca}
+        initialSubCategory={aperturaSub}
         onHotels={() => useAlojamientoUi.getState().abrirMapa()}
         onAddFreeTour={freeTourAvailable(route) ? alAnadir<void>(() => setFreeTourOpen(true)) : undefined}
         onQuickAdd={alAnadir((place: DestinationPlace) => setAddItem({ kind: 'place', place }))}

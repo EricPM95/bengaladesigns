@@ -39,6 +39,7 @@ import { BotonCambiarPlan } from './CambiarPlan'
 import { AvisoMasTiempo } from './MasTiempo'
 import { BOTON_CLARO, BOTON_ORO, DORADO } from '../../../ui/botonesOro'
 import { HojaActivaUbicacion } from './HojaActivaUbicacion'
+import { deDondeADonde, type ZonaUbicacion } from '../../../../lib/ubicacionHoy'
 
 /** Los colores del diseño «Hoy Estados» (apartado 04): tinta, marfil, oro. */
 const TINTA = '#1C2230'
@@ -275,6 +276,10 @@ export interface PropsParada {
   horario: HorarioDeParada | null
   /** La zona del alojamiento: de dónde sale la primera parada del día. */
   casa?: Coordinates | null
+  /** (V44 §1) Dónde está el viajero: en la ruta, en el destino pero lejos de ella, fuera del destino (> 50 km) o sin ubicación. */
+  zonaUbicacion?: ZonaUbicacion
+  /** (V44 §1) Si el viajero ha dado su ubicación (aunque HOY no la use: `ubicacion` solo llega aquí cuando está en la ruta). */
+  hayUbicacion?: boolean
 }
 
 /**
@@ -408,8 +413,12 @@ export function TarjetaParada(p: PropsParada) {
   const etiqueta = anterior ? 'SIGUIENTE PARADA' : 'PRIMERA PARADA'
   const rango = rangoDeHorario(p.horario)
   const cerrado = cerradoAhora(p.horario, ahoraMin)
-  // (V43 §8) Con ubicación: «A pie · 12 min desde ti»; sin ella, «… desde tu alojamiento» (o desde la parada de antes).
-  const lineaTrayecto = trayecto ? [trayecto.titulo, trayecto.detalle ?? (ubicacion ? 'desde ti' : null)].filter(Boolean).join(' · ') : null
+  // (V44 §1) La caja de minutos: en la ruta, «12 min · Desde ti»; en el destino pero lejos de la ruta (el aeropuerto) o sin ubicación, el tiempo del plan («Del alojamiento al Coliseo», «Del Panteón a la Fontana de Trevi»); fuera del destino, «—» y «Estás lejos».
+  const zona: ZonaUbicacion = p.zonaUbicacion ?? (ubicacion ? 'ruta' : 'sin')
+  const modoCaja = trayecto?.modo ?? (enCoche ? 'coche' : 'pie')
+  const origenDelPlan = anterior && !anterior.isBreak ? displayStopName(anterior.name) : null
+  const minutosCaja = zona === 'fuera' || !trayecto ? '—' : `${trayecto.min} min`
+  const subCaja = zona === 'fuera' ? 'Estás lejos' : zona === 'ruta' ? 'Desde ti' : deDondeADonde(origenDelPlan, nombre)
   return (
     <>
       <div data-hoy-siguiente data-hoy-estado="llegar" data-tarjeta="clara" className="flex-none overflow-hidden rounded-[30px]" style={{ background: '#FFFDF8', boxShadow: '0 24px 40px -26px rgba(28,34,48,.55)' }}>
@@ -420,24 +429,27 @@ export function TarjetaParada(p: PropsParada) {
           </FotoDeLaParada>
         </div>
         <div className="flex flex-col gap-3.5 px-4 pb-3.5 pt-4">
-          <div className="flex flex-col gap-[9px]">
+          {/* (V44 §1 y §2) Dos cajas, una al lado de otra: «HORARIO» (con «Cerrado ahora · abre a las 9:00») y la de minutos (A PIE / EN COCHE). */}
+          <div className="grid grid-cols-2 gap-2.5">
             {rango && (
-              <div data-hoy-horario className="flex items-center gap-[9px] text-[13.5px] font-medium" style={{ color: 'rgba(28,34,48,.72)' }}>
-                <Icono nombre="reloj" size={17} grosor={1.7} />
-                <span>
-                  {rango}
-                  {cerrado && <b data-hoy-cerrado-ahora style={{ color: '#B3321F' }}>{` · ${cerrado}`}</b>}
-                </span>
+              <div data-hoy-horario className="flex min-h-[78px] flex-col gap-1 rounded-2xl px-3 py-2.5" style={{ background: '#F6F0E2' }}>
+                <span style={{ font: "700 10px 'Geist Mono',monospace", letterSpacing: '.14em', color: '#6F4E37' }}>HORARIO</span>
+                <b className="text-[15px] leading-[1.15]">{rango}</b>
+                {cerrado && <b data-hoy-cerrado-ahora className="text-[12px] font-semibold leading-[1.25]" style={{ color: '#B3321F' }}>{cerrado}</b>}
               </div>
             )}
-            {lineaTrayecto && trayecto && (
-              <div data-hoy-trayecto={trayecto.modo} className="flex items-center gap-[9px] text-[14px] font-semibold">
-                <Icono nombre={trayecto.modo === 'coche' ? 'coche' : 'andando'} size={17} grosor={1.7} />
-                <span className="min-w-0 flex-1">
-                  {lineaTrayecto}
-                </span>
-              </div>
-            )}
+            <div data-hoy-trayecto={modoCaja} data-hoy-trayecto-zona={zona} className={`flex min-h-[78px] flex-col gap-1 rounded-2xl px-3 py-2.5 ${rango ? '' : 'col-span-2'}`} style={{ background: '#F6F0E2' }}>
+              <span className="flex items-center justify-between">
+                <span style={{ font: "700 10px 'Geist Mono',monospace", letterSpacing: '.14em', color: '#6F4E37' }}>{modoCaja === 'coche' ? 'EN COCHE' : 'A PIE'}</span>
+                {zona === 'ruta' && (
+                  <button type="button" onClick={p.pedirUbicacion} data-hoy-actualizar-ubicacion className="-my-2 flex min-h-11 items-center px-1 text-[11.5px] font-bold underline underline-offset-[3px]" style={{ color: ORO_TEXTO }}>
+                    {p.ubicacionEstado === 'pidiendo' ? 'Buscando…' : 'Actualizar'}
+                  </button>
+                )}
+              </span>
+              <b data-hoy-trayecto-min className="text-[22px] leading-[1.05]" style={{ fontFamily: "'Instrument Serif',serif", fontWeight: 400 }}>{minutosCaja}</b>
+              <span data-hoy-trayecto-sub className="text-[12px] font-medium leading-[1.25]" style={{ color: 'rgba(28,34,48,.65)' }}>{subCaja}</span>
+            </div>
           </div>
           {salida && fija != null && (
             <div data-hoy-salida={salida} className="flex items-center gap-2 rounded-xl px-3 py-2 text-[13px] font-semibold leading-[1.3]" style={salida === 'tarde' ? { background: '#FBE6E2', border: '1px solid #E5766B', color: '#8A2A1F' } : { background: '#F6F0E2', border: '1px solid rgba(181,138,46,.4)', color: '#6E5018' }}>
@@ -445,26 +457,28 @@ export function TarjetaParada(p: PropsParada) {
               {textoDeSalida(salida, fija)}
             </div>
           )}
-          {historia.hay && historia.estado !== 'parado' && !historia.candado ? (
-            <BarraDeHistoria h={historia} />
-          ) : (
-            historia.hay && (
-              <button type="button" onClick={alEscuchar} data-hoy-escuchar-camino data-escuchar={historia.candado ? 'candado' : historia.estado} className="flex min-h-[58px] items-center gap-3 rounded-2xl px-3 text-left" style={{ background: '#F6F0E2', border: '1px solid rgba(181,138,46,.3)', color: '#4A3510' }}>
-                <span aria-hidden="true" className="flex h-10 w-10 flex-none items-center justify-center rounded-full" style={{ background: DORADO }}>
+          {/* (V44 §2) «Escucha su historia por el camino · 3 min», en azul oscuro DESDE EL PRINCIPIO: al darle al play solo cambia ▶ por ❚❚ y se mueven las ondas. */}
+          {historia.hay && (
+            <button type="button" onClick={alEscuchar} data-hoy-escuchar-camino data-escuchar={historia.candado ? 'candado' : historia.estado} aria-label={historia.estado === 'hablando' ? 'Pausar la historia' : 'Escuchar su historia por el camino'} className="flex min-h-[58px] items-center gap-3 rounded-2xl px-3 text-left" style={{ background: TINTA, color: MARFIL }}>
+              <style>{'@keyframes ondaV44{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}'}</style>
+              <span aria-hidden="true" className="flex h-10 w-10 flex-none items-center justify-center rounded-full" style={{ background: DORADO }}>
+                {historia.estado === 'hablando' ? (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#4A3510"><path d="M6 4h4v16H6zM14 4h4v16h-4z" /></svg>
+                ) : (
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="#4A3510"><path d="M8 5v14l11-7z" /></svg>
-                </span>
-                <span className="flex min-w-0 flex-1 flex-col text-[13px] font-semibold leading-[1.25]">
-                  <span>Escucha su historia por el camino</span>
-                  <span className="text-[12px] font-medium opacity-70">{historia.minutos} min</span>
-                </span>
-                <span aria-hidden="true" className="flex h-5 flex-none items-center gap-[2.5px]">
-                  {[8, 14, 10, 18, 12, 16, 9].map((h, i) => (
-                    <i key={i} style={{ display: 'block', width: 2.5, height: h, borderRadius: 2, background: 'rgba(110,80,24,.55)' }} />
-                  ))}
-                </span>
-                {historia.candado && <Icono nombre="candado" size={13} grosor={2} />}
-              </button>
-            )
+                )}
+              </span>
+              <span className="flex min-w-0 flex-1 flex-col text-[13px] font-semibold leading-[1.25]">
+                <span>Escucha su historia por el camino</span>
+                <span className="text-[12px] font-medium opacity-70">{historia.minutos} min</span>
+              </span>
+              <span aria-hidden="true" className="flex h-5 flex-none items-center gap-[2.5px]">
+                {[8, 14, 10, 18, 12, 16, 9].map((h, i) => (
+                  <i key={i} style={{ display: 'block', width: 2.5, height: h, borderRadius: 2, background: ORO_CLARO, opacity: historia.estado === 'hablando' ? 1 : 0.55, transformOrigin: 'center', animation: historia.estado === 'hablando' ? `ondaV44 .9s ease-in-out ${i * 0.09}s infinite` : 'none' }} />
+                ))}
+              </span>
+              {historia.candado && <Icono nombre="candado" size={13} grosor={2} />}
+            </button>
           )}
           <div className="flex gap-[9px]">
             {comoLlegar ? (
@@ -480,18 +494,19 @@ export function TarjetaParada(p: PropsParada) {
           </div>
           <ExtraDeParada parada={siguiente} dayId={day.id} vista={false} contexto="tarjeta" route={route} reserva={reservaSiguiente} />
           {/* (V43 §8) Con ubicación: «¿Ya estás aquí?» y [Ya he llegado]; sin ella, el recuadro «Sin tu ubicación no sabemos cuándo llegas» con [Usar mi ubicación] y [Ya he llegado]. */}
-          {ubicacion ? (
+          {zona === 'fuera' ? (
+            <div data-hoy-lejos className="flex flex-col gap-1 rounded-2xl p-3" style={{ background: 'transparent', border: '1.5px dashed rgba(181,138,46,.5)' }}>
+              <span className="text-[13px] font-semibold leading-[1.3]" style={{ color: '#4A3510' }}>Estás lejos de {route.destination}. Cuando llegues, contaremos desde donde estés.</span>
+            </div>
+          ) : zona === 'ruta' || (zona === 'destino') ? (
             <div className="flex items-center justify-center gap-1 text-center text-[12.5px] font-medium" style={{ color: 'rgba(28,34,48,.55)' }}>
               ¿Ya estás aquí?
               <button type="button" onClick={() => setForzada(siguiente.id)} data-hoy-ya-he-llegado aria-label={`Ya he llegado a ${nombre}`} className="inline-flex min-h-11 items-center px-1 font-bold underline underline-offset-[3px]" style={{ color: ORO_TEXTO }}>
                 Ya he llegado
               </button>
-              <button type="button" onClick={p.pedirUbicacion} data-hoy-actualizar-ubicacion className="inline-flex min-h-11 items-center px-1 font-bold underline underline-offset-[3px]" style={{ color: ORO_TEXTO }}>
-                Actualizar
-              </button>
             </div>
           ) : (
-            <div data-hoy-sin-ubicacion className="flex flex-col gap-2.5 rounded-2xl p-3" style={{ background: '#F6F0E2', border: '1px solid rgba(181,138,46,.35)' }}>
+            <div data-hoy-sin-ubicacion className="flex flex-col gap-2.5 rounded-2xl p-3" style={{ background: 'transparent', border: '1.5px dashed rgba(181,138,46,.5)' }}>
               <span className="text-[13px] font-semibold leading-[1.3]" style={{ color: '#4A3510' }}>Sin tu ubicación no sabemos cuándo llegas</span>
               <div className="flex gap-2">
                 <button type="button" onClick={() => (p.ubicacionEstado === 'no' ? setHojaUbicacion(true) : p.pedirUbicacion())} disabled={p.ubicacionEstado === 'pidiendo'} data-hoy-usar-ubicacion className="flex h-11 flex-1 items-center justify-center rounded-2xl text-[13.5px] font-bold" style={BOTON_ORO}>

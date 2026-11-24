@@ -79,7 +79,8 @@ const pintaDias = (route, abierto) => aTexto((ultimoHtmlDias = renderToStaticMar
 const nombresDe = (route) => route.days.map((d) => d.stops.map((s) => s.name))
 const MALOS = [/Te falta/i, /Si te sobra tiempo/i, /Segunda visita/i, /Buscar lugares/i, /Tienes algo ya reservado/i, /sugerencia para este hueco/i, /También te puede interesar/i]
 const FRANJA_CON_HORA = /(Mañana|Tarde|Noche|Comida|Cena)\s*(?:[·\-–—:]|desde|a las|de)?\s*(?:desde\s*)?\d{1,2}[:.]\d{2}/i
-const LINEA_DE_HORARIO = /Abre|Cierra|cierra|Última entrada|Cerrado|Solo|Gratis|Entrada|Acceso/
+// (V44: la tarjeta de una parada enseña su horario de apertura «9:00–19:30», sin la palabra «Abre»: también es un horario, no una hora que el viajero no puso.)
+const LINEA_DE_HORARIO = /Abre|Cierra|cierra|Última entrada|Cerrado|Solo|Gratis|Entrada|Acceso|\d{1,2}:\d{2}\s*[–-]\s*\d{1,2}:\d{2}/
 const reserva = (id, refId, placeNames, dateIso, dayNumber, time, extra = {}) => ({ id, kind: 'entrada', refId, name: refId, placeNames, dateIso, dayNumber, time, ...extra })
 const COLISEO = ['Coliseo', 'Foro Romano y Palatino']
 

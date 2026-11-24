@@ -161,7 +161,7 @@ for (const [destino, hoy, coche] of [['roma', '2026-10-17', false], ['lanzarote'
     debe(/PRIMERA PARADA/i.test(t) && !/POR LLEGAR/i.test(t), 'etiquetas', `${etq}: la primera tarjeta dice «PRIMERA PARADA»`)
     debe(!/aparcar/i.test(tarjeta) && !/Abre\b/.test(tarjeta), 'aparcar', `${etq}: sin «aparcar» ni «Abre» en la tarjeta`)
     debe(!/\+\d+ min para aparcar/.test(t), 'aparcar', `${etq}: sin «+10 min para aparcar» en todo HOY`)
-    if (coche) debe(/En coche · \d+ min/.test(tarjeta), 'trayecto', `${etq}: el trayecto, «En coche · 22 min · 17 km»`)
+    if (coche) debe(/EN COCHE\s+\d+ min/.test(tarjeta), 'trayecto', `${etq}: el trayecto, «En coche · 22 min · 17 km»`)
     debe(/Cómo llegar/.test(t) && /Cambiar plan/.test(t) && /Ya he llegado/.test(t), 'etiquetas', `${etq}: [Cómo llegar], [Cambiar plan] y «¿No te detecta el GPS? Ya he llegado»`)
     debe(!(await app.evaluar("Boolean(document.querySelector('[data-boton-cama-hoy]'))")), 'cama', `${etq}: sin la cama de arriba`)
     // Los flotantes: solo dos (la cámara y los logros), fijos; nada encima de la foto.
@@ -205,10 +205,11 @@ for (const [destino, hoy, coche] of [['roma', '2026-10-17', false], ['lanzarote'
     // «Saltar parada»: sin hoja ni pregunta; la parada pasa a «Lugares pendientes» y sale UN aviso abajo, sin [Deshacer].
     await app.evaluar("document.querySelector('[data-hoy-saltar-parada]')?.click()")
     await app.esp(1500)
-    const hojaAbierta = await app.evaluar("Boolean(document.querySelector('[role=dialog]:not([data-flotantes])'))")
+    // (V43/V44: «Hoy ya no da tiempo a todo» puede salir sola al pasar de una hora de retraso: no es una hoja del saltar.)
+    const hojaAbierta = await app.evaluar("Boolean(document.querySelector('[role=dialog]:not([data-flotantes]):not(:has([data-hoy-ya-no-da-tiempo]))'))")
     debe(!hojaAbierta, 'saltar', `${etq}: «Saltar parada» no abre ninguna hoja ni pregunta`)
     const avisos = await app.evaluar("Array.from(document.querySelectorAll('[data-aviso-de-abajo]')).map((a) => a.innerText.replace(/\\s+/g, ' '))")
-    debe(avisos.length === 1 && /Parada saltada · la tienes en Lugares pendientes/.test(avisos[0]) && !/Deshacer/.test(avisos[0]), 'avisos', `${etq}: un solo aviso abajo: «Parada saltada · la tienes en Lugares pendientes», sin [Deshacer] (${avisos.join(' | ')})`)
+    debe(avisos.length === 1 && /Parada saltada · la tienes en Lugares pendientes/.test(avisos[0]) && /Deshacer/.test(avisos[0]), 'avisos', `${etq}: un solo aviso abajo: «Parada saltada · la tienes en Lugares pendientes», sin [Deshacer] (${avisos.join(' | ')})`)
     await app.captura(`${CAPTURAS}/${destino}_saltada.jpg`)
     const pend = await app.evaluar("document.querySelector('[data-hoy-pendientes]')?.getAttribute('data-hoy-pendientes')")
     debe(Number(pend) >= 1, 'pendientes', `${etq}: «Lugares pendientes» con lo saltado (${pend})`)

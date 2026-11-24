@@ -185,7 +185,7 @@ await sec(async () => {
   debe(!(await hay(a, '[data-hoy-por-la-manana]')) && (await txt(a, '[data-hoy-insignia]')) === 'PRIMERA PARADA', 'por_la_manana', 'Completa 1 (V2): por la mañana, la tarjeta «PRIMERA PARADA» (ya no «Sal de casa a las…»)')
   const ord1 = await ordenDeBloques(a)
   debe(ord1[0] === 'cabecera' && ord1.indexOf('principal') < ord1.indexOf('tuDia') && ord1.indexOf('tuDia') < ord1.indexOf('cerca'), 'orden', `Completa 1: el mismo orden (${ord1.join(' · ')})`)
-  debe(/En coche · \d+ min/.test((await txt(a, '[data-hoy-trayecto]')) ?? ''), 'por_la_manana', '«PRIMERA PARADA» con su trayecto en coche')
+  debe(/EN COCHE\s+\d+ min/.test((await txt(a, '[data-hoy-trayecto]')) ?? ''), 'por_la_manana', '«PRIMERA PARADA» con su trayecto en coche')
   await capturaEntera(a, '01_lz_martes10_por_la_manana')
   await ir(a, { dia: idxMartes, min: 10 * 60 })
 

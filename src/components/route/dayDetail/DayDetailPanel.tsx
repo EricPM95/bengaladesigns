@@ -7,7 +7,7 @@ import { CabeceraDelDiaCoche, VueltaEnCoche, trayectoDeVuelta } from './CocheDel
 import type { DayTravelInfo } from '../../../lib/dayTravelInfo'
 import type { ConnectorInfo, TransportMode } from '../../../lib/mockDayDetail'
 import { addDaysToIso } from '../../../lib/dateRange'
-import { alDia, delDia, diaCorto, elDia } from '../../../lib/nombreDeDia'
+import { alDia, diaCorto, elDia } from '../../../lib/nombreDeDia'
 import { displayStopName } from '../../../lib/format'
 import {
   buildCombinedDaysLines,
@@ -501,7 +501,6 @@ export function DayDetailPanel({
   const numberColors = { bg: dayColorPastel(dayIndex), text: dayColorStrong(dayIndex) }
   // El primero de los días en blanco por límite: es el único que lleva la explicación.
   // `allDays` viene recortado a id/número/ciudad, así que la marca se busca en la ruta entera.
-  const isFirstBeyondAutoDay = (route?.days ?? []).find((candidate) => candidate.beyondAutoDays)?.id === day.id
 
   // Arrastrar paradas para cambiarlas de orden dentro del día. El umbral de 8 px evita que un tap
   // torpe cuente como arrastre, y el retardo en táctil deja que el dedo haga scroll por la lista
@@ -934,13 +933,15 @@ export function DayDetailPanel({
   const timeline: TimelineItem[] = []
   /** Día libre (decisión del usuario, 2026-09-28): solo paradas, en el orden del viajero; la hora, la que él ponga. */
   const freeDay = (day.dayType ?? 'normal') === 'manual'
+  // (V44 §9) Un día MONTADO POR EL VIAJERO («lo hago yo», «Crear mi propio día», los días más allá de los escritos) nunca lleva «Hora de comer» ni «Hora de cenar» automáticas.
+  const sinComidas = freeDay || Boolean(day.beyondAutoDays || day.userAdded) || (route ? isManualRoute(route) : false)
   // Un día movido de su fecha (PROMPT_UI_REPASO 10): si en la nueva cae un cierre, la marca roja de siempre en esa parada.
   const originalDayNumber = route?.originalRoute?.days.find((candidate) => candidate.id === day.id)?.dayNumber
   const movedDay = !freeDay && originalDayNumber != null && originalDayNumber !== day.dayNumber
   // (Tanda 7: el primer y el último día los monta el motor con las horas del viajero; la pantalla ya no marca paradas con «Llegas después» ni «Ya te has ido».)
   if (muestraParadas) {
     // (10S10, 1) La comida o la cena delante de la primera parada (detrás de «-1»): también son elementos de la línea.
-    if (!freeDay && stops.length > 0) {
+    if (!sinComidas && stops.length > 0) {
       if (lunchInsertionIndex === -1) timeline.push({ type: 'lunch', index: -1 })
       if (dinnerInsertionIndex === -1) timeline.push({ type: 'dinner', index: -1 })
     }
@@ -949,7 +950,7 @@ export function DayDetailPanel({
       for (const entry of freeTimesOf(day)) {
         if (realStops[index]?.name === entry.after && entry.before !== LUNCH_FREE_LABEL && realStops[index + 1]?.name === entry.before) timeline.push({ type: 'free', index, entry })
       }
-      if (lunchInsertionIndex === index && !freeDay) {
+      if (lunchInsertionIndex === index && !sinComidas) {
         for (const entry of freeTimesOf(day)) {
           if (realStops[index]?.name === entry.after && entry.before === LUNCH_FREE_LABEL) timeline.push({ type: 'free', index, entry })
         }
@@ -958,7 +959,7 @@ export function DayDetailPanel({
           if (entry.after === LUNCH_FREE_LABEL && realStops[index + 1]?.name === entry.before) timeline.push({ type: 'free', index: -1 - index, entry })
         }
       }
-      if (dinnerInsertionIndex === index && !freeDay) {
+      if (dinnerInsertionIndex === index && !sinComidas) {
         // (El hueco con «+ Añadir parada» antes de cenar; ya no hay un «Tiempo libre» ahí: paso 5, 2026-10-01.)
         if (dinnerFreeMinutes(index) !== null) timeline.push({ type: 'mealGap', index })
         timeline.push({ type: 'dinner', index })
@@ -1387,13 +1388,8 @@ export function DayDetailPanel({
               {/* Solo en el día en blanco por límite del destino, y solo en el PRIMERO: repetirlo en
                   cada día a partir del octavo sería regañar al viajero por alargar su viaje. No es
                   un error ni un bloqueo — a partir de aquí manda él. */}
-              {day.beyondAutoDays && isFirstBeyondAutoDay && (
-                <p className="rounded-xl bg-bg-hover px-3 py-2.5 text-small leading-relaxed text-text-soft">
-                  A partir {delDia(route, day.dayNumber)}, tú decides. Añade las paradas que quieras y nosotros organizamos los tiempos.
-                </p>
-              )}
               {day.beyondAutoDays ? (
-                <button type="button" onClick={() => setExtraSheet(true)} className="flex h-12 w-full items-center justify-center rounded-2xl btn-champan text-[14px] font-medium transition-transform active:scale-[.98]">
+                <button type="button" data-elegir-mis-sitios onClick={() => setExtraSheet(true)} className="flex h-12 w-full items-center justify-center rounded-2xl text-[14px] font-bold transition-transform active:scale-[.98]" style={{ background: '#1C2230', color: '#F3D88F' }}>
                   Elegir mis sitios
                 </button>
               ) : (

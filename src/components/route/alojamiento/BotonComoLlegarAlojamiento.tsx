@@ -1,3 +1,4 @@
+import { useRouteStore } from '../../../store/useRouteStore'
 import type { CSSProperties } from 'react'
 import { enlaceComoLlegarAlojamiento } from '../../../lib/direccionAlojamiento'
 import { usePagoActivo } from '../../../lib/pago'
@@ -22,7 +23,8 @@ interface BotonComoLlegarAlojamientoProps {
  * Solo sale de pago (`pagoActivo()`) y solo con dirección. Icono fino gris sin relleno; el texto, el de la pantalla donde esté.
  */
 export function BotonComoLlegarAlojamiento({ direccion, variante = 'completo', className = '', style }: BotonComoLlegarAlojamientoProps) {
-  const enlace = enlaceComoLlegarAlojamiento(direccion)
+  const ciudadDelViaje = useRouteStore((state) => state.route?.destination ?? null)
+  const enlace = enlaceComoLlegarAlojamiento(direccion, ciudadDelViaje)
   const pago = usePagoActivo()
   if (!enlace) return null
   // (Tanda 10G: sin el pase, cerrado y a la vista; Tanda 10N5: con la caja pequeña del pase, y sin pintar hasta saber si hay pase.)

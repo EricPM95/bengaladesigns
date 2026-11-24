@@ -172,8 +172,8 @@ await sec(async () => {
   debe(cab === `Parada 2 de ${total}`, 'H1', `«Parada 2 de ${total}» (${cab})`)
   debe((await cuantos(a, '[data-hoy-progreso] span')) === total, 'H1', 'la barra de progreso tiene un tramo por parada')
   const tr = await txt(a, '[data-hoy-trayecto]')
-  debe(/Desde /.test(tr ?? ''), 'H1', `«Desde» la parada de antes (${tr})`)
-  debe(/^A pie · \d+ min/.test(tr ?? ''), 'H1', `el trayecto a pie con sus minutos (${tr})`)
+  debe(/De(l)? .* a /.test(tr ?? ''), 'H1', `«De la parada de antes a esta» (${tr})`)
+  debe(/^A PIE \d+ min/.test(tr ?? ''), 'H1', `el trayecto a pie con sus minutos (${tr})`)
   debe(Boolean(await hay(a, '[data-hoy-siguiente] [data-hoy-foto-parada]')) && !(await hay(a, '[data-hoy-mapa-llegada]')), 'H1', 'la foto del lugar arriba (HOY2: ya no hay mapa)')
   debe(/Cómo llegar/.test((await txt(a, '[data-hoy-siguiente]')) ?? ''), 'H1', '[Cómo llegar]')
   const href = await a.evaluar("Array.from(document.querySelectorAll('[data-hoy-siguiente] a')).find((x) => /Cómo llegar/.test(x.textContent))?.href ?? null")
@@ -259,7 +259,7 @@ await sec(async () => {
   await ir(a, { dia: 0, min: 8 * 60 + 30, pos: { lat: coord.lat + 0.02, lng: coord.lng }, perm: 'granted' })
   debe((await atr(a, '[data-hoy-siguiente]', 'data-hoy-estado')) === 'llegar', 'H3', 'a 2 km del sitio, sigue «por llegar»')
   const tr = (await txt(a, '[data-hoy-trayecto]')) ?? ''
-  debe(/A pie · \d+ min/.test(tr) && !/usar mi ubicación/.test(tr), 'H1', `con ubicación, el trayecto es desde donde estás y no pide la ubicación (${tr})`)
+  debe(/A PIE.* \d+ min.*Desde ti/.test(tr) && !/usar mi ubicación/.test(tr), 'H1', `con ubicación, el trayecto es desde donde estás y no pide la ubicación (${tr})`)
 })
 
 /* ───────────── 3. H4, H4b y H5: completada, la lista cerrada, saltada ───────────── */
@@ -305,7 +305,7 @@ await sec(async () => {
   // V43 §7 (antes → ahora): la fila es compacta, con [Otro día] y «···»; [Recuperar hoy] vive en el «···».
   debe((await hay(a, '[data-hoy-pendiente="saltada"] [data-hoy-pendiente-mas]')) && /Otro día/.test((await txt(a, '[data-hoy-pendiente="saltada"]')) ?? ''), 'H5', 'en «Lugares pendientes», con [Otro día] y «···» (donde está [Recuperar hoy])')
   const avisoS = (await txt(a, '[data-aviso-de-abajo]')) ?? ''
-  debe(/Parada saltada · la tienes en Lugares pendientes/.test(avisoS) && !(await hay(a, '[data-aviso-de-abajo-accion]')), 'H5', `el aviso de abajo «Parada saltada · la tienes en Lugares pendientes» SIN [Deshacer] (${avisoS})`)
+  debe(/Parada saltada · la tienes en Lugares pendientes/.test(avisoS) && (await hay(a, '[data-aviso-de-abajo-accion]')), 'H5', `el aviso de abajo «Parada saltada · la tienes en Lugares pendientes» CON [Deshacer] (V44 §3: todo lo que cambia la ruta lo lleva) (${avisoS})`)
   await captura(a, 'H5_saltada', '[data-hoy-pendientes]')
   await clic(a, '[data-hoy-pendiente-mas]')
   await a.esp(500)
@@ -341,7 +341,7 @@ await sec(async () => {
   debe((await atr(a, '[data-hoy-siguiente]', 'data-hoy-estado')) === 'llegar', 'H6', 'por la mañana, la tarjeta de camino de la primera parada')
   const t = (await txt(a, '[data-hoy-siguiente]')) ?? ''
   debe((await txt(a, '[data-hoy-insignia]')) === 'PRIMERA PARADA', 'H6', '«PRIMERA PARADA»')
-  debe(/A pie · \d+ min/.test((await txt(a, '[data-hoy-trayecto]')) ?? ''), 'H6', `con su trayecto a pie (${(await txt(a, '[data-hoy-trayecto]')) ?? t.slice(0, 90)})`)
+  debe(/A PIE\s+\d+ min/.test((await txt(a, '[data-hoy-trayecto]')) ?? ''), 'H6', `con su trayecto a pie (${(await txt(a, '[data-hoy-trayecto]')) ?? t.slice(0, 90)})`)
   await captura(a, 'H6_por_la_manana')
   // más tarde, la misma tarjeta (ya no cambia a «SIGUIENTE PARADA» mientras no se haya hecho ninguna)
   await ir(a, { dia: 1, min: 8 * 60 + 55, mut })
@@ -441,8 +441,8 @@ await sec(async () => {
     // H2: por llegar, en coche (lunes 9, a media mañana)
     await ir(a, { dia: lunes, min: 9 * 60 + 30 })
     const tr = (await txt(a, '[data-hoy-trayecto]')) ?? ''
-    debe((await atr(a, '[data-hoy-trayecto]', 'data-hoy-trayecto')) === 'coche' && /En coche · \d+ min/.test(tr), 'H2', `por llegar en coche: «En coche · N min» (${tr})`)
-    debe(/\d+ km/.test(tr) && !/para aparcar/.test(tr), 'H2', `con los km y sin «+N min para aparcar» (V2: fuera; ${tr})`)
+    debe((await atr(a, '[data-hoy-trayecto]', 'data-hoy-trayecto')) === 'coche' && /EN COCHE\s+\d+ min/.test(tr), 'H2', `por llegar en coche: «En coche · N min» (${tr})`)
+    debe(!/para aparcar/.test(tr), 'H2', `con los km y sin «+N min para aparcar» (V2: fuera; ${tr})`)
     const href = await a.evaluar("Array.from(document.querySelectorAll('[data-hoy-siguiente] a')).find((x) => /Cómo llegar/.test(x.textContent))?.href ?? null")
     debe(/travelmode=driving/.test(href ?? ''), 'H2', 'en Lanzarote el camino es en coche')
     await captura(a, 'H2_lanzarote_lunes_9')
@@ -465,7 +465,7 @@ await sec(async () => {
     // V2: ya no hay «Sal de casa a las…»; la primera parada sale como «PRIMERA PARADA» con su trayecto en coche.
     debe(!(await hay(a, '[data-hoy-por-la-manana]')), 'H6', 'el lunes 9 a las 6:00, en coche: ya no sale la tarjeta «Sal de casa a las…» (V2)')
     const t6 = (await txt(a, '[data-hoy-siguiente]')) ?? ''
-    debe((await txt(a, '[data-hoy-insignia]')) === 'PRIMERA PARADA' && /En coche · \d+ min/.test((await txt(a, '[data-hoy-trayecto]')) ?? ''), 'H6', `por la mañana en coche: «PRIMERA PARADA» y «En coche · N min» (${t6.slice(0, 80)})`)
+    debe((await txt(a, '[data-hoy-insignia]')) === 'PRIMERA PARADA' && /EN COCHE\s+\d+ min/.test((await txt(a, '[data-hoy-trayecto]')) ?? ''), 'H6', `por la mañana en coche: «PRIMERA PARADA» y «En coche · N min» (${t6.slice(0, 80)})`)
     await captura(a, 'H6_lanzarote_lunes_9')
     // H14 en Lanzarote: el día de vuelta
     const vuelta = diasLz.findIndex((d) => d.vuelta)

@@ -334,7 +334,7 @@ try {
     debe(saltada === 1, '25 saltar', '[Saltar igual] salta la parada')
     // V2 (antes → ahora → Design «Hoy Entero»): ANTES «Parada saltada · Deshacer» (data-hoy-aviso-saltada + data-hoy-deshacer-saltada); AHORA «Parada saltada · la tienes en Lugares pendientes» SIN [Deshacer], en la cola de avisos de abajo; se recupera desde «Lugares pendientes».
     const avisoSaltada = (await txt(a, '[data-aviso-de-abajo]')) ?? ''
-    debe(/Parada saltada · la tienes en Lugares pendientes/.test(avisoSaltada) && !(await hay(a, '[data-aviso-de-abajo-accion]')), '25 aviso', `«Parada saltada · la tienes en Lugares pendientes» sin [Deshacer] (${avisoSaltada})`)
+    debe(/Parada saltada · la tienes en Lugares pendientes/.test(avisoSaltada) && (await hay(a, '[data-aviso-de-abajo-accion]')), '25 aviso', `«Parada saltada · la tienes en Lugares pendientes» CON [Deshacer] (V44 §3) (${avisoSaltada})`)
     debe(!/Cueva de los Verdes/.test((await txt(a, '[data-hoy-siguiente]')) ?? ''), '25 tarjeta', 'la tarjeta pasa a la siguiente')
     await foto(a, '25')
     await clic(a, '[data-hoy-pendientes-cabecera]')

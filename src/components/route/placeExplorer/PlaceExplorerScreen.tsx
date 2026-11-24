@@ -80,6 +80,8 @@ interface PlaceExplorerScreenProps {
   initialOrigin?: Coordinates | null
   /** Abrir directamente en «Cerca de ti» (ordenado por cercanía, pidiendo la ubicación si no hay punto de partida): la tarjeta «Hoy vuelves a casa» (Tanda 7). Solo de pago. */
   initialNearby?: boolean
+  /** (V44 §5) El subfiltro de restaurantes con el que abrir (si el filtro es Restaurantes). */
+  initialSubCategory?: string | null
   /** Las excursiones del destino, para el filtro "Excursiones" (ver useDestinationPool). Vacío en un
       destino sin catálogo curado — el chip entonces ni se pinta. */
   excursions?: Excursion[]
@@ -356,6 +358,7 @@ export function PlaceExplorerScreen({
   pinsDeLaLista = false,
   initialOrigin = null,
   initialNearby = false,
+  initialSubCategory = null,
   excursions = [],
   initialQuery,
   focusCoordinates = null,
@@ -406,6 +409,11 @@ export function PlaceExplorerScreen({
   const [selectedExcursion, setSelectedExcursion] = useState<Excursion | null>(null)
   /** null = "Todos" (la sub-categoría es excluyente: una o ninguna). Solo aplica a restaurantes. */
   const [activeSubCategory, setActiveSubCategory] = useState<RestaurantSubCategory | null>(null)
+  // (V44 §5) Abierto desde «Ver todos en Explorar» de «Comer cerca de ti»: el subfiltro que estaba marcado allí.
+  useEffect(() => {
+    if (open && initialSubCategory && findRestaurantSubCategory(initialSubCategory)) setActiveSubCategory(initialSubCategory as RestaurantSubCategory)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, initialSubCategory])
   const [query, setQuery] = useState(initialQuery ?? '')
   const [tab, setTab] = useState<BottomTab>('recommended')
   /** Tanda 10O: sin el pase, «Cerca de ti» no cambia de pestaña: abre esta hoja. */

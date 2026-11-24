@@ -65,6 +65,7 @@ import { AvisoDeHoy, CruzDeAviso, ZonaDeAvisos } from './AvisosHoy'
 import { AvisoPlanActualizadoGlobal, useContexto } from './CambiarPlan'
 import { HoyYaNoDaTiempo } from './HoyYaNoDaTiempo'
 import { UbicacionDeHoy } from './UbicacionDeHoy'
+import { zonaDeUbicacion } from '../../../../lib/ubicacionHoy'
 import { yaNoDaTiempo } from '../../../../lib/hoyCambiarPlan'
 import { TarjetaDeComida, useComidaDeAhora } from './ComerAhora'
 import { SitioDeAtardecer } from './SitioDeAtardecer'
@@ -226,7 +227,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const [anadidas, setAnadidas] = useState<Set<string>>(new Set())
   // (HOY2) Tocar la tarjeta (o una fila de «Tu día») abre la ficha COMPLETA de DÍAS, no «Sobre este lugar».
   const [fichaCompleta, setFichaCompleta] = useState<Stop | null>(null)
-  const { ubicacion, estado: ubicacionEstado, pedir: pedirUbicacion } = useUbicacionHoy()
+  const { ubicacion: ubicacionReal, estado: ubicacionEstado, pedir: pedirUbicacion } = useUbicacionHoy()
   const enCoche = esDestinoDeCoche(route.destination)
   const [ultimoVisto, setUltimoVisto] = useState<Stop | null>(null)
   const sumaDelVisto = useUltimaSuma(ultimoVisto?.id ?? null)
@@ -241,18 +242,21 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
 
   const tituloDeHoy = nombreDelDia(route, day, info.gruposDia)
   const paradasDelDia = numberedStopsOf(day)
+  // (V44 §1) El GPS solo cuenta para los minutos y los cierres cuando el viajero está EN LA RUTA (a 30 min andando de la parada). En el aeropuerto, en casa o en otra ciudad se cuenta con el tiempo del plan: nada se va a pendientes ni sale «10407 min» por estar lejos.
+  const zonaUbi = zonaDeUbicacion({ ubicacion: ubicacionReal, route, referencia: paradasDelDia.find((s) => !s.saltada && !s.checkedInAt) ?? null, enCoche })
+  const ubicacion = zonaUbi === 'ruta' ? ubicacionReal : null
   // (V2, 9) NUNCA MANDAR A UN SITIO CERRADO: si la siguiente parada ya está cerrada (o lo estará al llegar), no sale como siguiente: pasa sola a «Lugares pendientes» y sale la siguiente abierta.
-  const cerradas = conPaseOPrueba0 ? cerradasDeHoy({ day, horarioDe, ahoraMin: ahoraMinHoy, trayectoMin: (st) => trayectoHasta({ siguiente: st, ubicacion, anterior: null, enCoche, casa: null, ida: null })?.totalMin ?? 0 }) : new Set<string>()
+  const trayectoMinDe = (st: Stop) => trayectoHasta({ siguiente: st, ubicacion, anterior: null, enCoche, casa: null, ida: null })?.totalMin ?? 0
+  const cerradas = conPaseOPrueba0 ? cerradasDeHoy({ day, horarioDe, ahoraMin: ahoraMinHoy, trayectoMin: trayectoMinDe }) : new Set<string>()
   const paradas = paradasDelDia.map((st) => (cerradas.has(st.id) ? { ...st, saltada: true } : st))
   const vigentes = paradas.filter((s) => !s.saltada)
   useEffect(() => {
-    for (const st of paradasDelDia) {
-      // V43 §6: una vez por viaje, día y sitio (guardado en el móvil, se apunta al irse el aviso), no por visita a la pestaña. Sin `useRef`: el almacén ya descarta el que está a la vista o esperando.
-      if (cerradas.has(st.id)) {
-        if (yaDicho(route.id, dateIso, `cerrada:${st.id}`)) continue
-        avisarAbajo({ id: `cerrada:${st.id}`, texto: avisoDeCerrada(displayStopName(st.name)), alIrse: () => marcarDicho(route.id, dateIso, `cerrada:${st.id}`) })
-      }
-    }
+    // V43 §6 y V44 §3: una vez por viaje, día y sitio (guardado en el móvil, se apunta al irse el aviso), y TODO LO QUE HA CERRADO, en UN solo aviso («Han cerrado A y B»). Sin `useRef`: el almacén ya descarta el que está a la vista o esperando.
+    const nuevos = paradasDelDia.filter((st) => cerradas.has(st.id) && !yaDicho(route.id, dateIso, `cerrada:${st.id}`))
+    if (nuevos.length === 0) return
+    const nombres = nuevos.map((st) => displayStopName(st.name))
+    const texto = nuevos.length === 1 ? avisoDeCerrada(nombres[0]) : `Han cerrado ${nombres.slice(0, -1).join(', ')} y ${nombres[nombres.length - 1]} · los tienes en Lugares pendientes`
+    avisarAbajo({ id: `cerrada:${nuevos.map((st) => st.id).join('+')}`, texto, alIrse: () => nuevos.forEach((st) => marcarDicho(route.id, dateIso, `cerrada:${st.id}`)) })
   })
   const pendientes = lugaresPendientes({ route, day, cerradas })
   // (HOY2b 8b) Los horarios de lo que queda por hacer hoy: la tarjeta de la mañana y el aviso en directo.
@@ -316,9 +320,15 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const minSalida = salidaManana ? minutosDe(salidaManana.hora) : null
   const esPorLaManana = Boolean(salidaManana && minSalida != null && ahoraMinHoy < minSalida)
   const vuelveH14 = (conPase: boolean) => (tarjetaVuelve || fichas.vuelta.hora || route.planVuelta?.hora ? <HoyVuelvesH14 route={route} day={day} tarjeta={tarjetaVuelve} mitad={fichas.vuelta} info={infoLlegada} conPase={conPase} onVerComoIr={() => fichas.abrir('vuelta')} /> : null)
+  // (V44 §3) Saltar MIRA TODO EL DÍA DE GOLPE: lo que al saltarla también ha cerrado sale en el MISMO aviso («Han cerrado A y B»), no uno detrás de otro; y lleva [Deshacer] (todo lo que cambia la ruta lo lleva).
   const saltar = (stop: Stop) => {
+    const diaSin: DayPlan = { ...day, stops: day.stops.map((s) => (s.id === stop.id ? { ...s, saltada: true } : s)) }
+    const nuevas = conPaseOPrueba0 ? [...cerradasDeHoy({ day: diaSin, horarioDe, ahoraMin: ahoraMinHoy, trayectoMin: trayectoMinDe })].filter((id) => id !== stop.id && !cerradas.has(id)) : []
+    const nombresCerrados = nuevas.map((id) => displayStopName(day.stops.find((s) => s.id === id)?.name ?? '')).filter(Boolean)
+    for (const id of nuevas) marcarDicho(route.id, dateIso, `cerrada:${id}`)
+    const texto = nombresCerrados.length === 0 ? AVISO_SALTADA : nombresCerrados.length === 1 ? `Parada saltada. ${nombresCerrados[0]} ya ha cerrado · las tienes en Lugares pendientes` : `Parada saltada. Han cerrado ${nombresCerrados.slice(0, -1).join(', ')} y ${nombresCerrados[nombresCerrados.length - 1]} · las tienes en Lugares pendientes`
     setStopSaltada(day.id, stop.id, true)
-    avisarAbajo({ id: `saltada:${stop.id}`, texto: AVISO_SALTADA })
+    avisarAbajo({ id: `saltada:${stop.id}`, texto, accion: { etiqueta: 'Deshacer', alTocar: () => setStopSaltada(day.id, stop.id, false) } })
     setUltimoVisto(null)
     setOfrecerFoto(null)
   }
@@ -554,7 +564,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {ultimoVisto && siguiente && sumaDelVisto && <LineaDelLogro texto={`+1 en ${sumaDelVisto}`} />}
 
       {/* (V43 §8) La ubicación en todo HOY: la tarjeta de la parada ya la lleva; aquí, en el resto de estados. */}
-      {conPaseOPrueba0 && !esVuelta && (!siguiente || Boolean(comidaDeAhora) || bienvenida) && <UbicacionDeHoy hay={Boolean(ubicacion)} estado={ubicacionEstado} pedir={pedirUbicacion} />}
+      {conPaseOPrueba0 && !esVuelta && (!siguiente || Boolean(comidaDeAhora) || bienvenida) && <UbicacionDeHoy hay={Boolean(ubicacionReal)} zona={zonaUbi} destino={route.destination} estado={ubicacionEstado} pedir={pedirUbicacion} />}
 
       {/* HOY2 (Completa 4): a la hora de comer, la tarjeta de la comida en lugar de la de la parada */}
       {!sinParadasDeVuelta && !bienvenida && siguiente && comidaDeAhora && !esVuelta && (
@@ -571,6 +581,8 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
           ubicacion={ubicacion}
           ubicacionEstado={ubicacionEstado}
           pedirUbicacion={pedirUbicacion}
+          zonaUbicacion={zonaUbi}
+          hayUbicacion={Boolean(ubicacionReal)}
           enCoche={enCoche}
           onTerminado={marcarVisto}
           onSaltar={() => saltar(siguiente)}

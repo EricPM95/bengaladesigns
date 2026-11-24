@@ -19,7 +19,7 @@ export function VolverAlAlojamiento({ route, desde, casa, enCoche }: { route: Ro
   const abrirTuAlojamiento = useAlojamientoUi((s) => s.abrirTuAlojamiento)
   if (!pagoActivo()) return null
   const direccion = direccionDelAlojamiento(route)
-  const enlace = enlaceComoLlegarAlojamiento(direccion)
+  const enlace = enlaceComoLlegarAlojamiento(direccion, route.destination)
   const minutos = direccion && desde && casa && hasRealCoordinates(desde) && hasRealCoordinates(casa) ? viajeMin({ coordinates: desde }, { coordinates: casa }, enCoche) : null
   const caja = { background: '#FFFDF8', border: '1px solid rgba(181,138,46,.4)' }
   const cama = (

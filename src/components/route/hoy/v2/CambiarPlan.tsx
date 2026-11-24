@@ -36,6 +36,7 @@ import { useCercaDeAqui } from '../useCercaDeAqui'
 import { HojaV2 } from './HojasV2'
 import { ParadaFotoDeParada } from './ParadaFoto'
 import { HojaComerAhora } from './ComerAhora'
+import { LineaUbicacion } from './LineaUbicacion'
 import { BOTON_ORO, BOTON_CLARO } from '../../../ui/botonesOro'
 
 /**
@@ -258,7 +259,7 @@ export function BotonCambiarPlan(p: PropsCambiarPlan) {
   const [vacio, setVacio] = useState<string | undefined>(undefined)
   const ctx = useContexto(route, p.enCoche)
   const setMode = useRouteStore((s) => s.setMode)
-  const enlaceCasa = enlaceComoLlegarAlojamiento(direccionDelAlojamiento(route))
+  const enlaceCasa = enlaceComoLlegarAlojamiento(direccionDelAlojamiento(route), route.destination)
   const tripId = useSyncStore((s) => s.activeTripId) ?? route.id
   const cerca = useCercaDeAqui({ tripId, sitiosHoy: day.stops.map((s) => s.name), activo: paso === 'anadir_lista' })
   const fijas = ctx.fijasDe(day)
@@ -315,7 +316,9 @@ export function BotonCambiarPlan(p: PropsCambiarPlan) {
     const dichos = new Set((cerca?.cerca ?? []).filter((c) => c.hay_emblema || c.coleccion_nombre).flatMap((c) => [norm(c.sitio), norm(c.nombre)]))
     return new Set(lugares.filter((l) => dichos.has(norm(l.name))).map((l) => l.name))
   }, [cerca, lugares])
-  const desde = p.ubicacion ?? siguiente.coordinates
+  // (V44 §1 y §5) Sin ubicación en la ruta, los sitios se cuentan desde la parada de ahora.
+  const [ubiLocal, setUbiLocal] = useState<Coordinates | null>(null)
+  const desde = p.ubicacion ?? ubiLocal ?? siguiente.coordinates
   const [activoAnadir, setActivoAnadir] = useState<string | null>(null)
   const [elegidoOtro, setElegidoOtro] = useState<Candidato | null>(null)
   const [quitarDelOtro, setQuitarDelOtro] = useState(false)
@@ -409,7 +412,7 @@ export function BotonCambiarPlan(p: PropsCambiarPlan) {
         <HojaV2 onCerrar={cerrar} etiqueta="Añadir un sitio cercano" fondo={MARFIL}>
           <div data-cambiar-hoja="anadir_lista" className="flex flex-col gap-2.5">
             <Titulo texto="Añadir un sitio cercano" onCerrar={cerrar} />
-            <span data-anadir-ubicacion className="text-[13px] leading-[1.4] text-[#1C2230]/65">{p.ubicacion ? 'Cerca de ti' : `Sin tu ubicación, contamos desde ${displayStopName(siguiente.name)}`}</span>
+            <LineaUbicacion route={route} referencia={siguiente} enCoche={p.enCoche} enLaRuta={Boolean(p.ubicacion)} onUbicacion={setUbiLocal} />
             {candidatos.length > 0 && (
               <div data-anadir-mapa className="h-[170px] flex-none overflow-hidden rounded-[22px]" style={{ border: '1px solid rgba(28,34,48,.12)' }}>
                 <StopsMapView

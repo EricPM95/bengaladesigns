@@ -4394,6 +4394,8 @@ app.post('/api/destination-places', (req, res) => {
       likes_initial: Number.isFinite(place.megusta_inicial) ? place.megusta_inicial : 0,
       schedule: place.hours ?? null,
       sub_category: place.sub_category ?? null,
+      // (V44 §5) El tipo de local («restaurante», «cafeteria», «heladeria»…): HOY lo enseña bajo el nombre en «Comer cerca de ti». Un campo de texto más por restaurante (unos 10 bytes × 71): sin coste de red apreciable.
+      tipo_local: place.tipo_local ?? null,
       address: place.address ?? null,
       price_range: place.price_range ?? null,
       avg_price_person: place.avg_price_person ?? null,

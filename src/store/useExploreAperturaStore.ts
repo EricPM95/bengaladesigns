@@ -12,6 +12,8 @@ export interface AperturaExplorar {
   origen: Coordinates | null
   /** Abrir directamente en «Cerca de mí» aunque no haya punto de partida (de pago; la ubicación se pide al entrar). Sin él, se abre en «Recomendados» (con «Cerca de mí» a un toque). */
   cerca?: boolean
+  /** (V44 §5) Con «restaurantes»: el subfiltro que estaba marcado en «Comer cerca de ti» (trattoria, pizza, gelato, cafe…). */
+  subfiltro?: string | null
 }
 
 interface ExploreAperturaState {

@@ -40,7 +40,7 @@ export function AccommodationBlock({ city, segmentDayId, onAnadir }: Accommodati
   const nombre = (hotelDeEstaEstancia?.name ?? '').trim() || null
   const zona = pago && esLaPrimera ? viaje.zonaNombre : null
   const direccion = pago && esLaPrimera ? viaje.direccion : null
-  const enlace = pago && esLaPrimera ? enlaceComoLlegarAlojamiento(viaje.direccion) : null
+  const enlace = pago && esLaPrimera ? enlaceComoLlegarAlojamiento(viaje.direccion, city) : null
   const etiqueta = `ALOJAMIENTO · ${zonaCorta(zona ?? city).toUpperCase()}`
 
   const cama = (color: string, tamano: number) => (

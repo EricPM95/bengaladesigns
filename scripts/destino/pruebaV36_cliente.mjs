@@ -69,9 +69,8 @@ const soltarCandado = () => {
 }
 process.on('exit', soltarCandado)
 
-const entorno = leer('.env.local')
-const urlSupabase = /^VITE_SUPABASE_URL=(\S+)/m.exec(entorno)?.[1] ?? ''
-const hostSupabase = urlSupabase ? new URL(urlSupabase).host : 'prueba.supabase.co'
+// (V44: ya NO se lee `.env.local`. El Vite estable de pruebas arranca con un Supabase de MENTIRA —`sin-nube-de-pruebas.supabase.co`, ver `_vite_estable.config.mjs`—; la app habla con esa dirección y el Chrome la intercepta. Con PERMITIR_SUPABASE_REAL=1 esta prueba no vale: no toca la nube de verdad.)
+const hostSupabase = 'sin-nube-de-pruebas.supabase.co'
 const ref = hostSupabase.split('.')[0]
 const base = process.env.APP_URL || 'http://localhost:5173'
 const origen = new URL(base).origin

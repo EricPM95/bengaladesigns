@@ -459,9 +459,9 @@ export function opcionesDeDia(p: { route: Route; day: DayPlan; stop: Stop; ctx: 
   return salida
 }
 
-/** El mejor día donde la parada CABE sin quitar nada: abierto, cerca y sin llenarlo (hasta 7 visitas). Nada si no cabe en ninguno. */
+/** El mejor día donde la parada CABE sin quitar nada: abierto y cerca. (V44 §7) Sin tope de visitas: lo que cuenta es el tiempo (que quepa en las horas del día, con lo que ya tiene y los trayectos). Nada si no cabe en ninguno. */
 export function mejorDiaPara(p: { route: Route; day: DayPlan; stop: Stop; ctx: Contexto; dias?: DayPlan[] }): MejorDia | null {
-  const buenas = opcionesDeDia(p).filter((o): o is OpcionDeDia & { col: Colocacion } => !o.cerrado && o.col?.caso === 'a' && o.visitas < 7)
+  const buenas = opcionesDeDia(p).filter((o): o is OpcionDeDia & { col: Colocacion } => !o.cerrado && o.col?.caso === 'a')
   if (buenas.length === 0) return null
   buenas.sort((a, b) => a.metros + a.visitas * 120 - (b.metros + b.visitas * 120))
   const m = buenas[0]

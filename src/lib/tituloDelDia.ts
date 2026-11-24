@@ -55,6 +55,8 @@ export const AÑADE_TUS_SITIOS = 'Añade tus sitios'
 
 /** (V42 §5.1) ¿Es un día de un viaje a mano que aún no tiene ninguna parada (ni nombre propio, ni excursión, ni día añadido a mano)? */
 function diaPorOrganizar(route: Route, day: DayPlan): boolean {
+  // (V44 §9) El día en blanco MÁS ALLÁ de los escritos también es «Día por organizar» (sin paradas, ni nombre propio, ni excursión).
+  if (day.beyondAutoDays === true) return !day.nameByUser && day.dayType !== 'excursion' && day.interruptor?.mode !== 'excursion' && !day.halfDayExcursion && paradasParaElTitulo(day).length === 0
   return (isManualRoute(route) || (day.porOrganizar === true && day.dayType === 'manual')) && !day.nameByUser && !day.userAdded && day.dayType !== 'excursion' && day.interruptor?.mode !== 'excursion' && !day.halfDayExcursion && paradasParaElTitulo(day).length === 0
 }
 

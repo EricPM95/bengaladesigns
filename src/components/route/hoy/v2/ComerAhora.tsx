@@ -7,7 +7,12 @@ import { numberedStopsOf } from '../../../../lib/stopKind'
 import { urlComoLlegar } from '../../../../lib/hoyParada'
 import { aHora, viajeMin, type Propuesta } from '../../../../lib/hoyCambiarPlan'
 import { RESTAURANT_SUB_CATEGORIES } from '../../../../lib/placeCategories'
-import { comidaActiva, horarioDeComer, proponerComerAhora, restaurantesAbiertos, type RestauranteCerca } from '../../../../lib/hoyComer'
+import { comidaActiva, horarioDeComer, proponerComerAhora, restaurantesAbiertos, restaurantesMasCercanos, type RestauranteCerca } from '../../../../lib/hoyComer'
+import { zonaDeUbicacion } from '../../../../lib/ubicacionHoy'
+import { useExploreAperturaStore } from '../../../../store/useExploreAperturaStore'
+import { useRouteStore } from '../../../../store/useRouteStore'
+import { useUbicacionHoy } from './useUbicacionHoy'
+import { HojaActivaUbicacion } from './HojaActivaUbicacion'
 import { aplicarPropuesta, volverALaRutaOriginal } from '../../../../lib/hoyCambiarPlanAplicar'
 import { useDestinationPool } from '../../../../lib/useDestinationPool'
 import { StopsMapView, type StopsMapMarker } from '../../../map/StopsMapView'
@@ -29,13 +34,13 @@ const ORO_TEXTO = '#8E6820'
 const BOTON_MARFIL = BOTON_CLARO
 const normaliza = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
 
-/** De dónde cuenta las distancias: tu ubicación; sin ella, donde estabas (la última parada vista) o, si no, tu siguiente parada. */
+/** De dónde cuenta las distancias: tu ubicación (solo si estás en la ruta; V44 §1); sin ella, DESDE LA PARADA DE AHORA (V44 §5; si no tiene coordenadas, la última vista). */
 export function origenDeComer(day: DayPlan, siguiente: Stop, ubicacion: Coordinates | null): { origen: Coordinates | null; exacto: boolean; desde: string | null } {
   if (ubicacion && hasRealCoordinates(ubicacion)) return { origen: ubicacion, exacto: true, desde: null }
+  if (hasRealCoordinates(siguiente.coordinates)) return { origen: siguiente.coordinates, exacto: false, desde: displayStopName(siguiente.name) }
   const vistas = numberedStopsOf(day).filter((s) => s.checkedInAt && hasRealCoordinates(s.coordinates))
   const ultima = vistas[vistas.length - 1]
-  if (ultima) return { origen: ultima.coordinates, exacto: false, desde: displayStopName(ultima.name) }
-  return { origen: hasRealCoordinates(siguiente.coordinates) ? siguiente.coordinates : null, exacto: false, desde: displayStopName(siguiente.name) }
+  return { origen: ultima ? ultima.coordinates : null, exacto: false, desde: ultima ? displayStopName(ultima.name) : null }
 }
 
 const textoMin = (min: number, modo: 'coche' | 'pie') => `${modo === 'coche' ? 'En coche' : 'A pie'} · ${min} min`
@@ -53,11 +58,25 @@ export function HojaComerAhora({ route, day, dateIso, siguiente, ubicacion, enCo
   const [indice, setIndice] = useState(0)
   const [activo, setActivo] = useState<string | null>(null)
   const [textoVuelta, setTextoVuelta] = useState<string | null>(null)
-  const [sub, setSub] = useState<string | null>(null)
-  const { origen, exacto, desde } = origenDeComer(day, siguiente, ubicacion)
-  // (V43 §3) El título dice «comer» o «cenar» (desde las 17:00).
-  const tituloHoja = ahoraMin >= 17 * 60 ? 'Quiero cenar ahora' : 'Quiero comer ahora'
-  const abiertos = useMemo(() => (resolved ? restaurantesAbiertos({ restaurantes: places, origen, dateIso, ahoraMin, enCoche, sub }) : []), [resolved, places, origen?.lat, origen?.lng, dateIso, ahoraMin, enCoche, sub]) // eslint-disable-line react-hooks/exhaustive-deps
+  // (V44 §5) El título según la hora: desayunar (hasta las 11:30, con [Café] marcado), comer (hasta las 17:00) o cenar. En el menú de «Cambiar plan» sigue siendo «Quiero comer ahora».
+  const tituloHoja = ahoraMin <= 11 * 60 + 30 ? 'Desayunar cerca de ti' : ahoraMin < 17 * 60 ? 'Comer cerca de ti' : 'Cenar cerca de ti'
+  const [sub, setSub] = useState<string | null>(() => (ahoraMin <= 11 * 60 + 30 ? 'cafe' : null))
+  // (V44 §1 y §5) El GPS solo cuenta en la ruta; sin él, la lista y el mapa salen de la parada de ahora, y se dice que no hay ubicación SIN nombrar ningún sitio.
+  const gps = useUbicacionHoy()
+  const [hojaUbicacion, setHojaUbicacion] = useState(false)
+  const ubicacionUtil = ubicacion ?? (zonaDeUbicacion({ ubicacion: gps.ubicacion, route, referencia: siguiente, enCoche }) === 'ruta' ? gps.ubicacion : null)
+  const { origen, exacto } = origenDeComer(day, siguiente, ubicacionUtil)
+  const setMode = useRouteStore((s) => s.setMode)
+  const abiertos = useMemo(() => (resolved ? restaurantesAbiertos({ restaurantes: places, origen, dateIso, ahoraMin, enCoche, sub, maxMin: 600 }) : []), [resolved, places, origen?.lat, origen?.lng, dateIso, ahoraMin, enCoche, sub])
+  // Si aún no ha abierto nada: nunca vacío ni mandar a otra pantalla, los más cercanos con su hora de apertura.
+  const noAbiertos = abiertos.length === 0
+  const cercanos = useMemo(() => (resolved && noAbiertos ? restaurantesMasCercanos({ restaurantes: places, origen, dateIso, ahoraMin, enCoche, sub }) : []), [resolved, noAbiertos, places, origen?.lat, origen?.lng, dateIso, ahoraMin, enCoche, sub])
+  const lista = noAbiertos ? cercanos : abiertos
+  const verTodos = () => {
+    useExploreAperturaStore.getState().pedir({ categoria: 'restaurantes', origen: ubicacionUtil ?? origen, cerca: false, subfiltro: sub })
+    setMode('explore')
+    onCerrar()
+  } // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!textoVuelta) return undefined
@@ -65,7 +84,7 @@ export function HojaComerAhora({ route, day, dateIso, siguiente, ubicacion, enCo
     return () => window.clearTimeout(id)
   }, [textoVuelta])
 
-  const marcadores: StopsMapMarker[] = abiertos.map((r, i) => ({ id: r.nombre, name: r.nombre, coordinates: r.coordinates, number: i + 1, bg: activo === r.nombre ? '#B58A2E' : TINTA, text: '#fff' }))
+  const marcadores: StopsMapMarker[] = lista.map((r, i) => ({ id: r.nombre, name: r.nombre, coordinates: r.coordinates, number: i + 1, bg: activo === r.nombre ? '#B58A2E' : TINTA, text: '#fff' }))
   const irAqui = (r: RestauranteCerca) => {
     const lista = proponerComerAhora({ route, day, restaurante: r, ctx, ahoraMin, siguiente, desde: ubicacion })
     setElegido(r)
@@ -96,19 +115,31 @@ export function HojaComerAhora({ route, day, dateIso, siguiente, ubicacion, enCo
               </button>
             ))}
           </div>
-          <span data-comer-ubicacion className="text-[12.5px] text-[#1C2230]/60">{exacto ? 'Cerca de ti' : `Sin tu ubicación, contamos desde ${desde ?? 'tu siguiente parada'}`}</span>
-          {abiertos.length > 0 && (
+          {exacto ? (
+            <span data-comer-ubicacion className="text-[12.5px] text-[#1C2230]/60">Cerca de ti</span>
+          ) : !gps.ubicacion ? (
+            <span data-comer-ubicacion data-comer-sin-ubicacion className="flex flex-wrap items-center gap-x-1 text-[12.5px] text-[#1C2230]/60">
+              No tienes la ubicación activada ·
+              <button type="button" onClick={() => (gps.estado === 'no' ? setHojaUbicacion(true) : gps.pedir())} data-comer-usar-ubicacion className="inline-flex min-h-11 items-center font-bold underline underline-offset-[3px]" style={{ color: '#8E6820' }}>
+                {gps.estado === 'pidiendo' ? 'Buscando…' : 'Usar mi ubicación'}
+              </button>
+            </span>
+          ) : (
+            <span data-comer-ubicacion className="text-[12.5px] text-[#1C2230]/60">Contamos desde tu parada de ahora</span>
+          )}
+          {hojaUbicacion && <HojaActivaUbicacion onCerrar={() => setHojaUbicacion(false)} onReintentar={() => { setHojaUbicacion(false); gps.pedir() }} />}
+          {lista.length > 0 && (
             <div data-comer-mapa className="h-[190px] flex-none overflow-hidden rounded-[22px]" style={{ border: '1px solid rgba(28,34,48,.12)' }}>
-              <StopsMapView markers={marcadores} activeStopId={activo} onSelectStop={(id) => setActivo(id)} userPosition={ubicacion} />
+              <StopsMapView markers={marcadores} activeStopId={activo} onSelectStop={(id) => setActivo(id)} userPosition={ubicacionUtil} />
             </div>
           )}
           {!resolved && <span className="text-[14px] font-medium text-[#1C2230]/60">Buscando…</span>}
-          {resolved && abiertos.length === 0 && (
+          {resolved && noAbiertos && (
             <span data-comer-vacio className="text-[14.5px] font-medium leading-[1.4]">
-              Ahora no hay ninguno de nuestros restaurantes abierto cerca de ti. Prueba con «Comer» en «Cerca de ti».
+              A esta hora aún no han abierto. Los más cercanos:
             </span>
           )}
-          {abiertos.map((r, i) => {
+          {lista.map((r, i) => {
             const cierraPronto = r.cierraMin != null && r.cierraMin - ahoraMin < 60
             return (
               <div key={r.nombre} data-comer-fila={r.nombre} onClick={() => setActivo(r.nombre)} className="flex items-center gap-3 rounded-[20px] py-2.5 pl-3 pr-2.5" style={{ background: '#FFFDF8', border: activo === r.nombre ? '1.5px solid #B58A2E' : '1px solid rgba(28,34,48,.12)' }}>
@@ -116,22 +147,32 @@ export function HojaComerAhora({ route, day, dateIso, siguiente, ubicacion, enCo
                 <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
                   <b className="truncate" style={{ font: "400 20px/1.1 'Instrument Serif',serif" }}>{displayStopName(r.nombre)}</b>
                   <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[12.5px] text-[#1C2230]/65">
-                    {r.cocina && <span data-comer-cocina>{r.cocina}</span>}
+                    {r.tipo && <span data-comer-tipo>{r.tipo}</span>}
                     <span data-comer-minutos>{r.minutos} min {r.modo === 'coche' ? 'en coche' : 'a pie'}</span>
                     {r.precio && <span>{r.precio}</span>}
                   </span>
-                  {cierraPronto ? (
+                  {noAbiertos ? (
+                    <span data-comer-abre className="text-[12px] font-semibold" style={{ color: '#6E5018' }}>{r.abreMin != null ? `Abre a las ${aHora(r.abreMin, false)}` : 'Hoy no abre más'}</span>
+                  ) : cierraPronto ? (
                     <span data-comer-cierra-pronto className="text-[12px] font-bold" style={{ color: '#C2581C' }}>Cierra pronto</span>
                   ) : (
                     <span data-comer-abierto className="text-[12px] font-semibold" style={{ color: 'oklch(0.38 0.1 150)' }}>{r.cierraMin != null ? `Abierto hasta las ${aHora(r.cierraMin, false)}` : 'Abierto ahora'}</span>
                   )}
                 </span>
-                <button type="button" onClick={(e) => { e.stopPropagation(); irAqui(r) }} data-comer-ir-aqui className="flex h-11 flex-none items-center rounded-2xl px-4 text-[13.5px] font-bold" style={BOTON_ORO}>
-                  Elegir
-                </button>
+                {!noAbiertos && (
+                  <button type="button" onClick={(e) => { e.stopPropagation(); irAqui(r) }} data-comer-ir-aqui className="flex h-11 flex-none items-center rounded-2xl px-4 text-[13.5px] font-bold" style={BOTON_ORO}>
+                    Elegir
+                  </button>
+                )}
               </div>
             )
           })}
+          {/* (V44 §5) Abajo del todo: EXPLORAR solo con el filtro Restaurantes (y el subfiltro que hubiera). */}
+          {resolved && (
+            <button type="button" onClick={verTodos} data-comer-ver-todos className="flex h-12 items-center justify-center rounded-2xl text-[14px] font-bold" style={BOTON_CLARO}>
+              Ver todos en Explorar
+            </button>
+          )}
         </div>
       </HojaV2>
       {textoVuelta && <AvisoPlanActualizado texto={textoVuelta} conDeshacer={false} />}

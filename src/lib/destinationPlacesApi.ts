@@ -85,6 +85,8 @@ export interface DestinationPlace {
   order?: number
   /** Solo restaurantes — ver RESTAURANT_SUB_CATEGORIES. */
   sub_category?: RestaurantSubCategory | null
+  /** (V44) Solo restaurantes: el tipo de local de los datos («restaurante», «cafeteria», «heladeria», «bar_de_vinos»…). */
+  tipo_local?: string | null
   address?: string | null
   /** "€", "€€" o "€€€". */
   price_range?: string | null

@@ -21,7 +21,7 @@ export function ExtraDaySheet({ destination, onChoose, onClose }: { destination:
             Ya has visto lo mejor de {destination}
           </h2>
           <p className="mt-3 text-[15px] leading-relaxed text-text-soft">
-            A partir de aquí, el viaje lo eliges tú: te enseñamos los sitios que aún no has visto para que montes cada día a tu gusto.
+            A partir de aquí, el viaje lo eliges tú: monta cada día a tu gusto.
           </p>
         </div>
         <div className="px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6">

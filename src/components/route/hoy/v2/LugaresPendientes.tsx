@@ -2,13 +2,15 @@ import { useMemo, useState } from 'react'
 import type { DayPlan, Route } from '../../../../lib/types'
 import { displayStopName } from '../../../../lib/format'
 import { esDestinoDeCoche } from '../../../../lib/experienceCategoryBank'
-import { mejorDiaPara } from '../../../../lib/hoyCambiarPlan'
+import { etiquetaConNumero, mejorDiaPara } from '../../../../lib/hoyCambiarPlan'
 import type { Pendiente } from '../../../../lib/hoyPendientes'
 import { avisarAbajo } from '../../../../store/useAvisoDeAbajo'
 import { useRouteStore } from '../../../../store/useRouteStore'
 import { Icono } from '../../../ui/Icono'
 import { HojaPasarAOtroDia } from '../saltar'
 import { HojaV2 } from './HojasV2'
+import { HojaDelMenu } from '../../../ui/MenuHoja'
+import { ICONOS_OPCION, OpcionTarjeta } from '../../../ui/HojaOpciones'
 import { Titulo, useContexto } from './CambiarPlan'
 import { ParadaFotoDeParada } from './ParadaFoto'
 import { BOTON_CLARO, BOTON_ORO } from '../../../ui/botonesOro'
@@ -41,29 +43,56 @@ export function LugaresPendientes({ route, day, dateIso, pendientes }: { route: 
   if (pendientes.length === 0) return null
   // (V43) Solo días de DESPUÉS de hoy: lo de un día pasado no se toca (la app no deja mover a ni desde un día pasado).
   const diasPara = (p: Pendiente) => route.days.filter((d) => !d.isReturnLeg && d.id !== p.dayId && d.dayNumber > day.dayNumber).map((d) => ({ id: d.id, dayNumber: d.dayNumber, city: d.city }))
+  // (V44 §3) TODO lo que cambia la ruta lleva [Deshacer] y va ABAJO (sobre el menú): recuperar hoy, ya lo visité, quitar, pasar a otro día y pasar todos.
+  const conDeshacer = (id: string, texto: string, deshacer: () => void) => avisarAbajo({ id, texto, accion: { etiqueta: 'Deshacer', alTocar: deshacer } })
   const recuperar = (p: Pendiente) => {
-    if (p.dayId !== day.id) moveStopToDay(p.stop.id, p.dayId, day.id)
+    const deOtroDia = p.dayId !== day.id
+    const estabaSaltada = Boolean(p.stop.saltada)
+    if (deOtroDia) moveStopToDay(p.stop.id, p.dayId, day.id)
     setStopSaltada(day.id, p.stop.id, false)
+    conDeshacer(`recuperar:${p.stop.id}`, `${displayStopName(p.stop.name)}, de vuelta en tu día`, () => {
+      setStopSaltada(day.id, p.stop.id, true)
+      if (deOtroDia) {
+        moveStopToDay(p.stop.id, day.id, p.dayId)
+        setStopSaltada(p.dayId, p.stop.id, estabaSaltada)
+      }
+    })
+  }
+  const visitado = (p: Pendiente) => {
+    setStopVisto(p.dayId, p.stop.id, true)
+    conDeshacer(`visitado:${p.stop.id}`, `${displayStopName(p.stop.name)}, marcada como visitada`, () => setStopVisto(p.dayId, p.stop.id, false))
   }
   const pasar = (p: Pendiente, aDayId: string) => {
+    const estabaSaltada = Boolean(p.stop.saltada)
+    const aDia = route.days.find((d) => d.id === aDayId)
     moveStopToDay(p.stop.id, p.dayId, aDayId)
     setStopSaltada(aDayId, p.stop.id, false)
     setPasando(null)
+    conDeshacer(`pasar:${p.stop.id}`, `${displayStopName(p.stop.name)}, pasada al ${aDia ? etiquetaConNumero(ctx, aDia) : 'otro día'}`, () => {
+      moveStopToDay(p.stop.id, aDayId, p.dayId)
+      setStopSaltada(p.dayId, p.stop.id, estabaSaltada)
+    })
   }
   const quitar = (p: Pendiente) => {
     const d = route.days.find((x) => x.id === p.dayId)
     const indice = d ? d.stops.findIndex((s) => s.id === p.stop.id) : -1
     removeStop(p.dayId, p.stop.id)
-    // Quitar se puede deshacer: el aviso con [Deshacer] vuelve a poner el sitio donde estaba.
-    avisarAbajo({ id: `quitar:${p.stop.id}`, texto: `${displayStopName(p.stop.name)}, quitada de tu ruta`, accion: { etiqueta: 'Deshacer', alTocar: () => insertStopAt(p.dayId, Math.max(indice, 0), p.stop) } })
+    conDeshacer(`quitar:${p.stop.id}`, `${displayStopName(p.stop.name)}, quitada de tu ruta`, () => insertStopAt(p.dayId, Math.max(indice, 0), p.stop))
   }
   const pasarTodos = () => {
-    for (const { p, mejor } of reparto) {
-      if (!mejor) continue
-      moveStopToDay(p.stop.id, p.dayId, mejor.dia.id)
-      setStopSaltada(mejor.dia.id, p.stop.id, false)
+    const hechos = reparto.filter((x) => x.mejor).map(({ p, mejor }) => ({ p, aDayId: (mejor as NonNullable<typeof mejor>).dia.id, estabaSaltada: Boolean(p.stop.saltada) }))
+    for (const h of hechos) {
+      moveStopToDay(h.p.stop.id, h.p.dayId, h.aDayId)
+      setStopSaltada(h.aDayId, h.p.stop.id, false)
     }
     setResumen(false)
+    if (hechos.length > 0)
+      conDeshacer('pasar-todos', hechos.length === 1 ? `${displayStopName(hechos[0].p.stop.name)}, pasada a otro día` : `${hechos.length} lugares pasados a otros días`, () => {
+        for (const h of hechos) {
+          moveStopToDay(h.p.stop.id, h.aDayId, h.p.dayId)
+          setStopSaltada(h.p.dayId, h.p.stop.id, h.estabaSaltada)
+        }
+      })
   }
   const caben = reparto.filter((x) => x.mejor)
   const noCaben = reparto.filter((x) => !x.mejor)
@@ -112,25 +141,15 @@ export function LugaresPendientes({ route, day, dateIso, pendientes }: { route: 
         </div>
       )}
       {menu && (
-        <HojaV2 onCerrar={() => setMenu(null)} etiqueta={displayStopName(menu.stop.name)} fondo="#FBF3E2">
-          <div data-hoy-pendiente-menu className="flex flex-col gap-2.5">
-            <Titulo texto={displayStopName(menu.stop.name)} onCerrar={() => setMenu(null)} />
+        <span data-hoy-pendiente-menu>
+          <HojaDelMenu etiqueta="Parada" titulo={displayStopName(menu.stop.name)} onCerrar={() => setMenu(null)} z={95}>
             {menu.motivo !== 'cerrada' && (
-              <button type="button" onClick={() => { recuperar(menu); setMenu(null) }} data-hoy-pendiente-recuperar className="flex h-12 items-center justify-center gap-2 rounded-2xl text-[14px] font-bold" style={BOTON_CLARO}>
-                <Icono nombre="recuperar" size={16} grosor={1.8} />
-                Recuperar hoy
-              </button>
+              <OpcionTarjeta tono="arena" icono={ICONOS_OPCION.volver} titulo="Recuperar hoy" linea="Vuelve a tu día de hoy" flecha datos="pendiente-recuperar" atributos={{ 'data-hoy-pendiente-recuperar': '1' }} onClick={() => { recuperar(menu); setMenu(null) }} />
             )}
-            <button type="button" onClick={() => { setStopVisto(menu.dayId, menu.stop.id, true); setMenu(null) }} data-hoy-pendiente-visitado className="flex h-12 items-center justify-center gap-2 rounded-2xl text-[14px] font-bold" style={BOTON_CLARO}>
-              <Icono nombre="hecho" size={16} grosor={2} />
-              Ya lo visité
-            </button>
-            <button type="button" onClick={() => { quitar(menu); setMenu(null) }} data-hoy-pendiente-quitar className="flex h-12 items-center justify-center gap-2 rounded-2xl text-[14px] font-bold" style={{ background: '#FFFDF8', border: '1px solid rgba(194,60,40,.4)', color: '#B3321F' }}>
-              <Icono nombre="cerrar" size={15} grosor={2} />
-              Quitar
-            </button>
-          </div>
-        </HojaV2>
+            <OpcionTarjeta tono="azul" icono={ICONOS_OPCION.check} titulo="Ya lo visité" linea="Cuenta como hecha" flecha atributos={{ 'data-hoy-pendiente-visitado': '1' }} onClick={() => { visitado(menu); setMenu(null) }} />
+            <OpcionTarjeta peligro icono={ICONOS_OPCION.papelera} titulo="Quitar" linea="Sale de tu ruta. Puedes deshacerlo" atributos={{ 'data-hoy-pendiente-quitar': '1' }} onClick={() => { quitar(menu); setMenu(null) }} />
+          </HojaDelMenu>
+        </span>
       )}
       {resumen && (
         <HojaV2 onCerrar={() => setResumen(false)} etiqueta="Pasar todos a otros días" fondo="#FBF3E2">
