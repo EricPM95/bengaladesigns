@@ -1,13 +1,13 @@
-# Estado de la tanda v47
+# Estado de la tanda v48
 
-**Última actualización: 24/11/26, 20:26**
+**Última actualización: 24/11/26, 20:34**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-TERMINADA: pusheada d442dd36; build sin errores; produccion carga en iPhone (solo 403); sin pruebas por orden de Eric
+Empezando: billete QR en DIAS y HOY, dia de llegada, avisos de HOY, ficha de lugar
 
 ## Qué falta
-nada
+todo
 
 ## Procesos abiertos ahora mismo
 - node: 2
