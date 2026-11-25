@@ -67,6 +67,8 @@ export interface PedidoDeFoto {
   nombre: string | null
   /** La cámara enseña la etiqueta «Emblema Oculto». */
   oculto: boolean
+  /** (V66) Una foto ya elegida de la galería: no se abre la cámara, la foto se manda como si se hubiera hecho allí. */
+  archivo?: File
 }
 
 interface CamaraViajeState {
@@ -78,7 +80,7 @@ interface CamaraViajeState {
 
 export const useCamaraViajeStore = create<CamaraViajeState>((set) => ({
   pedido: null,
-  abrir: (p = {}) => set({ pedido: { sitio: p.sitio ?? null, nombre: p.nombre ?? null, oculto: p.oculto ?? false } }),
+  abrir: (p = {}) => set({ pedido: { sitio: p.sitio ?? null, nombre: p.nombre ?? null, oculto: p.oculto ?? false, archivo: p.archivo } }),
   limpiar: () => set({ pedido: null }),
 }))
 

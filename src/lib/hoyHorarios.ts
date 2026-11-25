@@ -112,6 +112,13 @@ export function paradasJustasDeHoy(ventanas: VentanaDeHorario[]): SitioJusto[] {
 /** La hora de cierre que se dice del tramo en el que cae la llegada. */
 const cierreDicho = (j: SitioJusto): number => j.v.tramos.find((t) => j.llegada >= t.abre && j.llegada <= t.cierra)?.cierra ?? j.v.tramos[j.v.tramos.length - 1].cierra
 
+/** (V66, 14) La primera frase del párrafo, sin «Para hoy: » ni «Y también: » (el título de la fila de aviso de la mañana). */
+export function fraseCortaDeHoy(j: SitioJusto): string {
+  const p = parrafoDeHoy(j, true).replace(/^Para hoy: /, '')
+  const m = p.match(/^.*?[.!?](?=s|$)/)
+  return (m ? m[0] : p).replace(/.$/, '')
+}
+
 /** El párrafo de un sitio justo (frases completas; la hora de cierre o de apertura siempre a la vista). `primero`: «Para hoy: …»; el segundo, «Y también: …». */
 export function parrafoDeHoy(j: SitioJusto, primero: boolean): string {
   const apertura = primero ? 'Para hoy: ' : 'Y también: '

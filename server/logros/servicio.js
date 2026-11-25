@@ -376,7 +376,7 @@ export function crearServicioLogros({ repo: repoBruto, datos, catalogos, ahora =
 
   /** Lo que tiene un sitio por ganar (sin decir qué emblema): para que la tarjeta del Visto sepa cuál enseñar. Solo se LEE; no cambia nada. */
   function queHayEn(c, viaje, sitio) {
-    if (!sitio) return { sitio_nombre: null, hay_pedazo: false, hay_emblema: false, foto_dentro: null }
+    if (!sitio) return { sitio_nombre: null, hay_pedazo: false, hay_emblema: false, es_importante: false, foto_dentro: null }
     const d = datos.destinos[viaje.destino]
     const items = aItems(c.logros)
     const sitios = sitiosDeId(d, sitio) // (V4) una parada con varios sitios: lo que falte en cualquiera
@@ -384,6 +384,8 @@ export function crearServicioLogros({ repo: repoBruto, datos, catalogos, ahora =
       sitio_nombre: nombreDeSitio(catalogos, viaje.destino, sitio),
       hay_pedazo: sitios.some((s) => d.colecciones.some((x) => x.sitios.includes(s) && !items.get(clave(viaje.destino, 'pedazo', x.id + ':' + s)))),
       hay_emblema: sitios.some((s) => d.emblemas.some((e) => e.sitio === s && !items.get(clave(viaje.destino, 'emblema', e.id)))),
+      // (V66, 2) «Guarda un recuerdo» solo sale en los sitios de «Los imprescindibles» del destino (la colección cuyo id acaba en «imprescindibles») y en las maravillas del mundo. Se lee de los datos de logros: 0 consultas a Supabase.
+      es_importante: sitios.some((s) => Boolean(d.sitios?.[s]?.maravilla) || d.colecciones.some((x) => /imprescindibles$/.test(x.id) && x.sitios.includes(s))),
       foto_dentro: sitios.map((s) => d.sitios[s]?.foto_dentro).find(Boolean) ?? null,
     }
   }

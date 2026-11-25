@@ -186,7 +186,7 @@ export function TarjetasDeCambios({ tarjetas, franja }: { tarjetas: NonNullable<
  * La hoja de una propuesta (V55, la regla de TODAS las que proponen un cambio): el texto de arriba, una tarjeta por cada sitio que cambia (con su foto, a dónde va y su cuadrado), la franja verde de lo que sigue igual,
  * el botón dorado que dice lo que hace y, abajo y pequeño, [Dejarlo como está]. Nada de «Propuesta», «Cambia:», [Aplicar], «¿Lo dejamos?» ni «Volver a mi ruta original».
  */
-export function HojaPropuesta({ titulo, propuestas, indice, onOtra, onAplicar, onCerrar, vacio, extra, etiquetaAplicar, onElegirOtroDia, children }: { titulo: string; propuestas: Propuesta[]; indice: number; onOtra: () => void; onAplicar: (p: Propuesta) => void; onOriginal?: () => void; onCerrar: () => void; vacio?: string; /** Algo más entre el resumen y el botón dorado (la pausa de «Vamos con calma»). */ extra?: ReactNode; /** Lo que dice el botón dorado si la propuesta no trae el suyo. */ etiquetaAplicar?: string; /** «Pasar a otro día»: en vez de [Ver otra opción], [Elegir otro día]. */ onElegirOtroDia?: () => void; children?: ReactNode }) {
+export function HojaPropuesta({ titulo, propuestas, indice, onOtra, onAplicar, onCerrar, vacio, extra, etiquetaAplicar, onElegirOtroDia, etiquetaDejar, children }: { titulo: string; propuestas: Propuesta[]; indice: number; onOtra: () => void; onAplicar: (p: Propuesta) => void; onOriginal?: () => void; onCerrar: () => void; vacio?: string; /** Algo más entre el resumen y el botón dorado (la pausa de «Vamos con calma»). */ extra?: ReactNode; /** Lo que dice el botón dorado si la propuesta no trae el suyo. */ etiquetaAplicar?: string; /** «Pasar a otro día»: en vez de [Ver otra opción], [Elegir otro día]. */ onElegirOtroDia?: () => void; /** (V66) Lo que dice el botón blanco de «no» cuando son dos opciones (por defecto, «Dejarlo como está»; «Dejarla el martes»). */ etiquetaDejar?: string; children?: ReactNode }) {
   const p = propuestas[indice] ?? null
   const route = useRouteStore((st) => st.route)
   const tarjetas = useMemo(() => (p && route ? tarjetasDePropuesta(p, route) : []), [p, route])
@@ -217,7 +217,7 @@ export function HojaPropuesta({ titulo, propuestas, indice, onOtra, onAplicar, o
                   <div data-dos-botones className="grid grid-cols-2 gap-2.5">
                     {oro}
                     <button type="button" onClick={onCerrar} data-propuesta-dejar="1" className="flex min-h-[52px] items-center justify-center rounded-2xl px-3 text-center text-[15px] font-bold" style={BOTON_CLARO}>
-                      Dejarlo como está
+                      {etiquetaDejar ?? 'Dejarlo como está'}
                     </button>
                   </div>
                 )

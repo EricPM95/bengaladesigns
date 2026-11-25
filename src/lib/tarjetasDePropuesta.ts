@@ -137,8 +137,16 @@ export function tarjetasDePropuesta(p: Propuesta, route: Route): TarjetaDePropue
         break
     }
   }
-  return [...principales, ...corridas]
+  const todas = [...principales, ...corridas]
+  // (V66, 20) En una hoja con MUCHOS cambios (más de 3): tarjeta solo para lo que cambia de día, va a pendientes o se quita. Lo que sigue en el mismo día (hoy a otra hora, «se corre unos minutos») no se menciona:
+  // no enseñamos horas, cada uno va a su ritmo. Si no quedara ninguna, se dejan todas (una hoja sin nada que enseñar). La hoja de Reorganizar (`cambiosDeReorganizar`) no se toca: ver DECISIONES_V66.
+  if (todas.length > MUCHOS_CAMBIOS) {
+    const losQueCuentan = todas.filter((t) => t.aPendientes || t.quitar || Boolean(t.destino))
+    if (losQueCuentan.length > 0) return losQueCuentan
+  }
+  return todas
 }
+const MUCHOS_CAMBIOS = 3
 
 /** La franja verde de lo que se queda igual: la que trae la propuesta, o «Sigue igual: …» con lo que se mantiene. */
 export const franjaDePropuesta = (p: Propuesta): string => p.franja ?? `Sigue igual: ${p.mantiene.titulo}`

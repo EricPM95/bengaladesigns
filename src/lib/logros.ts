@@ -113,6 +113,8 @@ export interface RespuestaDeHecho {
   sitio_nombre?: string | null
   hay_pedazo?: boolean
   hay_emblema?: boolean
+  /** (V66, 2) El sitio es de «Los imprescindibles» del destino o una maravilla del mundo: solo ahí sale «Guarda un recuerdo». */
+  es_importante?: boolean
   /** La línea de «Dentro no se pueden hacer fotos…», si el sitio la tiene. */
   foto_dentro?: string | null
   repetido?: boolean

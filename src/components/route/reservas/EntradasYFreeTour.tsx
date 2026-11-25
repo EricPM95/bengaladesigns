@@ -10,7 +10,7 @@ import { BloqueClaro } from './PiezasDesignReservas'
 import { CabeceraBloque, ICONOS } from './BloqueReservas'
 import { useMisReservas } from '../../../store/useMisReservas'
 import { removeReservationWithUndo } from '../../../store/useAddFlowStore'
-import { corregirConElDocumento } from '../../../lib/corregirConElDocumento'
+import { usePreguntaDeDia } from './PreguntaDeDiaDelDocumento'
 import { FueraDeRutaFila } from './FueraDeRutaFila'
 import { FichaEntrada } from './FichaEntrada'
 import { TarjetaEntradaDesign, CodigoDeEntradaPantallaCompleta } from './EntradaConBillete'
@@ -106,6 +106,8 @@ export function EntradasYFreeTour({ route, info, abierto }: { route: Route; info
   const reservations = useReservasParaMi()
   const [buscando, setBuscando] = useState(false)
   const [target, setTarget] = useState<ReservationTarget | null>(null)
+  // (V66, 3.1) Un documento de OTRO día del viaje: se pregunta antes de mover la reserva.
+  const { preguntar: preguntarDia, hoja: hojaDeDia } = usePreguntaDeDia()
   const [ficha, setFicha] = useState<BloqueEntrada | null>(null)
   // (V65 §2) «Las entradas de cada uno»: la hoja de una entrada de más de una persona.
   const [cadaUno, setCadaUno] = useState<Reservation | null>(null)
@@ -200,7 +202,7 @@ export function EntradasYFreeTour({ route, info, abierto }: { route: Route; info
           año={route.answers.dateRange ? Number(route.answers.dateRange.start.slice(0, 4)) : undefined}
           onLapizArriba={() => setTarget({ ...targetOf(item), existing: reserva })}
           onLapizDatos={() => setTarget({ ...targetOf(item), existing: reserva, soloDatos: true })}
-          onLeida={(lectura) => setTarget({ ...targetOf(item), existing: corregirConElDocumento(reserva, { fecha: lectura.fecha, hora: lectura.hora }, 'entrada'), lectura })}
+          onLeida={(lectura) => preguntarDia(reserva, { fecha: lectura.fecha, hora: lectura.hora }, 'entrada', null, (existing, usar) => setTarget({ ...targetOf(item), existing, lectura: usar ? lectura : { ...lectura, fecha: null, hora: null } }))}
           onQuitar={quitar}
           claveDeAviso={reserva.id}
           onSubirVarias={esParaVarios(reserva) ? () => setCadaUno(reserva) : undefined}
@@ -291,6 +293,7 @@ export function EntradasYFreeTour({ route, info, abierto }: { route: Route; info
         )}
       </BloqueClaro>
       {cadaUno && <HojaEntradasDeCadaUno reserva={cadaUno} tipo="entrada" año={route.answers.dateRange ? Number(route.answers.dateRange.start.slice(0, 4)) : undefined} onClose={() => setCadaUno(null)} />}
+      {hojaDeDia}
       {target && <AddReservationSheet route={route} target={target} onClose={() => setTarget(null)} />}
       {buscando && (
         <OtraReservaBuscador

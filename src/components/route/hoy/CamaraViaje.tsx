@@ -8,9 +8,10 @@ import { haversineMeters } from '../../../lib/distanceMock'
 import { abrirPase } from '../../../lib/pago'
 import { nombreDelPase } from '../../../lib/nombrePase'
 import { reproducirMomentos } from '../../../lib/sonidos'
-import { camaraExplicada, guardarFotoSinSubir, marcarCamaraExplicada, modoDeCamara, paradaDeLaFoto, rangoDelViaje, subirFotosPendientes, useCamaraViajeStore, type FaseDelViaje, type ModoDeCamara, type PedidoDeFoto } from '../../../lib/camaraViaje'
+import { METROS_EN_LA_PARADA, camaraExplicada, guardarFotoSinSubir, marcarCamaraExplicada, modoDeCamara, paradaDeLaFoto, rangoDelViaje, subirFotosPendientes, useCamaraViajeStore, type FaseDelViaje, type ModoDeCamara, type PedidoDeFoto } from '../../../lib/camaraViaje'
 import { useLogrosStore } from '../../../store/useLogrosStore'
 import { useSyncStore } from '../../../store/useSyncStore'
+import { useVistoStore } from '../../logros/visto/vistoStore'
 import { CamaraApp } from '../../logros/visto/CamaraApp'
 import { abrirGaleriaDeReclamo } from '../../logros/reclamar/Reclamar'
 import { EstilosDelVisto } from '../../logros/visto/Hojas'
@@ -244,8 +245,12 @@ export function BotonCamaraViaje({ route, fase, conAcceso, day }: PropsBotonCama
   useEffect(() => {
     if (!pedido) return
     useCamaraViajeStore.getState().limpiar()
-    if (conAcceso && fase === 'during') setCamara(pedido)
-  }, [pedido, conAcceso, fase])
+    // (V66) Con una foto ya elegida de la galería no se abre la cámara: la foto se manda directamente.
+    if (conAcceso && fase === 'during') {
+      if (pedido.archivo) void hacerFoto(pedido.archivo, pedido)
+      else setCamara(pedido)
+    }
+  }, [pedido, conAcceso, fase]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(
     () => () => {
@@ -269,8 +274,22 @@ export function BotonCamaraViaje({ route, fase, conAcceso, day }: PropsBotonCama
     setCamara({ sitio: null, nombre: null, oculto: false })
   }
 
-  const hacerFoto = async (archivo: File) => {
-    const ped = camara
+  // (V66, 2) Una foto hecha con la cámara flotante ESTANDO en una parada de hoy (a menos de 400 m) cuenta como la foto de esa parada: «Guarda un recuerdo» ya no le sale al pulsar [He terminado]. Solo se mira el GPS de ahora (0 consultas a Supabase).
+  const anotarFotoDeLaParada = async () => {
+    if (!day) return
+    const donde = await ubicacionDeAhora(2500).catch(() => null)
+    if (!donde) return
+    let mejor: { id: string; m: number } | null = null
+    for (const s of day.stops) {
+      if (s.isBreak || !s.coordinates || (s.coordinates.lat === 0 && s.coordinates.lng === 0)) continue
+      const m = haversineMeters(donde as never, s.coordinates as never)
+      if (m <= METROS_EN_LA_PARADA && (!mejor || m < mejor.m)) mejor = { id: s.id, m }
+    }
+    if (mejor) useVistoStore.getState().marcarConFoto(mejor.id)
+  }
+
+  const hacerFoto = async (archivo: File, pedidoDirecto?: PedidoDeFoto) => {
+    const ped = pedidoDirecto ?? camara
     setCamara(null)
     if (!ped || !tripId) return
     setPensando(true)
@@ -291,6 +310,7 @@ export function BotonCamaraViaje({ route, fase, conAcceso, day }: PropsBotonCama
         if (!cambiar) return
       }
       void guardarFotoSinSubir({ id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, tripId, dayId: day?.id ?? '', dayNumber, stopName: nombreParada, blob: archivo }).then(() => subirFotosPendientes())
+      void anotarFotoDeLaParada()
       setResultado({ tipo: 'recuerdo', url, sub: nombreParada ? `Guardada en ${nombreParada}` : null })
       return
     }
@@ -300,6 +320,7 @@ export function BotonCamaraViaje({ route, fase, conAcceso, day }: PropsBotonCama
     const datosAlbum = { tripId, dayId: day?.id ?? '', dayNumber: day?.dayNumber ?? 1, stopName: ped.nombre ?? null }
     void guardarFotoSinSubir({ id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, ...datosAlbum, blob: archivo }).then(() => subirFotosPendientes())
     if (!r) return setResultado({ tipo: 'sin_conexion', url })
+    if (r.valida !== false) void anotarFotoDeLaParada()
     if (r.valida !== false && r.nuevos?.length) return setResultado({ tipo: 'logro', respuesta: r })
     setResultado({ tipo: 'recuerdo', url, sub: r.valida === false ? (r.mensaje ?? null) : null })
   }

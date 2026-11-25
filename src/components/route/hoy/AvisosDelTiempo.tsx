@@ -9,7 +9,7 @@ import { proponerAlternativaDelTiempo, proponerVolverAlPlan } from '../../../lib
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { HojaPropuesta, useContexto } from './v2/CambiarPlan'
-import { AvisoDeHoy, CruzDeAviso } from './v2/AvisosHoy'
+import { AvisoDeHoy, CruzDeAviso, D_AVISO, FilaDeAviso } from './v2/AvisosHoy'
 import { BOTON_AZUL, EnlaceDeAviso } from './piezas'
 
 /**
@@ -56,7 +56,6 @@ const ICONO: Record<TipoAviso, string> = {
   nubes: 'M7 18a4 4 0 0 1 0-8 5 5 0 0 1 9.5 1A3.5 3.5 0 0 1 16 18z',
   viento: 'M3 8h11a3 3 0 1 0-3-3M3 12h15a3 3 0 1 1-3 3M3 16h8',
 }
-const FONDO: Record<TipoAviso, string> = { lluvia: '#E7EEF6', nubes: '#EEEBE4', viento: '#EFE9DB' }
 
 function Icono({ d }: { d: string }) {
   return (
@@ -70,17 +69,8 @@ function Icono({ d }: { d: string }) {
 
 /** H12: el cartel de un aviso, con [Ver alternativa]. */
 function Cartel({ aviso, onVer, onCerrar }: { aviso: AvisoTiempo; onVer: () => void; onCerrar: () => void }) {
-  // (HOY2) Con la X, el texto y el botón no caben en una fila: arriba el icono, el texto y la X; debajo, [Ver alternativa].
-  return (
-    <div data-aviso-tiempo={aviso.tipo} className='flex flex-none flex-col gap-1 rounded-[18px] py-2 pl-3.5 pr-2' style={{ background: FONDO[aviso.tipo], border: '1px solid rgba(28,34,48,.1)' }}>
-      <div className='flex items-start gap-2.5'>
-        <Icono d={ICONO[aviso.tipo]} />
-        <span className='min-w-0 flex-1 pt-1 text-[13.5px] font-medium leading-[1.35]'>{aviso.texto}</span>
-        <CruzDeAviso onClick={onCerrar} />
-      </div>
-      <EnlaceDeAviso onClick={onVer} texto='Ver alternativa' datos={{ 'data-ver-alternativa': '1' }} className='mb-1 ml-[48px]' />
-    </div>
-  )
+  // (V66, 14) Viento y nubes (y la lluvia de Lanzarote), en la fila azul de aviso de siempre (`FilaDeAviso`, V54): el texto, su botón a la derecha y se va deslizándola hacia arriba.
+  return <FilaDeAviso tono="azul" icono={aviso.tipo === 'viento' ? ICONO.viento : D_AVISO.nube} titulo={aviso.texto} boton={{ texto: aviso.tipo === 'lluvia' ? 'Ver plan' : 'Ver cambio', onClick: onVer, datos: { 'data-ver-alternativa': '1' } }} onIrse={onCerrar} datos={{ 'data-aviso-tiempo': aviso.tipo }} />
 }
 
 /** El aviso de «lo hemos cambiado», con [Deshacer]; y 32b «Ha parado de llover» con [Ver plan] (que abre «¿Volvemos al plan?»). */

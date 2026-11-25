@@ -237,7 +237,7 @@ export function proponerSolucion(p: {
     const partes = [...porDia.entries()].map(([d, ns]) => `${unir(ns)} al ${d}`)
     if (sinDia.length) partes.push(`${unir(sinDia.map((q) => q.nombre))} a Lugares pendientes`)
     const plural = quitadas.length > 1
-    const sufijoPregunta = v.pregunta ? ' Es de lo más importante: solo lo hacemos si tú quieres.' : ''
+    const sufijoPregunta = v.pregunta ? ' Es de los lugares más importantes de tu viaje: solo lo hacemos si tú quieres.' : ''
     const intro = movidas.length === 0 ? `Para ${paraLlegar}, hoy no te da tiempo de ver ${unir(sinDia.map((q) => q.nombre))}. ${plural ? 'Los guardamos' : 'Lo guardamos'} en Lugares pendientes y luego decides.${sufijoPregunta}` : `Para ${paraLlegar}, te pasamos ${unir(partes)}.${sufijoPregunta}`
     const unSoloDia = porDia.size === 1 && sinDia.length === 0
     const semana = movidas[0]?.aDia?.replace(/ \d+$/, '') ?? ''

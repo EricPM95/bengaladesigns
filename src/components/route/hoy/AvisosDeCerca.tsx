@@ -6,6 +6,8 @@ import { numberedStopsOf } from '../../../lib/stopKind'
 import { pagoActivo } from '../../../lib/pago'
 import { alCambiarSugerencias, sugerenciasDelCompanero } from '../../../lib/sugerenciasCompanero'
 import { useSyncStore } from '../../../store/useSyncStore'
+import { useRouteStore } from '../../../store/useRouteStore'
+import { useVistoStore } from '../../logros/visto/vistoStore'
 import { FueraDeRuta, yaDijoAhoraNo } from './FueraDeRuta'
 import { AvisoDeHoy, avisoCerrado, cerrarAvisoDelDia } from './v2/AvisosHoy'
 import { HojaLlegadaOculta, TarjetaBrilla } from './JuegoCerca'
@@ -125,7 +127,7 @@ export function AvisosDeCerca({ route, day, dateIso }: { route: Route; day: DayP
           <FueraDeRuta sitio={tarjetaFuera} tipo={fuera ? 'fuera' : 'junto'} route={route} day={day} tripId={tripId} fecha={dateIso} onCerrar={() => cerrar(tarjetaFuera.sitio)} />
         </AvisoDeHoy>
       )}
-      {llegada && <HojaLlegadaOculta sitio={llegada} onCerrar={() => setLlegada(null)} />}
+      {llegada && <HojaLlegadaOculta sitio={llegada} onCerrar={() => setLlegada(null)} onDesmarcar={() => { const p = numberedStopsOf(day).find((s) => sinAcentos(s.name) === sinAcentos(llegada.nombre)); if (p) { useRouteStore.getState().setStopVisto(day.id, p.id, false); useVistoStore.getState().quitarPendiente(p.id) } }} />}
     </>
   )
 }

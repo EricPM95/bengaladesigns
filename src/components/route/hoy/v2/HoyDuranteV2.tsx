@@ -84,7 +84,6 @@ import { UbicacionDeHoy } from './UbicacionDeHoy'
 import { zonaDeUbicacion } from '../../../../lib/ubicacionHoy'
 import { yaNoDaTiempo } from '../../../../lib/hoyCambiarPlan'
 import { TarjetaDeComida, useComidaDeAhora } from './ComerAhora'
-import { SitioDeAtardecer } from './SitioDeAtardecer'
 import { ATuAire } from './ATuAire'
 import { AvisoDeHorarioEnDirecto, TarjetaDeHorariosDeHoy, useVentanasDeHoy } from './HorarioHoy'
 import { AvisoDeEntradas, PreguntaParadaNoMarcada } from './PeligroHoy'
@@ -303,14 +302,19 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const ocupadoConMomentos = useMomentosUI((s) => s.ronda !== null || s.fila.mostrando !== null || s.compartir !== null)
   const sorpresasPendientes = useLogrosStore((s) => s.momentos.length > 0)
   const ayerCerrable = conPaseOPrueba0 && !esVuelta ? diaDeAyer(route, dateIso) : null
+  // (V66, 22) [Sin fuerzas] → «¿Acabamos aquí el día y descansas?» → [Sí, acabar el día]: sale «Por hoy ya está» (H2) ya, sin esperar a las 22:00, y al cerrarla, el resumen del día.
+  const [cierreForzado, setCierreForzado] = useState(false)
   const cierreDelDia: { variante: 'h2' | 'h3'; dia: DayPlan; iso: string } | null =
-    conPaseOPrueba0 && !esVuelta && tocaCierreDeHoy({ day, ahoraMin: ahoraMinHoy }) && !yaDicho(route.id, dateIso, CLAVE_DEL_CIERRE)
+    cierreForzado && !esVuelta
+      ? { variante: 'h2', dia: day, iso: dateIso }
+      : conPaseOPrueba0 && !esVuelta && tocaCierreDeHoy({ day, ahoraMin: ahoraMinHoy }) && !yaDicho(route.id, dateIso, CLAVE_DEL_CIERRE)
       ? { variante: 'h2', dia: day, iso: dateIso }
       : ayerCerrable && sinVerDelDia(ayerCerrable.day).length > 0 && !yaDicho(route.id, ayerCerrable.iso, CLAVE_DEL_CIERRE)
         ? { variante: 'h3', dia: ayerCerrable.day, iso: ayerCerrable.iso }
         : null
   const cerrarCierre = () => {
     if (!cierreDelDia) return
+    setCierreForzado(false)
     marcarDicho(route.id, cierreDelDia.iso, CLAVE_DEL_CIERRE)
     repintarCierre((n) => n + 1)
     const tripIdCierre = useSyncStore.getState().activeTripId
@@ -524,7 +528,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       <AvisosDelTiempo route={route} day={day} dateIso={dateIso} ubicacion={ubicacion} enCoche={enCoche} />
       <RainAlert day={day} dateIso={dateIso} when="hoy" />
       {/* HOY2b (E): «¿Cómo vais?» una vez al día, después de comer (prioridad 3, lo que sugiere el compañero) */}
-      {!bienvenida && !esVuelta && <ComoVais route={route} day={day} dateIso={dateIso} comidaPendiente={Boolean(comidaDeAhora)} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMinHoy} conPase={conPaseOPrueba} />}
+      {!bienvenida && !esVuelta && <ComoVais route={route} day={day} dateIso={dateIso} comidaPendiente={Boolean(comidaDeAhora)} onAcabarDia={() => setCierreForzado(true)} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMinHoy} conPase={conPaseOPrueba} />}
       <AvisosDeCerca route={route} day={day} dateIso={dateIso} />
       {/* (HOY3) iPhone sin instalar, primer día: «Añade JUTRIP a tu pantalla de inicio para recibir los avisos del viaje». */}
       <TarjetaInstalarAvisos dateIso={dateIso} inicioDelViaje={route.answers.dateRange?.start} conPase={!sinPase || fila?.tipo === 'hoy_es_prueba'} />
@@ -611,31 +615,38 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       )}
 
       {/* HOY1 (H13) + LG1: el atardecer (Roma y Lanzarote), desde 2 horas antes de la puesta de sol */}
-      {fraseAtardecer && (
-        <div data-hoy-atardecer={fraseAtardecer.tipo} className="flex flex-none flex-col gap-3 rounded-3xl p-4 text-white" style={{ background: 'linear-gradient(160deg,#F9C98A,#E58A5E 55%,#7A3E78)' }}>
-          <div className="flex items-center gap-3.5">
-            <span className="flex h-[52px] w-[52px] flex-none items-center justify-center rounded-full" style={{ background: 'rgba(255,255,255,.22)' }}>
-              <Icono nombre="hoy" size={26} grosor={1.8} />
+      {fraseAtardecer && (() => {
+        // (V66 §2; Design «Atardecer Bloque», S1-S3) Arriba, pequeño, el icono y «ATARDECER · 18:26» (sin parada de atardecer, solo «ATARDECER»: la hora ya va en el título); debajo el título, el texto y, a lo ancho, el botón.
+        // S1 con parada: [Ir al {parada}]; S2 sin parada: SOLO el sitio más cercano y su botón; S3 sin ningún sitio cerca: solo la hora, sin texto ni botón.
+        const destinoDelBoton = fraseAtardecer.tipo === 'parada' && fraseAtardecer.parada && hasRealCoordinates(fraseAtardecer.parada.coordinates)
+          ? { nombre: fraseAtardecer.parada.name, coordinates: fraseAtardecer.parada.coordinates, coche: enCoche }
+          : fraseAtardecer.tipo === 'cerca' && fraseAtardecer.cerca[0]
+            ? { nombre: fraseAtardecer.cerca[0].nombre, coordinates: fraseAtardecer.cerca[0].coordinates, coche: fraseAtardecer.cerca[0].modo === 'coche' }
+            : null
+        return (
+          <div data-hoy-atardecer={fraseAtardecer.tipo} className="relative flex flex-none flex-col gap-3.5 overflow-hidden rounded-[26px] px-[18px] pb-4 pt-[18px] text-white" style={{ background: 'linear-gradient(160deg,#FBD59A 0%,#EC9468 48%,#8A4A82 100%)', boxShadow: '0 18px 30px -20px rgba(122,62,120,.8)' }}>
+            <span aria-hidden="true" className="pointer-events-none absolute" style={{ right: -30, top: -34, width: 150, height: 150, borderRadius: '50%', background: 'radial-gradient(circle,rgba(255,244,214,.55),rgba(255,244,214,0) 68%)' }} />
+            <span data-hoy-atardecer-etiqueta className="relative flex items-center gap-2" style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.16em', opacity: 0.95 }}>
+              <span className="flex h-[30px] w-[30px] items-center justify-center rounded-full" style={{ background: 'rgba(255,255,255,.24)' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M17 18a5 5 0 0 0-10 0M12 9V4M4.2 11.2l1.4 1.4M19.8 11.2l-1.4 1.4M2 18h20M7 22h10M9 6l3-3 3 3" />
+                </svg>
+              </span>
+              {fraseAtardecer.tipo === 'parada' ? `ATARDECER · ${fraseAtardecer.hora}` : 'ATARDECER'}
             </span>
-            <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <b data-hoy-atardecer-titulo style={{ font: "400 22px/1.15 'Instrument Serif',serif" }}>{fraseAtardecer.texto}</b>
-              {fraseAtardecer.extra && <span data-hoy-atardecer-mar className="text-[13.5px] font-medium opacity-90">{fraseAtardecer.extra}</span>}
-            </span>
-            {fraseAtardecer.tipo === 'parada' && fraseAtardecer.parada && hasRealCoordinates(fraseAtardecer.parada.coordinates) && (
-              <a href={urlComoLlegar(fraseAtardecer.parada.coordinates, ubicacion, enCoche)} target="_blank" rel="noopener noreferrer" data-hoy-atardecer-como-llegar className="flex h-11 flex-none items-center rounded-xl px-3.5 text-[12.5px] font-bold no-underline" style={{ background: '#FBF3E2', color: '#4A3510' }}>
-                Cómo llegar
+            <b data-hoy-atardecer-titulo className="relative" style={{ font: "400 27px/1.12 'Instrument Serif',serif", textWrap: 'balance' as never }}>{fraseAtardecer.titulo}</b>
+            {fraseAtardecer.detalle && <span data-hoy-atardecer-texto className="relative" style={{ font: "500 14px/1.45 'Geist'", opacity: 0.95 }}>{fraseAtardecer.detalle}</span>}
+            {destinoDelBoton && (
+              <a href={urlComoLlegar(destinoDelBoton.coordinates, ubicacion, destinoDelBoton.coche)} target="_blank" rel="noopener noreferrer" data-hoy-atardecer-como-llegar className="relative flex min-h-[50px] w-full items-center justify-center gap-2 rounded-2xl no-underline" style={{ ...BOTON_ORO, font: "700 15px 'Geist'", border: 'none' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M12 2v4M12 18v4M2 12h4M18 12h4M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" />
+                </svg>
+                Ir {lugarCon('a', destinoDelBoton.nombre)}
               </a>
             )}
           </div>
-          {fraseAtardecer.tipo === 'cerca' && (
-            <div className="flex flex-col gap-2">
-              {fraseAtardecer.cerca.map((c) => (
-                <SitioDeAtardecer key={c.nombre} nombre={c.nombre} tiempo={c.modo === 'coche' ? `a ${c.minutos} min en coche` : `a ${c.minutos} min a pie`} ciudad={route.destination} dateIso={dateIso} enlace={urlComoLlegar(c.coordinates, ubicacion, c.modo === 'coche')} />
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+        )
+      })()}
 
       {/* HOY1 (H4): la línea dorada del logro que acaba de ganar */}
       {ultimoVisto && siguiente && sumaDelVisto && <LineaDelLogro texto={`+1 en ${sumaDelVisto}`} />}

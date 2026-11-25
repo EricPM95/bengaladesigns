@@ -5,6 +5,7 @@ import { displayStopName } from '../../../../lib/format'
 import { aplicarPropuesta } from '../../../../lib/hoyCambiarPlanAplicar'
 import { aHora, escalonDeRetraso, proponerRetraso, retrasoDeAhora, type Propuesta } from '../../../../lib/hoyCambiarPlan'
 import { conArticulo, proponerSolucion, revisarEntradas, type Peligro } from '../../../../lib/hoyPeligro'
+import { segunGrupo } from '../../../../lib/viajaEnGrupo'
 import { numberedStopsOf } from '../../../../lib/stopKind'
 import { useRadioDeParada } from '../../../../lib/radiosDeHoy'
 import { useSyncStore } from '../../../../store/useSyncStore'
@@ -28,6 +29,7 @@ const MARFIL = '#FBF3E2'
 /* Las entradas con hora                                                */
 /* ------------------------------------------------------------------ */
 
+const cap = (t: string): string => t.charAt(0).toUpperCase() + t.slice(1)
 const alSitio = (s: Stop): string => conArticulo(s).replace(/^el /, 'al ').replace(/^(?!al )/, 'a ')
 
 const horaTexto = (min: number) => aHora(min, false)
@@ -112,7 +114,7 @@ export function AvisoDeEntradas({ route, day, dateIso, ubicacion, enCoche, ahora
               tono="amarillo"
               icono={D_AVISO.reloj}
               titulo="Vas con retraso"
-              sub={`${alSitio(margen.stop)} puedes entrar más tarde sin problema, pero hoy quizá no te dé tiempo a todo.`}
+              sub={`${cap(alSitio(margen.stop))} ${segunGrupo('podéis entrar más tarde; hoy quizá no lleguéis', 'puedes entrar más tarde; hoy quizá no llegues')} a todo.`}
               boton={{ texto: 'Ver cómo queda el día', onClick: verRetraso, datos: { 'data-margen-ver-dia': '1' } }}
               onIrse={() => cerrar(claveM)}
               datos={{ 'data-hoy-entrada-margen': 'nocabe' }}

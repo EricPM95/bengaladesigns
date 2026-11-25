@@ -3,7 +3,7 @@ import { abrirPase } from '../../../lib/pago'
 import { nombreDelPase } from '../../../lib/nombrePase'
 import { TextoConPase } from '../../cuenta/TextoConPase'
 import { TarjetaOscura, botonOro, ojoMono } from './piezas'
-import { CruzDeAviso } from './v2/AvisosHoy'
+import { D_AVISO, FilaDeAviso } from './v2/AvisosHoy'
 
 const ETIQUETA_DE_PRUEBA = 'Tu día de prueba'
 const CON_ETIQUETA = new Set<FilaDeHoy['tipo']>(['prueba_otro_dia', 'prueba_primer_dia', 'manana_es_prueba', 'hoy_es_prueba', 'prueba_mas_adelante', 'tras_prueba'])
@@ -13,18 +13,12 @@ const CON_ETIQUETA = new Set<FilaDeHoy['tipo']>(['prueba_otro_dia', 'prueba_prim
  */
 export function FranjaDiaDePrueba({ fila, onCerrar }: { fila: FilaDeHoy; onCerrar?: () => void }) {
   if (!fila.texto) return null
-  return (
-    <div data-franja-prueba className="flex flex-none items-center gap-3 rounded-[20px] py-3 pl-4 pr-2" style={{ background: 'linear-gradient(110deg,#F7E6BE,#FBF3E2)', border: '1px solid rgba(166,124,82,.35)' }}>
-      <span style={{ font: "500 14px/1.4 'Geist'", color: '#1C2230', textWrap: 'pretty' as never }}>
-        <TextoConPase texto={fila.texto} />
-      </span>
-      {onCerrar && (
-        <span className="ml-auto flex-none">
-          <CruzDeAviso onClick={onCerrar} />
-        </span>
-      )}
-    </div>
-  )
+  // (V66, 14) Ahora es una fila de aviso (`FilaDeAviso`): el título es lo de antes de los dos puntos («Hoy es tu día de prueba») y debajo, en gris, el resto. Se va deslizándola hacia arriba.
+  const quitado = fila.texto.replace(/{{|}}/g, '')
+  const i = quitado.indexOf(':')
+  const titulo = i > 0 ? quitado.slice(0, i) : quitado
+  const sub = i > 0 ? quitado.slice(i + 1).trim() : undefined
+  return <FilaDeAviso tono="amarillo" icono={D_AVISO.reloj} titulo={titulo} sub={sub} onIrse={onCerrar} datos={{ 'data-franja-prueba': '1' }} />
 }
 
 /**

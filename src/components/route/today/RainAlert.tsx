@@ -38,7 +38,7 @@ function hoursOf(stops: Stop[]): number[] {
  */
 export function RainAlert({ day, dateIso, when }: RainAlertProps) {
   const route = useRouteStore((state) => state.route)
-  const [part, setPart] = useState<'manana' | 'tarde' | 'dia' | null>(null)
+  const [part, setPart] = useState<'manana' | 'tarde' | 'noche' | 'dia' | null>(null)
   const [rain, setRain] = useState<HourlyRain | null>(null)
   // (HOY2, C) [Ver alternativa] abre «Plan de lluvia» con el formato común de las propuestas (Cambia… / Se mantiene… / [Aplicar] / [Ver otra opción] / «Volver a mi ruta original»); al parar de llover, «¿Volvemos al plan?».
   const [hoja, setHoja] = useState<'plan' | 'vuelta' | null>(null)
@@ -72,7 +72,8 @@ export function RainAlert({ day, dateIso, when }: RainAlertProps) {
       if (!lluvia || hours.length === 0) return setPart(null)
       const wet = hours.filter((hour) => rainsInHours(lluvia, [hour]))
       if (wet.length === 0) return setPart(null)
-      setPart(wet.every((hour) => hour < 14) ? 'manana' : wet.every((hour) => hour >= 14) ? 'tarde' : 'dia')
+      // (V66, 16) mañana hasta las 13:00, tarde hasta las 20:00, después noche.
+      setPart(wet.every((hour) => hour < 13) ? 'manana' : wet.every((hour) => hour >= 13 && hour < 20) ? 'tarde' : wet.every((hour) => hour >= 20) ? 'noche' : 'dia')
     })
     return () => {
       cancelled = true
@@ -87,7 +88,7 @@ export function RainAlert({ day, dateIso, when }: RainAlertProps) {
   const paro = applied && rain != null && haParadoDeLlover(rain, new Date().getHours())
   if (applied && paro && cerradoParo) return null
 
-  const when_ = part === 'manana' ? (when === 'hoy' ? 'esta mañana' : 'mañana por la mañana') : part === 'tarde' ? (when === 'hoy' ? 'esta tarde' : 'mañana por la tarde') : when === 'hoy' ? 'hoy' : 'mañana'
+  const when_ = part === 'manana' ? (when === 'hoy' ? 'esta mañana' : 'mañana por la mañana') : part === 'tarde' ? (when === 'hoy' ? 'esta tarde' : 'mañana por la tarde') : part === 'noche' ? (when === 'hoy' ? 'esta noche' : 'mañana por la noche') : when === 'hoy' ? 'hoy' : 'mañana'
   const canApply = Boolean(day.rainPlan && (day.rainPlan.remove.length > 0 || day.rainPlan.add.length > 0))
   const abrir = (cual: 'plan' | 'vuelta') => {
     setPropuestas(cual === 'plan' ? proponerSiLlueveRoma({ day, ctx }) : proponerVolverAlPlan({ day, ctx }))

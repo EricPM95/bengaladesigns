@@ -77,8 +77,10 @@ export function paradasQueQuedan(day: DayPlan): Stop[] {
 
 /** «esta mañana» / «esta tarde» / «hoy» según las horas con lluvia. */
 export function cuandoLlueve(horas: number[]): string {
-  if (horas.every((h) => h < 14)) return 'esta mañana'
-  if (horas.every((h) => h >= 14)) return 'esta tarde'
+  // (V66, 16) «esta mañana» hasta las 13:00, «esta tarde» hasta las 20:00, después «esta noche».
+  if (horas.every((h) => h < 13)) return 'esta mañana'
+  if (horas.every((h) => h >= 13 && h < 20)) return 'esta tarde'
+  if (horas.every((h) => h >= 20)) return 'esta noche'
   return 'hoy'
 }
 

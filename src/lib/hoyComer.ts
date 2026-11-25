@@ -352,7 +352,7 @@ export function proponerComerAhora(p: { route: Route; day: DayPlan; restaurante:
       intro: pregunta ? `Para comer ahora tendríamos que quitar ${unir(nombres)}, que es de lo más importante.` : `Vas a ${meal?.mealTime === 'dinner' ? 'cenar' : 'comer'} en ${n}. Recolocamos el resto del día para que todo siga cabiendo.`,
       cambia: {
         titulo: nombres.length ? `La comida pasa a ahora, en ${n}, y ${unir(nombres)} sale de hoy` : `La comida pasa a ahora, en ${n}`,
-        detalle: pregunta ? 'Es de lo más importante: solo lo quitamos si tú quieres.' : nombres.length ? 'Así llegas bien al resto del día.' : sim.nuevas.size ? 'Lo que queda se recoloca un poco, después de comer.' : 'El resto de tu día sigue igual: solo cambia el orden.',
+        detalle: pregunta ? 'Es de los lugares más importantes de tu viaje: solo lo hacemos si tú quieres.' : nombres.length ? 'Así llegas bien al resto del día.' : sim.nuevas.size ? 'Lo que queda se recoloca un poco, después de comer.' : 'El resto de tu día sigue igual: solo cambia el orden.',
       },
       mantiene: mantieneDe(items, ctx),
       ops,

@@ -750,7 +750,7 @@ export function proponerRetraso(p: { route: Route; day: DayPlan; paradaId: strin
     const titulo = partes.length ? cap(partes.join(' y ')) : 'Tus siguientes paradas se retrasan un poco'
     const pregunta = v.pregunta
     const detalle = pregunta
-      ? 'Es de lo más importante: solo lo quitamos si tú quieres.'
+      ? 'Es de los lugares más importantes de tu viaje: solo lo hacemos si tú quieres.'
       : aSobraHoy.length && algunoSinDia
         ? 'No cabe en ningún otro día de tu viaje.'
         : aSobraHoy.length
@@ -767,9 +767,9 @@ export function proponerRetraso(p: { route: Route; day: DayPlan; paradaId: strin
     const resumen: NonNullable<Propuesta['resumen']> = []
     if (aDiaQ.length) resumen.push({ icono: 'mover', texto: `${cap(unir(aDiaQ.map((q) => q.nombre)))} pasa${aDiaQ.length > 1 ? 'n' : ''} al ${diasDe.join(' y al ')}` })
     if (soloOpc.length || aSobraHoy.length) resumen.push({ icono: 'quitar', texto: `Sale de hoy: ${unir([...soloOpc, ...aSobraHoy])}` })
-    // (V43 §2) 23c: «no cabe en ningún otro día de tu viaje»; con imprescindibles: «Es de lo más importante: solo lo quitamos si tú quieres».
+    // (V43 §2) 23c: «no cabe en ningún otro día de tu viaje»; con imprescindibles: «Es de los lugares más importantes de tu viaje: solo lo hacemos si tú quieres».
     if (aSobraHoy.length && algunoSinDia && !pregunta) resumen.push({ icono: 'quitar', texto: 'No cabe en ningún otro día de tu viaje' })
-    if (pregunta) resumen.push({ icono: 'quitar', texto: 'Es de lo más importante: solo lo quitamos si tú quieres' })
+    if (pregunta) resumen.push({ icono: 'quitar', texto: 'Es de los lugares más importantes de tu viaje: solo lo hacemos si tú quieres' })
     if (sim.nuevas.size > 0) resumen.push({ icono: 'reloj', texto: 'Lo que sigue se retrasa un poco' })
     resumen.push({ icono: 'ok', texto: `Sigue igual: ${mantiene.titulo}` })
     return {

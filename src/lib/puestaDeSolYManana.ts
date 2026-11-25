@@ -85,11 +85,17 @@ export interface SitioCercaDelSol {
   coordinates: { lat: number; lng: number }
   minutos: number
   modo: 'a_pie' | 'coche'
+  /** «el Pincio», «Famara»: el nombre corto con su artículo (de `sitiosDeAtardecer.json`). */
+  corto: string
 }
 export interface FraseDeAtardecer {
   /** 'parada': el día tiene parada de atardecer; 'cerca': no la tiene y se enseñan sitios cerca; 'solo_hora': no hay sitios a mano, solo la hora. */
   tipo: 'parada' | 'cerca' | 'solo_hora'
   texto: string
+  /** (V66 §2, Design «Atardecer Bloque» S1-S3) El título de la tarjeta («Hoy ves el atardecer en el Castillo de Sant'Angelo» · «Hoy el sol se pone a las 18:26»). */
+  titulo: string
+  /** (V66 §2) El texto de debajo, o null (S3: solo la hora): «Llega un cuarto de hora antes, que es cuando más bonito está.» · «Desde el Pincio, a 10 minutos andando, se ve precioso.» */
+  detalle: string | null
   hora: string
   /** El nombre de la parada del atardecer (tipo 'parada'). */
   sitio: string
@@ -120,9 +126,9 @@ export function fraseDeAtardecer(p: { day: DayPlan; pendientes: Stop[]; desde?: 
   const delDia = p.pendientes.find((s) => s.isSunset) ?? p.pendientes.find((s) => sitioDeAtardecerDe(p.delDestino ?? null, s))
   if (delDia) {
     const lugar = sitioDeAtardecerDe(p.delDestino ?? null, delDia)?.corto ?? conArticuloMinuscula(delDia.name)
-    return { tipo: 'parada', hora, sitio: delDia.name, parada: delDia, cerca: [], extra, texto: `Hoy ves el atardecer en ${lugar}: el sol se pone a las ${hora}. Llega un cuarto de hora antes, que es cuando más bonito está.` }
+    return { tipo: 'parada', hora, sitio: delDia.name, parada: delDia, cerca: [], extra, titulo: `Hoy ves el atardecer en ${lugar}`, detalle: 'Llega un cuarto de hora antes, que es cuando más bonito está.', texto: `Hoy ves el atardecer en ${lugar}: el sol se pone a las ${hora}. Llega un cuarto de hora antes, que es cuando más bonito está.` }
   }
-  const sinSitios: FraseDeAtardecer = { tipo: 'solo_hora', hora, sitio: '', cerca: [], extra, texto: `Hoy el sol se pone a las ${hora}.` }
+  const sinSitios: FraseDeAtardecer = { tipo: 'solo_hora', hora, sitio: '', cerca: [], extra, titulo: `Hoy el sol se pone a las ${hora}`, detalle: null, texto: `Hoy el sol se pone a las ${hora}.` }
   if (!p.delDestino || !p.desde) return sinSitios
   const cerca: SitioCercaDelSol[] = []
   for (const x of p.delDestino.sitios) {
@@ -130,15 +136,18 @@ export function fraseDeAtardecer(p: { day: DayPlan; pendientes: Stop[]; desde?: 
     const m = haversineMeters(p.desde, { lat: x.lat, lng: x.lng })
     const aPie = Math.max(1, Math.round(m / METROS_POR_MINUTO))
     const coche = Math.max(2, minutosEnCocheDeMetros(m))
-    if (aPie <= MAX_A_PIE_MIN) cerca.push({ nombre: x.nombre, coordinates: { lat: x.lat, lng: x.lng }, minutos: aPie, modo: 'a_pie' })
-    else if (p.enCoche && coche <= MAX_EN_COCHE_MIN) cerca.push({ nombre: x.nombre, coordinates: { lat: x.lat, lng: x.lng }, minutos: coche, modo: 'coche' })
+    if (aPie <= MAX_A_PIE_MIN) cerca.push({ nombre: x.nombre, coordinates: { lat: x.lat, lng: x.lng }, minutos: aPie, modo: 'a_pie', corto: x.corto })
+    else if (p.enCoche && coche <= MAX_EN_COCHE_MIN) cerca.push({ nombre: x.nombre, coordinates: { lat: x.lat, lng: x.lng }, minutos: coche, modo: 'coche', corto: x.corto })
   }
   cerca.sort((a, b) => a.minutos - b.minutos)
   const tres = cerca.slice(0, 3)
   if (tres.length === 0) return sinSitios
   // (HOY2b 6, Eric 5-nov. Antes: título «Hoy el sol se pone a las 18:04. Si te apetece verlo, estos sitios están cerca:» y, DESPUÉS de los dos puntos, «Aquí el sol cae al mar.». Ahora: el título solo dice la hora; debajo, de corrido,
   // «Aquí el sol se esconde en el mar. Si te apetece verlo, te recomendamos estos sitios:» (la frase del mar, solo en Lanzarote) y, cada sitio con su foto, su tiempo y [Cómo llegar].)
-  return { tipo: 'cerca', hora, sitio: '', cerca: tres, extra: `${mar ? 'Aquí el sol se esconde en el mar. ' : ''}Si te apetece verlo, te recomendamos estos sitios:`, texto: `Hoy el sol se pone a las ${hora}` }
+  // (V66 §2) La tarjeta enseña SOLO el sitio más cercano, en una frase: «Desde el Pincio, a 10 minutos andando, se ve precioso.» (en Lanzarote, donde el sol cae al mar, «…, el sol cae al mar.»).
+  const uno = tres[0]
+  const detalle = `Desde ${uno.corto}, a ${uno.minutos} ${uno.minutos === 1 ? 'minuto' : 'minutos'} ${uno.modo === 'coche' ? 'en coche' : 'andando'}, ${mar ? 'el sol cae al mar' : 'se ve precioso'}.`
+  return { tipo: 'cerca', hora, sitio: '', cerca: tres, titulo: `Hoy el sol se pone a las ${hora}`, detalle, extra: `${mar ? 'Aquí el sol se esconde en el mar. ' : ''}Si te apetece verlo, te recomendamos estos sitios:`, texto: `Hoy el sol se pone a las ${hora}` }
 }
 
 export interface TarjetaDeManana {

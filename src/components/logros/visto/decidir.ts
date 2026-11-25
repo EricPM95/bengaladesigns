@@ -23,6 +23,8 @@ export interface RespuestaParaDecidir {
   ubic?: 'cerca' | 'lejos' | 'sin'
   hay_pedazo?: boolean
   hay_emblema?: boolean
+  /** (V66, 2) El sitio es de «Los imprescindibles» del destino o una maravilla del mundo: solo ahí sale «Guarda un recuerdo». */
+  es_importante?: boolean
   repetido?: boolean
   foto_dentro?: string | null
   nuevos?: { tipo: string; [otro: string]: unknown }[]
@@ -48,13 +50,15 @@ export function hojaSegunRespuesta(r: RespuestaParaDecidir | null, nombreParada:
   const base = { nombreSitio, fotoDentro: r.foto_dentro ?? null, pedazo: null, mensaje: null }
   if (r.motivo === 'pregunta_medio_dia' || r.repetido) return null
   if (r.motivo === 'lejos' && (r.hay_pedazo || r.hay_emblema)) return { ...base, tipo: 'lejos', mensaje: `¿Ya has estado hoy ${enSitio(nombreSitio)}? Sube una foto que hiciste allí y gana tu pedazo.` }
-  if (r.motivo === 'lejos') return { ...base, tipo: 'recuerdo' }
-  if (r.cuenta === false) return { ...base, tipo: 'recuerdo' }
+  // (V66, 2) «Guarda un recuerdo» solo en los sitios importantes (imprescindibles y maravillas); en el resto de paradas, nunca (Eric: «es muy pesado foto en todos los lugares»).
+  const recuerdo: HojaDecidida | null = r.es_importante ? { ...base, tipo: 'recuerdo' } : null
+  if (r.motivo === 'lejos') return recuerdo
+  if (r.cuenta === false) return recuerdo
   if (r.hay_emblema) return { ...base, tipo: 'oculto' }
   if (r.ubic === 'sin' && r.hay_pedazo) return { ...base, tipo: 'sin_ubicacion' }
   const pedazo = r.nuevos?.find((m) => m.tipo === 'suma') ?? null
   if (pedazo) return { ...base, tipo: 'ganado', pedazo }
-  return { ...base, tipo: 'recuerdo' }
+  return recuerdo
 }
 
 /** Lo que le falta a la parada según la tarjeta (la tira V6): sale de la MISMA decisión, así el texto de la tira nunca contradice al de la hoja. */

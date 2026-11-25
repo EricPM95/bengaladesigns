@@ -28,7 +28,7 @@ import { removeReservationWithUndo } from '../../../store/useAddFlowStore'
 import { leerImporte } from '../../../lib/dinero'
 import { precioEnVista } from '../../../lib/moneda'
 import type { DatosExcursionLeida } from '../../../lib/billeteLeer'
-import { corregirConElDocumento } from '../../../lib/corregirConElDocumento'
+import { usePreguntaDeDia } from './PreguntaDeDiaDelDocumento'
 import { paginaEnMemoria, pedirPaginaDeDestino, type ActividadDeDestino } from '../../../lib/paginaDestino'
 import { TarjetaDeActividad } from '../DestinationDetailModal'
 import { TodasLasActividades } from './TodasLasActividades'
@@ -83,6 +83,8 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
   
   const [lista, setLista] = useState(false)
   const [target, setTarget] = useState<ReservationTarget | null>(null)
+  // (V66, 3.1) Un documento de OTRO día del viaje: se pregunta antes de mover la reserva.
+  const { preguntar: preguntarDia, hoja: hojaDeDia } = usePreguntaDeDia()
   // (10R §4) El billete de cada excursión (privado de esta persona) y la hoja «Datos de la excursión».
   const billetes = useBilletesDeExcursiones()
   const [datosDe, setDatosDe] = useState<{ reserva: Reservation; leida: DatosExcursionLeida | null } | null>(null)
@@ -212,7 +214,7 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
                 año={route.answers.dateRange ? Number(route.answers.dateRange.start.slice(0, 4)) : undefined}
                 onLapizArriba={() => setTarget({ kind: 'excursion', refId: reserva.refId, name: reserva.name, placeNames: [], excursion, currentDayId: dayOfReservation(route, reserva)?.id ?? null, existing: reserva })}
                 onLapizDatos={() => setDatosDe({ reserva, leida: null })}
-                onLeida={(leida) => setDatosDe({ reserva: corregirConElDocumento(reserva, { fecha: leida.fecha, hora: leida.hora }, 'reserva', excursionDe(reserva)), leida })}
+                onLeida={(leida) => preguntarDia(reserva, { fecha: leida.fecha, hora: leida.hora }, 'reserva', excursionDe(reserva), (existing, usar) => setDatosDe({ reserva: existing, leida: usar ? leida : { ...leida, fecha: null, hora: null } }))}
                 onQuitar={quitar}
                 claveDeAviso={reserva.id}
                 onSubirVarias={esParaVarios(reserva) ? () => setCadaUno(reserva) : undefined}
@@ -270,6 +272,7 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
           }}
         />
       )}
+      {hojaDeDia}
       {target && <AddReservationSheet route={route} target={target} onClose={() => setTarget(null)} />}
     </>
   )

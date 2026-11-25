@@ -1,4 +1,6 @@
-import { BOTON_CLARO, BOTON_ORO } from '../../ui/botonesOro'
+import { BOTON_ORO } from '../../ui/botonesOro'
+import { TiradorDeHoja } from '../../ui/TiradorDeHoja'
+import { lugarCon } from '../../../lib/articulos'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
 import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
@@ -63,50 +65,87 @@ export function TarjetaBrilla({ nivel, onAhoraNo }: { nivel: 'brilla' | 'mas_cer
   )
 }
 
-/** Al llegar: «¡Aquí se esconde un Emblema Oculto!» (la hoja oscura de siempre del Visto), con [Hacer la foto]. */
-export function HojaLlegadaOculta({ sitio, onCerrar }: { sitio: SitioCerca; onCerrar: () => void }) {
+/**
+ * (V66 §1; Design «Emblema Oculto Hoja», E1 y E2) Al llegar: la hoja del Emblema Oculto. Azul noche, casi a pantalla completa, con rayos que giran muy despacio y estrellitas que titilan; el rombo dorado con «?»,
+ * «EMBLEMA OCULTO», el título, «Haz una foto en {sitio} y descúbrelo.», [Hacer la foto] (dorado), [Elegir de la galería] (oscuro con borde dorado: abre la fototeca y la foto cuenta igual) y «¿No estás aquí? Desmarcar visto».
+ * Es `role=dialog aria-modal`: con un aviso de [Deshacer] abajo, la hoja empieza justo encima de él (regla V63 §1 de `index.css`) y no se le tapan los botones.
+ */
+const ESTRELLAS_OCULTO = Array.from({ length: 16 }, (_, i) => ({ x: 6 + ((i * 83) % 88), y: 3 + ((i * 47) % 40), r: i % 3 ? 2 : 3, d: (2 + (i % 5) * 0.6).toFixed(1), b: (i * 0.31).toFixed(2) }))
+export function HojaLlegadaOculta({ sitio, onCerrar, onDesmarcar }: { sitio: SitioCerca; onCerrar: () => void; onDesmarcar?: () => void }) {
   // (V52 §5) La hoja del emblema oculto suena al salir (antes no sonaba).
   useEffect(() => {
     void sonar('oculto')
   }, [])
+  const pedido = { sitio: sitio.sitio, nombre: sitio.nombre, oculto: true }
   return createPortal(
-    <div data-juego="llegada" role="dialog" aria-label="Aquí se esconde un Emblema Oculto" className="fixed inset-0 z-[80] flex flex-col justify-end">
+    <div data-juego="llegada" role="dialog" aria-modal="true" aria-label="Aquí se esconde un Emblema Oculto" className="fixed inset-0 z-[80] flex flex-col justify-end">
       <EstilosDelVisto />
+      <style>{`@keyframes eoSpin{to{transform:rotate(360deg)}}@keyframes eoTw{0%,100%{opacity:.15;transform:scale(.7)}50%{opacity:1;transform:scale(1)}}@keyframes eoPulse{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.07)}}@media (prefers-reduced-motion: reduce){[data-juego=llegada] *{animation:none!important}}`}</style>
       <button type="button" aria-label="Cerrar" onClick={onCerrar} className="absolute inset-0 cursor-default border-0 p-0" style={{ background: FONDO_DE_HOJA, animation: 'vistoFade .3s ease both' }} />
-      <div className="relative mx-auto flex w-full max-w-[520px] flex-col gap-3 overflow-hidden px-[18px] pb-8 pt-3" style={{ borderRadius: '26px 26px 0 0', background: 'radial-gradient(120% 90% at 85% 0%,#3A3550 0%,#1C2230 60%)', color: '#FFFDF8', boxShadow: '0 -12px 34px -18px rgba(0,0,0,.5)', animation: 'vistoSheet .5s cubic-bezier(.2,.8,.2,1) both' }}>
-        <span className="pointer-events-none absolute -right-[70px] -top-20 h-60 w-60 rounded-full" style={{ background: 'repeating-conic-gradient(rgba(243,213,154,.18) 0 7deg,transparent 7deg 20deg)', WebkitMaskImage: 'radial-gradient(circle,#000 20%,transparent 68%)', maskImage: 'radial-gradient(circle,#000 20%,transparent 68%)', animation: 'vistoRays 24s linear infinite' }} />
-        <span className="self-center" style={{ width: 42, height: 4, borderRadius: 4, background: 'rgba(255,253,248,.25)' }} />
+      <div className="relative mx-auto flex w-full max-w-[520px] flex-col items-center gap-3.5 overflow-y-auto overflow-x-hidden px-5 pb-7 pt-2.5" style={{ maxHeight: '100%', minHeight: 'min(78%, 640px)', borderRadius: '34px 34px 0 0', background: 'radial-gradient(120% 70% at 50% 0%,#2E2A5A 0%,#1E2040 45%,#14162C 100%)', color: '#FFFDF8', boxShadow: '0 -24px 50px rgba(0,0,0,.4)', animation: 'vistoSheet .5s cubic-bezier(.2,.8,.2,1) both' }}>
+        <span aria-hidden="true" className="pointer-events-none absolute left-1/2 top-[70px]" style={{ marginLeft: -190, width: 380, height: 380, opacity: 0.5, animation: 'eoSpin 70s linear infinite', background: 'repeating-conic-gradient(from 0deg,rgba(243,216,143,.38) 0 4deg,transparent 4deg 15deg)', WebkitMaskImage: 'radial-gradient(circle,#000 8%,transparent 62%)', maskImage: 'radial-gradient(circle,#000 8%,transparent 62%)' }} />
+        {ESTRELLAS_OCULTO.map((e, i) => (
+          <span key={i} aria-hidden="true" className="pointer-events-none absolute rounded-full" style={{ left: `${e.x}%`, top: `${e.y}%`, width: e.r, height: e.r, background: '#F3D88F', animation: `eoTw ${e.d}s ease-in-out ${e.b}s infinite` }} />
+        ))}
+        <TiradorDeHoja oscura />
         <CruzDeHoja onCerrar={onCerrar} oscura />
-        <div className="relative flex items-start gap-3.5 pr-11">
-          <span className="flex h-16 w-16 flex-none items-center justify-center">
-            <span className="flex h-[46px] w-[46px] rotate-45 items-center justify-center rounded-xl" style={{ background: 'linear-gradient(140deg,#F7E6BE,#D9B86A 55%,#B8903E)', boxShadow: '0 0 22px rgba(243,213,154,.55),inset 0 1px 0 rgba(255,255,255,.6)' }}>
-              <span className="-rotate-45" style={{ font: "400 26px/1 'Instrument Serif',serif", color: '#3A2A10' }}>?</span>
-            </span>
-          </span>
-          <span className="flex min-w-0 flex-1 flex-col gap-1">
-            <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: 'oklch(0.86 0.12 85)' }}>Emblema Oculto</span>
-            <span style={{ font: "400 22px/1.1 'Instrument Serif',serif", textWrap: 'balance' as never }}>¡Aquí se esconde un Emblema Oculto!</span>
-            <span style={{ font: "400 13px/1.45 'Geist'", color: 'rgba(255,253,248,.82)' }}>Haz una foto {sitio.en_sitio} y descúbrelo.</span>
-          </span>
+        <div className="relative mt-1 flex h-[132px] w-[132px] flex-none items-center justify-center">
+          <span aria-hidden="true" className="absolute rounded-full" style={{ inset: -14, background: 'radial-gradient(circle,rgba(243,216,143,.4),rgba(243,216,143,0) 66%)', animation: 'eoPulse 3s ease-in-out infinite' }} />
+          <svg width="132" height="132" viewBox="0 0 132 132" fill="none" className="relative" aria-hidden="true">
+            <defs>
+              <linearGradient id="eoG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#FFF1B8" /><stop offset=".45" stopColor="#E0B14A" /><stop offset="1" stopColor="#A8721C" /></linearGradient>
+              <linearGradient id="eoD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#2A2D58" /><stop offset="1" stopColor="#14162C" /></linearGradient>
+            </defs>
+            <path d="M66 6l56 60-56 60L10 66z" fill="url(#eoD)" stroke="url(#eoG)" strokeWidth="4" strokeLinejoin="round" />
+            <path d="M66 18l44 48-44 48L22 66z" stroke="#F3D88F" strokeOpacity=".4" strokeWidth="1.2" strokeLinejoin="round" />
+            <text x="66" y="84" textAnchor="middle" fontFamily="Instrument Serif" fontSize="58" fill="url(#eoG)">?</text>
+          </svg>
         </div>
+        <span className="relative" style={{ font: "600 11px 'Geist Mono',monospace", letterSpacing: '.2em', color: '#F3D88F' }}>EMBLEMA OCULTO</span>
+        <span className="relative -mt-1.5 text-center" style={{ font: "400 31px/1.08 'Instrument Serif',serif", textWrap: 'balance' as never }}>¡Aquí se esconde un Emblema Oculto!</span>
+        <span className="relative text-center" style={{ font: "400 14.5px/1.45 'Geist'", color: 'rgba(255,253,248,.75)', textWrap: 'balance' as never }}>Haz una foto {lugarCon('en', sitio.nombre)} y descúbrelo.</span>
         <button
           type="button"
           data-juego-boton="foto"
           onClick={() => {
             onCerrar()
-            useCamaraViajeStore.getState().abrir({ sitio: sitio.sitio, nombre: sitio.nombre, oculto: true })
+            useCamaraViajeStore.getState().abrir(pedido)
           }}
-          className="relative flex min-h-12 items-center justify-center gap-2 rounded-2xl"
-          style={{ ...BOTON_ORO, font: "700 14px 'Geist'", border: 'none' }}
+          className="relative mt-1 flex min-h-14 w-full items-center justify-center gap-2.5 rounded-2xl"
+          style={{ ...BOTON_ORO, font: "700 16px 'Geist'", border: 'none' }}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M4 8h3l2-3h6l2 3h3v11H4zM12 11a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z" />
           </svg>
           Hacer la foto
         </button>
-        <button type="button" data-juego-boton="ahora-no" onClick={onCerrar} className="relative flex min-h-12 items-center justify-center rounded-2xl" style={{ ...BOTON_CLARO, font: "700 14px 'Geist'" }}>
-          Ahora no
-        </button>
+        {/* [Elegir de la galería]: abre la fototeca del móvil (sin `capture`); la foto se manda igual que una hecha con la cámara (la cámara de viaje la recibe en `archivo`). */}
+        <label data-juego-boton="galeria" className="relative flex min-h-[50px] w-full cursor-pointer items-center justify-center gap-2 rounded-2xl" style={{ background: 'rgba(255,255,255,.08)', border: '1px solid rgba(243,216,143,.55)', color: '#F3D88F', font: "700 14.5px 'Geist'" }}>
+          <input
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            onChange={(e) => {
+              const f = e.target.files?.[0]
+              e.target.value = ''
+              if (!f) return
+              onCerrar()
+              useCamaraViajeStore.getState().abrir({ ...pedido, archivo: f })
+            }}
+          />
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="3.5" y="4.5" width="17" height="15" rx="3" />
+            <circle cx="9" cy="10" r="1.6" />
+            <path d="M4 17l5-4.5 3.5 3 3-2.5 4.5 4" />
+          </svg>
+          Elegir de la galería
+        </label>
+        <span className="relative" style={{ font: "500 13px 'Geist'", color: 'rgba(255,253,248,.6)' }}>
+          ¿No estás aquí?{' '}
+          <button type="button" data-juego-boton="desmarcar" onClick={() => { onDesmarcar?.(); onCerrar() }} className="min-h-9 underline underline-offset-[3px]" style={{ color: '#F3D88F', background: 'none', border: 'none', font: "500 13px 'Geist'" }}>
+            Desmarcar visto
+          </button>
+        </span>
       </div>
     </div>,
     document.body,

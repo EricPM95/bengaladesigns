@@ -11,7 +11,7 @@ import { AvisoDeHoy, CruzDeAviso } from './AvisosHoy'
 import { HojaPropuesta, Titulo, useContexto } from './CambiarPlan'
 import { HojaV2 } from './HojasV2'
 import { AvisoMasTiempo } from './MasTiempo'
-import { BOTON_ORO } from '../../../ui/botonesOro'
+import { BOTON_CLARO, BOTON_ORO } from '../../../ui/botonesOro'
 import { useModoCuentas } from '../../../../lib/modoCuentas'
 
 /**
@@ -31,7 +31,7 @@ const leer = (k: string): string | null => {
   }
 }
 
-export function ComoVais({ route, day, dateIso, ubicacion, enCoche, ahoraMin, conPase, comidaPendiente = false }: { route: Route; day: DayPlan; dateIso: string; comidaPendiente?: boolean; ubicacion: Coordinates | null; enCoche: boolean; ahoraMin: number; conPase: boolean }) {
+export function ComoVais({ route, day, dateIso, ubicacion, enCoche, ahoraMin, conPase, comidaPendiente = false, onAcabarDia }: { route: Route; onAcabarDia?: () => void; day: DayPlan; dateIso: string; comidaPendiente?: boolean; ubicacion: Coordinates | null; enCoche: boolean; ahoraMin: number; conPase: boolean }) {
   // (V56, 10) «¿Cómo vas?» si viaja solo; «¿Cómo vais?» si hay más personas UNIDAS al viaje (`modoCuentas`, no lo que dijo en el formulario).
   const grupo = useModoCuentas().modo !== 'solo'
   const [sugerencias, setSugerencias] = useState(sugerenciasDelCompanero())
@@ -51,6 +51,13 @@ export function ComoVais({ route, day, dateIso, ubicacion, enCoche, ahoraMin, co
       /* sin almacenamiento: vale hasta cerrar la pantalla */
     }
     setRespondido(v)
+  }
+  // (V66, 22) [Sin fuerzas] primero pregunta «¿Acabamos aquí el día y descansas?»: [Sí, acabar el día] sigue con «Por hoy ya está» (H2) y el resumen del día (lo monta HoyDuranteV2 con `onAcabarDia`); [Seguir] sigue con lo de siempre (`cansados`).
+  const [preguntaFin, setPreguntaFin] = useState(false)
+  const preguntarFin = () => {
+    if (!onAcabarDia) return cansados()
+    responder('cansados')
+    setPreguntaFin(true)
   }
   const cansados = () => {
     responder('cansados')
@@ -78,12 +85,45 @@ export function ComoVais({ route, day, dateIso, ubicacion, enCoche, ahoraMin, co
               <button type="button" onClick={() => responder('fuerzas')} data-como-vais="fuerzas" className="flex h-[50px] min-w-0 flex-1 items-center justify-center rounded-2xl px-2.5 text-[13.5px] font-bold" style={BOTON_ORO}>
                 Con fuerzas
               </button>
-              <button type="button" onClick={cansados} data-como-vais="cansados" className="flex h-[50px] min-w-0 flex-1 items-center justify-center rounded-2xl px-2.5 text-[13.5px] font-bold" style={BOTON_BLANCO}>
+              <button type="button" onClick={preguntarFin} data-como-vais="cansados" className="flex h-[50px] min-w-0 flex-1 items-center justify-center rounded-2xl px-2.5 text-[13.5px] font-bold" style={BOTON_BLANCO}>
                 {grupo ? 'Cansados' : 'Sin fuerzas'}
               </button>
             </div>
           </div>
         </AvisoDeHoy>
+      )}
+      {preguntaFin && (
+        <HojaV2 onCerrar={() => setPreguntaFin(false)} etiqueta="¿Acabamos aquí el día?" fondo={MARFIL}>
+          <div data-cansados-pregunta-fin className="flex flex-col gap-3">
+            <Titulo texto={grupo ? '¿Acabamos aquí el día y descansáis?' : '¿Acabamos aquí el día y descansas?'} onCerrar={() => setPreguntaFin(false)} />
+            <div data-dos-botones className="grid grid-cols-2 gap-2.5">
+              <button
+                type="button"
+                data-cansados-acabar
+                onClick={() => {
+                  setPreguntaFin(false)
+                  onAcabarDia?.()
+                }}
+                className="flex min-h-[52px] items-center justify-center rounded-2xl px-3 text-center text-[15px] font-bold"
+                style={BOTON_ORO}
+              >
+                Sí, acabar el día
+              </button>
+              <button
+                type="button"
+                data-cansados-seguir
+                onClick={() => {
+                  setPreguntaFin(false)
+                  cansados()
+                }}
+                className="flex min-h-[52px] items-center justify-center rounded-2xl px-3 text-center text-[15px] font-bold"
+                style={BOTON_CLARO}
+              >
+                Seguir
+              </button>
+            </div>
+          </div>
+        </HojaV2>
       )}
       {hoja && (hoja.caso === 'calma' || hoja.caso === 'reserva' || hoja.caso === 'opcional') && hoja.propuesta && (
         <HojaPropuesta
