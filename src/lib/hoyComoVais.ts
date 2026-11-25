@@ -1,3 +1,4 @@
+import { segunGrupo } from './viajaEnGrupo'
 import { hasRealCoordinates } from './distanceMock'
 import type { DestinationPlace } from './destinationPlacesApi'
 import { displayStopName } from './format'
@@ -157,7 +158,7 @@ export function responderCansados(p: { route: Route; day: DayPlan; ctx: Contexto
   const k = vigentes.findIndex((s) => !s.checkedInAt)
   const restantes: Stop[] = k < 0 ? [] : vigentes.slice(k).filter((s) => !s.checkedInAt)
   const items = itemsDe(restantes, ctx.fijasDe(day), ctx.datos)
-  const sinNada = (): RespuestaCansados => ({ caso: 'respiro', propuesta: null, pausa: null, texto: 'Tomaos un respiro.', quita: [] })
+  const sinNada = (): RespuestaCansados => ({ caso: 'respiro', propuesta: null, pausa: null, texto: segunGrupo('Tomaos un respiro.', 'Tómate un respiro.'), quita: [] })
   if (items.length === 0) return sinNada()
 
   // Desde dónde se busca una pausa: donde estás; sin ubicación, tu siguiente parada.
@@ -170,9 +171,9 @@ export function responderCansados(p: { route: Route; day: DayPlan; ctx: Contexto
     const propuesta: Propuesta = {
       id: `cansados-opcional-${items.map((i) => i.stop.id).join('+')}`,
       tipo: 'cansados',
-      intro: '¿Y si por hoy lo dejáis aquí? Lo que queda no es imprescindible.',
-      cambia: { titulo: `${unir(nombres)} ${nombres.length > 1 ? 'pasan' : 'pasa'} a «Lugares pendientes»`, detalle: 'Lo podéis recuperar cuando queráis.' },
-      mantiene: { titulo: 'todo lo que ya habéis visto', detalle: 'Nada se pierde.' },
+      intro: segunGrupo('¿Y si por hoy lo dejáis aquí? Lo que queda no es imprescindible.', '¿Y si por hoy lo dejas aquí? Lo que queda no es imprescindible.'),
+      cambia: { titulo: `${unir(nombres)} ${nombres.length > 1 ? 'pasan' : 'pasa'} a «Lugares pendientes»`, detalle: segunGrupo('Lo podéis recuperar cuando queráis.', 'Lo puedes recuperar cuando quieras.') },
+      mantiene: { titulo: segunGrupo('todo lo que ya habéis visto', 'todo lo que ya has visto'), detalle: 'Nada se pierde.' },
       ops: q.ops,
       caso: undefined,
       quitadas: q.quitadas,
@@ -213,13 +214,13 @@ export function responderCansados(p: { route: Route; day: DayPlan; ctx: Contexto
       const hora = aHora((ctx.horaFijaMin?.(fija.stop) ?? fija.t) as number, false)
       const sitio = conArticuloDe(fija.stop.name)
       const turno = Boolean(fija.stop.isFreeTour)
-      const texto = `Aguantad un poco: a las ${hora} tenéis ${sitio}. Lo que queda después, ¿lo dejamos para otro día?`
+      const texto = `${segunGrupo('Aguantad un poco', 'Aguanta un poco')}: a las ${hora} ${segunGrupo('tenéis', 'tienes')} ${sitio}. Lo que queda después, ¿lo dejamos para otro día?`
       const propuesta: Propuesta = {
         id: `cansados-reserva-${fija.stop.id}`,
         tipo: 'cansados',
         intro: texto,
-        cambia: { titulo: frasePasa(q), detalle: 'Así os queda un día más ligero.' },
-        mantiene: { titulo: `${turno ? 'vuestro turno' : 'vuestra entrada'} de las ${hora}`, detalle: 'Las reservas no se tocan.' },
+        cambia: { titulo: frasePasa(q), detalle: segunGrupo('Así os queda un día más ligero.', 'Así te queda un día más ligero.') },
+        mantiene: { titulo: `${turno ? segunGrupo('vuestro turno', 'tu turno') : segunGrupo('vuestra entrada', 'tu entrada')} de las ${hora}`, detalle: 'Las reservas no se tocan.' },
         ops: q.ops,
         quitadas: q.quitadas,
         corridas: 0,

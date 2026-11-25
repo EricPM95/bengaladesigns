@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { FlagIcon } from '../ui/FlagIcon'
 import { nombreDelPais, paisDelAparato, paisesOrdenados } from '../../lib/paisVive'
+import { ponerMonedaDelPais } from '../../lib/monedaDelPais'
 import { createPortal } from 'react-dom'
 import { franjasDeEdad, guardarPrimeraVez, usePrimeraVezUi, type Compania, type FranjaEdad, type Frecuencia } from '../../lib/primeraVez'
 import type { Sueno } from '../../lib/suenos'
@@ -93,6 +94,8 @@ export function PreguntasPrimeraVez({ onTerminar }: { onTerminar: () => void }):
     setGuardando(true)
     // Aunque no se pueda guardar (sin red), las preguntas se cierran: no se atasca a nadie. Si no llegó a guardarse, volverán a salir la próxima vez.
     await guardarPrimeraVez({ frecuencia: r.frecuencia, compania: r.compania, franja_edad: r.edad, pais_vive: r.pais, sueno: conSuenos ? (r.sueno ?? null) : null }).catch(() => false)
+    // (V56, 4) Al contestar el país, la moneda del viajero pasa a ser la de ese país (zona euro o sin contestar: euros). Sin contestar no se toca nada.
+    if (r.pais) void ponerMonedaDelPais(r.pais)
     onTerminar()
   }
   const id = pantallas[paso]

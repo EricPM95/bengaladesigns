@@ -165,11 +165,13 @@ export function nombreDelDia(route: Route, diaGuardado: DayPlan, grupos: GruposD
   // (V18) Un nombre que es de OTRO día («Dia 2 Lunes» en el jueves 12) no se enseña: el día se nombra como si no tuviera nombre propio. Los que el viajero escribió no se tocan.
   const day: DayPlan = esNombreDeOtroDia(route, diaGuardado) ? { ...diaGuardado, curatedTitle: undefined, title: diaGuardado.ownDay ? `Tu día en ${diaGuardado.city || route.destination}` : diaGuardado.userAdded ? FREE_DAY_DEFAULT_NAME : diaGuardado.city } : diaGuardado
   if (esNombreDeLaExcursionDeOtroDia(route, diaGuardado)) return { titulo: `Excursión desde ${diaGuardado.city}`, viaje: grupos ? viajeDelDia(route, diaGuardado) : null, ponleNombre: false }
-  // (V42 §5.1) Viaje a mano sin paradas en ese día: «Día por organizar»; el de llegada y el de vuelta, «Día de viaje» (con su trayecto).
+  // (V42 §5.1) Viaje a mano sin paradas en ese día: «Día por organizar»; el de llegada, «Día de viaje», y el de vuelta, «Hoy vuelves a casa» (con su trayecto).
   if (diaPorOrganizar(route, day)) {
     const trayecto = viajeDelDia(route, day)
     const esViaje = Boolean(trayecto) || day.isReturnLeg === true || esDiaDeLlegada(route, day)
-    return { titulo: esViaje ? DIA_DE_VIAJE : DIA_POR_ORGANIZAR, viaje: esViaje ? trayecto : null, ponleNombre: false }
+    // (V56, 6) El día de VUELTA sin paradas es «Hoy vuelves a casa» (como en los viajes escritos, `DIA_DE_VUELTA`), con su trayecto y «Día de viaje» debajo; el de llegada sigue siendo «Día de viaje».
+    const esVuelta = day.isReturnLeg === true || (route.days.length > 1 && route.days[route.days.length - 1]?.id === day.id)
+    return { titulo: esVuelta ? DIA_DE_VUELTA : esViaje ? DIA_DE_VIAJE : DIA_POR_ORGANIZAR, viaje: esViaje ? trayecto : null, ponleNombre: false }
   }
   if (!grupos) {
     const antiguo = nombreDeSiempre(route, day, true)

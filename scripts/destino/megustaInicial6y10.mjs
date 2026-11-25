@@ -11,7 +11,7 @@ const SEMILLA = 'megusta-6y10'
 const FICHERO = 'data/pipeline_v2/roma.json'
 const LISTAS = 'data/dias/roma/listas.json'
 const NOTA = 'redes de Eric, aproximado por debajo del real'
-/** Cuántos restaurantes llevan cifra: los 21 que más salen (el corte cae entre el 21 y el 22, que ya no empatan con él). */
+/** Cuántos restaurantes llevan cifra: los 21 que más salen MÁS Sgarro Bistrot (V56: 22 con cifra en total; Taverna Trilussa ya está entre los 21). */
 const RESTAURANTES_CON_CIFRA = 21
 
 /** Un número entre 0 y 1 que sale del texto y de la semilla (FNV-1a + mezcla), siempre el mismo. */
@@ -91,7 +91,8 @@ export function calcular() {
   const listas = JSON.parse(fs.readFileSync(LISTAS, 'utf8'))
   const lugares = datos.places.map((p) => ({ tipo: 'places', nombre: p.name, nivel: p.level ?? null, cifra: cifraDeLugar(p.name, p.level ?? null) }))
   const ranking = vecesPorRestaurante(listas, new Set(datos.restaurants.map((r) => r.name)))
-  const conCifra = new Map(ranking.slice(0, RESTAURANTES_CON_CIFRA).map(([nombre, veces]) => [nombre, veces]))
+  // (V56) Eric pidió el corte en 22 con estos dos dentro (el empate a 3 apariciones los deja en el aire según el orden del alfabeto).
+  const conCifra = new Map([...ranking.slice(0, RESTAURANTES_CON_CIFRA), ...ranking.filter(([n]) => n === 'Taverna Trilussa' || n === 'Sgarro Bistrot')].map(([nombre, veces]) => [nombre, veces]))
   const restaurantes = datos.restaurants.map((r) => ({ tipo: 'restaurants', nombre: r.name, veces: ranking.find(([n]) => n === r.name)?.[1] ?? 0, cifra: conCifra.has(r.name) ? entre(r.name, 100, 199) : 0 }))
   return { lugares, restaurantes, ranking }
 }

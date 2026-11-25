@@ -1,4 +1,5 @@
 import { datosDelSitio } from './avisoDeHorario'
+import { segunGrupo } from './viajaEnGrupo'
 import { hasRealCoordinates, haversineMeters } from './distanceMock'
 import { horarioDeParada, type HorarioDeParada } from './horarioDeParada'
 import { aHora, aplicarOpADia, itemsDe, mantieneDe, minDe, nombre as nombreCorto, simularBase, unir, type Contexto, type Propuesta } from './hoyCambiarPlan'
@@ -117,13 +118,13 @@ export function parrafoDeHoy(j: SitioJusto, primero: boolean): string {
   if (j.tipo === 'apertura') {
     const abre = j.v.tramos.find((t) => t.abre > j.llegada)!.abre
     const verbo = j.v.plural ? 'abren' : 'abre'
-    return `${apertura}${j.v.nombre} ${verbo} a las ${horaCorta(abre)} y lo tenéis previsto un poco antes. Si llegáis antes de esa hora, os tocará esperar un poco.${j.v.seVeFuera ? ' Mientras, se ve igual por fuera.' : ''}`
+    return `${apertura}${j.v.nombre} ${verbo} a las ${horaCorta(abre)} ${segunGrupo('y lo tenéis previsto un poco antes. Si llegáis antes de esa hora, os tocará esperar un poco.', 'y lo tienes previsto un poco antes. Si llegas antes de esa hora, te tocará esperar un poco.')}${j.v.seVeFuera ? ' Mientras, se ve igual por fuera.' : ''}`
   }
   const cierra = cierreDicho(j)
   const ult = j.v.ultimaEntrada != null && j.v.ultimaEntrada < cierra && limiteDeEntrada(j.v, j.llegada) === j.v.ultimaEntrada ? `, y la última entrada es a las ${horaCorta(j.v.ultimaEntrada)}` : ''
   const verbo = j.v.plural ? 'cierran' : 'cierra'
-  const cola = j.v.seVeFuera ? ' Y si llegáis tarde, se ve igual por fuera.' : j.v.mirador ? ' Y si llegáis tarde, desde el mirador de al lado se ve igual de bonito.' : ''
-  return `${apertura}${j.v.nombre} ${verbo} a las ${horaCorta(cierra)}${ult}. Vamos con margen; si os retrasáis, os avisamos a tiempo.${cola}`
+  const cola = j.v.seVeFuera ? segunGrupo(' Y si llegáis tarde, se ve igual por fuera.', ' Y si llegas tarde, se ve igual por fuera.') : j.v.mirador ? segunGrupo(' Y si llegáis tarde, desde el mirador de al lado se ve igual de bonito.', ' Y si llegas tarde, desde el mirador de al lado se ve igual de bonito.') : ''
+  return `${apertura}${j.v.nombre} ${verbo} a las ${horaCorta(cierra)}${ult}. ${segunGrupo('Vamos con margen; si os retrasáis, os avisamos a tiempo.', 'Vamos con margen; si te retrasas, te avisamos a tiempo.')}${cola}`
 }
 
 /* ------------------------------------------------------------------ */

@@ -13,6 +13,7 @@ import { addDaysToIso } from '../../lib/dateRange'
 import { LoQueTePuedesLlevar, useLoQueTePuedesLlevar } from '../primeraVez/LoQueTePuedesLlevar'
 import { desdeTexto, enlaceDeHotel, notaTexto, opinionesTexto, paginaEnMemoria, pedirPaginaDeDestino, type ActividadDeDestino, type HotelDeDestino, type PaginaDeDestino } from '../../lib/paginaDestino'
 import { BOTON_ORO } from '../ui/botonesOro'
+import { useMonedaViajero } from '../../lib/moneda'
 
 interface DestinationDetailModalProps {
   city: string | null
@@ -71,6 +72,7 @@ function Foto({ url, alto, prioridad = false, children }: { url: string | null; 
 }
 
 export function TarjetaDeActividad({ a, i, ancho }: { a: ActividadDeDestino; i: number; ancho: string }) {
+  useMonedaViajero() // (V56) se vuelve a pintar al cambiar la moneda o llegar el cambio
   const precio = desdeTexto(a)
   return (
     <a href={withCampaign(a.url, null)} target="_blank" rel="noopener noreferrer" data-actividad={a.id} className={tarjeta} style={{ flex: 'none', width: ancho, scrollSnapAlign: 'start' }}>

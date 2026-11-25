@@ -17,6 +17,7 @@ import { HojaV2 } from './HojasV2'
 import { EnlaceDejarlo } from '../piezas'
 import { BOTON_ORO } from '../../../ui/botonesOro'
 import { displayStopName } from '../../../../lib/format'
+import { segunGrupo } from '../../../../lib/viajaEnGrupo'
 
 /**
  * (HOY2b 8b) LOS AVISOS DE HORARIO EN HOY. Los cálculos viven en `src/lib/hoyHorarios.ts`; aquí, lo que se ve:
@@ -195,7 +196,7 @@ export function AvisoDeHorarioEnDirecto({ route, day, dateIso, ubicacion, enCoch
           day={day}
           enCoche={enCoche}
           propuestas={propuestas}
-          vacio={`Esta vez no hay un cambio pequeño que lo arregle. ${tarde.v.nombre.charAt(0).toUpperCase()}${tarde.v.nombre.slice(1)} ${tarde.v.plural ? 'cierran' : 'cierra'} a las ${aHora(tarde.cierra, false)}: si no llegáis, mejor dejadlo para otro día.`}
+          vacio={`Esta vez no hay un cambio pequeño que lo arregle. ${tarde.v.nombre.charAt(0).toUpperCase()}${tarde.v.nombre.slice(1)} ${tarde.v.plural ? 'cierran' : 'cierra'} a las ${aHora(tarde.cierra, false)}: ${segunGrupo('si no llegáis, mejor dejadlo para otro día.', 'si no llegas, mejor déjalo para otro día.')}`}
           recalcular={(diaDe) => proponerAdelantar({ route, day, tarde, ctx, ahoraMin, ubicacion, ventanas, diaDe }).filter((p) => Object.keys(diaDe).every((id) => p.quitadas.some((q) => q.id === id)))}
           onAplicar={(pr) => {
             aplicarPropuesta(route.id, dateIso, pr)
@@ -210,7 +211,7 @@ export function AvisoDeHorarioEnDirecto({ route, day, dateIso, ubicacion, enCoch
           titulo="Pasar a otro día"
           propuestas={propuestas}
           indice={indice}
-          vacio={`Esta vez no hay un cambio pequeño que lo arregle. ${tarde.v.nombre.charAt(0).toUpperCase()}${tarde.v.nombre.slice(1)} ${tarde.v.plural ? 'cierran' : 'cierra'} a las ${aHora(tarde.cierra, false)}: si no llegáis, mejor dejadlo para otro día.`}
+          vacio={`Esta vez no hay un cambio pequeño que lo arregle. ${tarde.v.nombre.charAt(0).toUpperCase()}${tarde.v.nombre.slice(1)} ${tarde.v.plural ? 'cierran' : 'cierra'} a las ${aHora(tarde.cierra, false)}: ${segunGrupo('si no llegáis, mejor dejadlo para otro día.', 'si no llegas, mejor déjalo para otro día.')}`}
           onOtra={() => setIndice((i) => (i + 1) % propuestas.length)}
           onElegirOtroDia={tarde.ya ? () => setEligiendo(true) : undefined}
           onAplicar={(pr) => {

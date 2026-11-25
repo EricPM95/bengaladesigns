@@ -6101,7 +6101,7 @@
       },
       "fuente": "turismoroma.it, «Alberi di Natale, Presepi e Luminarie a Roma 2025-26» (dato comprobado por el usuario). Las fechas cambian cada año. En 2025-26, del 8 de diciembre al 6 de enero.",
       "comprobado": "2026-09-30",
-      "verificar": "Fechas de la temporada 2025-26: revisar en noviembre.",
+      "verificar": "Fechas de la temporada 2026-27: AÚN NO publicadas (comprobado el 25-nov-2026 en turismoroma.it y en la prensa vaticana: solo sale la VIII edición, 8-dic-2025 a 6-ene-2026). Revisar en diciembre en la web oficial; mientras tanto se dejan las de 2025-26.",
       "capa_de": "Plaza de San Pedro",
       "titulo_parada": "Plaza de San Pedro y los 100 Presepi",
       "texto_parada": "Bajo la columnata de Bernini se reúnen en Navidad más de cien belenes llegados de todo el mundo, de todos los materiales y tamaños. La muestra nació en 1976 junto a Piazza del Popolo y desde hace unos años se hace aquí, en el Vaticano.",
@@ -6182,7 +6182,7 @@
       },
       "fuente": "turismoroma.it, «Alberi di Natale, Presepi e Luminarie a Roma 2025-26» (dato comprobado por el usuario). Las fechas cambian cada año. En 2025-26, del 26 de noviembre al 6 de enero.",
       "comprobado": "2026-09-30",
-      "verificar": "Fechas de la temporada 2025-26: revisar en noviembre.",
+      "verificar": "Fechas de la temporada 2026-27: AÚN NO publicadas (comprobado el 25-nov-2026 en turismoroma.it y en la prensa vaticana: solo sale la VIII edición, 8-dic-2025 a 6-ene-2026). Revisar en diciembre en la web oficial; mientras tanto se dejan las de 2025-26.",
       "neighbor_of": [
         "Via Condotti"
       ],
@@ -7708,7 +7708,7 @@
     },
     {
       "name": "Taverna Trilussa",
-      "megusta_inicial": 0,
+      "megusta_inicial": 100,
       "sub_category": "trattoria", "tipo_local": "restaurante",
       "meal": "cena",
       "address": "Via del Politeama, 23/25, 00153 Roma",

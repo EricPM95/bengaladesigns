@@ -482,6 +482,9 @@ export function mejorDiaPara(p: { route: Route; day: DayPlan; stop: Stop; ctx: C
 
 /* ---------- «Hoy ya no da tiempo a todo» (V43 §2) ---------- */
 
+/** (V56, 8) Desde las 20:00 la hoja «Hoy ya no da tiempo a todo» ya no sale. */
+export const HORA_DE_CENAR_MIN = 20 * 60
+
 export interface YaNoDaTiempo {
   /** Si había una entrada o reserva que ya pasó. */
   entrada: { nombre: string; hora: string; /** (V48) Un free tour no tiene «entrada»: «Tu Free Tour por Roma de las 10:00 ya ha pasado». */ freeTour?: boolean } | null
@@ -493,6 +496,8 @@ export interface YaNoDaTiempo {
  */
 export function yaNoDaTiempo(p: { day: DayPlan; ahoraMin: number; ctx: Contexto; vistas: number }): YaNoDaTiempo | null {
   const { day, ahoraMin, ctx } = p
+  // (V56, 8) A partir de las 20:00 no sale: es la hora de cenar. (Lo demás, igual: una vez al día, con más de 1 h de retraso o al abrir HOY con la mañana pasada y nada hecho.)
+  if (ahoraMin >= HORA_DE_CENAR_MIN) return null
   const pendientes = delDia(day).filter((s) => !s.checkedInAt)
   if (pendientes.length === 0) return null
   const siguiente = pendientes[0]

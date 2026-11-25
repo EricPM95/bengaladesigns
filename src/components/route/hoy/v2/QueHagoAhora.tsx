@@ -18,6 +18,7 @@ import { HojaComerAhora } from './ComerAhora'
 import { HojaV2 } from './HojasV2'
 import { FotoDeSitio } from './RetoDelDia'
 import { BOTON_ORO } from '../../../ui/botonesOro'
+import { segunGrupo } from '../../../../lib/viajaEnGrupo'
 
 /**
  * (HOY2b, E, apartado 1) EL BOTÓN [¿QUÉ HAGO AHORA?] y su hoja (17 y Completa 1 a 6). Siempre a la vista, en su hueco (`data-hoy-hueco-que-hago-ahora`, entre la tarjeta principal y «Cerca de ti»).
@@ -130,7 +131,7 @@ export function QueHagoAhora({ route, day, dateIso, siguiente, anterior, ubicaci
               {q.tipo === 'comer' && (
                 <>
                   <span data-que-hago-frase style={{ font: "400 24px/1.2 'Instrument Serif',serif", textWrap: 'balance' as never }}>
-                    {q.meal.mealTime === 'dinner' ? 'Es hora de cenar y todavía no tenéis restaurante.' : 'Es hora de comer y todavía no tenéis restaurante.'} Te enseñamos los abiertos más cerca.
+                    {q.meal.mealTime === 'dinner' ? segunGrupo('Es hora de cenar y todavía no tenéis restaurante.', 'Es hora de cenar y todavía no tienes restaurante.') : segunGrupo('Es hora de comer y todavía no tenéis restaurante.', 'Es hora de comer y todavía no tienes restaurante.')} Te enseñamos los abiertos más cerca.
                   </span>
                   <button type="button" onClick={() => setPaso('comer')} data-que-hago-comer className="flex h-12 items-center justify-center gap-1.5 rounded-2xl px-2.5 text-[13.5px] font-bold" style={BOTON_ORO}>
                     Quiero {q.meal.mealTime === 'dinner' ? 'cenar' : 'comer'} ahora
@@ -203,7 +204,7 @@ function ContenidoAtardecer({ route, day, frase, ubicacion, enCoche }: { route: 
         </div>
       )}
       <span data-que-hago-cena className="text-[14px] font-medium leading-[1.4]">
-        {sitio ? `Y para cenar, os esperamos en ${displayStopName(sitio.name)}.` : 'Y para cenar, mira los restaurantes abiertos cerca desde «Cerca de ti».'}
+        {sitio ? `Y para cenar, ${segunGrupo('os esperamos', 'te esperamos')} en ${displayStopName(sitio.name)}.` : 'Y para cenar, mira los restaurantes abiertos cerca desde «Cerca de ti».'}
       </span>
       {sitio && hasRealCoordinates(sitio.coordinates) && (
         <a href={urlComoLlegar(sitio.coordinates, ubicacion, enCoche)} target="_blank" rel="noopener noreferrer" data-que-hago-cena-como-llegar className="flex h-12 items-center justify-center gap-1.5 rounded-2xl px-2.5 text-[13.5px] font-bold no-underline" style={BOTON_ORO}>

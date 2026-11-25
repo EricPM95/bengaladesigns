@@ -157,3 +157,12 @@ El plan gratis de Supabase tiene 5 GB de «egress» al mes; la app llegó a 10 G
 
 ## La rueda de la hora: el ✓ guarda la hora que se ve (Eric, 25-nov, V55)
 **En TODAS las ruedas de hora de la app, al pulsar ✓ se guarda la hora que se ve, aunque no se haya movido la rueda** (también la hora gris de ejemplo, 08:30, de una casilla vacía: al abrir la rueda esa ya es la que se ve). **Tocar fuera, deslizar hacia abajo o Escape cierran SIN guardar.** Hay UNA sola rueda confirmable: `HojaDeHora` (`src/components/ui/HojaDeHora.tsx`), y la usan `CampoDeHora` y `TimeField` (reservas, vuelos, entradas, Free Tour, excursiones…); no se escribe otra. `PickerSheet` (`DateField`) es la hoja de la FECHA con calendario y botón «Listo», no una rueda. Una hora ya puesta y no tocada se guarda tal cual (08:32 no se redondea sola).
+
+## Pueblos, ciudades, islas, barrios, plazas y calles nunca cierran (Eric, 25-nov, V56) — vale para TODOS los destinos
+**Estos sitios no llevan horario.** Nunca salen «Cerrado» ni van a «Ya ha cerrado». Lo que cierra son sus ATRACCIONES, que siempre son una parada aparte (el mercadillo de Teguise, solo los domingos por la mañana, es su propia parada; la Casa-Museo de Haría tiene su horario, el pueblo no). En los datos (`data/pipeline_v2/<destino>.json`) un sitio de este tipo no lleva `schedule`, `by_day`, `special_hours` ni `closed_*`: las calles y plazas llevan `abierto_24h` o nada. Un destino nuevo sigue lo mismo. (Hecho en la V56: Teguise sin `by_day`; Haría queda pendiente de separar el pueblo de la Casa-Museo, ver DECISIONES_V56.)
+
+## HOY habla según las personas UNIDAS al viaje (Eric, 25-nov, V56)
+«¿Cómo vas?» si viaja solo; «¿Cómo vais?» si hay más personas unidas (`modoCuentas`, no lo que se dijo en el formulario). Todo texto de HOY que hable en plural («tenéis», «Tomaos», «os avisamos») pasa por `segunGrupo(plural, singular)` de `src/lib/viajaEnGrupo.ts` (o `useModoCuentas()` en un componente). Un texto nuevo de HOY con «vosotros» sin su versión de una persona es un fallo.
+
+## La moneda del viajero sigue a su país; la «V56» de la moneda (Eric, 25-nov)
+Al contestar «¿En qué país vives?» (primera vez o Ajustes) la moneda pasa a ser la del país (`src/lib/monedaDelPais.ts`: México → MXN; zona euro o sin contestar → EUR). Manda lo último que dice el viajero: un cambio de moneda posterior manda; un cambio de país posterior vuelve a mandar. Todo precio que se enseña pasa por `precioEnVista`/`formatearPrecio` (nunca un «€» escrito a mano). El pago es siempre en euros.

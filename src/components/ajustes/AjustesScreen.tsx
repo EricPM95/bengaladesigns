@@ -27,6 +27,7 @@ import { HojaMonedaViajero } from '../moneda/HojaMonedaViajero'
 import { useMonedaViajero } from '../../lib/moneda'
 import { monedaConNombre } from '../../lib/dinero'
 import { guardarPaisVive, leerPaisVive, nombreDelPais } from '../../lib/paisVive'
+import { ponerMonedaDelPais } from '../../lib/monedaDelPais'
 import { HojaPaisVive } from './HojaPaisVive'
 import { HojaSueno } from './HojaSueno'
 import { guardarSueno, leerSueno, type Sueno } from '../../lib/suenos'
@@ -257,6 +258,8 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
           onElegir={(iso) => {
             setPaisVive(iso)
             setHojaPais(false)
+            // (V56, 4) Manda lo último que dice el viajero: el país nuevo pone la moneda de ese país (después, si cambia la moneda, manda esa).
+            void ponerMonedaDelPais(iso)
             void guardarPaisVive(iso).then((ok) => {
               if (!ok) setMensaje('No se ha podido guardar el país. Inténtalo de nuevo.')
             })

@@ -268,6 +268,8 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const { meal: comidaDeAhora, marcarHecha: comidaHecha } = useComidaDeAhora(route, day, siguiente, ahoraMinHoy)
   // (HOY1) La parada de antes es la última que no se ha saltado: de una saltada no se sale.
   const anterior = siguiente ? paradas.slice(0, paradas.indexOf(siguiente)).reverse().find((s) => !s.saltada) : undefined
+  // (V56, 2) Los sitios del atardecer se cuentan desde la ubicación real si hay GPS; si no, desde la ÚLTIMA parada hecha (con todo hecho, `anterior` ya no existe: antes se caía al alojamiento y salían menos sitios).
+  const ultimaHecha = [...paradas].reverse().find((s) => s.checkedInAt && !s.saltada && hasRealCoordinates(s.coordinates))
   const entradasDeHoy = reservations.filter((r) => dayOfReservation(route, r)?.id === day.id && r.kind === 'entrada' && !r.fueraDeRuta)
   const reservaDe = (stop: Stop) => reservations.find((r) => r.id === stop.reservedId) ?? entradasDeHoy.find((r) => r.placeNames.includes(stop.name)) ?? null
   const esLlegada = esDiaDeLlegada(route, day)
@@ -297,7 +299,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
     ? fraseDeAtardecer({
         day,
         pendientes: vigentes.filter((s) => !s.checkedInAt),
-        desde: (zonaUbi !== 'fuera' && zonaUbi !== 'sin' ? ubicacionReal : null) ?? (anterior && hasRealCoordinates(anterior.coordinates) ? anterior.coordinates : null) ?? (siguiente && hasRealCoordinates(siguiente.coordinates) ? siguiente.coordinates : null) ?? zonaCoordsAtardecer,
+        desde: (zonaUbi !== 'fuera' && zonaUbi !== 'sin' ? ubicacionReal : null) ?? ultimaHecha?.coordinates ?? (anterior &&hasRealCoordinates(anterior.coordinates) ? anterior.coordinates : null) ?? (siguiente && hasRealCoordinates(siguiente.coordinates) ? siguiente.coordinates : null) ?? zonaCoordsAtardecer,
         ahoraMin: new Date().getHours() * 60 + new Date().getMinutes(),
         delDestino: solDelDestino,
         enCoche,

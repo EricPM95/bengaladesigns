@@ -4,8 +4,6 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import { ErrorBoundary } from './components/ErrorBoundary.tsx'
-import { SeasonCardPreview } from './dev/SeasonCardPreview.tsx'
-import { PruebaFotos } from './components/logros/PruebaFotos.tsx'
 import { logrosActivos } from './lib/logros.ts'
 import { lazy, Suspense } from 'react'
 import { precargarBanderas } from './lib/banderas.ts'
@@ -39,8 +37,11 @@ const VisorDeSonidos = new URLSearchParams(window.location.search).get('visor-so
 const enElPanel = window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin/') || new URLSearchParams(window.location.search).get('admin') === 'panel'
 const PanelJutrip = enElPanel ? lazy(() => import('./components/panel/PanelJutrip.tsx').then((m) => ({ default: m.PanelJutrip }))) : null
 
-// Solo en desarrollo: ?tarjeta=verano enseña la tarjeta de temporada sola (src/dev/SeasonCardPreview.tsx).
+// Solo en desarrollo: ?tarjeta=verano enseña la tarjeta de temporada sola (src/dev/SeasonCardPreview.tsx). (V56) Se baja a demanda: ningún viajero la descarga.
 const previewSeason = import.meta.env.DEV ? new URLSearchParams(window.location.search).get('tarjeta') : null
+const SeasonCardPreview = previewSeason ? lazy(() => import('./dev/SeasonCardPreview.tsx').then((m) => ({ default: m.SeasonCardPreview }))) : null
+// (V56) La prueba de las fotos (?pruebaFotos=1) también se baja a demanda.
+const PruebaFotos = new URLSearchParams(window.location.search).get('pruebaFotos') ? lazy(() => import('./components/logros/PruebaFotos.tsx').then((m) => ({ default: m.PruebaFotos }))) : null
 
 // Con los logros encendidos (Tanda 8A): el panel de Eric (/admin/logros o /?admin=logros) y la prueba de las fotos (?pruebaFotos=1). Apagados, nada de esto existe.
 const parametros = new URLSearchParams(window.location.search)
@@ -55,7 +56,7 @@ if (parametros.get('admin') === 'logros') {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
-      {VisorDeSonidos ? <Suspense fallback={null}><VisorDeSonidos /></Suspense> : PanelJutrip ? <Suspense fallback={null}><PanelJutrip /></Suspense> : AdminSonidos ? <Suspense fallback={null}><AdminSonidos /></Suspense> : DibujosPrueba ? <Suspense fallback={null}><DibujosPrueba /></Suspense> : previewSeason ? <SeasonCardPreview season={previewSeason} /> : paginaDeLogros === 'fotos' ? <PruebaFotos /> : <App />}
+      {VisorDeSonidos ? <Suspense fallback={null}><VisorDeSonidos /></Suspense> : PanelJutrip ? <Suspense fallback={null}><PanelJutrip /></Suspense> : AdminSonidos ? <Suspense fallback={null}><AdminSonidos /></Suspense> : DibujosPrueba ? <Suspense fallback={null}><DibujosPrueba /></Suspense> : previewSeason && SeasonCardPreview ? <Suspense fallback={null}><SeasonCardPreview season={previewSeason} /></Suspense> : paginaDeLogros === 'fotos' && PruebaFotos ? <Suspense fallback={null}><PruebaFotos /></Suspense> : <App />}
     </ErrorBoundary>
   </StrictMode>,
 )

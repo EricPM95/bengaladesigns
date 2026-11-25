@@ -12,6 +12,7 @@ import { HojaPropuesta, Titulo, useContexto } from './CambiarPlan'
 import { HojaV2 } from './HojasV2'
 import { AvisoMasTiempo } from './MasTiempo'
 import { BOTON_ORO } from '../../../ui/botonesOro'
+import { useModoCuentas } from '../../../../lib/modoCuentas'
 
 /**
  * (HOY2b, E, apartado 2) «¿CÓMO VAIS?» (16) Y «CANSADOS» (16b). UNA vez al día, después de comer, si quedan 2 paradas o más: [Con fuerzas] / [Cansados]. Se apaga con «Sugerencias del compañero».
@@ -31,6 +32,8 @@ const leer = (k: string): string | null => {
 }
 
 export function ComoVais({ route, day, dateIso, ubicacion, enCoche, ahoraMin, conPase, comidaPendiente = false }: { route: Route; day: DayPlan; dateIso: string; comidaPendiente?: boolean; ubicacion: Coordinates | null; enCoche: boolean; ahoraMin: number; conPase: boolean }) {
+  // (V56, 10) «¿Cómo vas?» si viaja solo; «¿Cómo vais?» si hay más personas UNIDAS al viaje (`modoCuentas`, no lo que dijo en el formulario).
+  const grupo = useModoCuentas().modo !== 'solo'
   const [sugerencias, setSugerencias] = useState(sugerenciasDelCompanero())
   useEffect(() => alCambiarSugerencias(() => setSugerencias(sugerenciasDelCompanero())), [])
   const k = clave(route.id, day.id)
@@ -68,7 +71,7 @@ export function ComoVais({ route, day, dateIso, ubicacion, enCoche, ahoraMin, co
         <AvisoDeHoy id="como-vais" prio={3}>
           <div data-hoy-como-vais className="flex flex-none flex-col gap-3 rounded-[22px] p-4" style={{ background: '#FFFDF8', border: '1px solid rgba(181,138,46,.45)' }}>
             <span className="flex items-start justify-between">
-              <b style={{ font: "400 26px/1.1 'Instrument Serif',serif" }}>¿Cómo vais?</b>
+              <b style={{ font: "400 26px/1.1 'Instrument Serif',serif" }}>{grupo ? '¿Cómo vais?' : '¿Cómo vas?'}</b>
               <CruzDeAviso onClick={() => responder('cerrado')} />
             </span>
             <div className="flex gap-2">
@@ -76,7 +79,7 @@ export function ComoVais({ route, day, dateIso, ubicacion, enCoche, ahoraMin, co
                 Con fuerzas
               </button>
               <button type="button" onClick={cansados} data-como-vais="cansados" className="flex h-[50px] min-w-0 flex-1 items-center justify-center rounded-2xl px-2.5 text-[13.5px] font-bold" style={BOTON_BLANCO}>
-                Cansados
+                {grupo ? 'Cansados' : 'Sin fuerzas'}
               </button>
             </div>
           </div>
@@ -84,7 +87,7 @@ export function ComoVais({ route, day, dateIso, ubicacion, enCoche, ahoraMin, co
       )}
       {hoja && (hoja.caso === 'calma' || hoja.caso === 'reserva' || hoja.caso === 'opcional') && hoja.propuesta && (
         <HojaPropuesta
-          titulo={hoja.caso === 'calma' ? 'Vamos con calma' : hoja.caso === 'opcional' ? 'Por hoy' : 'Aguantad un poco'}
+          titulo={hoja.caso === 'calma' ? 'Vamos con calma' : hoja.caso === 'opcional' ? 'Por hoy' : grupo ? 'Aguantad un poco' : 'Aguanta un poco'}
           propuestas={[hoja.propuesta]}
           indice={indice}
           etiquetaAplicar={hoja.caso === 'reserva' ? 'Pasar a otro día' : hoja.caso === 'opcional' ? 'Terminar el día' : 'Hacerlo así'}
@@ -121,10 +124,10 @@ export function ComoVais({ route, day, dateIso, ubicacion, enCoche, ahoraMin, co
         />
       )}
       {hoja && hoja.caso === 'respiro' && (
-        <HojaV2 onCerrar={cerrarHoja} etiqueta="Tomaos un respiro" fondo={MARFIL}>
+        <HojaV2 onCerrar={cerrarHoja} etiqueta={grupo ? 'Tomaos un respiro' : 'Tómate un respiro'} fondo={MARFIL}>
           <div data-cansados-caso="respiro" className="flex flex-col gap-3">
-            <Titulo texto="Tomaos un respiro" onCerrar={cerrarHoja} />
-            <span className="text-[14.5px] font-medium leading-[1.4]">No hay nada que quitar, así que mejor paráis un rato. ¿Cuánto?</span>
+            <Titulo texto={grupo ? 'Tomaos un respiro' : 'Tómate un respiro'} onCerrar={cerrarHoja} />
+            <span className="text-[14.5px] font-medium leading-[1.4]">{grupo ? 'No hay nada que quitar, así que mejor paráis un rato. ¿Cuánto?' : 'No hay nada que quitar, así que mejor paras un rato. ¿Cuánto?'}</span>
             <div className="flex gap-2">
               {([15, 30] as const).map((m) => (
                 <button key={m} type="button" onClick={() => setMinutos(m)} data-cansados-respiro={m} className="flex h-[50px] min-w-0 flex-1 items-center justify-center rounded-2xl text-[14px] font-bold" style={minutos === m ? BOTON_ORO : BOTON_BLANCO}>
@@ -132,7 +135,7 @@ export function ComoVais({ route, day, dateIso, ubicacion, enCoche, ahoraMin, co
                 </button>
               ))}
             </div>
-            {minutos && <AvisoMasTiempo key={minutos} route={route} day={day} dateIso={dateIso} paradaId="" minutos={minutos} plural ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMin} onCerrar={() => undefined} fijo={false} autoCerrar={false} />}
+            {minutos && <AvisoMasTiempo key={minutos} route={route} day={day} dateIso={dateIso} paradaId="" minutos={minutos} plural={grupo} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMin} onCerrar={() => undefined} fijo={false} autoCerrar={false} />}
             <button type="button" onClick={cerrarHoja} className="flex h-11 items-center justify-center text-[13px] font-semibold underline underline-offset-[3px] text-[#1C2230]/65">
               Vale, gracias
             </button>

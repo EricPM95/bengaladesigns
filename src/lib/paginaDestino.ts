@@ -1,6 +1,7 @@
 /**
  * (V21) La página del destino: pide al servidor las actividades de el operador y los hoteles (POST /api/destino-pagina, server/paginaDestino.js) y las guarda en memoria por destino.
  */
+import { MONEDA_BASE, precioEnVista } from './moneda'
 export interface ActividadDeDestino {
   id: string
   nombre: string
@@ -54,10 +55,10 @@ export async function pedirPaginaDeDestino(destino: string): Promise<PaginaDeDes
   }
 }
 
-/** Pura: «9,1», «4.812 opiniones», «Gratis» / «28 €». */
+/** Pura: «9,1», «4.812 opiniones», «Gratis» / «≈ 2.150 MXN · 100 €» (V56: el precio «desde» pasa por `precioEnVista`, como el resto de precios de la app; Civitatis lo da en euros). */
 export const notaTexto = (n: number): string => n.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
 export const opinionesTexto = (n: number): string => `${String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.')} opiniones`
-export const desdeTexto = (a: Pick<ActividadDeDestino, 'gratis' | 'desde'>): string | null => (a.gratis ? 'Gratis' : a.desde != null ? `${Math.round(a.desde)} €` : null)
+export const desdeTexto = (a: Pick<ActividadDeDestino, 'gratis' | 'desde'>): string | null => (a.gratis ? 'Gratis' : a.desde != null ? precioEnVista({ amount: Math.round(a.desde), currency: MONEDA_BASE }) : null)
 
 /**
  * Pura: el enlace de Stay22 del hotel con las fechas y las personas del viaje (Stay22 las pasa a Booking: `checkin`, `checkout` y `adults` llegan como `checkin`, `checkout` y `group_adults`), para que Booking abra ya con ellas.

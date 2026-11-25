@@ -1,0 +1,104 @@
+[
+  {
+    "id": "1",
+    "texto": "El panel y el estudio no pesan a ningún viajero",
+    "estado": "ok",
+    "explicacion": "Medido con el build: la descarga al abrir pasa de 341,7 a 338,1 KB comprimidos (tope 340). El panel ya era a demanda; ahora también lo son dos pantallas de pruebas y el código de «Solo para mí» del administrador."
+  },
+  {
+    "id": "2",
+    "texto": "Sitios del atardecer: GPS o última parada hecha",
+    "estado": "ok",
+    "explicacion": "Si hay GPS se cuenta desde ahí; si no, desde la última parada hecha. Captura de Lanzarote con 3 sitios (2_atardecer_lanzarote.jpg)."
+  },
+  {
+    "id": "3",
+    "texto": "«Me gusta» de restaurantes con corte en 22",
+    "estado": "ok",
+    "explicacion": "Taverna Trilussa y Sgarro Bistrot llevan cifra (100). Comprobado en el JSON de Roma; no tiene captura."
+  },
+  {
+    "id": "4-pais-moneda",
+    "texto": "Al contestar el país, la moneda es la de ese país",
+    "estado": "ok",
+    "explicacion": "México pasa a pesos mexicanos; zona euro o sin contestar, euros. Visto en Ajustes (4_ajustes_mexico_pesos.jpg)."
+  },
+  {
+    "id": "4-ajustes",
+    "texto": "En Ajustes sale esa moneda y se puede cambiar",
+    "estado": "ok",
+    "explicacion": "Ajustes dice «MXN Peso mexicano» tras elegir México; la fila de moneda sigue abriendo la hoja para cambiarla."
+  },
+  {
+    "id": "4-manda-lo-ultimo",
+    "texto": "Manda lo último que dice el viajero",
+    "estado": "ok",
+    "explicacion": "Cambiar la moneda manda sobre el país anterior, y cambiar el país vuelve a poner la moneda del país nuevo. Hecho en el código; visto el cambio de país, no el orden inverso en captura."
+  },
+  {
+    "id": "4-precios-desde",
+    "texto": "Los precios «desde» con formatearPrecio",
+    "estado": "ok",
+    "explicacion": "Ahora salen «≈ 2.514 MXN · 119 €» (4_actividad_otra_moneda.jpg) y el «€» escrito a mano de paginaDestino.ts ya no está. El pago no cambia."
+  },
+  {
+    "id": "5-paginas",
+    "texto": "Fuera las 4 páginas RUTAS_REVISION",
+    "estado": "ok",
+    "explicacion": "Borrados RUTAS_REVISION.html/.json y RUTAS_REVISION_LARGOS.html/.json con git rm, sin commit."
+  },
+  {
+    "id": "5-pruebas",
+    "texto": "Fuera pruebaRevisionRutas y pruebaRevisionLargos",
+    "estado": "ok",
+    "explicacion": "Solo comprobaban esas páginas; borradas. Los generadores y capturas de esas páginas siguen (no se pedía)."
+  },
+  {
+    "id": "6",
+    "texto": "«Hoy vuelves a casa» en el último día en blanco",
+    "estado": "ok",
+    "explicacion": "Un viaje a mano con el último día sin paradas muestra «Hoy vuelves a casa» (6_hoy_vuelves_a_casa.jpg); la llegada sigue «Día de viaje»."
+  },
+  {
+    "id": "7",
+    "texto": "100 Presepi in Vaticano: fechas 2026-27",
+    "estado": "no",
+    "explicacion": "Las fechas del año que viene aún no están en la web oficial (turismoroma.it ni la prensa vaticana). Dejado «revisar en diciembre» en el dato y no puse fechas."
+  },
+  {
+    "id": "8",
+    "texto": "«Hoy ya no da tiempo» no sale desde las 20:00",
+    "estado": "ok",
+    "explicacion": "Desde las 20:00 la hoja no sale; lo demás igual. No encontré un tope de 22:40 escrito (ver DECISIONES). Sin captura: es un corte de hora."
+  },
+  {
+    "id": "9-regla",
+    "texto": "Regla nueva en CLAUDE.md: pueblos, calles y plazas no cierran",
+    "estado": "ok",
+    "explicacion": "Añadida a CLAUDE.md, para todos los destinos."
+  },
+  {
+    "id": "9-datos",
+    "texto": "Quitar el horario a Haría, Teguise y similares en Roma y Lanzarote",
+    "estado": "medias",
+    "explicacion": "Teguise sin horario (visto «Abierto · Sin horario»). Roma ya estaba bien. Haría sigue con el horario de la Casa-Museo: hay que separar pueblo y museo y eso toca logros, fotos y coche (ver DECISIONES)."
+  },
+  {
+    "id": "10-texto",
+    "texto": "«¿Cómo vas?» solo, «¿Cómo vais?» con más personas unidas",
+    "estado": "ok",
+    "explicacion": "Se decide con las personas unidas al viaje (modoCuentas). Capturas 10_como_vas_solo.jpg y 10_como_vais_grupo.jpg."
+  },
+  {
+    "id": "10-otros-vosotros",
+    "texto": "Revisar los otros textos de HOY con «vosotros»",
+    "estado": "ok",
+    "explicacion": "Cansados, respiro, horarios, «tenéis restaurante», cena y «si no llegáis» tienen ya su versión de una persona. Revisado leyendo el código; sin captura de cada uno."
+  },
+  {
+    "id": "11",
+    "texto": "Modo rápido: tsc, build y capturas",
+    "estado": "ok",
+    "explicacion": "tsc y npm run build sin errores; capturas en docs/dias/V56_capturas. Sin pruebas ni push, como pedía el encargo."
+  }
+]

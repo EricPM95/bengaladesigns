@@ -3,7 +3,6 @@ import { supabase, usuarioLocal } from '../lib/supabaseClient'
 import type { Reservation } from '../lib/bookings'
 import { leerLoSuyo, type LoSuyoDeCadaUno, type MiAlojamiento, type MiVuelo, type QuienTieneLoSuyo, VACIO } from '../lib/loSuyo'
 import { useSyncStore } from './useSyncStore'
-import { fusionarPrivadasDelAdmin } from '../lib/reservasPrivadasAdmin'
 
 /**
  * EL VUELO Y EL ALOJAMIENTO DE CADA UNO, del viaje abierto (Tanda 10N5 §6c). Lo MÍO (`mio`) vive en el propio móvil (`localStorage`) y, si la migración 0049 está aplicada, también en `lo_suyo_del_viaje`
@@ -93,7 +92,8 @@ export const useLoSuyo = create<LoSuyoState>((set, get) => ({
       if (!usuario.user) return
       const uid = usuario.user.id
       // (Tanda 10N8 §0b-2) El administrador recupera sus reservas «Solo para mí», guardadas aparte.
-      void fusionarPrivadasDelAdmin(tripId)
+      // (V56, 1) El código de «Solo para mí» se baja a demanda (un trocito aparte), no con el arranque de todos. Una consulta a Supabase por viaje abierto: 1 fila, <2 KB; para quien no es el administrador, nada.
+      void import('../lib/reservasPrivadasAdmin').then((m) => m.fusionarPrivadasDelAdmin(tripId))
       const [{ data: fila, error }, quien, entradas] = await Promise.all([
         supabase.from('lo_suyo_del_viaje').select('vuelo, alojamiento').eq('trip_id', tripId).eq('user_id', uid).maybeSingle(),
         supabase.rpc('lo_suyo_del_grupo', { p_trip: tripId }),

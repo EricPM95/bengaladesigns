@@ -1104,11 +1104,7 @@
    ],
    "is_free_access": true,
    "closed_on": [],
-   "by_day": {
-    "dom": [
-     "09:00-14:00"
-    ]
-   },
+   "horario_nota": "V56: un pueblo no lleva horario ni cierra nunca. Lo que cierra es el mercadillo (domingos 9:00-14:00, ver `mercadillo`), que debe ser su propia parada.",
    "mercadillo": {
     "dia": "domingo",
     "horario": "09:00-14:00",
