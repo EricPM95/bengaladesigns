@@ -43,6 +43,9 @@ import { BotonCambiarPlan, D_RELOJ, Opcion } from './CambiarPlan'
 import { AvisoMasTiempo } from './MasTiempo'
 import { BOTON_CLARO, BOTON_ORO, DORADO } from '../../../ui/botonesOro'
 import { HojaActivaUbicacion } from './HojaActivaUbicacion'
+import { origenDelAlojamiento } from '../../../../lib/tuAlojamiento'
+import { useAlojamientoDelViaje } from '../../alojamiento/useAlojamientoDelViaje'
+import { zonaCorta } from '../../dayDetail/AccommodationBlock'
 import { desdeDonde, type ZonaUbicacion } from '../../../../lib/ubicacionHoy'
 import { estadoDelHorario, type TonoDeCaja } from '../../../../lib/horarioDeLaCaja'
 import { InsigniaPartes } from '../../../logros/dibujos/InsigniaPartes'
@@ -334,6 +337,10 @@ export function TarjetaParada(p: PropsParada) {
   const [hojaTiempo, setHojaTiempo] = useState(false)
   const [verEntrada, setVerEntrada] = useState(false)
   const ahoraMin = useAhoraMin()
+  // (V58 §1) De dónde cuenta los minutos la primera parada: del alojamiento (hotel puesto), de la zona elegida o del centro.
+  const aloj = useAlojamientoDelViaje()
+  const seleccionesAloj = useRouteStore((s) => s.accommodationSelections)
+  const origenAloj = origenDelAlojamiento(route, seleccionesAloj, aloj.zonaNombre ? zonaCorta(aloj.zonaNombre) : null)
   // (LG1) «Ya estás aquí» con el radio de cada sitio en los datos de logros (La Graciosa y Timanfaya, 2.500 m); sin radio, 150 m.
   const tripId = useSyncStore((s) => s.activeTripId) ?? route.id
   const radioAqui = useRadioDeParada(tripId, siguiente.name)
@@ -474,7 +481,7 @@ export function TarjetaParada(p: PropsParada) {
   const zona: ZonaUbicacion = p.zonaUbicacion ?? (ubicacion ? 'ruta' : 'sin')
   const origenDelPlan = anterior && !anterior.isBreak ? displayStopName(anterior.name) : null
   const minutosCaja = zona === 'fuera' || !trayecto ? '—' : `${trayecto.min} min`
-  const subCaja = zona === 'fuera' ? 'Estás lejos' : zona === 'ruta' ? 'Desde ti' : desdeDonde(origenDelPlan, !p.casa)
+  const subCaja = zona === 'fuera' ? 'Estás lejos' : zona === 'ruta' ? 'Desde ti' : desdeDonde(origenDelPlan, origenAloj.tipo !== 'alojamiento', origenAloj.tipo === 'zona' ? origenAloj.zonaNombre : null)
   return (
     <>
       <div data-hoy-siguiente data-hoy-estado={p.cerrada ? 'cerrada' : 'llegar'} data-tarjeta="clara" className="flex-none overflow-hidden rounded-[28px]" style={TARJETA_PARADA}>

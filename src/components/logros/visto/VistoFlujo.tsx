@@ -125,9 +125,23 @@ export async function procesarVisto(p: { tripId: string; dayId: string; stopId: 
     window.setTimeout(resolver, MS_DEL_AVISO)
   })
   poner({ aviso: { id, parada, nombre: parada.nombre } })
+  // (V58 §7) «Guarda un recuerdo de {sitio}» sale AL MOMENTO: en cuanto el servidor contesta que no hay nada que ganar, sin esperar a los 5 segundos del aviso (antes salía unos segundos tarde y tapaba la siguiente
+  // parada y el aviso). Solo sale en HOY (la pantalla desde donde se toca [Visto]) y se cierra sola al cambiar de pestaña, de día o de viaje (ver el efecto de `VistoFlujo`).
+  let recuerdoAbierto = false
   const llegada = enviarVisto({ tripId: p.tripId, stopId: p.stopId, nombre: p.nombre }).then((r) => {
     useLogrosStore.getState().recibir(r)
     if (r?.nuevos?.length) reproducirMomentos(r.nuevos.map((m) => m.tipo), r.nuevos)
+    const hojaYa = p.sinHoja || deshecho ? null : hojaSegunRespuesta(r, parada)
+    if (hojaYa?.tipo === 'recuerdo' && useRouteStore.getState().mode === 'today') {
+      useVistoStore.getState().quitarPendiente(p.stopId)
+      const falta = faltaDe(hojaYa.tipo)
+      if (falta) useVistoStore.getState().anotarPendiente(p.stopId, { tripId: p.tripId, falta, nombre: parada.nombre, fotoDentro: hojaYa.fotoDentro ?? null })
+      recuerdoAbierto = true
+      if (!useVistoStore.getState().conFoto[p.stopId] && primeraVez(p.tripId, 'recuerdos', `recuerdo:${p.stopId}`)) {
+        if (useVistoStore.getState().aviso?.id === id) poner({ aviso: null })
+        abrirHoja(hojaYa)
+      }
+    }
     return r
   })
   const [r] = await Promise.all([llegada, fin])
@@ -139,6 +153,7 @@ export async function procesarVisto(p: { tripId: string; dayId: string; stopId: 
     if (r) void enviarDeshacerVisto({ tripId: p.tripId, stopId: p.stopId, nombre: p.nombre })
     return
   }
+  if (recuerdoAbierto) return
   const hoja = hojaSegunRespuesta(r, parada)
   if (!hoja || p.sinHoja) return
   const falta = faltaDe(hoja.tipo)
@@ -281,6 +296,27 @@ export function VistoFlujo({ tripId }: { tripId: string | null }) {
   const [miniaturas, setMiniaturas] = useState<Record<string, string>>({})
   const [sinRed, setSinRed] = useState(typeof navigator !== 'undefined' && navigator.onLine === false)
   const pendienteDeGaleria = useRef<DestinoDeFoto | null>(null)
+
+  // (V58 §7) «Guarda un recuerdo» solo vive en HOY: se cierra sola al cambiar de pestaña, de día o de viaje.
+  const modo = useRouteStore((st) => st.mode)
+  const diaSimulado = useRouteStore((st) => st.dev_simulated_today_iso)
+  const diaActivo = useRouteStore((st) => st.activeDayId)
+  const viajeActual = route?.id ?? null
+  const hojaRecuerdo = s.hoja?.tipo === 'recuerdo'
+  const claveAlAbrir = useRef<string | null>(null)
+  useEffect(() => {
+    if (!hojaRecuerdo) {
+      claveAlAbrir.current = null
+      return
+    }
+    const clave = `${viajeActual}|${diaSimulado}|${diaActivo}`
+    if (modo !== 'today' || (claveAlAbrir.current !== null && claveAlAbrir.current !== clave)) {
+      claveAlAbrir.current = null
+      cerrarHoja()
+      return
+    }
+    claveAlAbrir.current = clave
+  }, [hojaRecuerdo, modo, diaSimulado, diaActivo, viajeActual])
 
   // A2: sin conexión.
   useEffect(() => {

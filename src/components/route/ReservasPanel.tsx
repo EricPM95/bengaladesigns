@@ -142,7 +142,7 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
     { bloque: 'aloj' as const, nombre: 'Alojamiento', hecho: alojamientoListo },
     // (6-nov, RETOQUES 5e) Todo lo que se reserva cuenta: el coche (solo en los destinos de coche; con «Mi coche» ya está hecho) y una ficha por cada excursión de la ruta.
     ...(llevaCoche ? [{ bloque: 'coche' as const, nombre: cocheElegido === 'propio' ? 'Mi coche' : 'Alquiler coche', hecho: cocheElegido === 'propio' || Boolean(rentalVehicleBooking) }] : []),
-    ...(entradas.length > 0 ? [{ bloque: 'entradas' as const, nombre: `Entradas ${entradas.filter((item) => item.reservation).length}/${entradas.length}`, hecho: entradas.every((item) => item.reservation) }] : []),
+    ...(entradas.length > 0 ? [{ bloque: 'entradas' as const, nombre: `Entradas ${entradas.filter((item) => item.reservation).length}/${entradas.length}`, hecho: entradas.every((item) => item.reservation), cuenta: { hechas: entradas.filter((item) => item.reservation).length, total: entradas.length } }] : []),
     ...(hayExcursiones ? excursionesDeRuta.map((x) => ({ id: `excursion-${x.excursion.id}`, bloque: 'excursiones' as const, nombre: nombreCortoDeExcursion(x.excursion), hecho: Boolean(x.reservation) })) : []),
     // (V22) Al final, el seguro (siempre) y la eSIM (solo de los países donde hace falta según el origen y el destino): cuentan como algo que hay que tener listo, y bajan a su tarjeta de «Útil para el viaje».
     { id: 'util-seguro', bloque: 'util' as const, nombre: 'Seguro de viaje', hecho: Boolean(insuranceBooking), tarjeta: 'seguro' },

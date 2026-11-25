@@ -205,7 +205,7 @@
     "horario": "Lanzarote3 (actualizado en septiembre de 2025) da todos los días de 12:00 a 23:00. Una reseña de 2021 decía que cerraba los lunes, así que el lunes está sin confirmar.",
     "reserva": "por su web.",
     "cierra_dias": [],
-    "dias_sin_confirmar": true
+    "dias_sin_confirmar": [1]
    },
    {
     "rol": "alternativa",

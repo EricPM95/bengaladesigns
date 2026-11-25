@@ -9,6 +9,8 @@ export interface FichaResumen {
   hecho: boolean
   /** (V22) La tarjeta de «Útil para el viaje» a la que baja (el seguro, la eSIM de un país). */
   tarjeta?: string
+  /** (V58 §2) Cuántas reservas cuenta esta ficha cuando son varias (las entradas: una por entrada). Sin él, la ficha cuenta una. */
+  cuenta?: { hechas: number; total: number }
 }
 
 /**
@@ -17,13 +19,15 @@ export interface FichaResumen {
  * una, la pantalla baja a su bloque y lo abre (`pedir(bloque)`). Es la ÚNICA tarjeta que dice lo que falta: ni la oscura ni ninguna otra línea repite «Te faltan…» o «Lo tienes todo listo».
  */
 export function ResumenViaje({ fichas, onFicha }: { fichas: FichaResumen[]; onFicha: (bloque: BloqueReservasId, ficha: FichaResumen) => void }) {
-  const listas = fichas.filter((ficha) => ficha.hecho).length
-  const todas = listas === fichas.length
+  // (V58 §2) «3 de 8 reservas listas»: cada cosa que se reserva cuenta una (llegada y vuelta, alojamiento, coche, CADA entrada, cada excursión, seguro, eSIM): el total es lo que enseñan las fichas y los bloques de debajo.
+  const listas = fichas.reduce((n, ficha) => n + (ficha.cuenta ? ficha.cuenta.hechas : ficha.hecho ? 1 : 0), 0)
+  const total = fichas.reduce((n, ficha) => n + (ficha.cuenta ? ficha.cuenta.total : 1), 0)
+  const todas = listas === total
   return (
     <div className="flex flex-col gap-2.5 rounded-[20px] bg-[#FFFDF8] px-3.5 pb-[13px] pt-3.5" style={{ border: '1px solid rgba(28,34,48,.07)' }} data-blk="resumen">
       <span style={{ font: "400 20px/1.1 'Instrument Serif',serif" }}>
         <em style={{ color: todas ? GR : 'rgb(var(--accent))' }}>
-          {listas} de {fichas.length} listo
+          {listas} de {total} {total === 1 ? 'reserva lista' : 'reservas listas'}
         </em>
       </span>
       <div className="flex gap-1" aria-hidden="true">

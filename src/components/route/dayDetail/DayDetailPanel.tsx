@@ -590,9 +590,13 @@ export function DayDetailPanel({
   const visitCount = stopNumbers.size
   // Los metros hasta el paseo tampoco cuentan: su conector ni siquiera se pinta (no se va a un
   // barrio, se pasea por él), así que sumarlos falsearía el "a pie" de la cabecera.
-  const totalWalkMeters =
-    connectorEntries.reduce((sum, entry, index) => (realStops[index]?.isZoneWalk ? sum : sum + (entry.connector.meters ?? 0)), 0) +
-    (finalConnector?.meters ?? 0)
+  // (V58 §6) En un día en coche los tramos con `trayectoCoche` NO son a pie: sus kilómetros van aparte («23,8 km en coche»: la ida, los tramos entre paradas y la vuelta) y solo los tramos andando cuentan en «km a pie».
+  const diaEnCoche = Boolean(day.coche?.activo)
+  const totalWalkMeters = diaEnCoche
+    ? // Día en coche: a pie solo cuentan los tramos que el motor marca «a pie» (dos filas seguidas en el mismo aparcamiento), a 80 m por minuto; los demás tramos, los que se hacen en coche, van en «km en coche».
+      realStops.reduce((sum, stop) => sum + (stop.trayectoCoche?.modo === ('walk' as never) ? (stop.trayectoCoche?.minutos ?? 0) * 80 : 0), 0)
+    : connectorEntries.reduce((sum, entry, index) => (realStops[index]?.isZoneWalk ? sum : sum + (entry.connector.meters ?? 0)), 0) + (finalConnector?.meters ?? 0)
+  const totalCarKm = diaEnCoche ? (day.coche?.ida?.km ?? 0) + realStops.reduce((sum, stop) => sum + (stop.trayectoCoche?.km ?? 0), 0) + (day.coche?.vuelta?.km ?? 0) : 0
   const totalActivityMinutes = stops.reduce((sum, stop) => sum + stop.durationMinutes, 0)
   // Ronda 9 (Mejora 1A/1C): "solo este día" es la vista por defecto (marcadores + línea de ruta de
   // este día únicamente, mismo color que su círculo numerado) — "Ver todo" cambia a todos los días
@@ -1268,10 +1272,12 @@ export function DayDetailPanel({
         {/* El resumen del día (Tanda 6g, 3b): a todo el ancho del bloque, con el mismo margen que «Hoy el sol se pone…», con su fondo beige y las esquinas redondeadas, tres columnas iguales
             separadas por una línea fina; el número en Instrument Serif y debajo la palabra en mono y en mayúsculas, centrados. Con el interruptor en Excursión no sale: ya está la línea de horas. */}
         {showsRoute && !enExcursion && stops.length > 0 && (
-          <div className="mx-1 mb-5 mt-3 grid grid-cols-3 rounded-2xl bg-bg-hover py-3.5">
+          <div className="mx-1 mb-5 mt-3 grid rounded-2xl bg-bg-hover py-3.5" style={{ gridTemplateColumns: 'repeat(auto-fit,minmax(0,1fr))', gridAutoFlow: 'column' }}>
             {[
               { value: String(visitCount), label: visitCount === 1 ? 'parada' : 'paradas' },
-              { value: formatWalkKm(totalWalkMeters).replace(' km', ''), label: 'km a pie' },
+              // (V58 §6) Día en coche: «23,8 km en coche» (y los de a pie, aparte, solo si los hay).
+              ...(diaEnCoche && totalCarKm > 0 ? [{ value: String(Math.round(totalCarKm * 10) / 10).replace('.', ','), label: 'km en coche' }] : []),
+              ...(!diaEnCoche || totalWalkMeters > 0 ? [{ value: formatWalkKm(totalWalkMeters).replace(' km', ''), label: 'km a pie' }] : []),
               { value: formatActivityDuration(totalActivityMinutes), label: 'de actividad' },
             ].map((figure, index) => (
               <div key={figure.label} className={`flex min-w-0 flex-col items-center justify-center px-1 ${index > 0 ? 'border-l border-text/[.12]' : ''}`}>

@@ -36,9 +36,23 @@ export const zonaDeAlojamientoElegida = (zona: string | null | undefined): boole
  * LA regla de «el alojamiento de esta estancia ya está resuelto» (Tanda 6y4): la usan la tarjeta «Alojamiento» de RESERVAS, el «!» de preparación y el aviso del principio del día 1 en DÍAS (que solo sale mientras FALTA).
  * Cuenta el alojamiento que el viajero ha puesto en esa estancia; de pago y con un solo destino cuenta también la zona elegida.
  */
-export function alojamientoCubierto(datos: { pago: boolean; unDestino: boolean; selections: Record<string, unknown>; zona: string | null | undefined; segmentDayId: string | null | undefined }): boolean {
-  if (datos.segmentDayId && datos.selections[datos.segmentDayId]) return true
-  return datos.pago && datos.unDestino && zonaDeAlojamientoElegida(datos.zona)
+export function alojamientoCubierto(datos: { pago?: boolean; unDestino?: boolean; selections: Record<string, unknown>; zona?: string | null | undefined; segmentDayId: string | null | undefined }): boolean {
+  // (V58 §1) LA ÚNICA respuesta a «¿tiene alojamiento esta estancia?» (contador y tarjeta de RESERVAS, «!» de preparación, DÍAS y HOY): hay hotel puesto. Solo con la zona NO cuenta como hecho
+  // (la zona orienta los minutos de HOY: «Desde Costa Teguise»). `pago`, `unDestino` y `zona` se conservan por compatibilidad y ya no cuentan.
+  if (!datos.segmentDayId) return false
+  const puesto = datos.selections[datos.segmentDayId] as { name?: unknown } | null | undefined
+  return Boolean(puesto) && (typeof puesto?.name !== 'string' || puesto.name.trim() !== '')
+}
+
+/**
+ * (V58 §1) De dónde cuenta HOY los minutos de la primera parada: `alojamiento` (hay hotel puesto: «Desde el alojamiento»), `zona` (solo la zona elegida: «Desde Costa Teguise») o `ninguno` («Desde el centro»).
+ * Mira la primera estancia del viaje.
+ */
+export function origenDelAlojamiento(route: Route | null | undefined, selections: Record<string, unknown>, zonaNombre: string | null): { tipo: 'alojamiento' | 'zona' | 'ninguno'; zonaNombre: string | null } {
+  const primera = route ? (estanciasDelViaje(route)[0] ?? null) : null
+  if (alojamientoCubierto({ selections, segmentDayId: primera?.segmentDayId })) return { tipo: 'alojamiento', zonaNombre }
+  if (route && zonaDeAlojamientoElegida(route.accommodationZone) && zonaNombre) return { tipo: 'zona', zonaNombre }
+  return { tipo: 'ninguno', zonaNombre: null }
 }
 
 /** Los destinos del viaje con noches, en orden: cada uno tiene su alojamiento, guardado en el id de su primer día. */

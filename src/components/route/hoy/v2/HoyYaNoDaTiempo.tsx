@@ -1,3 +1,4 @@
+import { lugarCon } from '../../../../lib/articulos'
 import { useState } from 'react'
 import type { Coordinates, DayPlan, Route, Stop } from '../../../../lib/types'
 import { proponerPasarLoQueFalta, type Propuesta, type YaNoDaTiempo } from '../../../../lib/hoyCambiarPlan'
@@ -38,7 +39,7 @@ export function HoyYaNoDaTiempo({ route, day, dateIso, info, enCoche, ahoraMin, 
         <span className="text-[14.5px] font-medium leading-[1.4]">Lo que tenías por la mañana ya ha pasado. ¿Qué hacemos?</span>
         {info.entrada && (
           <span data-ya-no-entrada className="text-[13.5px] leading-[1.4] text-[#1C2230]/70">
-            {info.entrada.freeTour ? `Tu ${info.entrada.nombre} de las ${info.entrada.hora} ya ha pasado.` : `Tu entrada de las ${info.entrada.hora} en ${info.entrada.nombre} ya ha pasado.`}
+            {info.entrada.freeTour ? `Tu ${info.entrada.nombre} de las ${info.entrada.hora} ya ha pasado.` : `Tu entrada de las ${info.entrada.hora} ${lugarCon('en', info.entrada.nombre)} ya ha pasado.`}
           </span>
         )}
         <button type="button" onClick={onCerrar} data-ya-no-ver className="flex h-[50px] items-center justify-center rounded-2xl text-[15px] font-bold" style={BOTON_ORO}>

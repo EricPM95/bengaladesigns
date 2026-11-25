@@ -1,5 +1,6 @@
 import { hasRealCoordinates, haversineMeters } from './distanceMock'
 import type { Coordinates, Route, Stop } from './types'
+import { articuloDeLosDatos } from './articulos'
 
 /**
  * V44 §1: DÓNDE ESTÁ EL VIAJERO respecto al viaje. El GPS solo cuenta para los minutos y los cierres cuando está EN LA RUTA; si no, HOY cuenta con el tiempo del plan.
@@ -29,6 +30,11 @@ export function zonaDeUbicacion(p: { ubicacion: Coordinates | null; route: Route
 /** «al Coliseo», «a la Fontana de Trevi», «a los Museos Vaticanos»: el artículo se saca de la primera palabra (no hay género en los datos). */
 export function aDestino(nombre: string): string {
   const limpio = nombre.trim()
+  // (V58 §5) Primero lo que dicen los datos del destino («Montserrat» no lleva artículo); si el sitio no está, se adivina por la terminación.
+  if (!/^(el|la|los|las)s/i.test(limpio)) {
+    const delDato = articuloDeLosDatos(limpio)
+    if (delDato !== null) return delDato === 'el' ? `al ${limpio}` : delDato ? `a ${delDato} ${limpio}` : `a ${limpio}`
+  }
   const m = /^(el|la|los|las)\s+(.*)$/i.exec(limpio)
   if (m) {
     const art = m[1].toLowerCase()
@@ -55,8 +61,9 @@ export function conArticulo(nombre: string): string {
  * (V46) La línea corta de la caja de minutos cuando se cuenta con el plan (sin ubicación en la ruta): «Desde el alojamiento» en la primera parada del día, «Desde el Panteón» en las demás.
  * Sin alojamiento en el viaje, los minutos se cuentan desde el centro de su zona: «Desde el centro».
  */
-export function desdeDonde(origen: string | null, sinAlojamiento = false): string {
-  return origen ? `Desde ${conArticulo(origen)}` : sinAlojamiento ? 'Desde el centro' : 'Desde el alojamiento'
+export function desdeDonde(origen: string | null, sinAlojamiento = false, zonaNombre: string | null = null): string {
+  // (V58 §1) Con el hotel puesto, «Desde el alojamiento»; solo con la zona, «Desde Costa Teguise»; sin nada, «Desde el centro».
+  return origen ? `Desde ${conArticulo(origen)}` : zonaNombre ? `Desde ${zonaNombre}` : sinAlojamiento ? 'Desde el centro' : 'Desde el alojamiento'
 }
 
 /** La frase de la caja de minutos cuando se cuenta con el plan: «Del alojamiento al Coliseo», «Del Panteón a la Fontana de Trevi». */

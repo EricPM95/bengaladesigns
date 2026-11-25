@@ -1,3 +1,4 @@
+import { lugarCon } from '../../../lib/articulos'
 import { BOTON_ORO } from '../../ui/botonesOro'
 import { useState } from 'react'
 import { PendienteDeParada } from '../../logros/visto/PendienteDeParada'
@@ -355,7 +356,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
             <Icono nombre="reservas" size={18} />
           </span>
           <span className="min-w-0 flex-1 self-center py-2 pl-1.5 pr-3.5 text-[13.5px] font-medium leading-[1.35]" style={{ color: 'oklch(0.3 0.08 150)' }}>
-            Tu entrada a {info.nombresCortos[entrada.refId] ?? displayStopName(entrada.placeNames[0] ?? entrada.name)} · <span style={{ font: "600 13px 'Geist Mono',monospace" }}>{entrada.time} ✓</span>
+            Tu entrada {lugarCon('a', info.nombresCortos[entrada.refId] ?? displayStopName(entrada.placeNames[0] ?? entrada.name))} · <span style={{ font: "600 13px 'Geist Mono',monospace" }}>{entrada.time} ✓</span>
           </span>
         </div>
         {/* (10S7, E4) «Tu entrada» con su código pequeño: solo con pase y si la entrada tiene su billete. */}

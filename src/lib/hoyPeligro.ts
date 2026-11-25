@@ -1,6 +1,7 @@
 import { hasRealCoordinates, haversineMeters } from './distanceMock'
 import { numberedStopsOf } from './stopKind'
 import { displayStopName } from './format'
+import { articuloDeLosDatos, lugarCon } from './articulos'
 import { puntualidadDe } from './puntualidadEntradas'
 import {
   aHora,
@@ -68,6 +69,9 @@ export interface RevisionDeEntradas {
 export const conArticulo = (s: Stop): string => {
   const n = displayStopName(s.name).split(' y ')[0].trim()
   if (/^(el|la|los|las)\s/i.test(n)) return n.charAt(0).toLowerCase() + n.slice(1)
+  // (V58 §5) Primero lo que dicen los datos del destino (con artículo o sin él: «Montserrat»); solo si el sitio no está, se adivina por la terminación.
+  const delDato = articuloDeLosDatos(n)
+  if (delDato !== null) return delDato ? `${delDato} ${n}` : n
   const p = n.split(' ')[0].toLowerCase()
   if (/as$/.test(p)) return `las ${n}`
   if (/os$/.test(p)) return `los ${n}`
@@ -123,7 +127,7 @@ export function quienCorrePeligro(p: { day: DayPlan; ctx: Contexto; ahoraMin: nu
 
 export function textoDelPeligro(peligro: Peligro, esTurno: boolean): string {
   const h = aHora(peligro.horaMin, false)
-  return `Tu ${esTurno ? 'turno' : 'entrada'} de las ${h} en ${nombre(peligro.stop)} corre peligro.`
+  return `Tu ${esTurno ? 'turno' : 'entrada'} de las ${h} ${lugarCon('en', conArticulo(peligro.stop))} corre peligro.`
 }
 
 /**

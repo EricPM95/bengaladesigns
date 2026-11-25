@@ -133,10 +133,12 @@ export function SiTeSobraTiempoHoy({ route, day, dateIso }: { route: Route; day:
 /* El día de llegada (Completa 8)                                       */
 /* ------------------------------------------------------------------ */
 
-export function TarjetaBienvenida({ aterrizaHora, horaUtil, recogerCoche, comoLlegarCoche, aviso, onVerBillete, children }: { aterrizaHora: string | null; horaUtil: string | null; recogerCoche: boolean; comoLlegarCoche: string | null; /** Una línea más (comer antes de ponerte en marcha, o «llegas tarde: descansa»). */ aviso?: ReactNode; onVerBillete?: (() => void) | null; children?: ReactNode }) {
+export function TarjetaBienvenida({ aterrizaHora, horaUtil, recogerCoche, comoLlegarCoche, aviso, onVerBillete, conBillete, children }: { conBillete?: boolean; aterrizaHora: string | null; horaUtil: string | null; recogerCoche: boolean; comoLlegarCoche: string | null; /** Una línea más (comer antes de ponerte en marcha, o «llegas tarde: descansa»). */ aviso?: ReactNode; onVerBillete?: (() => void) | null; children?: ReactNode }) {
+  // (V58 §3) Con el billete de la llegada encima (la pieza del billete QR) la hora del vuelo ya sale ahí: esta tarjeta NO repite «Tu vuelo · Aterrizas a las…» ni «Ver mi llegada»; solo lleva lo que el billete no tiene (coche, hora de empezar, comer, restaurantes) y, si no hay nada de eso, no sale.
+  if (conBillete && !recogerCoche && !horaUtil && !aviso && !comoLlegarCoche && !children) return null
   return (
     <div data-hoy-llegada="1" data-hoy-bienvenida className="flex flex-none flex-col gap-3 rounded-[26px] p-[18px]" style={{ background: '#1C2230', color: MARFIL, boxShadow: '0 18px 30px -18px rgba(28,34,48,.7)' }}>
-      <div className="flex items-center gap-3">
+      {!conBillete && <div className="flex items-center gap-3">
         <span className="flex h-[46px] w-[46px] flex-none items-center justify-center rounded-full" style={{ background: 'rgba(251,243,226,.1)', color: ORO_CLARO }}>
           <Icono nombre="avion" size={22} grosor={1.7} />
         </span>
@@ -144,7 +146,7 @@ export function TarjetaBienvenida({ aterrizaHora, horaUtil, recogerCoche, comoLl
           <span style={OJO_ORO}>Tu vuelo</span>
           <b data-hoy-bienvenida-titulo style={{ font: "400 26px/1.1 'Instrument Serif',serif" }}>{aterrizaHora ? `Aterrizas a las ${aterrizaHora}` : 'Bienvenido'}</b>
         </span>
-      </div>
+      </div>}
       <div className="flex flex-col gap-2.5" style={{ font: "500 14px/1.35 'Geist'" }}>
         {recogerCoche && (
           <span data-hoy-bienvenida-linea="coche" className="flex items-center gap-2.5">
@@ -167,7 +169,7 @@ export function TarjetaBienvenida({ aterrizaHora, horaUtil, recogerCoche, comoLl
         </a>
       )}
       {children}
-      {onVerBillete && (
+      {onVerBillete && !conBillete && (
         <button type="button" onClick={onVerBillete} data-hoy-bienvenida-billete className="flex min-h-11 items-center justify-center self-center text-[12.5px] underline underline-offset-2" style={{ color: 'rgba(251,243,226,.75)' }}>
           Ver mi llegada
         </button>

@@ -1,3 +1,4 @@
+import { lugarCon } from '../../../../lib/articulos'
 import { BOTON_ORO } from '../../../ui/botonesOro'
 import { useEffect, useMemo, useState } from 'react'
 import { logrosActivos } from '../../../../lib/logros'
@@ -506,7 +507,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
                 <Icono nombre="reservas" size={16} />
               </span>
               <span className="min-w-0 flex-1 text-[13px] font-medium leading-[1.35]" style={{ color: 'oklch(0.3 0.08 150)' }}>
-                Tu entrada a {info.nombresCortos[entrada.refId] ?? displayStopName(entrada.placeNames[0] ?? entrada.name)} · {entrada.time} ✓
+                Tu entrada {lugarCon('a', info.nombresCortos[entrada.refId] ?? displayStopName(entrada.placeNames[0] ?? entrada.name))} · {entrada.time} ✓
               </span>
               <CruzDeAviso onClick={() => cerrarAviso(`entrada:${entrada.id}`)} />
             </div>
@@ -549,6 +550,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {/* HOY2 (Completa 8): el día de llegada. Sustituye a las viejas 3, 3b y 3c (billete, «comer al llegar» y «llegas tarde»). */}
       {bienvenida && (
         <TarjetaBienvenida
+          conBillete={esLlegada && !esVuelta && Boolean(fichas.llegada.billete)}
           aterrizaHora={horaCorta(route.arrivalFlightTime)}
           horaUtil={llegadaTarde ? null : horaUtil}
           recogerCoche={recogerCoche}

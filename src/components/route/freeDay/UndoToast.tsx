@@ -19,7 +19,11 @@ export function UndoToast() {
 
   useEffect(() => {
     if (!toast) return
-    const timer = window.setTimeout(dismiss, toast.previous ? TOAST_MS : CONFIRM_MS)
+    // (V58 §4) El plazo cuenta desde que SALE el aviso (`toast.id` es la hora en que se creó), no desde que se monta este componente: antes, cada cambio de pestaña lo volvía a montar y el aviso empezaba otros
+    // 6 segundos («Tu Coliseo, el domingo 18 · Deshacer» se quedaba tapando el menú). Así se va a los 6 s pase lo que pase.
+    const plazo = toast.previous ? TOAST_MS : CONFIRM_MS
+    const desdeQueSalio = toast.id > 1e12 ? Date.now() - toast.id : 0
+    const timer = window.setTimeout(dismiss, Math.max(0, plazo - Math.max(0, desdeQueSalio)))
     return () => window.clearTimeout(timer)
   }, [toast, dismiss])
 

@@ -65,7 +65,8 @@ export function TarjetaCuentaAtras({ route, onPonFechas }: { route: Route; onPon
             Estás en <em style={{ color: '#E9C77A' }}>{estado.context.day.city || route.destination}</em>
           </span>
           <span className="relative text-[#FFFDF8]/80" style={{ font: "500 13px 'Geist Mono',monospace" }}>
-            {diaCorto(route, estado.context.day.dayNumber)} · {Math.min(estado.context.day.dayNumber, total)} de {total}
+            {/* (V58 §2) «Domingo 18 · día 2 de 3»: el día del viaje en el que estás y cuántos días tiene (sin contar el de la vuelta a casa). */}
+            {diaCorto(route, estado.context.day.dayNumber)} · día {Math.min(estado.context.day.dayNumber, total)} de {total}
           </span>
         </>
       ) : estado?.phase === 'before' && dias !== null ? (
