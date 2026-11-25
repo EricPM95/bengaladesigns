@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import { CuadradoPendientes, IconoPendientes } from './IconoPendientes'
+import { CuadradoPendientes, CuadradoQuitar, IconoPendientes } from './IconoPendientes'
+import { franjaDePropuesta, tarjetasDePropuesta } from '../../../../lib/tarjetasDePropuesta'
 import { avisarAbajo } from '../../../../store/useAvisoDeAbajo'
 import { CuadradoFecha } from '../../../ui/CuadradoFecha'
 import type { Coordinates, DayPlan, Route, Stop } from '../../../../lib/types'
@@ -36,7 +37,8 @@ import { ListaDeDias } from '../../dayDetail/ListaDeDias'
 import { useDatosDeImportancia } from '../masVisitas'
 import { useCercaDeAqui } from '../useCercaDeAqui'
 import { Cruz, HojaV2 } from './HojasV2'
-import { ParadaFotoDeParada } from './ParadaFoto'
+import { ParadaFoto, ParadaFotoDeParada } from './ParadaFoto'
+import { useFotoDeParada } from './useFotoDeParada'
 import { HojaComerAhora } from './ComerAhora'
 import { LineaUbicacion } from './LineaUbicacion'
 import { BOTON_ORO, BOTON_CLARO } from '../../../ui/botonesOro'
@@ -120,40 +122,8 @@ export function Opcion({ dato, d, titulo, sub, onClick, datos }: { dato: string;
   )
 }
 
-/** (Noche 24-25 nov; Design «Hoy Recorrido» 23a) Cada línea del resumen lleva su icono blanco en un círculo de 24 px: dorado si cambia algo, verde si sigue igual. */
-const ICONOS_RESUMEN: Record<NonNullable<Propuesta['resumen']>[number]['icono'], { d: string; color: string }> = {
-  mover: { d: D_CAMBIO, color: '#B58A2E' },
-  quitar: { d: 'M5 12h14', color: '#B58A2E' },
-  ok: { d: 'M5 12.5l4.5 4.5L19 7', color: '#2B7F45' },
-  reloj: { d: D_RELOJ, color: '#B58A2E' },
-  mas: { d: D_MAS, color: '#B58A2E' },
-}
-
 /** Lo que dice el botón dorado si la propuesta no trae el suyo: SIEMPRE lo que hace, nunca «Aplicar» (V43 §1). */
 const BOTON_POR_TIPO: Record<Propuesta['tipo'], string> = { retraso: 'Ajustar mi día', otro_dia: 'Pasarlo a ese día', anadir: 'Añadirlo a mi día', comer: 'Cambiar mi comida', peligro: 'Hacerlo así', lluvia: 'Usar el plan de lluvia', vuelta_lluvia: 'Volver a mi plan', cansados: 'Hacerlo así' }
-
-/** (V43 §1) El resumen: UN solo bloque que no se pulsa (fondo suave, sin borde ni sombra), una línea con icono por cada cambio, solo las que vienen al caso. */
-function ResumenDeCambios({ p }: { p: Propuesta }) {
-  const lineas = p.resumen ?? [
-    { icono: 'mover' as const, texto: `${p.cambia.titulo.charAt(0).toUpperCase()}${p.cambia.titulo.slice(1)}`, sub: p.cambia.detalle },
-    { icono: 'ok' as const, texto: `Sigue igual: ${p.mantiene.titulo}`, sub: p.mantiene.detalle },
-  ]
-  return (
-    <div data-propuesta-resumen className="flex flex-col gap-2.5 rounded-2xl p-3.5" style={{ background: 'rgba(28,34,48,.05)' }}>
-      {lineas.map((l, i) => (
-        <div key={i} data-resumen-linea={l.icono} className="flex items-start gap-2.5">
-          <span className="flex h-6 w-6 flex-none items-center justify-center rounded-full" style={{ background: ICONOS_RESUMEN[l.icono].color }}>
-            <Pic d={ICONOS_RESUMEN[l.icono].d} size={13} color="#fff" grosor={2.6} />
-          </span>
-          <span className="flex flex-col gap-px">
-            <span className="text-[14px] font-semibold leading-[1.3]">{l.texto}</span>
-            {l.sub && l.sub !== 'Sin cambios.' && <span className="text-[12.5px] leading-[1.35] text-[#1C2230]/60">{l.sub}</span>}
-          </span>
-        </div>
-      ))}
-    </div>
-  )
-}
 
 /**
  * (V50; Design «Aviso Cierre» A2/A4) «Pasar a otro día»: LA TARJETA DEL SITIO (foto pequeña, nombre, cuándo en gris y la fecha en su cuadrado oscuro; no se pulsa) y la franja verde de lo que sigue igual.
@@ -171,29 +141,53 @@ export function FranjaVerde({ texto }: { texto: string }) {
 }
 
 export function TarjetaDelSitio({ t, sinFranja = false }: { t: NonNullable<Propuesta['tarjetaDia']>; sinFranja?: boolean }) {
+  // (V55) La foto real de su parada (la misma de su parada: si no la trae, se pide al servidor por su nombre); el degradado solo si no hay ninguna.
+  const foto = useFotoDeParada(t.parada ?? null, t.ciudad ?? '', null) || t.fotoUrl
   return (
     <>
       <div data-tarjeta-del-sitio className="flex items-center gap-3 rounded-[20px] bg-[#FFFDF8] p-3" style={{ border: '1px solid rgba(181,138,46,.45)', boxShadow: '0 10px 18px -14px rgba(60,40,10,.4)' }}>
-        <span className="h-[52px] w-[52px] flex-none overflow-hidden rounded-[14px]" style={{ background: 'linear-gradient(150deg,#C9A57A,#8A6A4C)' }}>
-          {t.fotoUrl && <img src={t.fotoUrl} alt="" className="h-full w-full object-cover" />}
-        </span>
+        <ParadaFoto nombre={t.nombre} photoUrl={foto} vista size={52} marca={false} carga="eager" />
         <span className="flex min-w-0 flex-1 flex-col gap-0.5">
           <span className="line-clamp-2" style={{ font: "400 20px/1.1 'Instrument Serif',serif" }}>{t.nombre}</span>
           <span className="text-[12.5px] font-medium leading-[1.25] text-[#1C2230]/60">{t.cuando}</span>
         </span>
-        {t.aPendientes ? <CuadradoPendientes /> : <CuadradoFecha semana={t.semanaCorta} numero={t.numero} datos={{ 'data-tarjeta-fecha': '1' }} />}
+        {t.quitar ? <CuadradoQuitar /> : t.aPendientes ? <CuadradoPendientes /> : <CuadradoFecha semana={t.semanaCorta} numero={t.numero} datos={{ 'data-tarjeta-fecha': '1' }} />}
       </div>
-      {!t.aPendientes && !sinFranja && <FranjaVerde texto={`Sigue igual: el resto de tu ${t.diaDeHoy}`} />}
+      {!t.aPendientes && !t.quitar && !sinFranja && <FranjaVerde texto={`Sigue igual: el resto de tu ${t.diaDeHoy}`} />}
     </>
   )
 }
 
 /**
- * La hoja de una propuesta (V43 §1, la regla de TODAS: retraso, comer, otro día, añadir un sitio, plan de lluvia): el texto de arriba, UN bloque de resumen que no se pulsa,
- * el botón dorado que dice lo que hace y, abajo y pequeño, [Dejarlo como está]. Nada de «Propuesta», «Cambia:», [Aplicar] ni «Volver a mi ruta original».
+ * (V55) LAS TARJETAS DE UNA PROPUESTA, una por cada sitio que cambia, y debajo la franja verde de lo que se queda igual. Con más de 3, las 3 primeras y «y 5 más» en gris, que al tocarlo despliega el resto.
+ */
+export function TarjetasDeCambios({ tarjetas, franja }: { tarjetas: NonNullable<Propuesta['tarjetaDia']>[]; franja: string }) {
+  const [abierto, setAbierto] = useState(false)
+  const visibles = abierto ? tarjetas : tarjetas.slice(0, 3)
+  const resto = tarjetas.length - visibles.length
+  return (
+    <>
+      <div data-propuesta-tarjetas={tarjetas.length} className="flex flex-col gap-3">
+        {visibles.map((t, k) => <TarjetaDelSitio key={`${t.nombre}-${k}`} t={t} sinFranja />)}
+        {resto > 0 && (
+          <button type="button" onClick={() => setAbierto(true)} data-propuesta-mas-tarjetas className="zona-toque flex min-h-11 items-center justify-center text-[13.5px] font-semibold text-[#1C2230]/55">
+            y {resto} más
+          </button>
+        )}
+      </div>
+      <FranjaVerde texto={franja} />
+    </>
+  )
+}
+
+/**
+ * La hoja de una propuesta (V55, la regla de TODAS las que proponen un cambio): el texto de arriba, una tarjeta por cada sitio que cambia (con su foto, a dónde va y su cuadrado), la franja verde de lo que sigue igual,
+ * el botón dorado que dice lo que hace y, abajo y pequeño, [Dejarlo como está]. Nada de «Propuesta», «Cambia:», [Aplicar], «¿Lo dejamos?» ni «Volver a mi ruta original».
  */
 export function HojaPropuesta({ titulo, propuestas, indice, onOtra, onAplicar, onCerrar, vacio, extra, etiquetaAplicar, onElegirOtroDia, children }: { titulo: string; propuestas: Propuesta[]; indice: number; onOtra: () => void; onAplicar: (p: Propuesta) => void; onOriginal?: () => void; onCerrar: () => void; vacio?: string; /** Algo más entre el resumen y el botón dorado (la pausa de «Vamos con calma»). */ extra?: ReactNode; /** Lo que dice el botón dorado si la propuesta no trae el suyo. */ etiquetaAplicar?: string; /** «Pasar a otro día»: en vez de [Ver otra opción], [Elegir otro día]. */ onElegirOtroDia?: () => void; children?: ReactNode }) {
   const p = propuestas[indice] ?? null
+  const route = useRouteStore((st) => st.route)
+  const tarjetas = useMemo(() => (p && route ? tarjetasDePropuesta(p, route) : []), [p, route])
   return (
     <HojaV2 onCerrar={onCerrar} etiqueta={titulo} fondo={MARFIL}>
       <div data-cambiar-hoja="propuesta" data-propuesta-tipo={p?.tipo ?? 'vacia'} data-propuesta-caso={p?.caso ?? undefined} className="flex flex-col gap-3">
@@ -206,19 +200,14 @@ export function HojaPropuesta({ titulo, propuestas, indice, onOtra, onAplicar, o
                 {p.entradasPasadas.map((e) => (e.freeTour ? `Tu ${e.nombre} de las ${e.hora} ya ha pasado.` : `Tu entrada de las ${e.hora} en ${e.nombre} ya ha pasado.`)).join(' ')}
               </span>
             )}
-            {p.tarjetasDia && p.tarjetasDia.length > 0 ? (
-              <>
-                {p.tarjetasDia.map((t, k) => <TarjetaDelSitio key={k} t={t} sinFranja />)}
-                {p.franja && <FranjaVerde texto={p.franja} />}
-              </>
-            ) : p.tarjetaDia ? <TarjetaDelSitio t={p.tarjetaDia} /> : <ResumenDeCambios p={p} />}
+            {p.tarjetaDia && !(p.tarjetasDia && p.tarjetasDia.length > 0) ? <TarjetaDelSitio t={p.tarjetaDia} /> : <TarjetasDeCambios tarjetas={tarjetas} franja={franjaDePropuesta(p)} />}
             {children}
             {extra}
             {(() => {
               /* V53 §3: con DOS opciones (el dorado y «Dejarlo como está») van lado a lado, del mismo tamaño; con tres o más, el dorado, el blanco con borde debajo y la salida como texto pequeño. */
               const oro = (
                 <button type="button" onClick={() => onAplicar(p)} data-propuesta-aplicar className="flex min-h-[52px] items-center justify-center rounded-2xl px-3 text-center text-[15px] font-bold" style={BOTON_ORO}>
-                  {p.pregunta && !p.boton ? 'Sí, dejarlo' : (p.boton ?? etiquetaAplicar ?? BOTON_POR_TIPO[p.tipo])}
+                  {p.boton ?? etiquetaAplicar ?? BOTON_POR_TIPO[p.tipo]}
                 </button>
               )
               if (!onElegirOtroDia && propuestas.length <= 1) {
@@ -271,18 +260,6 @@ export function AvisoPlanActualizadoGlobal() {
   return aviso ? <AvisoPlanActualizado texto={aviso.texto ?? 'Plan actualizado'} conDeshacer /> : null
 }
 
-function Mensaje({ titulo, texto, onCerrar, children }: { titulo: string; texto: string; onCerrar: () => void; children?: ReactNode }) {
-  return (
-    <HojaV2 onCerrar={onCerrar} etiqueta={titulo} fondo={MARFIL}>
-      <div data-cambiar-hoja="mensaje" className="flex flex-col gap-3">
-        <Titulo texto={titulo} onCerrar={onCerrar} />
-        <span className="text-[14.5px] font-medium leading-[1.4]">{texto}</span>
-        {children}
-      </div>
-    </HojaV2>
-  )
-}
-
 type Paso = null | 'comer' | 'menu' | 'retraso' | 'saltar_reserva' | 'dias' | 'otro_dia' | 'anadir_lista' | 'anadir'
 
 export interface PropsCambiarPlan {
@@ -301,6 +278,25 @@ export interface PropsCambiarPlan {
   onVerExplorar?: () => void
   /** (V52 §1) La parada ya ha cerrado: en lugar de [Cambiar plan], [Pasar a otro día] (dorado, abre la hoja de siempre) y [Guardar en pendientes]. */
   cerrada?: boolean
+}
+
+/** (V55) La propuesta de «Saltarme esta parada» con una reserva por llegar: una tarjeta (la parada a «Lugares pendientes») y el aviso de que se puede perder la reserva. */
+function propuestaDeSaltar(parada: Stop, ciudad: string, horaFija: number | null, diaDeHoy: string): Propuesta {
+  const n = displayStopName(parada.name)
+  const hora = horaFija != null ? ` a las ${horaCorta(`${Math.floor(horaFija / 60)}:${String(horaFija % 60).padStart(2, '0')}`)}` : ''
+  return {
+    id: `saltar-${parada.id}`,
+    tipo: 'otro_dia',
+    intro: `Tienes reserva${hora} para ${n}. Si te lo saltas, puedes perderla.`,
+    cambia: { titulo: `${n} sale de hoy`, detalle: 'Se queda en «Lugares pendientes».' },
+    mantiene: { titulo: 'el resto de tu día', detalle: 'Sin cambios.' },
+    boton: 'Guardarlo en pendientes',
+    tarjetaDia: { nombre: n, fotoUrl: parada.photoUrl || parada.fixedPhotoUrl || '', cuando: 'A Lugares pendientes', semanaCorta: '', numero: '', destino: '', diaDeHoy, aPendientes: true, parada, ciudad },
+    ops: [],
+    quitadas: [],
+    corridas: 0,
+    intactas: [],
+  }
 }
 
 /** [Cambiar plan] y todo lo que abre. */
@@ -447,25 +443,18 @@ export function BotonCambiarPlan(p: PropsCambiarPlan) {
       {paso === 'comer' && <HojaComerAhora route={route} day={day} dateIso={dateIso} siguiente={siguiente} ubicacion={p.ubicacion} enCoche={p.enCoche} ahoraMin={p.ahoraMin} onCerrar={cerrar} />}
       {paso === 'retraso' && <HojaPropuesta titulo={titulo} propuestas={propuestas} indice={indice} vacio={vacio} onOtra={() => setIndice((i) => (i + 1) % propuestas.length)} onAplicar={aplicar} onCerrar={cerrar} />}
       {paso === 'saltar_reserva' && (
-        <Mensaje titulo="Saltarme esta parada" texto={`Tienes reserva${horaFija != null ? ` a las ${horaCorta(`${Math.floor(horaFija / 60)}:${String(horaFija % 60).padStart(2, '0')}`)}` : ''} para ${displayStopName(siguiente.name)}. Si te lo saltas, puedes perderla.`} onCerrar={cerrar}>
-          <div className="grid grid-cols-2 gap-2">
-            <button type="button" onClick={cerrar} data-saltar-cancelar className="flex h-12 items-center justify-center rounded-2xl text-[14px] font-bold" style={BOTON_ORO}>
-              No, lo mantengo
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                cerrar()
-                p.onSaltar()
-              }}
-              data-saltar-igual
-              className="flex h-12 items-center justify-center rounded-2xl text-[14px] font-bold"
-              style={BOTON_MARFIL}
-            >
-              Saltarlo igual
-            </button>
-          </div>
-        </Mensaje>
+        // (V55) «Saltarme esta parada» con una reserva por llegar: la misma hoja de propuesta (la tarjeta del sitio que va a pendientes, el dorado que dice lo que hace y [Dejarlo como está]).
+        <HojaPropuesta
+          titulo="Saltarme esta parada"
+          propuestas={[propuestaDeSaltar(siguiente, day.city, horaFija, ctx.etiquetaDia(day))]}
+          indice={0}
+          onOtra={() => undefined}
+          onAplicar={() => {
+            cerrar()
+            p.onSaltar()
+          }}
+          onCerrar={cerrar}
+        />
       )}
       {paso === 'dias' && (
         <HojaV2 onCerrar={cerrar} etiqueta="Pasar a otro día" fondo={MARFIL}>

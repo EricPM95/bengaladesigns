@@ -347,9 +347,9 @@ export function proponerComerAhora(p: { route: Route; day: DayPlan; restaurante:
     return {
       id: `comer-${restaurante.nombre}-${i}`,
       tipo: 'comer',
-      boton: `Comer en ${n}`,
+      boton: `${meal?.mealTime === 'dinner' ? 'Cenar' : 'Comer'} ahora en ${n}`,
       resumen,
-      intro: pregunta ? `Para comer ahora tendríamos que quitar ${unir(nombres)}, que es de lo más importante. ¿Lo quitamos?` : `Vas a ${meal?.mealTime === 'dinner' ? 'cenar' : 'comer'} en ${n}. Recolocamos el resto del día para que todo siga cabiendo.`,
+      intro: pregunta ? `Para comer ahora tendríamos que quitar ${unir(nombres)}, que es de lo más importante.` : `Vas a ${meal?.mealTime === 'dinner' ? 'cenar' : 'comer'} en ${n}. Recolocamos el resto del día para que todo siga cabiendo.`,
       cambia: {
         titulo: nombres.length ? `La comida pasa a ahora, en ${n}, y ${unir(nombres)} sale de hoy` : `La comida pasa a ahora, en ${n}`,
         detalle: pregunta ? 'Es de lo más importante: solo lo quitamos si tú quieres.' : nombres.length ? 'Así llegas bien al resto del día.' : sim.nuevas.size ? 'Lo que queda se recoloca un poco, después de comer.' : 'El resto de tu día sigue igual: solo cambia el orden.',

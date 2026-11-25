@@ -1,3 +1,4 @@
+import { Icono } from '../../../ui/Icono'
 /**
  * V53 §6: EL ICONO DE «LUGARES PENDIENTES», UNA sola pieza: el D de Design «Icono Pendientes» (el «Pin con reloj»: el sitio y, en la esquina, un reloj de «para luego»).
  * (Design marca la A como «la elegida»; Eric eligió la D. Ni la A, ni la E, ni la F.) Se usa en cuatro sitios: la cabecera del bloque «LUGARES PENDIENTES 7», el cuadrado de la derecha de la tarjeta
@@ -20,6 +21,15 @@ export function CuadradoPendientes() {
   return (
     <span data-cuadrado-pendientes="1" aria-hidden="true" className="flex h-[56px] w-[52px] flex-none items-center justify-center rounded-[14px]" style={{ background: '#1C2230' }}>
       <IconoPendientes size={28} color="#F3D88F" grosor={1.7} fondo="#1C2230" />
+    </span>
+  )
+}
+
+/** (V55) El cuadrado de la derecha de la tarjeta del sitio cuando el sitio SE QUITA DEL VIAJE: el mismo cuadrado azul oscuro (mismo tamaño que `CuadradoFecha` y `CuadradoPendientes`) con la papelera que ya usa la app, en dorado. */
+export function CuadradoQuitar() {
+  return (
+    <span data-cuadrado-quitar="1" aria-hidden="true" className="flex h-[56px] w-[52px] flex-none items-center justify-center rounded-[14px]" style={{ background: '#1C2230', color: '#F3D88F' }}>
+      <Icono nombre="papelera" size={24} grosor={1.7} />
     </span>
   )
 }

@@ -11,8 +11,9 @@ import { FONDO_DE_HOJA } from './fondoDeHoja'
  * ELEGIR UNA HORA, SIEMPRE IGUAL EN TODA LA APP (Tanda 10S6, apartado 2; regla en `docs/REGLAS_DE_LA_APP.md`).
  *
  * `HojaDeHora` es la hoja que sube desde abajo, en su propia capa, con la rueda (como la del iPhone). Arriba a la derecha: una papelera para quitar la hora y un ✓ para guardarla.
- * El ✓ guarda SIEMPRE la hora que se ve en la rueda, se haya movido o no (10S9: con el vuelo justo a las 08:30, el ✓ sin mover la rueda guarda 08:30).
- * Tocar fuera, o Escape, TAMBIÉN guarda la hora elegida (toques donde toques). Solo si la casilla estaba vacía y no se ha movido la rueda, tocar fuera (que no es elegir) la deja vacía.
+ * El ✓ guarda SIEMPRE la hora que se ve en la rueda, se haya movido o no (10S9: con el vuelo justo a las 08:30, el ✓ sin mover la rueda guarda 08:30; V55: también con la casilla vacía y la hora gris de ejemplo, 08:30: al abrir la rueda esa hora
+ * ya es la que se ve, y si Eric pulsa ✓ sin moverla, se guarda). La hora gris de ejemplo solo NO se guarda si nunca se abrió la rueda: abrir la hoja es abrir la rueda, así que no hay forma de confirmarla sin verla.
+ * Tocar fuera, deslizar hacia abajo o Escape cierran SIN guardar (solo la papelera y el ✓ cambian la hora).
  *   - `valor`: «HH:MM» o null (vacía). `onElegir(h)` recibe la hora, o null si se quita; la hoja se cierra sola después (`onCerrar`).
  *   - `items`: si se pasa, la rueda es de una sola columna con esas horas (las de verdad de cada sitio ese día); si no, la de dos columnas (horas y minutos, de 5 en 5).
  *   - `inicial`: la hora con la que se abre la rueda si `valor` está vacío.
@@ -39,7 +40,15 @@ export function HojaDeHora({
   onCerrar: () => void
 }) {
   const valida = valor && /^\d{1,2}:\d{2}$/.test(valor) ? (valor.length === 4 ? `0${valor}` : valor) : null
-  const arranque = valida ?? (items && items.length > 0 ? (items.includes(inicial) ? inicial : items[0]) : inicial)
+  const aMin = (h: string) => Number(h.slice(0, 2)) * 60 + Number(h.slice(3, 5))
+  const deMin = (m: number) => `${String(Math.floor(m / 60) % 24).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
+  // (V55) Lo que se ve en la rueda es lo que se guarda: si la hora de partida no es una de las de la rueda (08:32 en la de 5 en 5, una hora fuera de la lista), se parte de la que la rueda enseña (la más cercana).
+  const loQueSeVe = (h: string): string => {
+    const ok = /^\d{2}:\d{2}$/.test(h) ? h : '08:30'
+    if (items && items.length > 0) return items.includes(ok) ? ok : items.reduce((mejor, x) => (Math.abs(aMin(x) - aMin(ok)) < Math.abs(aMin(mejor) - aMin(ok)) ? x : mejor), items[0])
+    return deMin(Math.min(23 * 60 + 55, Math.round(aMin(ok) / 5) * 5))
+  }
+  const arranque = loQueSeVe(valida ?? inicial)
   const [elegida, setElegida] = useState(arranque)
   const tocada = useRef(false)
   const elegidaRef = useRef(elegida)
@@ -52,9 +61,10 @@ export function HojaDeHora({
   const guardar = (conTick = false) => {
     if (cierre.current) return
     cierre.current = true
-    // (V49) Nunca se guarda lo que el viajero no escribe: vacía y sin tocar la rueda, ni el ✓ ni tocar fuera inventan una hora (la hora de ejemplo, en gris, no cuenta). Con una hora ya puesta, o tocada la rueda, se guarda lo que se ve.
+    // (V55) El ✓ guarda la hora que se ve en la rueda, la haya movido o no (también la de ejemplo con la casilla vacía: la rueda ya la enseña). Tocar fuera no guarda (`cerrarSinGuardar`).
     void conTick
-    if (valida || tocada.current) onElegir(elegidaRef.current)
+    // Con una hora ya puesta y la rueda sin mover, se queda exactamente la que había (una hora rara, como 08:32, no se redondea sola).
+    onElegir(valida && !tocada.current ? valida : elegidaRef.current)
     onCerrar()
   }
   const quitar = () => {

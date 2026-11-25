@@ -1,0 +1,295 @@
+[
+  {
+    "id": "1-regla-claude-md",
+    "texto": "Sustituir la regla V43 del bloque de resumen por la nueva en CLAUDE.md y poner al día la tabla de piezas",
+    "estado": "ok",
+    "captura": null,
+    "nota": "Comprobado leyendo el archivo; no es una captura.",
+    "explicacion": "La regla vieja ya no está: ahora dice tarjeta por sitio, franja verde y botón dorado con la acción. La tabla de piezas nombra las tarjetas y el cuadrado nuevo."
+  },
+  {
+    "id": "1-texto-claro-arriba",
+    "texto": "Arriba, el texto claro de lo que pasa y por qué",
+    "estado": "ok",
+    "captura": "retraso_despues.jpg",
+    "explicacion": "Todas las hojas empiezan con la frase que explica el cambio."
+  },
+  {
+    "id": "1-tarjeta-por-sitio",
+    "texto": "Una tarjeta por cada sitio que cambia",
+    "estado": "ok",
+    "captura": "retraso_despues.jpg",
+    "explicacion": "Cada sitio que cambia sale en su tarjeta; las tarjetas se calculan solas a partir de lo que cambia la propuesta."
+  },
+  {
+    "id": "1-foto-real",
+    "texto": "La foto real del sitio, la de su parada",
+    "estado": "ok",
+    "captura": "retraso_despues.jpg",
+    "explicacion": "Las tarjetas llevan la foto de la parada; si no hay, sale el color de siempre. (En Lanzarote las fotos tardaron en cargar en la captura.)"
+  },
+  {
+    "id": "1-nombre-y-adonde-va-en-gris",
+    "texto": "El nombre y a dónde va, en gris",
+    "estado": "ok",
+    "captura": "retraso_despues.jpg",
+    "explicacion": "Debajo del nombre, en gris, dice a dónde va: «Hoy a las 13:22», «A Lugares pendientes», «Al domingo 18»…"
+  },
+  {
+    "id": "1-cuadrado-otro-dia",
+    "texto": "Otro día: el cuadrado de la fecha",
+    "estado": "ok",
+    "captura": "peligro_despues.jpg",
+    "explicacion": "Cuando un sitio pasa a otro día sale el cuadrado de la fecha de ese día."
+  },
+  {
+    "id": "1-cuadrado-hoy-otra-hora",
+    "texto": "Hoy a otra hora: cuadrado con el día de hoy y la hora en el gris",
+    "estado": "ok",
+    "captura": "retraso_despues.jpg",
+    "explicacion": "Lo que solo se corre de hora lleva el cuadrado de hoy y «Hoy a las 13:22» en gris."
+  },
+  {
+    "id": "1-cuadrado-pendientes",
+    "texto": "A pendientes: el cuadrado azul con el icono de pendientes",
+    "estado": "ok",
+    "captura": "yanodatiempo_despues.jpg",
+    "explicacion": "Lo que se guarda para luego lleva el pin con reloj."
+  },
+  {
+    "id": "1-cuadrado-papelera",
+    "texto": "Quitar del viaje: el cuadrado azul con la papelera",
+    "estado": "medias",
+    "captura": null,
+    "nota": "Pieza CuadradoQuitar en IconoPendientes.tsx; ver DECISIONES_V55 puntos 6 y 11.",
+    "explicacion": "La pieza está hecha y enchufada, pero el motor casi nunca quita algo del viaje, así que no la he podido ver en pantalla."
+  },
+  {
+    "id": "1-mas-de-3",
+    "texto": "Más de 3 sitios: 3 tarjetas y «y 5 más» que despliega el resto",
+    "estado": "ok",
+    "captura": "reorganizar_mas_despues.jpg",
+    "explicacion": "Con más de tres cambios salen tres tarjetas y debajo «y 9 más» en gris; al tocarlo se ve el resto."
+  },
+  {
+    "id": "1-franja-verde",
+    "texto": "La franja verde con lo que se queda igual",
+    "estado": "ok",
+    "captura": "anadir_despues.jpg",
+    "explicacion": "Debajo de las tarjetas, la franja verde dice «Sigue igual: …»."
+  },
+  {
+    "id": "1-boton-dorado",
+    "texto": "El botón dorado dice la acción; si hay segunda opción, el blanco con borde",
+    "estado": "ok",
+    "captura": "comer_despues.jpg",
+    "explicacion": "El dorado dice lo que hace («Comer ahora en Dal Toscano», «Guardarlo en pendientes») y la segunda opción va en blanco con borde."
+  },
+  {
+    "id": "1-no-dejar",
+    "texto": "Nunca «dejar» para dos cosas: fuera «¿Lo dejamos?» / «Sí, dejarlo»",
+    "estado": "ok",
+    "captura": "saltar_despues.jpg",
+    "explicacion": "«Sí, dejarlo» y «¿Lo quitamos?» han desaparecido; la única salida es [Dejarlo como está], pequeña, al final."
+  },
+  {
+    "id": "2-retraso",
+    "texto": "Voy con retraso",
+    "estado": "ok",
+    "captura": "retraso_antes_y_despues.jpg",
+    "explicacion": "Pasada: ahora son tarjetas con «Hoy a las …» y la franja verde."
+  },
+  {
+    "id": "2-comer",
+    "texto": "Quiero comer ahora",
+    "estado": "ok",
+    "captura": "comer_antes_y_despues.jpg",
+    "explicacion": "Pasada: la comida y lo que sale de hoy son tarjetas; el botón dice «Comer ahora en …»."
+  },
+  {
+    "id": "2-anadir",
+    "texto": "Añadir un sitio cercano (tarjeta del sitio nuevo con «Hoy a las …»)",
+    "estado": "ok",
+    "captura": "anadir_antes_y_despues.jpg",
+    "explicacion": "Pasada: el sitio nuevo sale primero con «Hoy a las 15:40», seguido de lo que se corre."
+  },
+  {
+    "id": "2-saltar",
+    "texto": "Saltarme esta parada",
+    "estado": "ok",
+    "captura": "saltar_antes_y_despues.jpg",
+    "nota": "DECISIONES_V55 punto 1.",
+    "explicacion": "Pasada la hoja con reserva por llegar: tarjeta del sitio a pendientes, «Guardarlo en pendientes» y [Dejarlo como está]. Sin reserva no hay hoja (salta con aviso)."
+  },
+  {
+    "id": "2-ya-no-da-tiempo",
+    "texto": "Hoy ya no da tiempo a todo",
+    "estado": "ok",
+    "captura": "yanodatiempo_antes_y_despues.jpg",
+    "explicacion": "Pasada: una tarjeta por sitio a pendientes, «y 9 más» y la franja."
+  },
+  {
+    "id": "2-si-te-sobra",
+    "texto": "Si te sobra tiempo (MasTiempo)",
+    "estado": "ok",
+    "captura": "mastiempo_despues.jpg",
+    "nota": "Sin captura «antes»: es la misma hoja que peligro_antes.",
+    "explicacion": "Ya usaba la hoja de tarjetas de la V54 y ahora comparte el mismo código; no tengo un «antes» distinto."
+  },
+  {
+    "id": "2-horario",
+    "texto": "El horario y lo cerrado",
+    "estado": "ok",
+    "captura": "horario_grupo_antes_y_despues.jpg",
+    "nota": "También horario_antes_y_despues.jpg.",
+    "explicacion": "Ya estaban en tarjetas desde la V54; siguen igual y ahora usan el mismo código común."
+  },
+  {
+    "id": "2-quehago",
+    "texto": "¿Qué hago ahora? (propone añadir)",
+    "estado": "ok",
+    "captura": "quehago_antes_y_despues.jpg",
+    "explicacion": "Pasada: usa la misma hoja de añadir un sitio con tarjetas."
+  },
+  {
+    "id": "2-comovais",
+    "texto": "¿Cómo vais? (si propone cambios)",
+    "estado": "medias",
+    "captura": null,
+    "nota": "DECISIONES_V55 punto 9.",
+    "explicacion": "La hoja de «calma» y «aguantad» ya pasaba por la hoja común; la de «lo opcional» se ha pasado a ella, pero no he conseguido sacar una captura porque el aviso no salió en el viaje de prueba."
+  },
+  {
+    "id": "2-lluvia",
+    "texto": "Plan de lluvia (AvisosDelTiempo y RainAlert)",
+    "estado": "ok",
+    "captura": "lluvia_lanza_antes_y_despues.jpg",
+    "nota": "También lluvia_roma_antes_y_despues.jpg.",
+    "explicacion": "Pasados los dos: tarjetas con lo que sale de hoy y lo que entra; Roma montada con la pieza real."
+  },
+  {
+    "id": "2-reorganizar",
+    "texto": "Reorganizar (ReorganizarHost)",
+    "estado": "ok",
+    "captura": "reorganizar_antes_y_despues.jpg",
+    "explicacion": "La alerta «¿Reorganizamos tu día?» ahora enseña una tarjeta por parada que se mueve, la franja y «Reorganizar mi día» / «Dejarlo como está»."
+  },
+  {
+    "id": "2-reorganizar-aviso-no-cabe",
+    "texto": "AvisoNoCabe.tsx",
+    "estado": "no",
+    "captura": null,
+    "nota": "DECISIONES_V55 punto 2.",
+    "explicacion": "No se ha cambiado: es una franja de abajo y una lista de días, no una propuesta con sitios que cambian."
+  },
+  {
+    "id": "2-reorganizar-dia",
+    "texto": "ReorganizarDia.tsx",
+    "estado": "no",
+    "captura": null,
+    "nota": "DECISIONES_V55 punto 3.",
+    "explicacion": "No se ha cambiado: es un botón que aplica directo y avisa con Deshacer; no tiene hoja."
+  },
+  {
+    "id": "2-ninguna-con-resumen",
+    "texto": "Que no quede ninguna hoja con ResumenDeCambios",
+    "estado": "ok",
+    "captura": null,
+    "nota": "Comprobado con grep.",
+    "explicacion": "La pieza ya no existe en el código; todas las hojas que proponen un cambio usan las tarjetas."
+  },
+  {
+    "id": "2-no-se-tocan-propuestas-viajeros",
+    "texto": "No tocar las propuestas entre viajeros (PropuestaHost, HojaPropuestaDelDueno)",
+    "estado": "ok",
+    "captura": null,
+    "nota": "Comprobado con git status.",
+    "explicacion": "No se ha cambiado ningún archivo de propuestas entre viajeros."
+  },
+  {
+    "id": "2-lo-que-no-encaja-en-decisiones",
+    "texto": "Lo que no encaje, dejarlo y apuntarlo en DECISIONES con su captura",
+    "estado": "ok",
+    "captura": null,
+    "explicacion": "Está en docs/dias/DECISIONES_V55.md con su captura y el motivo."
+  },
+  {
+    "id": "3-rueda-guarda-lo-que-se-ve",
+    "texto": "Al pulsar ✓ se guarda la hora que se ve, aunque no se mueva la rueda",
+    "estado": "ok",
+    "captura": "rueda_vacia_abierta_despues.jpg",
+    "explicacion": "Con la casilla vacía y 08:30 en gris, pulsar ✓ sin mover la rueda guarda 08:30 (probado en un Chrome de iPhone con la pieza real)."
+  },
+  {
+    "id": "3-todas-las-ruedas",
+    "texto": "Vale para todas las ruedas de hora de la app",
+    "estado": "ok",
+    "captura": "rueda_lista_abierta_despues.jpg",
+    "explicacion": "Solo hay una rueda confirmable (HojaDeHora) y todos los campos de hora pasan por ella; probados la de dos columnas y la de lista de horas."
+  },
+  {
+    "id": "3-tocar-fuera",
+    "texto": "Tocar fuera sigue cerrando sin guardar",
+    "estado": "ok",
+    "captura": null,
+    "explicacion": "Probado: tocar fuera y Escape cierran y no guardan."
+  },
+  {
+    "id": "3-hora-gris-solo-no-se-guarda-si-no-se-abre",
+    "texto": "La hora gris solo no se guarda si nunca se abrió la rueda",
+    "estado": "ok",
+    "captura": null,
+    "explicacion": "Abrir la hoja ya es abrir la rueda, así que ya no hay forma de confirmar la hora gris sin verla."
+  },
+  {
+    "id": "4-sin-pruebas",
+    "texto": "No pasar pruebas ni escribir una nueva",
+    "estado": "ok",
+    "captura": null,
+    "nota": "Las pruebas viejas que buscan textos quitados están en DECISIONES_V55.",
+    "explicacion": "No se ha pasado ni escrito ninguna prueba (solo capturas)."
+  },
+  {
+    "id": "4-build",
+    "texto": "Antes de subir: npm run build sin errores",
+    "estado": "ok",
+    "captura": null,
+    "explicacion": "La comprobación de tipos y el build terminaron sin errores."
+  },
+  {
+    "id": "4-repaso-capturas",
+    "texto": "REPASO corto con una captura antes y después de cada hoja, Reorganizar con más de 3 y una en Lanzarote",
+    "estado": "ok",
+    "captura": "reorganizar_mas_antes_y_despues.jpg",
+    "explicacion": "Están todas en docs/dias/V55_capturas/ y listadas en REPASO_V55.md, salvo la de «¿Cómo vais?»."
+  },
+  {
+    "id": "4-lanzarote",
+    "texto": "Una captura en Lanzarote",
+    "estado": "ok",
+    "captura": "lluvia_lanza_antes_y_despues.jpg",
+    "explicacion": "Hechas tres (pasar a otro día, retraso y lluvia) con la API en modo Lanzarote; la API se ha dejado normal."
+  },
+  {
+    "id": "4-nota-estado",
+    "texto": "Nota _estado_v55.md en la rama estado cada 30 minutos",
+    "estado": "no",
+    "captura": null,
+    "explicacion": "No se ha subido nada a Git porque este encargo decía no commit ni push."
+  },
+  {
+    "id": "4-push-y-produccion",
+    "texto": "Push de main y comprobar jutrip.app en modo iPhone",
+    "estado": "no",
+    "captura": null,
+    "explicacion": "No hecho a propósito: este encargo decía no commit y no push."
+  },
+  {
+    "id": "4-reiniciar-api",
+    "texto": "Reiniciar el api-server al final",
+    "estado": "ok",
+    "captura": null,
+    "nota": "No se ha tocado la de producción.",
+    "explicacion": "La API de desarrollo está encendida y en modo normal, y también el Vite 5173; no queda ningún Chrome de prueba abierto."
+  }
+]

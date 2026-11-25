@@ -82,12 +82,12 @@ export function ComoVais({ route, day, dateIso, ubicacion, enCoche, ahoraMin, co
           </div>
         </AvisoDeHoy>
       )}
-      {hoja && (hoja.caso === 'calma' || hoja.caso === 'reserva') && hoja.propuesta && (
+      {hoja && (hoja.caso === 'calma' || hoja.caso === 'reserva' || hoja.caso === 'opcional') && hoja.propuesta && (
         <HojaPropuesta
-          titulo={hoja.caso === 'calma' ? 'Vamos con calma' : 'Aguantad un poco'}
+          titulo={hoja.caso === 'calma' ? 'Vamos con calma' : hoja.caso === 'opcional' ? 'Por hoy' : 'Aguantad un poco'}
           propuestas={[hoja.propuesta]}
           indice={indice}
-          etiquetaAplicar={hoja.caso === 'reserva' ? 'Pasar a otro día' : 'Hacerlo así'}
+          etiquetaAplicar={hoja.caso === 'reserva' ? 'Pasar a otro día' : hoja.caso === 'opcional' ? 'Terminar el día' : 'Hacerlo así'}
           extra={
             pausa && hoja.caso === 'calma' ? (
               <div data-cansados-pausa={pausa.tipo} className="flex items-center gap-3 rounded-[18px] p-3" style={{ background: '#FFFDF8', border: '1px solid rgba(28,34,48,.12)' }}>
@@ -119,29 +119,6 @@ export function ComoVais({ route, day, dateIso, ubicacion, enCoche, ahoraMin, co
           }}
           onCerrar={cerrarHoja}
         />
-      )}
-      {hoja && hoja.caso === 'opcional' && hoja.propuesta && (
-        <HojaV2 onCerrar={cerrarHoja} etiqueta="Por hoy" fondo={MARFIL}>
-          <div data-cansados-caso="opcional" className="flex flex-col gap-3">
-            <Titulo texto="¿Y si por hoy lo dejáis aquí?" onCerrar={cerrarHoja} />
-            <span data-cansados-texto className="text-[14.5px] font-medium leading-[1.4]">Lo que queda no es imprescindible. Lo dejamos en «Lugares pendientes» por si luego os apetece.</span>
-            <button
-              type="button"
-              onClick={() => {
-                aplicarPropuesta(route.id, dateIso, hoja.propuesta as NonNullable<typeof hoja.propuesta>)
-                cerrarHoja()
-              }}
-              data-cansados-terminar
-              className="flex h-[50px] items-center justify-center rounded-2xl text-[15px] font-bold"
-              style={BOTON_ORO}
-            >
-              Terminar el día
-            </button>
-            <button type="button" onClick={cerrarHoja} data-cansados-seguimos className="flex h-[50px] items-center justify-center rounded-2xl text-[14.5px] font-bold" style={BOTON_BLANCO}>
-              Seguimos
-            </button>
-          </div>
-        </HojaV2>
       )}
       {hoja && hoja.caso === 'respiro' && (
         <HojaV2 onCerrar={cerrarHoja} etiqueta="Tomaos un respiro" fondo={MARFIL}>

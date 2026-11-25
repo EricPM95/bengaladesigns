@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { NoCabe, PropuestaDeVuelos } from '../lib/adaptarVuelos'
+import type { CambioDeUnDia } from '../lib/reorganizarDia'
 
 /**
  * EL BOTÓN «REORGANIZAR» DEL PASE (Tanda 10S7, apartado 2; `Piezas/Reorganizar` R1-R3). Estado de pantalla (no se guarda con el viaje):
@@ -11,6 +12,10 @@ import type { NoCabe, PropuestaDeVuelos } from '../lib/adaptarVuelos'
  */
 interface ReorganizarState {
   dias: string[]
+  /** (V55) Lo que cambiaría en cada uno de esos días (ya calculado al vigilar), para enseñar una tarjeta por cada sitio que se mueve en la alerta. */
+  cambios: CambioDeUnDia[]
+  /** Suma (o cambia) lo calculado de unos días. */
+  sumarCambios: (cambios: CambioDeUnDia[]) => void
   alerta: boolean
   trabajando: boolean
   iluminadas: string[]
@@ -26,7 +31,7 @@ interface ReorganizarState {
   proponerVuelos: (propuesta: PropuestaDeVuelos) => void
   cerrarVuelos: () => void
   /** Un cambio nuevo ha calculado estos días: se suman los que cambian y se quitan los que ya están bien. */
-  poner: (cambian: string[], revisados: string[]) => void
+  poner: (cambian: string[], revisados: string[], cambios?: CambioDeUnDia[]) => void
   abrirAlerta: () => void
   cerrarAlerta: () => void
   /** «Ahora no»: cierra la alerta; el botón se queda (LZ3). */
@@ -41,6 +46,8 @@ interface ReorganizarState {
 
 export const useReorganizarStore = create<ReorganizarState>((set) => ({
   dias: [],
+  cambios: [],
+  sumarCambios: (nuevos) => set((state) => ({ cambios: [...state.cambios.filter((c) => !nuevos.some((n) => n.dayId === c.dayId)), ...nuevos] })),
   alerta: false,
   trabajando: false,
   iluminadas: [],
@@ -52,11 +59,12 @@ export const useReorganizarStore = create<ReorganizarState>((set) => ({
   verSobraTiempo: (dayId) => set({ verSobraTiempoDe: dayId }),
   proponerVuelos: (propuesta) => set({ vuelos: propuesta }),
   cerrarVuelos: () => set({ vuelos: null }),
-  poner: (cambian, revisados) =>
+  poner: (cambian, revisados, cambios = []) =>
     set((state) => {
       const resto = state.dias.filter((id) => !revisados.includes(id))
       const dias = [...new Set([...resto, ...cambian])]
-      return dias.length === state.dias.length && dias.every((id, i) => id === state.dias[i]) ? state : { dias, alerta: dias.length === 0 ? false : state.alerta }
+      const todos = [...state.cambios.filter((c) => !revisados.includes(c.dayId) && dias.includes(c.dayId)), ...cambios.filter((c) => dias.includes(c.dayId))]
+      return dias.length === state.dias.length && dias.every((id, i) => id === state.dias[i]) && cambios.length === 0 ? state : { dias, cambios: todos, alerta: dias.length === 0 ? false : state.alerta }
     }),
   abrirAlerta: () => set({ alerta: true }),
   cerrarAlerta: () => set({ alerta: false }),
@@ -64,6 +72,6 @@ export const useReorganizarStore = create<ReorganizarState>((set) => ({
   fijarTrabajando: (trabajando) => set({ trabajando }),
   iluminar: (ids) => set({ iluminadas: ids }),
   limpiarIluminadas: () => set({ iluminadas: [] }),
-  reiniciar: () => set({ dias: [], alerta: false, trabajando: false, iluminadas: [], vuelos: null, noCaben: [] }),
-  terminar: () => set({ dias: [], alerta: false, trabajando: false }),
+  reiniciar: () => set({ dias: [], cambios: [], alerta: false, trabajando: false, iluminadas: [], vuelos: null, noCaben: [] }),
+  terminar: () => set({ dias: [], cambios: [], alerta: false, trabajando: false }),
 }))

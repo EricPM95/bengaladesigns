@@ -16,6 +16,8 @@ import { TiradorDeHoja } from '../ui/TiradorDeHoja'
 import { BOTON_CLARO, BOTON_ORO } from '../ui/botonesOro'
 import { IconoReorganizar } from './IconoReorganizar'
 import { FONDO_DE_HOJA } from '../ui/fondoDeHoja'
+import { TarjetasDeCambios } from '../route/hoy/v2/CambiarPlan'
+import { tarjetasDeReorganizar } from '../../lib/tarjetasDePropuesta'
 
 /**
  * EL BOTÓN «REORGANIZAR» DEL PASE (Tanda 10S7, apartado 2; `Piezas/Reorganizar` R1 a R3). Se monta una vez por pantalla del viaje, junto al botón de los logros:
@@ -79,7 +81,7 @@ export function ReorganizarHost(): ReactNode {
       const dias = useRouteStore.getState().route?.days ?? []
       const aCalcular = ids.filter((id) => !esDiaRecienReorganizado(dias.find((d) => d.id === id)))
       const cambian = await diasQueCambian(aCalcular)
-      useReorganizarStore.getState().poner(cambian.map((c) => c.dayId), ids)
+      useReorganizarStore.getState().poner(cambian.map((c) => c.dayId), ids, cambian)
     }
     const anular = useRouteStore.subscribe((estado, previo) => {
       if (estado.route?.id !== previo.route?.id) {
@@ -191,9 +193,27 @@ export function ReorganizarHost(): ReactNode {
   )
 }
 
-/** La alerta «¿Reorganizamos tu día?» (R2): hoja de abajo con el texto de Eric y [Reorganizar] [Ahora no]. */
+/**
+ * La alerta «¿Reorganizamos tu día?» (R2): hoja de abajo con el texto de Eric. (V55) Con el formato de TODAS las hojas que proponen un cambio: una tarjeta por cada parada que se mueve (su foto, de qué parada a cuál y el cuadrado
+ * de la fecha del día; con más de 3, «y 5 más»), la franja verde de lo que sigue igual, el dorado que dice lo que hace y [Dejarlo como está] (que, como siempre, deja el botón redondo).
+ */
 function AlertaReorganizar({ trabajando, onReorganizar }: { trabajando: boolean; onReorganizar: () => void }): ReactNode {
   const ahoraNo = () => useReorganizarStore.getState().ahoraNo()
+  const route = useRouteStore((s) => s.route)
+  const dias = useReorganizarStore((s) => s.dias)
+  const cambios = useReorganizarStore((s) => s.cambios)
+  // Lo que cambiaría en cada día ya viene calculado de vigilar la ruta; si falta alguno (llegó por otro camino), se calcula al abrir.
+  const faltan = dias.filter((id) => !cambios.some((c) => c.dayId === id))
+  useEffect(() => {
+    if (faltan.length === 0) return
+    let vivo = true
+    void diasQueCambian(faltan).then((nuevos) => vivo && useReorganizarStore.getState().sumarCambios(nuevos))
+    return () => {
+      vivo = false
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [faltan.join('|')])
+  const tarjetas = route ? tarjetasDeReorganizar(cambios.filter((c) => dias.includes(c.dayId)), route) : []
   useEffect(() => {
     const alTeclear = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && !useReorganizarStore.getState().trabajando) useReorganizarStore.getState().ahoraNo()
@@ -204,7 +224,7 @@ function AlertaReorganizar({ trabajando, onReorganizar }: { trabajando: boolean;
   return createPortal(
     <div data-hoja="reorganizar" data-alerta-reorganizar="1" role="dialog" aria-modal="true" aria-label="¿Reorganizamos tu día?" style={{ position: 'fixed', inset: 0, zIndex: 110, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
       <div className="hoja-fondo" onClick={trabajando ? undefined : ahoraNo} style={{ position: 'absolute', inset: 0, background: FONDO_DE_HOJA }} />
-      <div className="hoja-panel" style={{ position: 'relative', width: '100%', maxWidth: 520, borderRadius: '32px 32px 0 0', background: '#FBF3E2', color: '#1C2230', padding: '10px 18px calc(28px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', gap: 14, boxShadow: '0 -20px 40px rgba(0,0,0,.25)' }}>
+      <div className="hoja-panel" style={{ position: 'relative', width: '100%', maxWidth: 520, maxHeight: '92dvh', overflowY: 'auto', borderRadius: '32px 32px 0 0', background: '#FBF3E2', color: '#1C2230', padding: '10px 18px calc(28px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', gap: 14, boxShadow: '0 -20px 40px rgba(0,0,0,.25)' }}>
         <TiradorDeHoja />
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -214,12 +234,13 @@ function AlertaReorganizar({ trabajando, onReorganizar }: { trabajando: boolean;
           <CruzDeHoja enLinea onCerrar={ahoraNo} />
         </div>
         <span style={{ font: "400 14.5px/1.45 'Geist',sans-serif", color: 'rgba(28,34,48,.7)' }}>Adaptamos tus paradas a tu viaje y tus reservas a su hora, para que no pierdas tiempo.</span>
+        <TarjetasDeCambios tarjetas={tarjetas} franja="Sigue igual: tus reservas y lo que ya has visto" />
         <div data-dos-botones="1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
           <button type="button" data-reorganizar-si="1" onClick={onReorganizar} disabled={trabajando} style={{ ...BOTON_ORO, minHeight: 52, padding: '0 10px', lineHeight: 1.2, borderRadius: 16, border: 'none', cursor: 'pointer', font: "700 15px 'Geist',sans-serif", opacity: trabajando ? 0.7 : 1 }}>
-            Reorganizar
+            {dias.length > 1 ? 'Reorganizar mis días' : 'Reorganizar mi día'}
           </button>
           <button type="button" data-reorganizar-no="1" onClick={ahoraNo} disabled={trabajando} style={{ ...BOTON_CLARO, minHeight: 52, padding: '0 10px', lineHeight: 1.2, borderRadius: 16, cursor: 'pointer', font: "700 15px 'Geist',sans-serif" }}>
-            Ahora no
+            Dejarlo como está
           </button>
         </div>
       </div>

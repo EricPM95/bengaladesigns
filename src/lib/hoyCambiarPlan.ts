@@ -284,7 +284,7 @@ export interface Propuesta {
   /** (V43 §1) Las líneas del bloque de resumen (icono + texto): solo las que vienen al caso. Sin ellas, salen de «cambia» y «mantiene». */
   resumen?: { icono: 'mover' | 'quitar' | 'ok' | 'reloj' | 'mas'; texto: string; /** Una frase pequeña debajo (lo que antes era el «detalle»). */ sub?: string }[]
   /** (V50; Design «Aviso Cierre» A2/A4) «Pasar a otro día»: la tarjeta del sitio (foto pequeña, nombre, cuándo en gris y la fecha en su cuadrado oscuro) y el día de hoy para la franja verde «Sigue igual: el resto de tu martes». */
-  tarjetaDia?: { nombre: string; fotoUrl: string; cuando: string; semanaCorta: string; numero: string; destino: string; diaDeHoy: string; /** (V53 §6) El sitio va a «Lugares pendientes», no a un día: a la derecha, el cuadrado del pin con reloj en vez de la fecha. */ aPendientes?: boolean }
+  tarjetaDia?: { nombre: string; fotoUrl: string; cuando: string; semanaCorta: string; numero: string; destino: string; diaDeHoy: string; /** (V53 §6) El sitio va a «Lugares pendientes», no a un día: a la derecha, el cuadrado del pin con reloj en vez de la fecha. */ aPendientes?: boolean; /** (V55) El sitio se quita del viaje: a la derecha, el cuadrado azul con la papelera. */ quitar?: boolean; /** (V55) La parada, para pedir su foto real si no la trae (la misma de su parada), y la ciudad de su día. */ parada?: Stop; ciudad?: string }
   /** (V54 §3) VARIOS sitios que cambian (una tarjeta por sitio) y la frase de la franja verde («Llegas a tu entrada de las 9:15»). */
   tarjetasDia?: NonNullable<Propuesta['tarjetaDia']>[]
   franja?: string
@@ -412,7 +412,7 @@ export function proponerPasarADia(p: { route: Route; day: DayPlan; stop: Stop; d
     const iDespues = c.despuesDe ? delDia(destino).findIndex((s) => s.id === c.despuesDe?.id) : -1
     const mitad = Math.max(1, Math.ceil(delDia(destino).length / 2))
     const cuando = c.caso === 'c' ? `Al final del ${dest.replace(/ \d+$/, '')} · «Si te sobra tiempo»` : iDespues >= mitad ? 'Por la tarde' : 'Por la mañana'
-    const tarjetaDia = { nombre: n, fotoUrl: stop.photoUrl || stop.fixedPhotoUrl || '', cuando, semanaCorta, numero, destino: dest, diaDeHoy: ctx.etiquetaDia(day) }
+    const tarjetaDia = { nombre: n, fotoUrl: stop.photoUrl || stop.fixedPhotoUrl || '', cuando, semanaCorta, numero, destino: dest, diaDeHoy: ctx.etiquetaDia(day), parada: stop, ciudad: day.city }
     const base = { tarjetaDia, tipo: 'otro_dia' as const, caso: c.caso, boton: `Pasarlo al ${dest}`, resumen: resumenDia, quitadas, corridas: 0, intactas: items.filter((it) => it.fija).map((it) => it.stop.id), ops: [sacar, ...c.ops] }
     if (c.caso === 'a')
       return { ...base, id: `otro-dia-a-${destino.id}`, intro: `Podemos pasarte ${n} al ${dest}${c.despuesDe ? `, después de ${nombre(c.despuesDe)}` : ''}.`, cambia: { titulo: `${n} pasa al ${dest}`, detalle: c.despuesDe ? `Entra después de ${nombre(c.despuesDe)}.` : 'Entra al empezar el día.' }, mantiene: { titulo: `el resto de tu ${hoy}`, detalle: 'Sin cambios.' } }
@@ -583,11 +583,11 @@ export function proponerPasarSitios(p: { route: Route; day: DayPlan; ctx: Contex
       ops.push(...o)
       const iso = ctx.fechaDe?.(mejor.dia) ?? null
       quitadas.push({ id: s.id, nombre: nombre(s), clase, destino: 'manana', aDia: mejor.etiqueta })
-      tarjetas.push({ nombre: nombre(s), fotoUrl, cuando: 'Por la mañana', semanaCorta: semanaCorta(iso), numero: iso ? String(Number(iso.slice(8, 10))) : String(mejor.dia.dayNumber), destino: mejor.etiqueta, diaDeHoy: ctx.etiquetaDia(day) })
+      tarjetas.push({ nombre: nombre(s), fotoUrl, cuando: 'Por la mañana', semanaCorta: semanaCorta(iso), numero: iso ? String(Number(iso.slice(8, 10))) : String(mejor.dia.dayNumber), destino: mejor.etiqueta, diaDeHoy: ctx.etiquetaDia(day), parada: s, ciudad: day.city })
     } else {
       ops.push({ t: 'campo', dia: day.id, id: s.id, antes: { time: s.time, saltada: Boolean(s.saltada) }, despues: { time: s.time, saltada: true } })
       quitadas.push({ id: s.id, nombre: nombre(s), clase, destino: 'sobra' })
-      tarjetas.push({ nombre: nombre(s), fotoUrl, cuando: 'A Lugares pendientes', semanaCorta: '', numero: '', destino: '', diaDeHoy: ctx.etiquetaDia(day), aPendientes: true })
+      tarjetas.push({ nombre: nombre(s), fotoUrl, cuando: 'A Lugares pendientes', semanaCorta: '', numero: '', destino: '', diaDeHoy: ctx.etiquetaDia(day), aPendientes: true, parada: s, ciudad: day.city })
     }
   }
   const dest = new Set(quitadas.filter((q) => q.destino === 'manana').map((q) => q.aDia))
@@ -756,7 +756,7 @@ export function proponerRetraso(p: { route: Route; day: DayPlan; paradaId: strin
     const mantiene = mantieneDe(items, ctx)
     const cambiaTitulo = pregunta ? `Dejamos ${unir(quitadas.map((q) => q.nombre))}` : titulo
     const plural = quitadas.length > 1
-    const boton = aDiaQ.length ? `${plural ? 'Pasarlos' : 'Pasarlo'} al ${diasDe[0]}` : quitadas.length ? `${plural ? 'Quitarlos' : 'Quitarlo'} de hoy` : 'Ajustar mi día'
+    const boton = aDiaQ.length ? `${plural ? 'Pasarlos' : 'Pasarlo'} al ${diasDe[0]}` : quitadas.length ? `${plural ? 'Guardarlos' : 'Guardarlo'} en pendientes` : 'Ajustar mi día'
     const resumen: NonNullable<Propuesta['resumen']> = []
     if (aDiaQ.length) resumen.push({ icono: 'mover', texto: `${cap(unir(aDiaQ.map((q) => q.nombre)))} pasa${aDiaQ.length > 1 ? 'n' : ''} al ${diasDe.join(' y al ')}` })
     if (soloOpc.length || aSobraHoy.length) resumen.push({ icono: 'quitar', texto: `Sale de hoy: ${unir([...soloOpc, ...aSobraHoy])}` })
@@ -769,7 +769,7 @@ export function proponerRetraso(p: { route: Route; day: DayPlan; paradaId: strin
       id: `retraso-${p.minutos}-${k}`,
       tipo: 'retraso',
       intro: pregunta
-        ? `Para no perder lo que tienes fijo tendríamos que quitar ${unir(quitadas.map((q) => q.nombre))}, que es de lo más importante. ¿Lo quitamos?`
+        ? `Para no perder lo que tienes fijo tendríamos que quitar ${unir(quitadas.map((q) => q.nombre))}, que es de lo más importante.`
         : aDiaQ.length
           ? `Con el retraso, ${unir(aDiaQ.map((q) => q.nombre))} ya no cabe hoy. Lo pasamos al día donde mejor encaja.`
           : INTRO_RETRASO,
