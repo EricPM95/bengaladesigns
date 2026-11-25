@@ -5,6 +5,8 @@ import { useBilleteStore } from '../../../store/useBilleteStore'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { useViajeCompartido } from '../../../store/useViajeCompartido'
 import { leerReservaAlojamiento, type DatosReservaLeida } from '../../../lib/billeteLeer'
+import { abrirAvisoPase } from '../../../lib/avisoPase'
+import { estadoDelPaseParaDocumentos } from '../../../lib/pago'
 import { usePermisosDelViaje } from '../../../hooks/usePermisosDelViaje'
 import type { TuAlojamiento } from '../../../lib/tuAlojamiento'
 import {
@@ -22,6 +24,7 @@ import { fechaEnProsa } from '../../../lib/nombreDeDia'
 import { ponerAvisoDeDocumento, quitarAvisoDeDocumento } from '../../../lib/avisoDeDocumento'
 import { Trazo as TrazoDesign } from './PiezasDesignReservas'
 import { CampoDeHora } from '../../ui/HojaDeHora'
+import { revisarLaZonaDelAlojamiento } from '../../../lib/zonaDelAlojamiento'
 
 /**
  * LA RESERVA DEL ALOJAMIENTO (10S7 §5; `Piezas/Entradas Billete` A1 y A2). Va dentro de la caja del alojamiento de RESERVAS (AlojamientoReservas):
@@ -182,7 +185,7 @@ export function HojaReservaAlojamiento({
     direccion: base?.direccion ?? reserva?.direccion ?? '',
     entrada: base?.entrada ?? reserva?.entrada ?? '',
     salida: base?.salida ?? reserva?.salida ?? '',
-    noches: String(base?.noches ?? reserva?.noches ?? ''),
+    noches: '', // (V64) ya no se escribe ni se lee: las noches salen de las fechas (`reservaDeCampos`)
     horaEntrada: base?.horaEntrada ?? reserva?.horaEntrada ?? '',
     horaSalida: base?.horaSalida ?? reserva?.horaSalida ?? '',
     telefono: base?.telefono ?? reserva?.telefono ?? '',
@@ -240,14 +243,14 @@ export function HojaReservaAlojamiento({
       }
     >
       <h2 id="hoja-reserva-alojamiento" className={`max-w-[calc(100%-3rem)] font-display leading-[1.05] text-text ${modo === 'datos' ? 'text-[30px]' : 'text-[28px]'}`} data-hoja-titulo={modo === 'datos' ? 'datos-reserva' : 'reserva'}>
-        {modo === 'datos' ? 'Datos de la reserva' : 'Tu reserva'}
+        {modo === 'datos' ? 'Datos de la reserva' : leidos?.leida ? 'Revisa los datos' : 'Tu reserva'}
       </h2>
       {modo !== 'datos' && (
         <p className="mt-2 text-[13px] leading-[1.35] text-text/60" data-reserva-aloj-aviso>
           {leidos == null
             ? 'Todo opcional.'
             : leidos.leida
-              ? 'Esto es lo que hemos leído. Cámbialo si algo no cuadra.'
+              ? 'Hemos leído tu reserva. Revisa los datos y cámbialos si hace falta'
               : 'No hemos podido leer la reserva. Puedes escribir los datos a mano.'}
         </p>
       )}
@@ -306,7 +309,7 @@ export function HojaReservaAlojamiento({
               {cuadro('salida', 'Salida', '', { tipo: 'date' })}
             </div>
             <div className="flex gap-2">
-              {cuadro('noches', 'Noches', '3', { max: 3 })}
+              {/* (V64 §5) Fuera la casilla «Noches»: las noches salen SIEMPRE de las fechas. */}
               {hora('horaEntrada', 'Desde las', '15:00', 'Hora de entrada')}
               {hora('horaSalida', 'Hasta las', '11:00', 'Hora de salida')}
             </div>
@@ -329,6 +332,8 @@ export interface ApiReservaAloj {
   esAdmin: boolean
   abrirDatos: () => void
   botonAnadir: ReactNode
+  /** (V64 §2) [Cambiar] de la línea naranja: el selector de archivos (sin pase, el aviso del pase). */
+  subirOtra: () => void
 }
 
 export function ReservaDelAlojamiento({ hotel, segmentDayId, nombreMostrado, conPase, direccionDelViaje, año, children }: { hotel: TuAlojamiento; segmentDayId: string; nombreMostrado: string | null; conPase: boolean; direccionDelViaje: string | null; año?: number; children: (api: ApiReservaAloj) => ReactNode }) {
@@ -369,12 +374,31 @@ export function ReservaDelAlojamiento({ hotel, segmentDayId, nombreMostrado, con
     // El hotel conserva su precio y todo lo demás; cambia el nombre (si lo hay) y la reserva.
     setHotel(segmentDayId, { ...hotel, name: nombre || hotel.name, reserva: reservaConDatos(compartida) ? compartida : null })
     // La dirección de «Cómo llegar» (solo con pase): se pone la de la reserva si no había otra o si el viajero lo ha elegido.
-    if (conPase && nueva?.direccion && usarDireccionDeLaReserva && nueva.direccion !== direccionDelViaje) setDireccion(nueva.direccion)
+    if (conPase && nueva?.direccion && usarDireccionDeLaReserva && nueva.direccion !== direccionDelViaje) {
+      setDireccion(nueva.direccion)
+      // (V64 §6) La dirección leída del documento (o escrita en la hoja): ¿cae en otra zona que la elegida?
+      void revisarLaZonaDelAlojamiento({ direccion: nueva.direccion })
+    }
     setHoja(null)
+  }
+  // (V64 §2) [Cambiar] de la línea naranja: subir otra vez; tras leer, «Revisa los datos».
+  const otroArchivo = useRef<HTMLInputElement>(null)
+  const subirOtro = async (archivo: File | undefined) => {
+    if (!archivo) return
+    try {
+      const leidos = await leerReservaAlojamiento(archivo, { anioPorDefecto: año })
+      if (leidos.leida || !leidos.aviso) {
+        avisarSiNoCuadra(leidos)
+        setHoja({ leidos, modo: 'leida' })
+      }
+    } finally {
+      if (otroArchivo.current) otroArchivo.current.value = ''
+    }
   }
   return (
     <>
-      {children({ reserva, localizador, esAdmin, abrirDatos: () => setHoja({ leidos: null, modo: 'datos' }), botonAnadir: esAdmin && !reserva ? <BotonAnadirReserva año={año} onLeida={(leidos) => { avisarSiNoCuadra(leidos); setHoja({ leidos, modo: 'leida' }) }} onAMano={() => setHoja({ leidos: null, modo: 'datos' })} /> : null })}
+      <input ref={otroArchivo} type="file" accept="application/pdf,image/*" className="hidden" data-reserva-aloj-archivo="cambiar" onChange={(e) => void subirOtro(e.target.files?.[0])} />
+      {children({ reserva, localizador, esAdmin, abrirDatos: () => setHoja({ leidos: null, modo: 'datos' }), subirOtra: () => (estadoDelPaseParaDocumentos() === 'sin' ? abrirAvisoPase('documento_alojamiento', {}) : otroArchivo.current?.click()), botonAnadir: esAdmin && !reserva ? <BotonAnadirReserva año={año} onLeida={(leidos) => { avisarSiNoCuadra(leidos); setHoja({ leidos, modo: 'leida' }) }} onAMano={() => setHoja({ leidos: null, modo: 'datos' })} /> : null })}
       {hoja && (
         <HojaReservaAlojamiento
           nombreActual={nombreMostrado ?? ''}

@@ -7,6 +7,7 @@ import { ModeIcon } from './ArrivalReturnBar'
 import { Icono } from '../../ui/Icono'
 import { CodigoPantallaCompleta } from '../reservas/TarjetaBillete'
 import { IconoDeDocumento } from '../reservas/BotonesDeReserva'
+import { AnadirDocumentoDeHoy } from '../reservas/FlujoDelBillete'
 
 const AZUL = '#1F2A5C'
 
@@ -69,7 +70,8 @@ export function BilleteDeVuelo({ billete, onOpen }: { billete: DatosBillete; onO
       onOpen()
     }
   }
-  const irAReservas = () => useRouteStore.getState().setMode('bookings')
+  const [vezAnadir, setVezAnadir] = useState(0)
+  const irAReservas = () => setVezAnadir((v) => v + 1)
   const fuera = route ? ciudadDeSalida(route) : ''
   const salida = llegada ? route?.arrivalOtraHora : billete.horaRoma
   return (
@@ -139,6 +141,7 @@ export function BilleteDeVuelo({ billete, onOpen }: { billete: DatosBillete; onO
           </button>
         )}
       </div>
+      {vezAnadir > 0 && route && <AnadirDocumentoDeHoy key={vezAnadir} route={route} kind={llegada ? 'arrival' : 'departure'} mode={billete.mode} />}
       {ampliado && guardado?.codigo && (
         <CodigoPantallaCompleta
           codigo={guardado.codigo}

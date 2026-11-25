@@ -4,6 +4,7 @@ import { enlaceComoLlegarAlojamiento } from '../../../lib/direccionAlojamiento'
 import { usePagoActivo } from '../../../lib/pago'
 import { Icono } from '../../ui/Icono'
 import { Candado } from '../../pase/Candado'
+import { BOTON_ORO } from '../../ui/botonesOro'
 
 interface BotonComoLlegarAlojamientoProps {
   /**
@@ -33,9 +34,10 @@ export function BotonComoLlegarAlojamiento({ direccion, variante = 'completo', c
   // (10S8, `Piezas/Entradas Billete` A1p/A2p) El botón azul noche con letra dorada de las tarjetas de RESERVAS.
   if (variante === 'design')
     return (
-      <a href={enlace} target="_blank" rel="noopener noreferrer" data-como-llegar-alojamiento className={`flex h-[46px] items-center justify-center gap-2 rounded-[14px] ${className}`} style={{ background: '#1C2230', color: '#F3D88F', font: "700 14.5px 'Geist'", ...style }}>
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#F3D88F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <path d="M13 4a1 1 0 1 0 0 .01M10 21l2-7-3-3 1-5 4 2 3 1M7 12l3-1" />
+      // (V64 §5) Dorado (BOTON_ORO) como el dibujo D5a; el azul oscuro con dorado es del estilo de HOY.
+      <a href={enlace} target="_blank" rel="noopener noreferrer" data-como-llegar-alojamiento className={`flex h-[46px] items-center justify-center gap-2 rounded-[14px] ${className}`} style={{ ...BOTON_ORO, font: "700 14.5px 'Geist'", ...style }}>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#4A3510" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M12 2v4M12 18v4M2 12h4M18 12h4M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" />
         </svg>
         Cómo llegar a tu alojamiento
       </a>

@@ -2292,6 +2292,7 @@
    {
     "id": "puerto_del_carmen",
     "nombre": "Puerto del Carmen",
+    "radio_km": 4,
     "coordinates": {
      "lat": 28.92,
      "lng": -13.665
@@ -2300,6 +2301,7 @@
    {
     "id": "playa_blanca",
     "nombre": "Playa Blanca",
+    "radio_km": 4,
     "coordinates": {
      "lat": 28.863,
      "lng": -13.83
@@ -2308,6 +2310,7 @@
    {
     "id": "costa_teguise",
     "nombre": "Costa Teguise",
+    "radio_km": 3.5,
     "coordinates": {
      "lat": 28.998,
      "lng": -13.495
@@ -2316,6 +2319,7 @@
    {
     "id": "arrecife",
     "nombre": "Arrecife",
+    "radio_km": 4,
     "coordinates": {
      "lat": 28.963,
      "lng": -13.55
@@ -2324,6 +2328,7 @@
    {
     "id": "el_norte",
     "nombre": "El norte (Haría, Arrieta, Órzola)",
+    "radio_km": 10,
     "coordinates": {
      "lat": 29.14,
      "lng": -13.48
@@ -2332,6 +2337,7 @@
    {
     "id": "el_interior",
     "nombre": "El interior (Teguise, La Geria, Yaiza, Tinajo, Famara)",
+    "radio_km": 9,
     "coordinates": {
      "lat": 29.03,
      "lng": -13.64

@@ -9,6 +9,8 @@ import { HojaTuAlojamiento } from './HojaTuAlojamiento'
 import { useAddFlowStore } from '../../../store/useAddFlowStore'
 import { usePermisosDelViaje } from '../../../hooks/usePermisosDelViaje'
 import { alCambiarElVuelo } from '../../../lib/adaptarVuelos'
+import { revisarLaZonaDelAlojamiento } from '../../../lib/zonaDelAlojamiento'
+import { HojaZonaDelAlojamiento } from './HojaZonaDelAlojamiento'
 
 /**
  * Lo que abren todos los botones de alojamiento de la app (Tanda 6z): la pantalla del mapa y la hoja «Tu alojamiento». Se monta una sola vez con la ruta; quien quiere abrirlas lo pide
@@ -37,7 +39,8 @@ export function AlojamientoHost() {
     cerrarHoja()
     useAddFlowStore.setState({ toast: { message: `Esto lo cambia ${nombreAdmin || 'el dueño del viaje'}`, previous: null, id: Date.now() } })
   }, [esAdmin, hoja, cerrarHoja, nombreAdmin])
-  if (!route || (!mapa && !hoja)) return null
+  // (V64 §6) La hoja «Tu alojamiento está en Monti» vive aquí: la abre quien guarda la dirección (esta hoja, el mapa de RESERVAS o la reserva leída) con `revisarLaZonaDelAlojamiento`.
+  if (!route || (!mapa && !hoja)) return <HojaZonaDelAlojamiento />
 
   const estancias = estanciasDelViaje(route)
   const estanciaDe = (segmentDayId: string | null) => estancias.find((estancia) => estancia.segmentDayId === segmentDayId) ?? estancias[0] ?? null
@@ -75,6 +78,8 @@ export function AlojamientoHost() {
             if (d.direccion !== (route.accommodationAddress ?? null)) setDireccion(d.direccion)
             // (V45) El punto del mapa viaja dentro del viaje (sin consulta nueva). Solo si el viajero lo ha tocado.
             if (d.punto !== undefined) setPunto(d.punto)
+            // (V64 §6) ¿La dirección guardada cae en otra zona que la elegida? (La zona que acaba de elegir en esta misma hoja manda: si la cambió, `route` aún trae la de antes.)
+            if (d.direccion && d.direccion !== (route.accommodationAddress ?? null) && !(d.zona && d.zona !== (route.accommodationZone ?? null))) void revisarLaZonaDelAlojamiento({ direccion: d.direccion, punto: d.punto ?? route.accommodationPoint ?? null })
             if (d.zona !== (route.accommodationZone ?? null) && d.zona) {
               setZona(d.zona)
               void alCambiarElVuelo({ que: 'zona', mitad: null })
@@ -98,6 +103,7 @@ export function AlojamientoHost() {
           onClose={cerrarHoja}
         />
       )}
+      <HojaZonaDelAlojamiento />
     </>
   )
 }

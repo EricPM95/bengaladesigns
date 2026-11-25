@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
+import { HojaAnadirDocumento } from './HojaAnadirDocumento'
 import { ICONOS } from '../../../lib/iconos'
 import { usePaseParaDocumentos } from '../../../lib/pago'
 import { abrirAvisoPase } from '../../../lib/avisoPase'
@@ -37,7 +38,7 @@ export function BotonAnadirDocumento({
   onAnadir: () => void
   datos?: string
   icono?: ReactNode
-  /** (10S9b §1) Con pase: el enlace pequeño «o escribe los datos a mano» debajo del botón, que abre la hoja de datos de siempre vacía (con sus ejemplos en gris). Sin pase no sale (los datos son del pase). */
+  /** (V64 §1) [Escribir los datos] de la hoja pequeña que sale al pulsar el botón (con pase): abre la hoja de datos de siempre vacía. Sin él (el billete del invitado), el botón abre el selector de archivos directamente. Ya no hay enlace «o escribe los datos a mano». */
   aMano?: () => void
   /** (V45 §1) `borde`: el botón de borde «+ Añade/Sube…» (el de las tarjetas guardadas de vuelo, alojamiento, entradas y excursiones) en vez del dorado grande. Hace lo mismo. */
   estilo?: 'dorado' | 'borde'
@@ -45,11 +46,12 @@ export function BotonAnadirDocumento({
   const estado = usePaseParaDocumentos()
   const destino = useRouteStore((s) => s.route?.destination) ?? ''
   const cerrado = estado === 'sin'
+  const [hoja, setHoja] = useState(false)
   return (
     <div className="relative flex flex-col" data-anadir-doc-envoltorio>
       <button
         type="button"
-        onClick={() => (cerrado ? abrirAvisoPase(clave, { destino: destino || undefined }) : onAnadir())}
+        onClick={() => (cerrado ? abrirAvisoPase(clave, { destino: destino || undefined }) : aMano ? setHoja(true) : onAnadir())}
         data-billete-anadir={datos}
         data-anadir-doc={datos}
         data-con-candado={cerrado ? '1' : '0'}
@@ -66,11 +68,7 @@ export function BotonAnadirDocumento({
         {texto}
       </button>
       {cerrado && <CandadoRedondo diametro={24} datos="documento" className="pointer-events-none absolute -left-1.5 -top-2" />}
-      {aMano && estado === 'con' && (
-        <button type="button" onClick={aMano} data-datos-a-mano={datos} className="zona-toque mx-auto mt-2 border-none bg-transparent p-0 text-[13px] font-medium text-text/65 underline underline-offset-2">
-          o escribe los datos a mano
-        </button>
-      )}
+      {hoja && aMano && <HojaAnadirDocumento clave={clave} onSubir={onAnadir} onEscribir={aMano} onClose={() => setHoja(false)} />}
     </div>
   )
 }
@@ -87,7 +85,8 @@ export function PapeleraRoja({ onClick, etiqueta, datos = 'papelera', atributos,
       aria-label={etiqueta}
       data-papelera={datos}
       {...atributos}
-      className={`flex h-11 w-11 flex-none items-center justify-center rounded-full border-none ${enLinea ? '' : 'self-end'}`}
+      // (V64 §7) Abajo a la derecha, un poco más arriba: círculo de 38 px (el de Design; el toque sigue en 44 por `zona-toque`) y con menos margen por debajo y por encima: la tarjeta pierde ~16 px de alto.
+      className={`flex flex-none items-center justify-center rounded-full border-none ${enLinea ? 'h-11 w-11' : 'zona-toque -mb-1.5 -mt-1 h-[38px] w-[38px] self-end'}`}
       style={{ background: 'oklch(0.52 0.19 25 / .14)', color: 'oklch(0.52 0.19 25)' }}
     >
       <Icono nombre="papelera" size={18} />
@@ -160,24 +159,36 @@ export function LapizDeReserva({ onClick, etiqueta, datos = 'lapiz', atributos }
 }
 
 /**
- * (V45 §6 y V52 §5b) LA LÍNEA NARANJA DE UN DOCUMENTO QUE NO CUADRA, UNA SOLA PIEZA: «⚠ Esta tarjeta de embarque es del viernes 13 y tu vuelo es el lunes 23. Revisa que sea la buena» con [Es correcta], DENTRO de la tarjeta.
- * La usan el vuelo/tren/barco (con su texto), la entrada, la excursión y el alojamiento («Esta entrada…», «Esta reserva…»). Se queda hasta cambiar el documento o pulsar [Es correcta].
+ * (V45 §6, V52 §5b y V64 §2) LA LÍNEA NARANJA DE UN DOCUMENTO QUE NO CUADRA, UNA SOLA PIEZA: «⚠ Esta tarjeta de embarque es del viernes 13 y tu vuelo es el martes 24. Si no es la buena, súbela otra vez o cambia los datos a mano.»
+ * y, debajo, dos botones pequeños: [Es correcta] y [Cambiar] (abre la hoja de «añadir un documento»: subir otra vez o escribir los datos), DENTRO de la tarjeta.
+ * La usan el vuelo/tren/barco, la entrada, la excursión y el alojamiento. Se queda hasta cambiar el documento o pulsar [Es correcta]. Sin `onSubir` ni `onEscribir` (una tarjeta que aún no los trae) no sale [Cambiar].
  */
-export function LineaNaranjaDeDocumento({ texto, onCorrecta }: { texto: string; onCorrecta: () => void }) {
+export function LineaNaranjaDeDocumento({ texto, onCorrecta, clave, onSubir, onEscribir }: { texto: string; onCorrecta: () => void; /** Qué documento es, para los textos de la hoja de [Cambiar]. */ clave?: ClaveDocumento; onSubir?: () => void; onEscribir?: () => void }) {
+  const [hoja, setHoja] = useState(false)
+  const puedeCambiar = Boolean(clave && (onSubir || onEscribir))
+  const botonPequeno = { background: '#fff', border: '1px solid rgba(194,88,28,.4)', color: '#9A4A12' }
   return (
-    <div data-aviso-documento="fecha" role="status" className="flex flex-col gap-1.5 rounded-[14px] px-3 py-2.5" style={{ background: '#FDECD9', border: '1px solid rgba(194,88,28,.4)' }}>
+    <div data-aviso-documento="fecha" role="status" className="flex flex-col gap-2 rounded-[14px] px-3 py-2.5" style={{ background: '#FDECD9', border: '1px solid rgba(194,88,28,.4)' }}>
       <span className="text-[13px] font-semibold leading-[1.3]" style={{ color: '#9A4A12' }}>⚠ {texto}</span>
-      <button type="button" onClick={onCorrecta} data-aviso-documento-correcta className="zona-toque self-start rounded-full px-3 py-1.5 text-[12.5px] font-bold" style={{ background: '#fff', border: '1px solid rgba(194,88,28,.4)', color: '#9A4A12' }}>
-        Es correcta
-      </button>
+      <span className="flex gap-2">
+        <button type="button" onClick={onCorrecta} data-aviso-documento-correcta className="zona-toque rounded-full px-3 py-1.5 text-[12.5px] font-bold" style={botonPequeno}>
+          Es correcta
+        </button>
+        {puedeCambiar && (
+          <button type="button" onClick={() => setHoja(true)} data-aviso-documento-cambiar className="zona-toque rounded-full px-3 py-1.5 text-[12.5px] font-bold" style={botonPequeno}>
+            Cambiar
+          </button>
+        )}
+      </span>
+      {hoja && clave && <HojaAnadirDocumento clave={clave} onSubir={() => onSubir?.()} onEscribir={() => onEscribir?.()} onClose={() => setHoja(false)} />}
     </div>
   )
 }
 
 /** (V52 §5b) La línea naranja de la entrada, la excursión o el alojamiento: lee el aviso guardado de ese documento (clave = el id de la reserva o aloj:tramo) y no pinta nada si no hay. */
-export function AvisoDeDocumentoDeReserva({ clave }: { clave: string | null | undefined }) {
+export function AvisoDeDocumentoDeReserva({ clave, documento, onSubir, onEscribir }: { clave: string | null | undefined; /** (V64 §2) Qué documento es y cómo se cambia: [Cambiar] abre la hoja de añadir un documento. */ documento?: ClaveDocumento; onSubir?: () => void; onEscribir?: () => void }) {
   const tripId = useSyncStore((s) => s.activeTripId)
   const texto = useAvisoDeDocumento(tripId, clave ?? '')
   if (!clave || !texto) return null
-  return <LineaNaranjaDeDocumento texto={texto} onCorrecta={() => quitarAvisoDeDocumento(tripId, clave)} />
+  return <LineaNaranjaDeDocumento texto={texto} onCorrecta={() => quitarAvisoDeDocumento(tripId, clave)} clave={documento} onSubir={onSubir} onEscribir={onEscribir} />
 }

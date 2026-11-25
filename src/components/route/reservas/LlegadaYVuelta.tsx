@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { Route } from '../../../lib/types'
 import type { CambioDeVuelo, EnCambioDeVuelo } from '../../../lib/cambioDeVuelo'
 import { puntoCorto, type ArrivalInfo } from '../../../lib/arrivalReturn'
@@ -23,18 +23,17 @@ import { useBilleteStore } from '../../../store/useBilleteStore'
 import { useBillete } from '../../../hooks/useBillete'
 import { useDuracionBillete } from '../../../hooks/useDuracionBillete'
 import { ciudadDeSalida, diaEntero, trayectoDeLaMitad } from '../../../lib/billete'
-import { leerBillete, type DatosBilleteLeido } from '../../../lib/billeteLeer'
+import type { DatosBilleteLeido } from '../../../lib/billeteLeer'
 import { ladoDesdeBillete } from '../../../lib/billeteAplicar'
 import { etiquetaDeCiudadConEstacion, etiquetaDeCiudadConPunto, ejemploDeCiudadConAeropuerto, ejemploDeCiudadConEstacionEjemplo } from '../../../lib/aeropuertosCiudad'
 import { HojaDatosDelBillete } from './HojaDatosDelBillete'
 import { CabeceraDeMitad, CodigoPantallaCompleta, TarjetaBillete, filasDelBillete } from './TarjetaBillete'
-import { LapizDeReserva, claveDocumentoDeMedio } from './BotonesDeReserva'
+import { LapizDeReserva } from './BotonesDeReserva'
+import { useFlujoDelBillete } from './FlujoDelBillete'
+import { CajaDeDato } from './PiezasDesignReservas'
 import { BuscarVuelos } from './BuscarVuelos'
 import { HojaPrecio } from './HojaPrecio'
-import { fechaEnProsa } from '../../../lib/nombreDeDia'
-import { ponerAvisoDeDocumento, quitarAvisoDeDocumento, useAvisoDeDocumento } from '../../../lib/avisoDeDocumento'
-import { abrirAvisoPase } from '../../../lib/avisoPase'
-import { estadoDelPaseParaDocumentos } from '../../../lib/pago'
+import { quitarAvisoDeDocumento, useAvisoDeDocumento } from '../../../lib/avisoDeDocumento'
 
 const ETIQUETA_PUNTO: Record<string, string> = { avion: 'Aeropuerto', tren: 'Estación', bus: 'Estación', ferry: 'Puerto', coche: 'Punto' }
 const capitalizar = (texto: string) => texto.charAt(0).toUpperCase() + texto.slice(1)
@@ -284,69 +283,31 @@ export function MitadGuardada({ route, leg, ciudad, onCambiar, onQuitar, onAnadi
             {fecha}
           </span>
         </span>
-        {!coche && <CambiarBoton onClick={onCambiar} texto="Añadir" />}
+        {/* (V64 §4) Fuera el «Añadir» de la derecha: hace lo mismo que «+ Falta añadir…». */}
       </div>
       {coche ? (
         <span className="text-[14px] text-text/70">{legLine(leg)}</span>
       ) : (
         // (V45 §2) El vuelo sin poner: una línea con «+» y el enlace «Falta añadir la vuelta», que abre la hoja del vuelo en «Vuelta». Sin QR.
-        <span className="flex items-center gap-2.5" data-falta-anadir={leg.kind}>
-          <span aria-hidden="true" className="flex h-6 w-6 flex-none items-center justify-center rounded-full text-[17px] font-medium leading-none" style={{ border: '1.5px solid rgba(28,34,48,.3)', color: INK }}>+</span>
-          <button type="button" onClick={onCambiar} className="zona-toque border-none bg-transparent p-0 text-[14px] font-semibold underline underline-offset-[3px]" style={{ color: INK }}>
-            {esIda ? 'Falta añadir la ida' : 'Falta añadir la vuelta'}
-          </button>
-        </span>
+        // (V64 §4) Como el dibujo de Design: «+ Falta añadir la vuelta» (el + dorado y el texto en cursiva subrayado), todo es el botón.
+        <button type="button" onClick={onCambiar} data-falta-anadir={leg.kind} className="zona-toque flex items-center gap-2 border-none bg-transparent p-0 text-left" style={{ font: "italic 400 17px 'Instrument Serif',serif", color: '#8E6820' }}>
+          <svg className="flex-none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8E6820" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          <span className="underline underline-offset-[3px]">{esIda ? 'Falta añadir la ida' : 'Falta añadir la vuelta'}</span>
+        </button>
       )}
     </div>
   )
 }
 
-/** (10S8 §3, B1b-B1d) El precio, en su fila abajo del todo del bloque: «€ Precio total · 180 €» con su lápiz (solo ida o solo vuelta: «Precio · 180 €»). */
+/** (V64 §4) El precio (de la ida y la vuelta juntas) con el formato de la caja PRECIO de las tarjetas (`CajaDeDato`: el «€», «PRECIO» pequeño y el importe), a lo ancho y con su lápiz a la derecha. */
 function FilaPrecio({ texto, onCambiar }: { texto: string; onCambiar: () => void }) {
   return (
-    <div className="mx-3.5 mb-3.5 flex items-center gap-3 rounded-[18px] py-1.5 pl-3 pr-1" style={{ background: '#FBF3E2', border: '1px solid rgba(181,138,46,.35)' }} data-precio-vuelo>
-      <span aria-hidden="true" className="flex h-[30px] w-[30px] flex-none items-center justify-center rounded-full" style={{ background: '#F3E3B2', color: '#6E5018', font: "600 15px 'Geist'" }}>
-        €
-      </span>
-      <span className="min-w-0 flex-1 text-[14.5px] font-semibold" data-precio-vuelo-texto style={{ color: INK }}>
-        {texto}
-      </span>
-      <LapizDeReserva onClick={onCambiar} etiqueta="Cambiar el precio" datos="precio-vuelo" />
-    </div>
-  )
-}
-
-/** (10S8 §3) Lo que dice la app tras leer una tarjeta que no cuadra con lo puesto (la hora, la fecha) o que no se ha podido leer. Pequeño, abajo, con sus botones. */
-interface AvisoLeido {
-  /** `hora`: ¿actualizamos? [Sí, actualizar] [No]; `fecha` y `texto`: solo se entera [Vale]. */
-  tipo: 'hora' | 'fecha' | 'texto'
-  texto: string
-  kind: LegKind
-  hora?: string
-}
-
-function AvisoDeTarjeta({ aviso, onSi, onNo }: { aviso: AvisoLeido; onSi: () => void; onNo: () => void }) {
-  return (
-    <div role="alertdialog" aria-live="polite" data-aviso-tarjeta={aviso.tipo} className="fixed inset-x-0 bottom-24 z-[125] mx-auto flex w-[min(92vw,380px)] flex-col gap-3 rounded-[20px] px-4 py-3.5" style={{ background: '#FFFDF8', border: '1.5px solid #B58A2E', boxShadow: '0 18px 40px -16px rgba(28,34,48,.5)', color: INK }}>
-      <p className="text-[14.5px] font-medium leading-[1.35]" data-aviso-tarjeta-texto>
-        {aviso.texto}
-      </p>
-      <div className="flex gap-2">
-        {aviso.tipo === 'hora' ? (
-          <>
-            <button type="button" onClick={onSi} data-aviso-tarjeta-si className="h-11 flex-1 rounded-full btn-champan text-[14.5px] font-bold">
-              Sí, actualizar
-            </button>
-            <button type="button" onClick={onNo} data-aviso-tarjeta-no className="h-11 flex-1 rounded-full text-[14.5px] font-semibold" style={{ background: '#F5EFE4', color: INK }}>
-              No
-            </button>
-          </>
-        ) : (
-          <button type="button" onClick={onNo} data-aviso-tarjeta-vale className="h-11 flex-1 rounded-full text-[14.5px] font-semibold" style={{ background: '#F5EFE4', color: INK }}>
-            Vale
-          </button>
-        )}
-      </div>
+    <div className="mx-3.5 mb-3.5" data-precio-vuelo>
+      <CajaDeDato rotulo="PRECIO" icono={{ eur: true }} datos="precio-vuelo" lapiz={<LapizDeReserva onClick={onCambiar} etiqueta="Cambiar el precio" datos="precio-vuelo" />}>
+        <span data-precio-vuelo-texto>{texto}</span>
+      </CajaDeDato>
     </div>
   )
 }
@@ -388,26 +349,14 @@ export function LlegadaYVuelta({
   const g = useEntradasDelGrupo()
   // La hoja del vuelo: la ida y la vuelta juntas y UN solo botón «Guardar el vuelo». `vueloAbierto` es la pestaña con la que se abre.
   const [vueloAbierto, setVueloAbierto] = useState<LegKind | null>(null)
-  // (10S5) Añadir el billete: el PDF, la foto o la captura se lee y rellena la hoja del vuelo para que el viajero la revise.
-  const archivoRef = useRef<HTMLInputElement>(null)
-  const archivoDe = useRef<LegKind>('arrival')
-  const [leyendo, setLeyendo] = useState<LegKind | null>(null)
-  const [lecturas, setLecturas] = useState(0)
-  const [leido, setLeido] = useState<{ kind: LegKind; datos: DatosBilleteLeido } | null>(null)
-  // (10S8 §3) Lo que dice la app tras leer una tarjeta que no cuadra (la hora, la fecha) o que no se ha podido leer; y la hoja pequeña del precio.
-  const [aviso, setAviso] = useState<AvisoLeido | null>(null)
+  // (V64 §1) Añadir el billete: la hoja pequeña (subir o escribir), la lectura del archivo y «Revisa los datos» viven en `useFlujoDelBillete` (los mismos de HOY).
+  // La hoja pequeña del precio.
   const [precioAbierto, setPrecioAbierto] = useState(false)
-  const setLegCodigo = useRouteStore((state) => state.setLegCodigo)
-  const setLegCompania = useRouteStore((state) => state.setLegCompania)
-  const setLegOtroPunto = useRouteStore((state) => state.setLegOtroPunto)
-  const setLegOtraHora = useRouteStore((state) => state.setLegOtraHora)
   const setLegPrecio = useRouteStore((state) => state.setLegPrecio)
-  const guardarVueloDelAdmin2 = useRouteStore((state) => state.guardarVueloDelAdmin)
-  const tripId = useSyncStore((state) => state.activeTripId)
-  const yoId = useViajeCompartido((state) => state.gente.find((p) => p.esYo)?.id ?? null)
-  const ponerBillete = useBilleteStore((state) => state.poner)
   const ida = legOf(route, info, 'arrival')
   const vuelta = legOf(route, info, 'departure')
+  const flujo = useFlujoDelBillete({ route, info, onCambioDeVuelo })
+  const pedirArchivo = flujo.pedirArchivo
   const ciudad = route.days[0]?.city ?? route.destination
   const hecho = ida.done && vuelta.done
   const algoHecho = ida.done || vuelta.done
@@ -421,8 +370,6 @@ export function LlegadaYVuelta({
     if (verBloque) setDesplegadoUsuario(true)
   }, [verBloque])
   const hayVuelo = (ida.done && ida.mode !== 'coche') || (vuelta.done && vuelta.mode !== 'coche')
-  // (10S8, B1d) «Precio total» con la ida y la vuelta puestas; con solo una, «Precio».
-  const ambos = ida.done && ida.mode !== 'coche' && vuelta.done && vuelta.mode !== 'coche'
   const etiqueta = legsTag(ida, vuelta)
   const precioTotal = leerImporte(route.arrivalPrecio) ?? leerImporte(route.departurePrecio)
   // El viajero ha abierto su vuelta: ya la ha visto con las fechas de ahora (se va el aviso de la campana de «has cambiado los días del viaje»).
@@ -442,92 +389,7 @@ export function LlegadaYVuelta({
   }, [abierto])
 
   const abrirHoja = (mitad: LegKind) => {
-    setLeido(null)
     setVueloAbierto(mitad)
-  }
-  const pedirArchivo = (kind: LegKind) => {
-    // (10S8 §2) Añadir un documento nuevo es del pase: sin él, el aviso pequeño (el botón ya lo hace; esto cierra «Cambiar el archivo» de la hoja del vuelo).
-    if (estadoDelPaseParaDocumentos() === 'sin') {
-      abrirAvisoPase(claveDocumentoDeMedio((kind === 'arrival' ? ida : vuelta).mode), { destino: route.destination })
-      return
-    }
-    archivoDe.current = kind
-    if (archivoRef.current) {
-      archivoRef.current.value = ''
-      archivoRef.current.click()
-    }
-  }
-  const alElegirArchivo = async (archivo: File | undefined) => {
-    if (!archivo) return
-    const kind = archivoDe.current
-    setLeyendo(kind)
-    try {
-      const medio = (kind === 'arrival' ? ida : vuelta).mode
-      const datos = await leerBillete(archivo, { modo: medio === 'coche' ? undefined : medio })
-      setLecturas((n) => n + 1)
-      aplicarLeido(kind, datos)
-    } finally {
-      setLeyendo(null)
-    }
-  }
-  /**
-   * (10S8 §3) La tarjeta leída se guarda sola (el documento y sus datos son del viajero; ya no se abre la hoja del vuelo para revisarla). Lo que cambiaría el vuelo NO se cambia solo:
-   *  · si la fecha de la tarjeta es otra → «Tu tarjeta es del viernes 27 y tu vuelo está el jueves 26. Revisa las fechas.» (no se toca ni la hora);
-   *  · si la hora es otra → «Tu tarjeta dice que llegas a las 11:25. ¿Actualizamos la hora de tu vuelo?» [Sí, actualizar] [No]; «Sí» guarda la hora y, con pase, sale la alerta de la 10S7b.
-   * Si el servidor dijo algo (límite, tamaño, sin pase: `avisoLectura`), eso es lo que se enseña.
-   */
-  const aplicarLeido = (kind: LegKind, datos: DatosBilleteLeido) => {
-    const leg = kind === 'arrival' ? ida : vuelta
-    const tarjeta = leg.mode === 'avion' ? 'tarjeta' : 'billete'
-    const del = legWord(leg.mode).noun
-    const aviso = datos.aviso
-    const hayAlgo = Boolean(datos.numero || datos.horaSalida || datos.horaLlegada || datos.localizador || datos.asiento || datos.codigo || datos.fuentes.length > 0)
-    if (!hayAlgo) {
-      setAviso({ tipo: 'texto', kind, texto: aviso ?? `No hemos podido leer tu ${leg.mode === 'avion' ? 'tarjeta de embarque' : 'billete'}. Prueba con una captura.` })
-      return
-    }
-    const ciudadFuera = ciudadDeSalida(route)
-    const l = ladoDesdeBillete(leg, datos, ciudadFuera)
-    const previo = useBilleteStore.getState().datos[kind] ?? null
-    const limpio = (t: string | null | undefined) => t?.trim() || null
-    if (l.codigo) setLegCodigo(kind, l.codigo)
-    if (l.compania) setLegCompania(kind, l.compania)
-    if (l.otroPunto && !leg.otroPunto && l.otroPunto.trim() !== ciudadFuera) setLegOtroPunto(kind, l.otroPunto)
-    if (l.otraHora && !leg.otraHora) setLegOtraHora(kind, l.otraHora)
-    const codigo = datos.codigo ? { texto: datos.codigo.texto, formato: datos.codigo.formato, imagen: datos.codigo.imagen, dibujo: datos.codigo.dibujo ?? null } : (previo?.codigo ?? null)
-    ponerBillete(tripId, kind, {
-      horaRoma: leg.time,
-      localizador: limpio(l.localizador) ?? previo?.localizador ?? null,
-      terminal: limpio(l.terminal) ?? previo?.terminal ?? null,
-      asiento: limpio(l.asiento) ?? previo?.asiento ?? null,
-      coche: limpio(l.coche) ?? previo?.coche ?? null,
-      codigo,
-      codigoFuera: l.codigoFuera ?? previo?.codigoFuera ?? null,
-      dueno: yoId,
-    })
-    // La fecha de la tarjeta frente a la del vuelo (la de llegada en la ida; la de salida en la vuelta).
-    const fechaTarjeta = kind === 'arrival' ? (datos.fechaLlegada ?? datos.fecha) : datos.fecha
-    // (V45 §6) El error de fecha NO es una ventana ni un aviso que se va: una línea naranja DENTRO de la tarjeta, junto al QR, con [Es correcta]; se queda hasta cambiar el documento o pulsarla.
-    if (fechaTarjeta && leg.dateIso && fechaTarjeta !== leg.dateIso) {
-      ponerAvisoDeDocumento(tripId, kind, `${leg.mode === 'avion' ? 'Esta tarjeta de embarque' : 'Este billete'} es del ${fechaEnProsa(fechaTarjeta)} y tu ${del} es el ${fechaEnProsa(leg.dateIso)}. Revisa que sea la buena`)
-      return
-    }
-    quitarAvisoDeDocumento(tripId, kind)
-    if (l.hora && l.hora !== leg.time) {
-      setAviso({ tipo: 'hora', kind, hora: l.hora, texto: `Tu ${tarjeta} dice que ${kind === 'arrival' ? 'llegas' : 'sales'} a las ${l.hora}. ¿Actualizamos la hora de tu ${del}?` })
-      return
-    }
-    if (aviso) setAviso({ tipo: 'texto', kind, texto: aviso })
-  }
-  const actualizarHora = () => {
-    if (!aviso || aviso.tipo !== 'hora' || !aviso.hora) return
-    const kind = aviso.kind
-    const hora = aviso.hora
-    guardarVueloDelAdmin2({ [kind]: { time: hora }, medio: legWord((kind === 'arrival' ? ida : vuelta).mode).noun })
-    const guardado = useBilleteStore.getState().datos[kind]
-    if (guardado) ponerBillete(tripId, kind, { ...guardado, horaRoma: hora })
-    setAviso(null)
-    onCambioDeVuelo({ que: 'hora', mitad: kind })
   }
   const primeraLibre: LegKind = !ida.done && ida.mode !== 'coche' ? 'arrival' : !vuelta.done && vuelta.mode !== 'coche' ? 'departure' : ida.mode !== 'coche' ? 'arrival' : 'departure'
 
@@ -582,7 +444,6 @@ export function LlegadaYVuelta({
               <>
             <MitadGuardada route={route} leg={ida} ciudad={ciudad} onCambiar={() => abrirHoja('arrival')} onQuitar={() => quitar(ida)} onAnadirTarjeta={pedirArchivo} onCambioDeVuelo={onCambioDeVuelo} />
             <MitadGuardada route={route} leg={vuelta} ciudad={ciudad} onCambiar={() => abrirHoja('departure')} onQuitar={() => quitar(vuelta)} onAnadirTarjeta={pedirArchivo} onCambioDeVuelo={onCambioDeVuelo} />
-            {faltaAvion && <BuscarVuelos route={route} className="mx-4 mb-3 w-[calc(100%-2rem)]" />}
             {hayVuelo && g.gente.length >= 2 && g.esAdmin && (
               <div className="flex flex-col gap-2.5 px-4 pb-3 pt-1" data-en-este-vuelo>
                 <span className="flex items-center justify-between text-text/55" style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
@@ -595,19 +456,15 @@ export function LlegadaYVuelta({
                 </span>
               </div>
             )}
-            {hayVuelo && <FilaPrecio texto={`${ambos ? 'Precio total' : 'Precio'} · ${precioTotal ? precioEnVista(precioTotal) : 'sin poner'}`} onCambiar={() => setPrecioAbierto(true)} />}
+            {/* (V64 §4) El orden: los vuelos, el precio y [Buscar vuelos] abajo del todo. */}
+            {hayVuelo && <FilaPrecio texto={precioTotal ? precioEnVista(precioTotal) : 'Sin poner'} onCambiar={() => setPrecioAbierto(true)} />}
+            {faltaAvion && <BuscarVuelos route={route} className="mx-4 mb-4 w-[calc(100%-2rem)]" />}
               </>
             )}
           </>
         )}
       </BloqueShell>
-      <input ref={archivoRef} type="file" accept="application/pdf,image/*" hidden data-billete-archivo onChange={(e) => void alElegirArchivo(e.target.files?.[0])} />
-      {leyendo && (
-        <div role="status" data-billete-leyendo className="fixed inset-x-0 bottom-24 z-[120] mx-auto w-fit max-w-[88vw] rounded-full px-5 py-3 text-[14px] font-semibold" style={{ background: '#1C2230', color: '#F3D88F' }}>
-          Leyendo tu {leyendo === 'arrival' ? (ida.mode === 'avion' ? 'tarjeta de embarque' : 'billete') : vuelta.mode === 'avion' ? 'tarjeta de embarque' : 'billete'}…
-        </div>
-      )}
-      {aviso && <AvisoDeTarjeta aviso={aviso} onSi={actualizarHora} onNo={() => setAviso(null)} />}
+      {flujo.nodos}
       {precioAbierto && (
         <HojaPrecio
           titulo={`Precio del ${legWord((ida.mode !== 'coche' ? ida : vuelta).mode).noun}`}
@@ -624,21 +481,17 @@ export function LlegadaYVuelta({
       )}
       {vueloAbierto && (
         <HojaVueloDelAdmin
-          key={`hoja-${lecturas}`}
           route={route}
           ida={ida}
           vuelta={vuelta}
           ladoInicial={vueloAbierto}
-          leido={leido}
-          onCambiarArchivo={pedirArchivo}
+          onCambiarArchivo={flujo.abrirHoja}
           onClose={() => {
             setVueloAbierto(null)
-            setLeido(null)
           }}
           onGuardar={(cambios, cambiosDeVuelo) => {
             guardarVueloDelAdmin(cambios)
             setVueloAbierto(null)
-            setLeido(null)
             onMitad(undefined)
             for (const cambio of cambiosDeVuelo) onCambioDeVuelo(cambio)
           }}

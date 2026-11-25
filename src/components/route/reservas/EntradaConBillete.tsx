@@ -8,6 +8,8 @@ import type { Persona } from '../../../store/useViajeCompartido'
 import { AvisoDeDocumentoDeReserva, BotonAnadirDocumento, IconoDeDocumento, LapizDeReserva, PapeleraRoja } from './BotonesDeReserva'
 import { CajaDia, CajaHora, FilaIcono, ParaQuienDesign, SeccionDatos, TarjetaCrema, Trazo } from './PiezasDesignReservas'
 import { Etiqueta } from '../../ui/Etiqueta'
+import { abrirAvisoPase } from '../../../lib/avisoPase'
+import { estadoDelPaseParaDocumentos } from '../../../lib/pago'
 
 /**
  * (10S7 §3 y §4) LA ENTRADA CON SU BILLETE (`Piezas/Entradas Billete` E1 a E3 y el botón del código de `Entradas Lista` L2). Lo mismo que el billete del vuelo (10S5), para las entradas y el Free Tour:
@@ -119,6 +121,23 @@ export function TarjetaEntradaDesign({
   claveDeAviso?: string
 }) {
   const [ampliado, setAmpliado] = useState(false)
+  // (V64 §2) [Cambiar] de la línea naranja: subir otra vez (el mismo selector de archivos de siempre) o escribir los datos.
+  const otroArchivo = useRef<HTMLInputElement>(null)
+  const subirOtra = async (archivo: File | undefined) => {
+    if (!archivo) return
+    try {
+      const leida = await leerEntrada(archivo, { anioPorDefecto: año })
+      if (!leida.aviso && (leida.fuentes.length > 0 || leida.codigo)) onLeida(leida)
+    } catch {
+      // Sin lectura no cambia nada: la entrada se queda como estaba.
+    } finally {
+      if (otroArchivo.current) otroArchivo.current.value = ''
+    }
+  }
+  const pedirOtra = () => {
+    if (estadoDelPaseParaDocumentos() === 'sin') abrirAvisoPase('documento_entrada', {})
+    else otroArchivo.current?.click()
+  }
   const conCodigo = entradaConCodigo(billete)
   const localizador = billete?.localizador ? billete.localizador.toUpperCase() : null
   const hayFilas = gente.length > 0 || Boolean(precio) || Boolean(localizador)
@@ -165,7 +184,8 @@ export function TarjetaEntradaDesign({
         {!hayFilas && <span className="text-[13px] text-text/55">Para quién es y cuánto ha costado.</span>}
       </SeccionDatos>
       <div data-entrada-billete={billete && (billete.localizador || conCodigo) ? 'con-billete' : 'sin-billete'} className="flex flex-col gap-3">
-        <AvisoDeDocumentoDeReserva clave={claveDeAviso} />
+        <input ref={otroArchivo} type="file" accept="application/pdf,image/*" className="hidden" data-entrada-archivo="cambiar" onChange={(e) => void subirOtra(e.target.files?.[0])} />
+        <AvisoDeDocumentoDeReserva clave={claveDeAviso} documento="documento_entrada" onSubir={pedirOtra} onEscribir={onLapizDatos} />
         {conCodigo && billete && (
           <button type="button" onClick={() => setAmpliado(true)} data-entrada-codigo-pequeno className="flex w-full items-center gap-3.5 text-left">
             <span className="rounded-xl bg-white p-1.5" style={{ border: '1px solid rgba(28,34,48,.14)' }}>

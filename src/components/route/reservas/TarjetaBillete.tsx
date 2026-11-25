@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useState } from 'react'
 import { ICONOS } from '../../../lib/iconos'
 import { createPortal } from 'react-dom'
 import type { LegState } from '../../../lib/reservasLegs'
@@ -7,6 +7,9 @@ import type { BilleteGuardado, CodigoDelBillete } from '../../../store/useBillet
 import { Icono } from '../../ui/Icono'
 import { iconoDeMedio, INK } from './BloqueReservas'
 import { BotonAnadirDocumento, LineaNaranjaDeDocumento, IconoDeDocumento, LapizDeReserva, PapeleraRoja, claveDocumentoDeMedio } from './BotonesDeReserva'
+import { CajaDeDato } from './PiezasDesignReservas'
+import { DORADO } from '../../ui/botonesOro'
+import { puntoCorto } from '../../../lib/arrivalReturn'
 
 /**
  * LA MITAD DEL VUELO (O DEL TREN…) EN RESERVAS, con su billete (Tanda 10S5 §4; 10S8 §3, `Piezas/Billete Reservas` B1b a B3). Todo lo del billete es de esta persona (se guarda en su móvil y se ve sin internet). Por bloques:
@@ -15,18 +18,7 @@ import { BotonAnadirDocumento, LineaNaranjaDeDocumento, IconoDeDocumento, LapizD
  *   3. El código en pequeño con «Toca para ampliar»; o, sin él, [Añadir tarjeta de embarque] (con el candado sin pase). Sin duración calculada, sin «Desde el PDF…» y sin «Cambiar los datos».
  *   4. Abajo a la derecha, la papelera roja que quita ese lado.
  */
-const FILA: CSSProperties = { display: 'flex', alignItems: 'center', gap: 8, font: "600 13.5px 'Geist'", minWidth: 0 }
 const PUNTEADA = '1px dotted rgba(28,34,48,.28)'
-
-function IconoDeFila({ children }: { children: ReactNode }) {
-  return (
-    <span aria-hidden="true" style={{ width: 30, height: 30, flex: 'none', borderRadius: '50%', background: '#F3E3B2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6E5018" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        {children}
-      </svg>
-    </span>
-  )
-}
 
 /** Los dibujos de las filas, los del diseño (avión, reloj, terminal, asiento, tren, billete). */
 const DIBUJO = {
@@ -59,6 +51,61 @@ export function filasDelBillete(leg: Pick<LegState, 'mode' | 'codigo'>, billete:
   if (billete?.asiento) filas.push({ clave: 'asiento', texto: /^asiento/i.test(billete.asiento) ? billete.asiento : `Asiento ${billete.asiento}`, dibujo: 'asiento' })
   if (billete?.localizador) filas.push({ clave: 'localizador', texto: `Localizador ${billete.localizador.toUpperCase()}`, dibujo: 'billete' })
   return filas
+}
+
+/**
+ * (V64 §3; Design «Billete Datos» B1-B3) LAS CAJAS DE «DATOS DEL VUELO» (o del tren…): SEIS cajas en TRES filas de dos: COMPAÑÍA / VUELO, TERMINAL / ASIENTO, DURACIÓN / LOCALIZADOR (tren: COMPAÑÍA / TREN, ESTACIÓN / ASIENTO, DURACIÓN / LOCALIZADOR).
+ * Una caja SIN DATO no sale y las demás se recolocan sin huecos (B2). La duración es la de las horas reales (la calcula quien llama; sin tarjeta no sale). Solo los datos que haya; nunca uno inventado.
+ */
+export interface CajaDelBillete {
+  clave: string
+  rotulo: string
+  valor: string
+  /** El trazo del icono (los de Design). */
+  d: string
+}
+const D_CAJAS = {
+  compania: 'M4 8h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM9 8V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 13h18',
+  vuelo: 'M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z',
+  tren: 'M7 3h10a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3zM4 11h16M8 21l2-3M16 21l-2-3M8.5 14.5h.01M15.5 14.5h.01',
+  terminal: 'M4 21V9l8-5 8 5v12M9 21v-7h6v7',
+  estacion: 'M12 21s-6-5.5-6-10a6 6 0 0 1 12 0c0 4.5-6 10-6 10zM12 8.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z',
+  asiento: 'M7 4h6a2 2 0 0 1 2 2v7H7zM15 13h3a2 2 0 0 1 2 2v3H9M9 18v3M18 18v3',
+  duracion: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2',
+  localizador: 'M3 7h18v10H3zM9 7v10M13 10h4M13 14h3',
+}
+export function cajasDelBillete(leg: Pick<LegState, 'kind' | 'mode' | 'codigo' | 'compania' | 'otroPunto' | 'point'>, billete: BilleteGuardado | null, duracion: string | null): CajaDelBillete[] {
+  const avion = leg.mode === 'avion'
+  const conCoche = leg.mode === 'tren' || leg.mode === 'bus'
+  const esIda = leg.kind === 'arrival'
+  const cajas: CajaDelBillete[] = []
+  const pon = (clave: string, rotulo: string, valor: string | null | undefined, d: string) => {
+    const v = (valor ?? '').trim()
+    if (v) cajas.push({ clave, rotulo, valor: v, d })
+  }
+  pon('compania', leg.mode === 'ferry' ? 'NAVIERA' : 'COMPAÑÍA', leg.compania, D_CAJAS.compania)
+  pon('numero', avion ? 'VUELO' : leg.mode === 'tren' ? 'TREN' : leg.mode === 'bus' ? 'AUTOBÚS' : 'BARCO', leg.codigo?.toUpperCase(), avion ? D_CAJAS.vuelo : D_CAJAS.tren)
+  // El lado por donde se sale: fuera en la ida (el otro punto) y Roma en la vuelta (el punto elegido). Entre paréntesis, «Barcelona (El Prat)» → «El Prat».
+  const lugarDeSalida = esIda ? (leg.otroPunto ?? '') : leg.point ? puntoCorto(leg.point) : ''
+  if (avion) {
+    const t = (billete?.terminal ?? '').trim().replace(/^terminal\s*/i, '')
+    const aeropuerto = esIda ? (/\(([^)]+)\)/.exec(lugarDeSalida)?.[1] ?? '') : lugarDeSalida
+    pon('terminal', 'TERMINAL', t ? `${/^[0-9A-Za-z]{1,2}$/.test(t) ? `T${t.toUpperCase()}` : t}${aeropuerto ? ` · ${aeropuerto}` : ''}` : null, D_CAJAS.terminal)
+  } else if (lugarDeSalida) {
+    pon('estacion', leg.mode === 'ferry' ? 'PUERTO' : 'ESTACIÓN', lugarDeSalida, D_CAJAS.estacion)
+  }
+  const coche = conCoche ? (billete?.coche ?? '').trim().replace(/^coche\s*/i, '') : ''
+  const asiento = (billete?.asiento ?? '').trim().replace(/^asiento\s*/i, '')
+  pon('asiento', 'ASIENTO', [coche ? `Coche ${coche}` : '', asiento].filter(Boolean).join(' · '), D_CAJAS.asiento)
+  pon('duracion', 'DURACIÓN', duracion, D_CAJAS.duracion)
+  pon('localizador', 'LOCALIZADOR', billete?.localizador?.toUpperCase(), D_CAJAS.localizador)
+  return cajas
+}
+
+/** (V64 §3) El rótulo y la frase del bloque oscuro del documento: «TARJETA DE EMBARQUE · Enséñala en la puerta»; tren «TU BILLETE · Enséñalo al revisor»; ferry «Enséñalo al embarcar»; autobús «Enséñalo al conductor». */
+export function textoDelDocumento(mode: LegState['mode']): { rotulo: string; frase: string } {
+  if (mode === 'avion') return { rotulo: 'TARJETA DE EMBARQUE', frase: 'Enséñala en la puerta' }
+  return { rotulo: 'TU BILLETE', frase: mode === 'ferry' ? 'Enséñalo al embarcar' : mode === 'bus' ? 'Enséñalo al conductor' : 'Enséñalo al revisor' }
 }
 
 /** El código en una imagen (el recorte guardado). Sin imagen, nada. */
@@ -143,8 +190,9 @@ export function TarjetaBillete({
   const conCodigo = Boolean(billete?.codigo && (billete.codigo.dibujo || billete.codigo.imagen))
   // (10S8, B1b) Sin tarjeta ni datos guardados: solo la hora grande y el trayecto (ni fila de datos ni su lápiz). Con datos (o con la tarjeta): sus filas y el lápiz de «Datos del vuelo».
   // (10S9b §1) Lo escrito a mano en «Datos del vuelo» (localizador, terminal, asiento, coche) ya cuenta igual que lo leído del documento: guarda la misma fila privada y abre el bloque con su lápiz. El número del vuelo solo NO lo abre (viene también de la hoja del vuelo, «Ref. vuelo»).
-  const conDatos = conCodigo || Boolean(leg.codigo) || Boolean(billete && (billete.localizador || billete.terminal || billete.asiento || billete.coche))
-  const filas = conDatos ? filasDelBillete(leg, billete, conCodigo ? duracion : null) : []
+  const conDatos = conCodigo || Boolean(leg.codigo) || Boolean(leg.compania) || Boolean(billete && (billete.localizador || billete.terminal || billete.asiento || billete.coche))
+  const cajas = conDatos ? cajasDelBillete(leg, billete, conCodigo ? duracion : null) : []
+  const doc = textoDelDocumento(leg.mode)
   const botonTexto = leg.mode === 'avion' ? 'Añade tu tarjeta de embarque' : 'Añade tu billete'
   const iconoMedio = iconoDeMedio(leg.mode)
   const horas = horaFuera ? (esIda ? [horaFuera, leg.time] : [leg.time, horaFuera]) : null
@@ -177,42 +225,55 @@ export function TarjetaBillete({
         {trayecto}
       </span>
 
-      {filas.length > 0 && (
-        <div className="flex items-start gap-1" data-billete-datos style={{ borderTop: PUNTEADA, paddingTop: 12 }}>
-          <div className="min-w-0 flex-1" data-billete-filas style={{ display: 'grid', gridTemplateColumns: 'minmax(0,max-content) minmax(0,1fr)', columnGap: 8, rowGap: 12 }}>
-            {filas.map((f) => (
-              <span key={f.clave} style={f.clave === 'localizador' ? { ...FILA, gridColumn: '1 / -1' } : FILA} data-billete-fila={f.clave}>
-                <IconoDeFila>{DIBUJO[f.dibujo]}</IconoDeFila>
-                <span className="min-w-0" style={{ whiteSpace: f.clave === 'numero' ? 'nowrap' : undefined, overflowWrap: 'anywhere' }}>{f.texto}</span>
+      {cajas.length > 0 && (
+        <div className="flex flex-col gap-2" data-billete-datos style={{ borderTop: PUNTEADA, paddingTop: 12 }}>
+          <div className="flex items-center justify-between">
+            <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.16em', color: '#6F4E37' }}>DATOS DEL {leg.mode === 'avion' ? 'VUELO' : leg.mode === 'tren' ? 'TREN' : leg.mode === 'bus' ? 'AUTOBÚS' : 'FERRY'}</span>
+            {onDatos && (
+              <span className="-my-1.5 -mr-2.5 flex-none">
+                <LapizDeReserva onClick={onDatos} etiqueta={`Cambiar los datos del ${leg.mode === 'avion' ? 'vuelo' : 'billete'}`} datos="datos-billete" atributos={{ 'data-billete-cambiar-datos': '' }} />
+              </span>
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-2" data-billete-filas>
+            {cajas.map((c) => (
+              <span key={c.clave} data-billete-fila={c.clave} className="min-w-0">
+                <CajaDeDato rotulo={c.rotulo} icono={{ d: c.d }} datos={c.clave}>
+                  {c.valor}
+                </CajaDeDato>
               </span>
             ))}
           </div>
-          {onDatos && (
-            <span className="-mr-2.5 -mt-1.5 flex-none">
-              <LapizDeReserva onClick={onDatos} etiqueta={`Cambiar los datos del ${leg.mode === 'avion' ? 'vuelo' : 'billete'}`} datos="datos-billete" atributos={{ 'data-billete-cambiar-datos': '' }} />
-            </span>
-          )}
         </div>
       )}
 
-      {avisoDeFecha && <LineaNaranjaDeDocumento texto={avisoDeFecha.texto} onCorrecta={avisoDeFecha.onCorrecta} />}
+      {avisoDeFecha && <LineaNaranjaDeDocumento texto={avisoDeFecha.texto} onCorrecta={avisoDeFecha.onCorrecta} clave={claveDocumentoDeMedio(leg.mode)} onSubir={onAnadirTarjeta} onEscribir={onDatos} />}
       {conCodigo && billete?.codigo ? (
-        <button type="button" onClick={onAmpliar} data-billete-codigo-pequeno className="flex w-full items-center gap-3.5 text-left" style={{ borderTop: PUNTEADA, paddingTop: 12 }}>
-          <span className="rounded-xl bg-white p-1.5" style={{ border: '1px solid rgba(28,34,48,.14)' }}>
-            <CodigoDibujado codigo={billete.codigo} tam={72} />
-          </span>
-          <span className="flex flex-col items-start gap-1.5" style={{ font: "600 13px 'Geist'", color: INK }}>
-            Toca para ampliar
-            <span aria-hidden="true" className="flex h-[34px] w-[34px] items-center justify-center rounded-full" style={{ background: '#F3E3B2' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E5018" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7" />
-              </svg>
+        // (V64 §3) El bloque oscuro del documento: la línea de corte con sus muescas, el código en su cuadro blanco, «TARJETA DE EMBARQUE · Enséñala en la puerta» y [Ampliar].
+        <>
+          <div aria-hidden="true" className="relative -mx-4 h-0" style={{ borderTop: '1.5px dashed rgba(181,138,46,.6)' }}>
+            <span className="absolute -left-[9px] -top-[10px] h-[18px] w-[18px] rounded-full" style={{ background: '#FFFDF8' }} />
+            <span className="absolute -right-[9px] -top-[10px] h-[18px] w-[18px] rounded-full" style={{ background: '#FFFDF8' }} />
+          </div>
+          <div data-billete-codigo-pequeno className="flex items-center gap-3.5 rounded-[20px] p-3.5" style={{ background: 'linear-gradient(160deg,#232A3C,#1C2230)', boxShadow: '0 16px 24px -18px rgba(28,34,48,.9)' }}>
+            <button type="button" onClick={onAmpliar} aria-label="Ampliar el código" data-billete-codigo-qr className="flex-none rounded-[14px] border-none bg-white p-2">
+              <CodigoDibujado codigo={billete.codigo} tam={92} />
+            </button>
+            <span className="flex min-w-0 flex-1 flex-col gap-2">
+              <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.16em', color: '#F3D88F' }}>{doc.rotulo}</span>
+              <span style={{ font: "400 21px/1.15 'Instrument Serif',serif", color: '#FFFDF8' }}>{doc.frase}</span>
+              <button type="button" onClick={onAmpliar} data-billete-ampliar className="flex h-[34px] items-center gap-[7px] self-start rounded-xl border-none px-[13px] text-[12.5px] font-bold" style={{ background: DORADO, color: '#4A3510' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4A3510" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7" />
+                </svg>
+                Ampliar
+              </button>
             </span>
-          </span>
-        </button>
+          </div>
+        </>
       ) : (
         // (V53 §4) [+ Añade tu tarjeta de embarque] ocupa su fila; la papelera va ABAJO A LA DERECHA, como en todas las tarjetas de RESERVAS (ya no en la fila del botón).
-        <div style={{ borderTop: filas.length === 0 ? PUNTEADA : undefined, paddingTop: filas.length === 0 ? 12 : 0 }}>
+        <div style={{ borderTop: cajas.length === 0 ? PUNTEADA : undefined, paddingTop: cajas.length === 0 ? 12 : 0 }}>
           <BotonAnadirDocumento estilo="borde" texto={botonTexto} clave={claveDocumentoDeMedio(leg.mode)} onAnadir={onAnadirTarjeta} datos={`vuelo-${leg.kind}`} aMano={onDatos} />
         </div>
       )}

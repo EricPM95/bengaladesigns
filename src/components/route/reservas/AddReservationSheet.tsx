@@ -653,11 +653,13 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
           {view === 'hora' ? (
             <div>
               {!soloDatos && <p className="max-w-[calc(100%-2.5rem)] text-text/50" style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
-                {isExcursion ? (target.paso2 ? 'Añadir una excursión · 2 de 2' : 'Excursión · elige día y hora') : esLibre ? 'Reserva · elige día y hora' : isFreeTour ? 'Free Tour · elige día y hora' : 'Entrada · elige día y hora'}
+                {lectura ? target.name : isExcursion ? (target.paso2 ? 'Añadir una excursión · 2 de 2' : 'Excursión · elige día y hora') : esLibre ? 'Reserva · elige día y hora' : isFreeTour ? 'Free Tour · elige día y hora' : 'Entrada · elige día y hora'}
               </p>}
               <h2 id="add-reservation-heading" className={soloDatos ? "mt-1.5 font-display text-[30px] leading-none text-text" : "mt-1.5 font-display text-[28px] leading-[1.05] text-text"} data-hoja-titulo={soloDatos ? "datos-entrada" : undefined}>
-                {soloDatos ? "Datos de la entrada" : target.name}
+                {lectura && !soloDatos ? "Revisa los datos" : soloDatos ? "Datos de la entrada" : target.name}
               </h2>
+              {/* (V64 §1) Tras subir el documento, siempre «Revisa los datos»: los campos ya rellenos con lo leído y [Guardar]. */}
+              {lectura && !soloDatos && <p className="mt-2 text-[14px] font-medium leading-[1.4] text-text/75" data-reserva-leida>Hemos leído tu {isExcursion ? 'reserva' : 'entrada'}. Revisa los datos y cámbialos si hace falta</p>}
               {/* (V49) Las de día entero: solo caben en un día completo del viaje. */}
               {isExcursion && !soloDatos && target.excursion && !/medio/i.test(target.excursion.durationLabel ?? "") && (target.excursion.durationHours ?? 8) > 5 && (
                 <p data-excursion-dia-entero className="mt-1.5 text-[13.5px] leading-[1.35] text-text/65">Es una excursión de día entero: solo se puede hacer un día completo del viaje.</p>

@@ -16,6 +16,7 @@ import { ImagenDeLlegada, type TipoDeLlegada } from '../../../ui/ImagenDeLlegada
 import { HojaDeHora } from '../../../ui/HojaDeHora'
 import { BOTON_CLARO, BOTON_ORO } from '../../../ui/botonesOro'
 import { IconoDeDocumento } from '../../reservas/BotonesDeReserva'
+import { AnadirDocumentoDeHoy } from '../../reservas/FlujoDelBillete'
 import { CodigoPantallaCompleta } from '../../reservas/TarjetaBillete'
 import { useAlojamientoDelViaje } from '../../alojamiento/useAlojamientoDelViaje'
 import type { MitadDeHoy } from '../llegadaVuelta'
@@ -84,6 +85,8 @@ export function TarjetaDeLlegada({ route, day, dateIso, mitad, paradas, llegadoP
   const [llegadoAMano, setLlegadoAMano] = useState(() => leerLlegado(route, dateIso))
   const [hoja, setHoja] = useState(false)
   const [ampliado, setAmpliado] = useState(false)
+  // (V64 §1) El QR gris abre la misma hoja de añadir un documento de RESERVAS (subir foto o archivo / escribir los datos); solo se monta al tocar.
+  const [vezAnadir, setVezAnadir] = useState(0)
   const ahoraMin = useAhoraMin()
   const alojamiento = useAlojamientoDelViaje()
   const coche = useRouteStore((s) => s.rentalVehicleBooking)
@@ -178,7 +181,7 @@ export function TarjetaDeLlegada({ route, day, dateIso, mitad, paradas, llegadoP
           </span>
           {billete && (
             <span className="absolute right-1 top-1">
-              <IconoDeDocumento hay={hayQr} tipo="qr" onAbrir={() => setAmpliado(true)} onAnadir={() => useRouteStore.getState().setMode('bookings')} etiqueta={hayQr ? 'Ver el código en grande' : `Añade tu ${modo === 'avion' ? 'tarjeta de embarque' : 'billete'}`} datos="billete-llegada" />
+              <IconoDeDocumento hay={hayQr} tipo="qr" onAbrir={() => setAmpliado(true)} onAnadir={() => setVezAnadir((v) => v + 1)} etiqueta={hayQr ? 'Ver el código en grande' : `Añade tu ${modo === 'avion' ? 'tarjeta de embarque' : 'billete'}`} datos="billete-llegada" />
             </span>
           )}
           <span data-hoy-llegada-titulo className="absolute inset-x-[18px] bottom-3.5 text-left" style={NOMBRE_SOBRE_FOTO}>
@@ -276,6 +279,7 @@ export function TarjetaDeLlegada({ route, day, dateIso, mitad, paradas, llegadoP
           onCerrar={() => setHoja(false)}
         />
       )}
+      {vezAnadir > 0 && <AnadirDocumentoDeHoy key={vezAnadir} route={route} kind="arrival" mode={modo} />}
       {ampliado && guardado?.codigo && (
         <CodigoPantallaCompleta
           codigo={guardado.codigo}

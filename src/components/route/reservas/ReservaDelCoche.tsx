@@ -176,10 +176,10 @@ export function HojaReservaCoche({
       }
     >
       <h2 id="hoja-reserva-coche" className="max-w-[calc(100%-3rem)] font-display text-[28px] leading-[1.05] text-text" data-hoja-titulo="reserva-coche">
-        Tu reserva del coche
+        {leidos?.leida ? 'Revisa los datos' : 'Tu reserva del coche'}
       </h2>
       <p className="mt-2 text-[13px] leading-[1.35] text-text/60" data-reserva-coche-aviso>
-        {leidos == null ? 'Escribe lo que sepas; lo demás se puede dejar vacío.' : leidos.leida ? 'Esto es lo que hemos leído. Cámbialo si algo no cuadra.' : 'No hemos podido leer la reserva. Puedes escribir los datos a mano.'}
+        {leidos == null ? 'Escribe lo que sepas; lo demás se puede dejar vacío.' : leidos.leida ? 'Hemos leído tu reserva. Revisa los datos y cámbialos si hace falta' : 'No hemos podido leer la reserva. Escribe los datos tú: no hemos podido comprobar nada del documento.'}
       </p>
       <div className="mt-5 flex flex-col gap-3" data-reserva-coche-campos>
         {cuadro('compania', 'Compañía', 'Hertz, Cicar, Goldcar…', { ancho: true, max: 60 })}

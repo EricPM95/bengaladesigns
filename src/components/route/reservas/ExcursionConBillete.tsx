@@ -2,7 +2,8 @@ import { CampoDeHora } from '../../ui/HojaDeHora'
 import { useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { leerExcursion, type DatosExcursionLeida } from '../../../lib/billeteLeer'
 import { excursionConCodigo, type BilleteDeExcursion, type CodigoDelBillete } from '../../../store/useBilleteStore'
-import { usePagoActivo } from '../../../lib/pago'
+import { estadoDelPaseParaDocumentos, usePagoActivo } from '../../../lib/pago'
+import { abrirAvisoPase } from '../../../lib/avisoPase'
 import type { Persona } from '../../../store/useViajeCompartido'
 import { Candado } from '../../pase/Candado'
 import { CodigoPantallaCompleta, ImagenDelCodigo } from './TarjetaBillete'
@@ -119,6 +120,23 @@ export function TarjetaExcursionDesign({
   claveDeAviso?: string
 }) {
   const [ampliado, setAmpliado] = useState(false)
+  // (V64 §2) [Cambiar] de la línea naranja: subir otra vez (el mismo selector de archivos de siempre) o escribir los datos.
+  const otroArchivo = useRef<HTMLInputElement>(null)
+  const subirOtra = async (archivo: File | undefined) => {
+    if (!archivo) return
+    try {
+      const leida = await leerExcursion(archivo, { anioPorDefecto: año })
+      if (!leida.aviso && (leida.fuentes.length > 0 || leida.codigo)) onLeida(leida)
+    } catch {
+      // Sin lectura no cambia nada: la reserva se queda como estaba.
+    } finally {
+      if (otroArchivo.current) otroArchivo.current.value = ''
+    }
+  }
+  const pedirOtra = () => {
+    if (estadoDelPaseParaDocumentos() === 'sin') abrirAvisoPase('documento_excursion', {})
+    else otroArchivo.current?.click()
+  }
   const conCodigo = excursionConCodigo(billete)
   const localizador = billete?.localizador ? billete.localizador.toUpperCase() : null
   // (10S9b §1) Lo escrito a mano cuenta como datos: el localizador o las personas (igual que si vinieran del documento) abren el bloque con su lápiz.
@@ -182,7 +200,8 @@ export function TarjetaExcursionDesign({
         {!hayFilas && <span className="text-[13px] text-text/55">Para quién es, cuánto ha costado y dónde es el punto de encuentro.</span>}
       </SeccionDatos>
       <div data-excursion-billete={billete && (billete.localizador || conCodigo) ? 'con-billete' : 'sin-billete'} className="flex flex-col gap-3">
-        <AvisoDeDocumentoDeReserva clave={claveDeAviso} />
+        <input ref={otroArchivo} type="file" accept="application/pdf,image/*" className="hidden" data-excursion-archivo="cambiar" onChange={(e) => void subirOtra(e.target.files?.[0])} />
+        <AvisoDeDocumentoDeReserva clave={claveDeAviso} documento="documento_excursion" onSubir={pedirOtra} onEscribir={onLapizDatos} />
         {conCodigo && billete && (
           <button type="button" onClick={() => setAmpliado(true)} data-excursion-codigo-pequeno className="flex w-full items-center gap-3.5 text-left">
             <span className="rounded-xl bg-white p-1.5" style={{ border: '1px solid rgba(28,34,48,.14)' }}>
@@ -278,11 +297,11 @@ export function HojaDatosDeLaExcursion({ billete, puntoActual, horaActual, leida
       }
     >
       <h2 id="hoja-datos-excursion" className="max-w-[calc(100%-3rem)] font-display text-[30px] leading-[1.05] text-text" data-hoja-titulo="datos-excursion">
-        Datos de la excursión
+        {leida ? 'Revisa los datos' : 'Datos de la excursión'}
       </h2>
       {leida && (
-        <p className="mt-2 text-[13px] leading-[1.35] text-text/60" data-excursion-aviso-leida>
-          Esto es lo que hemos leído. Cámbialo si algo no cuadra.
+        <p className="mt-2 text-[14px] font-medium leading-[1.4] text-text/75" data-excursion-aviso-leida>
+          Hemos leído tu reserva. Revisa los datos y cámbialos si hace falta
         </p>
       )}
       <div className="mt-5 flex flex-col gap-3.5" data-excursion-campos>

@@ -111,6 +111,12 @@ const COMPANIAS: Record<string, string> = {
   AR: 'Aerolíneas Argentinas', AM: 'Aeroméxico', IT: 'Tigerair', KM: 'Air Malta', A3: 'Aegean', JU: 'Air Serbia', RO: 'Tarom', OU: 'Croatia Airlines', FI: 'Icelandair', BT: 'airBaltic',
 }
 
+/** (V64 §1) La compañía por el código del vuelo, sin leer nada ni llamar a nadie: «VY 3063» → «Vueling». null si el código no es de un vuelo o la compañía no está en la lista. */
+export function companiaDeCodigoDeVuelo(codigo: string | null | undefined): string | null {
+  const m = (codigo ?? '').trim().toUpperCase().match(/^([A-Z0-9]{2})\s*\d{1,4}[A-Z]?$/)
+  return m ? (COMPANIAS[m[1]] ?? null) : null
+}
+
 /** Lo que dice un código BCBP, sin el nombre del pasajero (no se usa para nada). */
 export interface LecturaBCBP {
   localizador: string | null

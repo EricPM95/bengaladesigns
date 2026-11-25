@@ -64,7 +64,7 @@ export function diaCorto(iso: string, conMes = false): string {
 
 /** «Jueves 26 → Domingo 29 · 3 noches» (con lo que haya; con el mes si las dos fechas son de meses distintos). Null si no hay ni fechas ni noches. */
 export function textoFechasReserva(r: Pick<ReservaAlojamiento, 'entrada' | 'salida' | 'noches'>): string | null {
-  const noches = r.noches ?? nochesEntre(r.entrada, r.salida)
+  const noches = nochesEntre(r.entrada, r.salida) ?? r.noches // (V64) siempre de las fechas
   const mesesDistintos = Boolean(r.entrada && r.salida) && (r.entrada as string).slice(0, 7) !== (r.salida as string).slice(0, 7)
   const dias = r.entrada && r.salida ? `${diaCorto(r.entrada, mesesDistintos)} → ${diaCorto(r.salida, mesesDistintos)}` : r.entrada ? `Entrada ${diaCorto(r.entrada, true)}` : r.salida ? `Salida ${diaCorto(r.salida, true)}` : null
   if (dias && noches) return `${dias} · ${nochesTexto(noches)}`

@@ -7,7 +7,7 @@ import { quitarConDeshacer } from '../../../store/useAddFlowStore'
 import { useAlojamientoUi } from '../../../store/useAlojamientoUi'
 import { estanciasDelViaje, precioDeAlojamiento, zonaDeAlojamientoElegida } from '../../../lib/tuAlojamiento'
 import { CabeceraBloque, ICONOS } from './BloqueReservas'
-import { BloqueClaro, CajaDia, CajaNoches, FilaIcono, ParaQuienDesign, SeccionDatos, TarjetaCrema } from './PiezasDesignReservas'
+import { BloqueClaro, CajaDeDato, CajaDia, CajaNoches, FilaIcono, ParaQuienDesign, RejillaDeDatos, TarjetaCrema } from './PiezasDesignReservas'
 import { IconoDeDocumento, LapizDeReserva, PapeleraRoja } from './BotonesDeReserva'
 import { fechaCorta } from '../../../lib/nombreDeDia'
 import { Icono } from '../../ui/Icono'
@@ -21,9 +21,10 @@ import { TimeListWheel } from '../../ui/TimeListWheel'
 import type { EnCambioDeVuelo } from '../../../lib/cambioDeVuelo'
 import { BotonComoLlegarAlojamiento } from '../alojamiento/BotonComoLlegarAlojamiento'
 import { ReservaDelAlojamiento } from './ReservaDelAlojamiento'
+import { revisarLaZonaDelAlojamiento } from '../../../lib/zonaDelAlojamiento'
 import { AvisoDeDocumentoDeReserva } from './BotonesDeReserva'
 import { MapaDelAlojamiento, MapaPequenoDelAlojamiento } from './MapaDelAlojamiento'
-import { reservaConDatos, textoHorasReserva } from '../../../lib/reservaAlojamiento'
+import { nochesEntre, reservaConDatos } from '../../../lib/reservaAlojamiento'
 
 /** La hoja de la zona (Tanda 6v): las zonas del destino en una rueda, como la de la hora, y [Guardar]. */
 export function HojaZona({ zonas, actual, onGuardar, onClose }: { zonas: DestinationExcursions['zonasAlojamiento']; actual: string | null; onGuardar: (id: string) => void; onClose: () => void }) {
@@ -92,7 +93,6 @@ export function AlojamientoReservas({
   const cuentasEntre = useRouteStore((state) => state.route?.cuentasEntre)
   const estancia = estanciasDelViaje(route)[0] ?? null
   const segmentDayId = estancia?.segmentDayId ?? route.days[0]?.id ?? ''
-  const noches = estancia?.noches ?? 0
   const hotel = useRouteStore((state) => state.accommodationSelections[segmentDayId]) ?? null
   const zonas = info.zonasAlojamiento
   const elegida = zonas.find((candidate) => candidate.id === zona) ?? null
@@ -123,13 +123,13 @@ export function AlojamientoReservas({
   // (10S8 §5) Las fechas de la caja de Design: «JUEVES 26 → DOMINGO 29» y «26 – 29 de noviembre». Las de la reserva si las trae; si no, las del viaje.
   const entradaIso = conReserva ? (hotel?.reserva?.entrada ?? rango?.start ?? null) : (rango?.start ?? null)
   const salidaIso = conReserva ? (hotel?.reserva?.salida ?? rango?.end ?? null) : (rango?.end ?? null)
-  const nochesCaja = (conReserva ? hotel?.reserva?.noches : null) ?? noches
+  // (V64 §5) Las noches SIEMPRE de las fechas (del 24 al 27 son 3), nunca de un número escrito aparte ni de la estancia.
+  const nochesCaja = nochesEntre(entradaIso, salidaIso) ?? 0
   const lineaFechas = entradaIso && salidaIso ? { rotulo: `${fechaCorta(entradaIso)} → ${fechaCorta(salidaIso)}`, grande: rangoDeFechas(entradaIso, salidaIso) } : null
   // (V45 §3) «Listo» con el hotel y las fechas, haya documento (la reserva) o no; «Falta» solo si falta el hotel o las fechas. La zona y la reserva ya no lo encienden ni lo apagan.
   const resumenVerde = Boolean(hotel) && Boolean(lineaFechas)
   // La zona nuestra de verdad, sin lo que va entre paréntesis («Centro (Panteón, Trevi, Navona)» → «Zona Centro»).
   const zonaCorta = elegida ? elegida.nombre.replace(/\s*\(.*\)\s*$/, '').trim() : ''
-  const zonaTexto = pago && elegida && zonaCorta ? (/^zona\b/i.test(zonaCorta) ? zonaCorta : `Zona ${zonaCorta}`) : null
   const gestionaAdmin = g.gente.length >= 2
 
   return (
@@ -146,12 +146,10 @@ export function AlojamientoReservas({
             {desplegado && (
               <>
                 <ReservaDelAlojamiento hotel={hotel ?? { name: '', precio: null }} segmentDayId={segmentDayId} nombreMostrado={nombreHotel} conPase={pago} direccionDelViaje={direccion} año={rango?.start ? Number(rango.start.slice(0, 4)) : undefined}>
-                  {({ reserva, localizador, esAdmin, abrirDatos, botonAnadir }) => {
+                  {({ reserva, localizador, esAdmin, abrirDatos, botonAnadir, subirOtra }) => {
                     const dirTexto = reserva?.direccion ?? direccion
-                    // (V45 §3) La dirección, una vez: «Zona Prati» en una línea y la dirección en otra.
-                    const filaDireccion = [zonaTexto, dirTexto].filter(Boolean).join(' · ')
-                    const horas = reserva ? textoHorasReserva(reserva) : null
-                    const hayFilas = (gestionaAdmin && quienes.length > 0) || precio !== null || Boolean(filaDireccion) || Boolean(horas) || Boolean(reserva?.telefono) || Boolean(localizador)
+                    const zonaCajaTexto = pago && elegida && zonaCorta ? zonaCorta : null
+                    const hayCajas = precio !== null || Boolean(zonaCajaTexto) || Boolean(reserva?.horaEntrada) || Boolean(reserva?.horaSalida) || Boolean(reserva?.telefono) || Boolean(localizador)
                     return (
                       <TarjetaCrema datos="aloj">
                         <div className="flex flex-col gap-3" data-alojamiento-caja data-tu-zona={pago && elegida ? '' : undefined} data-hotel-puesto={hotel ? '' : undefined}>
@@ -179,53 +177,62 @@ export function AlojamientoReservas({
                               )}
                             </div>
                           )}
-                          <SeccionDatos datos="aloj" onLapiz={esAdmin && hotel && (reserva || localizador) ? abrirDatos : undefined} etiquetaLapiz="Cambiar los datos de la reserva" sinLineaAbajo={!hayFilas}>
-                            {gestionaAdmin && quienes.length > 0 && (
-                              <span data-en-este-alojamiento>
-                                <ParaQuienDesign gente={quienes} />
-                                <span hidden data-en-este-alojamiento-nombres>
-                                  {nombresQuienes}
-                                </span>
+                          {/* (V64 §5) «DATOS DEL ALOJAMIENTO» del dibujo D5a: cajas en filas de dos (PRECIO / ZONA, ENTRADA / SALIDA, TELÉFONO / LOCALIZADOR); la que no tiene dato no sale y las demás se recolocan. «¿Para quién es?» se queda (V46). */}
+                          {gestionaAdmin && quienes.length > 0 && (
+                            <span data-en-este-alojamiento>
+                              <ParaQuienDesign gente={quienes} />
+                              <span hidden data-en-este-alojamiento-nombres>
+                                {nombresQuienes}
                               </span>
-                            )}
-                            {precio !== null && (
-                              <FilaIcono icono="euro" datos="precio">
-                                <span data-alojamiento-precio>{precioEnVista(precio)}</span>
-                              </FilaIcono>
-                            )}
-                            {zonaTexto && (
-                              <FilaIcono icono="direccion" datos="zona">
-                                <span data-zona-tarjeta>{zonaTexto}</span>
-                              </FilaIcono>
-                            )}
-                            {punto && pago && (
-                              <div data-alojamiento-mapa-tarjeta className="mb-1">
-                                <MapaPequenoDelAlojamiento punto={punto} puedeCambiar={esAdmin} onCambiar={() => setCambiandoPunto(true)} />
-                              </div>
-                            )}
-                            {dirTexto && !(punto && pago && dirTexto === punto.direccion) && (
-                              <FilaIcono icono="direccion" datos="direccion">
-                                <span data-direccion-tarjeta>{dirTexto}</span>
-                              </FilaIcono>
-                            )}
-                            {horas && (
-                              <FilaIcono icono="horas" datos="horas">
-                                {horas}
-                              </FilaIcono>
-                            )}
-                            {reserva?.telefono && (
-                              <FilaIcono icono="telefono" datos="telefono">
-                                {reserva.telefono}
-                              </FilaIcono>
-                            )}
-                            {localizador && (
-                              <FilaIcono icono="entrada" datos="localizador">
-                                Localizador {localizador}
-                              </FilaIcono>
-                            )}
-                            {!hayFilas && <span className="text-[13px] text-text/55">Para quién es y cuánto ha costado.</span>}
-                          </SeccionDatos>
-                          <AvisoDeDocumentoDeReserva clave={`aloj:${segmentDayId}`} />
+                            </span>
+                          )}
+                          {hayCajas ? (
+                            <RejillaDeDatos rotulo="DATOS DEL ALOJAMIENTO" datos="aloj">
+                              {precio !== null && (
+                                <CajaDeDato rotulo="PRECIO" icono={{ eur: true }} datos="precio">
+                                  <span data-alojamiento-precio>{precioEnVista(precio)}</span>
+                                </CajaDeDato>
+                              )}
+                              {zonaCajaTexto && (
+                                <CajaDeDato rotulo="ZONA" icono={{ d: D_ZONA }} datos="zona">
+                                  <span data-zona-tarjeta>{zonaCajaTexto}</span>
+                                </CajaDeDato>
+                              )}
+                              {reserva?.horaEntrada && (
+                                <CajaDeDato rotulo="ENTRADA" icono={{ d: D_ENTRADA }} datos="hora-entrada">
+                                  Desde las {reserva.horaEntrada}
+                                </CajaDeDato>
+                              )}
+                              {reserva?.horaSalida && (
+                                <CajaDeDato rotulo="SALIDA" icono={{ d: D_SALIDA }} datos="hora-salida">
+                                  Hasta las {reserva.horaSalida}
+                                </CajaDeDato>
+                              )}
+                              {reserva?.telefono && (
+                                <CajaDeDato rotulo="TELÉFONO" icono={{ d: D_TELEFONO }} datos="telefono" onClick={() => llamar(reserva.telefono as string)}>
+                                  {reserva.telefono}
+                                </CajaDeDato>
+                              )}
+                              {localizador && (
+                                <CajaDeDato rotulo="LOCALIZADOR" icono={{ d: D_LOCALIZADOR }} datos="localizador">
+                                  {localizador}
+                                </CajaDeDato>
+                              )}
+                            </RejillaDeDatos>
+                          ) : (
+                            !punto && !dirTexto && <span className="text-[13px] text-text/55">Para quién es y cuánto ha costado.</span>
+                          )}
+                          {punto && pago && (
+                            <div data-alojamiento-mapa-tarjeta>
+                              <MapaPequenoDelAlojamiento punto={punto} puedeCambiar={esAdmin} onCambiar={() => setCambiandoPunto(true)} />
+                            </div>
+                          )}
+                          {dirTexto && !(punto && pago) && (
+                            <FilaIcono icono="direccion" datos="direccion">
+                              <span data-direccion-tarjeta>{dirTexto}</span>
+                            </FilaIcono>
+                          )}
+                          <AvisoDeDocumentoDeReserva clave={`aloj:${segmentDayId}`} documento="documento_alojamiento" onSubir={subirOtra} onEscribir={abrirDatos} />
                           {pago && (elegida || direccion) && <BotonComoLlegarAlojamiento direccion={direccion} variante="design" />}
                           {hotel && botonAnadir}
                           {hotel && <PapeleraRoja etiqueta="Quitar el alojamiento" datos="alojamiento" onClick={() => quitarConDeshacer('Alojamiento quitado del viaje', () => setHotel(segmentDayId, null))} />}
@@ -242,6 +249,8 @@ export function AlojamientoReservas({
                     onElegido={(p) => {
                       setPunto(p)
                       setDireccionRuta(p.direccion)
+                      // (V64 §6) ¿Cae en otra zona que la elegida?
+                      void revisarLaZonaDelAlojamiento({ direccion: p.direccion, punto: p })
                       setCambiandoPunto(false)
                     }}
                   />
@@ -283,6 +292,17 @@ export function AlojamientoReservas({
       </BloqueClaro>
     </>
   )
+}
+
+// (V64) Los trazos de las cajas de dato (los de Design D5a).
+const D_ZONA = 'M12 21s-6-5.5-6-10a6 6 0 0 1 12 0c0 4.5-6 10-6 10zM12 8.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z'
+const D_ENTRADA = 'M15 3h4a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-4M10 8l-4 4 4 4M6 12h10'
+const D_SALIDA = 'M9 21H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h4M14 8l4 4-4 4M18 12H8'
+const D_TELEFONO = 'M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2'
+const D_LOCALIZADOR = 'M3 9a2 2 0 0 0 0 6v3a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-3a2 2 0 0 1 0-6V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1zM14 5v14'
+/** Tocar el teléfono llama (el móvil abre su marcador). */
+const llamar = (telefono: string) => {
+  window.location.href = `tel:${telefono.replace(/[^\d+]/g, '')}`
 }
 
 /** (10S8 §5) «26 – 29 de noviembre» (mismo mes) o «28 de octubre – 2 de noviembre». */

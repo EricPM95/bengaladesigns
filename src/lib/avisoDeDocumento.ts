@@ -9,11 +9,17 @@ const K = (viaje: string | null, clave: string) => `jutrip:aviso-documento:${via
 const useCambios = create<{ v: number }>(() => ({ v: 0 }))
 const avisar = () => useCambios.setState((s) => ({ v: s.v + 1 }))
 
+/**
+ * (V64 §2) El final de TODAS las líneas naranjas: «… Si no es la buena, súbela otra vez o cambia los datos a mano.» (antes: «Revisa que sea la buena»). Se aplica al leer, así también a los avisos ya guardados en el móvil.
+ */
+export const FINAL_DEL_AVISO = 'Si no es la buena, súbela otra vez o cambia los datos a mano.'
+const conFinalNuevo = (texto: string | null): string | null => (texto ? texto.replace(/\.?\s*Revisa que sea la buena\.?\s*$/i, `. ${FINAL_DEL_AVISO}`) : texto)
+
 export function leerAvisoDeDocumento(viaje: string | null, clave: string): string | null {
   try {
-    return window.localStorage.getItem(K(viaje, clave))
+    return conFinalNuevo(window.localStorage.getItem(K(viaje, clave)))
   } catch {
-    return memoria.get(K(viaje, clave)) ?? null
+    return conFinalNuevo(memoria.get(K(viaje, clave)) ?? null)
   }
 }
 const memoria = new Map<string, string>()

@@ -172,3 +172,53 @@ export function CajaNoches({ noches }: { noches: number }) {
     </div>
   )
 }
+
+/**
+ * (V64) La CAJA DE UN DATO de Design («PRECIO 250 €», «ZONA Plaza de España», «ENTRADA Desde las 15:00»): el círculo dorado claro con su icono (`eur` = el «€»; `d` = un trazo), el rótulo pequeño en mayúsculas y el dato.
+ * Va en una rejilla de dos columnas (`RejillaDeDatos`) o, sola, a lo ancho (el precio de «Llegada y vuelta»). Sin dato, quien la usa no la pinta. `onClick` la convierte en botón (el teléfono, para llamar); `lapiz`, a la derecha.
+ */
+export function CajaDeDato({ rotulo, icono, children, datos, onClick, lapiz }: { rotulo: string; icono: { eur: true } | { d: string }; children: ReactNode; datos?: string; onClick?: () => void; lapiz?: ReactNode }) {
+  const contenido = (
+    <>
+      <span className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-full" style={{ background: '#F3E3B2', color: MARRON, font: "700 14px 'Geist'" }}>
+        {'eur' in icono ? (
+          '€'
+        ) : (
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={MARRON} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d={icono.d} />
+          </svg>
+        )}
+      </span>
+      <span className="flex min-w-0 flex-1 flex-col gap-px text-left">
+        <span style={{ font: "600 8.5px 'Geist Mono',monospace", letterSpacing: '.12em', color: 'rgba(28,34,48,.5)' }}>{rotulo}</span>
+        <span className="[overflow-wrap:anywhere]" style={{ font: "700 14px/1.15 'Geist'" }}>
+          {children}
+        </span>
+      </span>
+    </>
+  )
+  const estilo: CSSProperties = { background: '#FFFDF8', border: '1px solid rgba(181,138,46,.35)' }
+  const clase = 'flex min-w-0 items-center gap-2.5 rounded-[16px] p-2.5'
+  if (onClick)
+    return (
+      <button type="button" onClick={onClick} data-caja-dato={datos} className={`${clase} w-full`} style={estilo}>
+        {contenido}
+      </button>
+    )
+  return (
+    <div data-caja-dato={datos} className={clase} style={estilo}>
+      {contenido}
+      {lapiz}
+    </div>
+  )
+}
+
+/** (V64) Las cajas de dato en filas de dos; una caja que falta no deja hueco (las demás se recolocan). */
+export function RejillaDeDatos({ rotulo, children, datos }: { rotulo: string; children: ReactNode; datos?: string }) {
+  return (
+    <div className="flex flex-col gap-2" data-rejilla-datos={datos}>
+      <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.16em', color: '#6F4E37' }}>{rotulo}</span>
+      <div className="grid grid-cols-2 gap-2">{children}</div>
+    </div>
+  )
+}
