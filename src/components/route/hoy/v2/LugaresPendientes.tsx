@@ -44,7 +44,7 @@ export function LugaresPendientes({ route, day, dateIso, pendientes }: { route: 
   )
   if (pendientes.length === 0) return null
   // (V43) Solo días de DESPUÉS de hoy: lo de un día pasado no se toca (la app no deja mover a ni desde un día pasado).
-  const diasPara = (p: Pendiente) => route.days.filter((d) => !d.isReturnLeg && d.id !== p.dayId && d.dayNumber > day.dayNumber).map((d) => ({ id: d.id, dayNumber: d.dayNumber, city: d.city }))
+  const diasPara = (p: Pendiente) => route.days.filter((d) => !d.isReturnLeg && d.dayType !== 'excursion' && d.interruptor?.mode !== 'excursion' && d.id !== p.dayId && d.dayNumber > day.dayNumber).map((d) => ({ id: d.id, dayNumber: d.dayNumber, city: d.city }))
   // (V44 §3) TODO lo que cambia la ruta lleva [Deshacer] y va ABAJO (sobre el menú): recuperar hoy, ya lo visité, quitar, pasar a otro día y pasar todos.
   const conDeshacer = (id: string, texto: string, deshacer: () => void) => avisarAbajo({ id, texto, accion: { etiqueta: 'Deshacer', alTocar: deshacer } })
   const recuperar = (p: Pendiente) => {

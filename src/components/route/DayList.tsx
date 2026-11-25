@@ -4,7 +4,7 @@ import type { DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import type { DayPlan, Route } from '../../lib/types'
 import { addDaysToIso } from '../../lib/dateRange'
-import { dayColor, dayColorIndex } from '../../lib/dayColors'
+import { dayColorIndex } from '../../lib/dayColors'
 import { closedWeekdaysFromSchedule, weekdayNameEs } from '../../lib/stopHoursTag'
 import { SortableDay } from './SortableDay'
 import { computeDayTravelInfo } from '../../lib/dayTravelInfo'
@@ -15,7 +15,7 @@ import { DayDetailPanel, type DayMapView } from './dayDetail/DayDetailPanel'
 import { DayMenu } from './dayDetail/DayMenu'
 import { usePermisosDelViaje } from '../../hooks/usePermisosDelViaje'
 import { EspacioParaElLapiz } from '../propuesta/BotonDePropuesta'
-import { EtiquetaRecomendacion } from '../propuesta/EtiquetaRecomendacion'
+import { TarjetaDeDia } from './TarjetaDeDia'
 import { MissingAccommodationBanner } from './MissingAccommodationBanner'
 import { ConfirmDialog } from './ConfirmDialog'
 import { AddDayButton, DayNameSheet } from './freeDay/DayNameSheet'
@@ -23,7 +23,7 @@ import { AddDayChooser } from './freeDay/AddDayChooser'
 import { useDestinationExcursions } from '../../lib/destinationExcursions'
 import { useExcursionsStore } from '../../store/useExcursionsStore'
 import { isDayPinned } from '../../lib/bookings'
-import { AÑADE_TUS_SITIOS, DIA_POR_ORGANIZAR, etiquetaDeViaje, nombrePropioDelDia, useNombreDeDias } from '../../lib/tituloDelDia'
+import { nombrePropioDelDia, useNombreDeDias } from '../../lib/tituloDelDia'
 import { SaleCards } from './reservas/SaleCards'
 import { diaCorto, diaProsa, elDia, fichaDelDia } from '../../lib/nombreDeDia'
 import { canAddDay, canMoveDay, isFreeDay } from '../../lib/freeDays'
@@ -31,13 +31,9 @@ import { useAddFlowStore, withUndo } from '../../store/useAddFlowStore'
 import { DayCardSwitch } from './DayCardSwitch'
 import { useInterruptorUiStore } from '../../store/useInterruptorUiStore'
 import { logrosActivos } from '../../lib/logros'
-import { ExcursionCardMeta } from './dayDetail/excursion/ExcursionCardMeta'
-import { ExcursionEstadoDelDia } from './dayDetail/ExcursionBloque'
-import { excursionReservationOf, viewedExcursion, volverAlDiaPropuesto } from '../../lib/dayInterruptor'
+import { volverAlDiaPropuesto } from '../../lib/dayInterruptor'
 import { diaDeHoy, diaQueSeAbreAlEntrar } from '../../lib/diaDeHoy'
-import { esDiaCompleto, TEXTO_DIA_COMPLETO } from '../../lib/diaCompleto'
-import { Icono } from '../ui/Icono'
-import { CuadradoFecha } from '../ui/CuadradoFecha'
+import { esDiaCompleto } from '../../lib/diaCompleto'
 import { usePagoActivo } from '../../lib/pago'
 import { reorganizarDias, sePuedeReorganizar } from '../../lib/reorganizarDia'
 import { PiezaSegura } from '../PiezaSegura'
@@ -55,12 +51,6 @@ interface DayListProps {
   onDayMapChange?: (map: DayMapView | null) => void
   onDayOverlayChange?: (open: boolean) => void
   showAllDaysOnMap?: boolean
-}
-
-function ChevronIcon() {
-  return (
-    <Icono nombre="adelante" className="h-[18px] w-[18px] shrink-0" />
-  )
 }
 
 /**
@@ -227,11 +217,8 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
         const expanded = activeDayId === day.id
         // El título del día sale de lo que se ve ese día (tanda 6y7, src/lib/tituloDelDia.ts): «Centro histórico», «Free Tour y Trastevere»… El día de viaje lleva además su trayecto, pequeño, junto a «Día de viaje».
         // (Un día que crea el viajero, o al que le pone nombre, se llama como lo llamó. El día de excursión se llama «Excursión desde Roma», Tanda 6g.)
-        const enExcursion = day.interruptor?.mode === 'excursion'
         const nombre = nombreDe(day)
         const title = nombre.titulo
-        // Solo en los destinos sin grupos: un día a mano sin nombre ya enseña su fecha en el cuadrito y el título dice «Ponle nombre» (gris, cursiva); al tocarlo se abre DayNameSheet (Tanda 6y2).
-        const sinNombre = nombre.ponleNombre
         const toggle = () => onSelectDay(expanded ? null : day.id)
         const pasado = pasados.has(day.id)
         const fotosDelDia = fotosPorDia.get(day.dayNumber) ?? 0
@@ -257,102 +244,30 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
           <SortableDay id={day.id} disabled={soloRecomienda || pasado || !isMovableDay(day, index) || isDayPinned(route, reservations, day)}>
             {(dragHandle) => (
           <PiezaSegura nombre={`día ${day.dayNumber} de DÍAS`}>
-          <div
-            data-day-id={day.id}
-            data-dia-pasado={pasado ? '1' : undefined}
-            className={`relative scroll-mt-3 ml-2.5 rounded-3xl border bg-bg-card shadow-[0_1px_2px_rgba(28,34,48,.05),0_12px_30px_-20px_rgba(28,34,48,.3)] transition-colors ${expanded ? 'border-text/[.14]' : 'border-text/[.06]'}`}
-          >
-            {/* La franja del color del día, fina y en diagonal (el mismo color que sus pines y su línea en el mapa). Solo
-                cerrado: abierto, el color del día se queda en los números de las paradas (decisión del usuario, 2026-09-29). */}
-            {!day.isReturnLeg && !expanded && (
-              <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 w-[14px] overflow-hidden rounded-l-3xl">
-                <span className="absolute inset-0" style={{ background: dayColor(colorIndex), clipPath: 'polygon(0 0, 9px 0, 4px 100%, 0 100%)' }} />
-              </span>
-            )}
-            {/* (V38) El asa vuelve a la IZQUIERDA del todo, asomando por el borde, encima de la franja de color (44 × 44 de zona de toque), como antes de la V27 (Eric lo pidió así). Los días «Hecho» no llevan asa. */}
-            {dragHandle && !pasado && <span data-asa-del-dia="1" className="absolute -left-[34px] top-[8px] z-10">{dragHandle}</span>}
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={toggle}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  event.preventDefault()
-                  toggle()
-                }
-              }}
-              className="flex min-h-[60px] w-full cursor-pointer items-center gap-3 py-2 pl-3.5 pr-2.5 text-left"
-            >
-              {/* El cuadrado, en el color neutro de siempre en todos los días: la franja ya dice qué color es. Con fechas es la ficha de la fecha («LUN» y «13»);
-                  sin fechas, el número del día (tanda 6z3, punto 5). */}
-              {/* (Noche 24-25 nov) El cuadrado de la fecha de toda la app (CuadradoFecha: azul oscuro, día y número en dorado); el día abierto lleva el borde dorado. Sin fechas, el número del día en el mismo cuadrado. */}
-              <CuadradoFecha semana={ficha?.semana ?? 'DÍA'} numero={ficha?.numero ?? day.dayNumber} marcado={expanded} datos={{ 'data-dia-cuadrado': day.id }} />
-
-              <div className="flex min-w-0 flex-1 flex-col gap-[2px]">
-                {/* Con fechas la ficha ya dice qué día es: la línea pequeña solo queda sin fechas («DÍA 3»). */}
-                {/* (V24) Sin etiqueta «HOY» en el día de hoy (decisión de Eric). */}
-                {!ficha && (
-                  <p className="flex items-center gap-2 font-mono text-[10px] font-medium uppercase tracking-[.14em] text-text/50">{diaCorto(route, day.dayNumber)}</p>
-                )}
-                {title === DIA_POR_ORGANIZAR ? (
-                  <>
-                    <p data-titulo-del-dia="1" className="min-h-[20px] font-display text-[18px] leading-[1.1] text-text [overflow-wrap:anywhere]">{title}</p>
-                    <p data-anade-tus-sitios="1" className="text-[12.5px] leading-snug text-text/55">{AÑADE_TUS_SITIOS}</p>
-                  </>
-                ) : sinNombre ? (
-                  <button
-                    type="button"
-                    data-ponle-nombre="1"
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      setNameSheet({ dayId: day.id })
-                    }}
-                    className="self-start text-left font-display text-[18px] italic leading-[1.08] text-text/45"
-                  >
-                    Ponle nombre
-                  </button>
-                ) : (
-                  <p data-titulo-del-dia="1" className="min-h-[20px] font-display text-[18px] leading-[1.1] text-text [overflow-wrap:anywhere]">{title}</p>
-                )}
-                {pasado && (
-                  <p data-dia-hecho={hizoAlgo ? '1' : undefined} data-dia-ya-paso={hizoAlgo ? undefined : '1'} className="text-[11.5px] font-medium leading-snug text-text/60">
-                    {fotosDelDia > 0 ? `Hecho · ${fotosDelDia} ${fotosDelDia === 1 ? 'foto' : 'fotos'}` : hizoAlgo ? 'Hecho · Ver tu día' : 'Ya pasó · Ver tu día'}
-                  </p>
-                )}
-                <EtiquetaRecomendacion dayId={day.id} />
-                {diaCompleto && <p className="text-[12px] leading-snug text-text/60">{TEXTO_DIA_COMPLETO}</p>}
-                {/* Las etiquetas de día van en el naranja de la app: el rojo es solo para avisos de verdad (Tanda 6g). El trayecto («Madrid → Roma») va pequeño, junto a la marca, y no es el título (tanda 6y7). */}
-                {travel && !day.userAdded && (
-                  <p className="flex flex-wrap items-baseline gap-x-1.5 text-[11.5px] font-normal text-text/55">
-                    {/* Tanda 7: «Barcelona → Roma · Día de viaje» (el trayecto primero); si el título ya dice «Día de viaje», solo el trayecto. */}
-                    {nombre.viaje && <span data-viaje-del-dia="1" className="whitespace-nowrap">{nombre.viaje}</span>}
-                    {nombre.viaje && etiquetaDeViaje(title) && <span data-marca-dia-de-viaje="1" className="whitespace-nowrap">· <span className="text-accent">{etiquetaDeViaje(title)}</span></span>}
-                  </p>
-                )}
-                {/* El día de la excursión lleva su etiqueta, como el primero y el último llevan «Día de viaje» (tanda 3); en el día 4 con interruptor, con sus horas y la reserva. */}
-                {enExcursion && !travel && <ExcursionCardMeta excursion={viewedExcursion(day)} reservedName={excursionReservationOf(route, reservations, day)?.name.replace(/^Excursión (a la|a los|a las|al|a)\s+/i, '') ?? null} />}
-                {day.dayType === 'excursion' && !enExcursion && !travel && (
-                  <>
-                    <p className="text-[12.5px] font-medium text-accent">Día de excursión</p>
-                    {/* (V18, Design E5) El día cerrado dice si la excursión está reservada: «Sin reservar» en rojo o «Reservada · salida 08:15» en verde. */}
-                    {!pasado && (day.excursions ?? []).length > 0 && (
-                      <ExcursionEstadoDelDia reserva={excursionReservationOf(route, reservations, day)} />
-                    )}
-                  </>
-                )}
-                {/* (Tanda 10M: ya no hay aquí las pastillas de los avisos de fechas —«Panteón cerrado», «Año Nuevo»…—: van a la campana de arriba.) */}
-                {/* (Ya no hay aquí la línea de lo reservado con su hora, «Coliseo · 10:00» con candado: la hora está en la pestañita verde de la parada. Tanda 6z3.) */}
-                {/* (Ya no hay aquí el contador «17 paradas»: Tanda 6y4.) */}
-              </div>
-
-              <span onClick={(event) => event.stopPropagation()} className="flex items-center">
-                {pasado && !hizoAlgo ? null : pasado ? (
-                  <span data-dia-hecho-marca="1" aria-label="Día hecho" role="img" className="flex h-[26px] w-[26px] items-center justify-center rounded-full" style={{ background: '#DCEBDD', color: '#2F6B43' }}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M5 12.5l4.5 4.5L19 7.5" />
-                    </svg>
-                  </span>
-                ) : soloRecomienda ? null : (
+          <TarjetaDeDia
+            route={route}
+            day={day}
+            reservations={reservations}
+            colorIndex={colorIndex}
+            expanded={expanded}
+            pasado={pasado}
+            hizoAlgo={hizoAlgo}
+            fotosDelDia={fotosDelDia}
+            diaCompleto={diaCompleto}
+            travel={travel}
+            nombre={nombre}
+            ficha={ficha}
+            dragHandle={dragHandle}
+            onToggle={toggle}
+            onPonleNombre={() => setNameSheet({ dayId: day.id })}
+            menu={
+              pasado && !hizoAlgo ? null : pasado ? (
+                <span data-dia-hecho-marca="1" aria-label="Día hecho" role="img" className="flex h-[26px] w-[26px] items-center justify-center rounded-full" style={{ background: '#DCEBDD', color: '#2F6B43' }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M5 12.5l4.5 4.5L19 7.5" />
+                  </svg>
+                </span>
+              ) : soloRecomienda ? null : (
                 <DayMenu
                   titulo={[diaProsa(route, day.dayNumber).replace(/^./, (c) => c.toUpperCase()), title].filter(Boolean).join(' · ')}
                   // «Recuperar este día»: solo en los días con cambios; nunca en uno del viajero (no hay ruta nuestra que recuperar) ni en uno fijado por una reserva.
@@ -380,14 +295,9 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                       : undefined
                   }
                 />
-                )}
-              </span>
-
-              <span className="flex w-[22px] justify-center text-text/45 transition-transform duration-[400ms]" style={{ transform: expanded ? 'rotate(90deg)' : 'none' }}>
-                <ChevronIcon />
-              </span>
-            </div>
-
+              )
+            }
+          >
             {/* El interruptor [Roma | Excursión] del día 4: debajo del título, a la vista aunque la tarjeta esté plegada (Tanda 6g). */}
             {day.interruptor && !pasado && <DayCardSwitch day={day} route={route} reservations={reservations} />}
 
@@ -405,7 +315,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                 showAllDaysOnMap={showAllDaysOnMap}
               />
             )}
-          </div>
+          </TarjetaDeDia>
           </PiezaSegura>
             )}
           </SortableDay>

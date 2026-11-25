@@ -78,7 +78,7 @@ export function SiTeSobraTiempoHoy({ route, day, dateIso }: { route: Route; day:
   const items = itemsDeSobraTiempo(day)
   if (items.length === 0) return null
   // (V46) Solo los días POSTERIORES a hoy: nunca uno pasado ni el de hoy.
-  const dias = route.days.filter((d) => !d.isReturnLeg && d.id !== day.id && d.dayNumber > day.dayNumber).map((d) => ({ id: d.id, dayNumber: d.dayNumber, city: d.city }))
+  const dias = route.days.filter((d) => !d.isReturnLeg && d.dayType !== 'excursion' && d.interruptor?.mode !== 'excursion' && d.id !== day.id && d.dayNumber > day.dayNumber).map((d) => ({ id: d.id, dayNumber: d.dayNumber, city: d.city }))
   const puedePasar = (it: ItemSobra) => dias.length > 0 && !it.stop.reservedId
   const recuperar = (it: ItemSobra) => (it.origen === 'saltada' ? setStopSaltada(day.id, it.stop.id, false) : addSpareStop(day.id, it.stop.id))
   const pasar = (it: ItemSobra, aDayId: string) => {

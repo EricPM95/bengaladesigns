@@ -2,7 +2,8 @@ import { PendienteDeParada } from '../../logros/visto/PendienteDeParada'
 import { LineaReservaFueraDeFranja } from '../reservas/LineaReservaFueraDeFranja'
 import { createPortal } from 'react-dom'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import type { Coordinates, DayPlan, Stop, TrayectoCoche } from '../../../lib/types'
+import type { Coordinates, DayPlan, Route, Stop, TrayectoCoche } from '../../../lib/types'
+import type { Reservation } from '../../../lib/bookings'
 import { CabeceraDelDiaCoche, VueltaEnCoche, trayectoDeVuelta } from './CocheDelDia'
 import type { DayTravelInfo } from '../../../lib/dayTravelInfo'
 import type { ConnectorInfo, TransportMode } from '../../../lib/mockDayDetail'
@@ -114,6 +115,8 @@ interface DayDetailPanelProps {
   onOverlayChange?: (open: boolean) => void
   /** "Ver todo" del mapa compartido: todos los días a la vez en vez de solo este. */
   showAllDaysOnMap?: boolean
+  /** (V57) Solo el probador de Reorganizar del panel: el viaje de prueba (en memoria) y sus reservas. Sin él, lo de siempre: el viaje del estado. */
+  vista?: { route: Route; reservations: Reservation[] }
 }
 
 /** Lo que el día abierto enseña en el mapa compartido de RouteView. */
@@ -282,6 +285,7 @@ export function DayDetailPanel({
   onMapChange,
   onOverlayChange,
   showAllDaysOnMap = false,
+  vista,
 }: DayDetailPanelProps) {
   const seedDayStops = useRouteStore((state) => state.seedDayStops)
   const insertStopAt = useRouteStore((state) => state.insertStopAt)
@@ -310,7 +314,9 @@ export function DayDetailPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusStopId, day.stops.length])
   const colocarLinea = useRouteStore((state) => state.colocarLinea)
-  const setLegToNext = useRouteStore((state) => state.setLegToNext)
+  const setLegToNextDelEstado = useRouteStore((state) => state.setLegToNext)
+  // (V57) En el probador del panel (`vista`) este panel no escribe nunca en el viaje del estado.
+  const setLegToNext: typeof setLegToNextDelEstado = vista ? () => {} : setLegToNextDelEstado
   // Prompt 6: paseos que el viajero ha quitado. No vuelven a proponerse en este día — "el algoritmo
   // propone, el viajero dispone". Vive en el panel y no en el store porque el paseo tampoco es una
   // parada real: no está en day.stops del store, lo añade el servidor al generar.
@@ -320,8 +326,10 @@ export function DayDetailPanel({
   const selectDayExcursion = useRouteStore((state) => state.selectDayExcursion)
   const declineHalfDayExcursion = useRouteStore((state) => state.declineHalfDayExcursion)
   const addBlankDayExcursion = useRouteStore((state) => state.addBlankDayExcursion)
-  const route = useRouteStore((state) => state.route)
-  const reservations = useRouteStore((state) => state.reservations)
+  const routeDelEstado = useRouteStore((state) => state.route)
+  const reservationsDelEstado = useRouteStore((state) => state.reservations)
+  const route = vista ? vista.route : routeDelEstado
+  const reservations = vista ? vista.reservations : reservationsDelEstado
   const openOwnDayFlow = useAddFlowStore((state) => state.openOwnDayFlow)
   const pedirInterruptor = useInterruptorUiStore((state) => state.pedir)
   // Del día 7 en adelante (días en blanco del destino): al abrir el día sale la hoja «Ya has visto lo mejor de…» (Tanda 6g, punto 8).
@@ -409,7 +417,8 @@ export function DayDetailPanel({
   const [arrivalSheet, setArrivalSheet] = useState<'llegada' | 'vuelta' | null>(null)
   const pedirReservas = useReservasFocusStore((state) => state.pedir)
   const setMode = useRouteStore((state) => state.setMode)
-  const marcarVueltaVista = useRouteStore((state) => state.marcarVueltaVista)
+  const marcarVueltaVistaDelEstado = useRouteStore((state) => state.marcarVueltaVista)
+  const marcarVueltaVista = vista ? () => {} : marcarVueltaVistaDelEstado
   /** Abrir la ficha de la vuelta es «ver la vuelta» (Tanda 7): se va el aviso de la campana de «has cambiado los días del viaje». */
   const abrirFichaDeVuelta = () => {
     marcarVueltaVista()

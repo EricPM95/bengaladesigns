@@ -450,7 +450,8 @@ export function lineasDeVuelta(p: {
   const titulo = p.hora ? `Tu ${palabra} sale a las ${horaCorta(p.hora)}` : 'Hoy vuelves a casa'
   const lineas: LineasDeVuelta['lineas'] = []
   if (p.conPase) {
-    if (p.hasta) lineas.push({ icono: 'reloj', texto: `Tienes el día libre hasta las ${horaCorta(p.hasta)}.` })
+    // (V57) «Sal hacia el aeropuerto a las …»: la misma cuenta que antes decía «día libre hasta las» (vuelo − estar allí − trayecto).
+    if (p.hasta) lineas.push({ icono: 'reloj', texto: `Sal hacia ${sitioConArticulo} a las ${horaCorta(p.hasta)}.` })
     if (p.trayectoMin != null) lineas.push({ icono: p.enCoche ? 'coche' : 'ubicacion', texto: `${p.sitio === 'estación' ? 'A la estación' : p.sitio === 'puerto' ? 'Al puerto' : 'Al aeropuerto'}: ${p.trayectoMin} min${p.enCoche ? ' en coche' : ''}.` })
   } else {
     if (p.hora) lineas.push({ icono: 'reloj', texto: `Tu ${palabra} sale a las ${horaCorta(p.hora)}.` })

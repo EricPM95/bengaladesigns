@@ -2,7 +2,7 @@ import type { QuestionnaireAnswers, Route, TransportContext, TripDefaultTranspor
 import { mapGeneratedRouteToRoute, type GeneratedRouteResponse, type GeneratedDay } from './mapGeneratedRoute'
 import { encodeExperienceCategories } from './experienceCategoryBank'
 import { reservasActuales } from './engineReservas'
-import { llegadaVueltaActuales } from './llegadaVuelta'
+import { llegadaVueltaActuales, type DatosParaMotor } from './llegadaVuelta'
 import { elDia } from './nombreDeDia'
 
 /** Misma clave que espera route_cache/computeRouteCacheMatch en server/index.js — ver encodeExperienceCategories. */
@@ -84,6 +84,11 @@ export interface GenerationParams {
   answers: QuestionnaireAnswers
   transportContext: TransportContext
   mustIncludePlaces: string[]
+  /**
+   * (V57, probador de Reorganizar del panel) Generación AISLADA: las reservas y los vuelos que se mandan al motor vienen de aquí, no del estado del viaje; y no se mira ni se guarda la caché de rutas
+   * (nada se escribe en ningún sitio). Sin este campo (la app de siempre), todo se lee del estado como antes.
+   */
+  aislado?: { reservas: Awaited<ReturnType<typeof reservasActuales>>; vuelo: DatosParaMotor }
 }
 
 /**
@@ -381,6 +386,7 @@ async function requestDayBlockWithRetry(
   allDaysLight: LightDaySummary[],
   transportContext: TransportContext,
   mustIncludePlaces: string[],
+  aislado?: GenerationParams['aislado'],
 ): Promise<DayBlockResult> {
   const dayNumbers = block.map((day) => day.day_number).join(',')
   let lastError: unknown
@@ -398,9 +404,9 @@ async function requestDayBlockWithRetry(
         // routeAlgorithm.js) — necesita la lista aquí, no solo en generate-day-places, porque este
         // endpoint relee zone_distribution desde cero y no confía en `places_for_block`.
         must_include_places: mustIncludePlaces,
-        reservas: await reservasActuales(),
+        reservas: aislado ? aislado.reservas : await reservasActuales(),
         // Tanda 7 (de pago): la hora de llegada y la de vuelta del viajero, al rehacer el viaje. Sin ellas (la gratis, a mano, coche, sin hora) no se manda nada.
-        ...(await llegadaVueltaActuales({ soloSiRehace: true })),
+        ...(aislado ? aislado.vuelo : await llegadaVueltaActuales({ soloSiRehace: true })),
         ...transportContext,
       })
     } catch (error) {
@@ -423,7 +429,7 @@ async function requestDayBlockWithRetry(
 async function requestReturnDay(params: GenerationParams, skeleton: SkeletonResponse): Promise<GeneratedDay | null> {
   const { destination, answers, mustIncludePlaces } = params
   if (skeleton.days.length === 0 || skeleton.days.length >= answers.days) return null
-  const datos = await llegadaVueltaActuales({ soloSiRehace: true })
+  const datos = params.aislado ? params.aislado.vuelo : await llegadaVueltaActuales({ soloSiRehace: true })
   if (!datos.vuelta) return null
   try {
     const result = await postJson<{ day?: GeneratedDay }>('/api/rebuild-day', {
@@ -433,7 +439,7 @@ async function requestReturnDay(params: GenerationParams, skeleton: SkeletonResp
       day_number: skeleton.days.length + 1,
       must_include_places: mustIncludePlaces,
       inside_names: [],
-      reservas: await reservasActuales(),
+      reservas: params.aislado ? params.aislado.reservas : await reservasActuales(),
       ...datos,
     })
     return result.day ?? null
@@ -523,7 +529,7 @@ async function settlePendingBlocks(args: SettlePendingBlocksArgs): Promise<{ gen
   }
   let settleQueue: SettleEntry[] = pendingBlocks.map((block, index) => ({
     index,
-    promise: requestDayBlockWithRetry(destination, answers, block, dayPlaces, allDaysLight, transportContext, params.mustIncludePlaces)
+    promise: requestDayBlockWithRetry(destination, answers, block, dayPlaces, allDaysLight, transportContext, params.mustIncludePlaces, params.aislado)
       .then((result): BlockOutcome => ({ block, status: 'ok', result }))
       .catch((error): BlockOutcome => ({ block, status: 'error', error })),
   }))
@@ -571,7 +577,7 @@ export async function runGeneration(params: GenerationParams, resumeFrom: Genera
 
   // Solo se intenta en un arranque limpio — una generación que se está RETOMANDO (resumeFrom) ya
   // decidió su camino la primera vez que se lanzó; no tiene sentido reconsiderar la caché a mitad.
-  if (!resumeFrom) {
+  if (!resumeFrom && !params.aislado) {
     const cachedRoute = await tryRouteCacheReuse(params, onCheckpoint).catch((error: unknown) => {
       // Nunca debe bloquear la generación — pero un catch mudo hace imposible diagnosticar por qué
       // un camino de caché falló (se descubrió así: un bug real en el conteo de días quedaba
@@ -668,7 +674,7 @@ export async function runGeneration(params: GenerationParams, resumeFrom: Genera
   // (El día de vuelta con la hora de un viajero es suyo: nunca a la caché de rutas.)
   const { return_leg_day: _vueltaDelViajero, ...paraLaCache } = generated
   void _vueltaDelViajero
-  saveRouteCache(destination, answers.days, routeCacheExperiences(answers), { ...paraLaCache, recommended_revisits: recommendedRevisits })
+  if (!params.aislado) saveRouteCache(destination, answers.days, routeCacheExperiences(answers), { ...paraLaCache, recommended_revisits: recommendedRevisits })
 
   // anchorNames alimenta el caché de tips con búsqueda web (ver StopDetailSheet.tsx/anchor-tips) —
   // antes solo cubría 2-3 "anclas" sueltas por día, ahora cubre la lista completa de lugares elegida

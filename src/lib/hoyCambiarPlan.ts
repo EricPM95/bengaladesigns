@@ -142,7 +142,7 @@ export function claseDe(stop: Stop, fijas: Set<string>, datos: DatosDeImportanci
 const NO_ES_VISITA = (s: Stop) => Boolean(s.isBreak || s.isZoneWalk || s.isFreeWalk || s.isFreeTime || s.passThrough || s.isArrival)
 
 export function diaAdmite(day: DayPlan | undefined): boolean {
-  return Boolean(day && !day.isReturnLeg && !day.isExcursionDay && day.interruptor?.mode !== 'excursion')
+  return Boolean(day && !day.isReturnLeg && !day.isExcursionDay && day.interruptor?.mode !== 'excursion' && day.dayType !== 'excursion')
 }
 
 export const unir = (lista: string[]): string => (lista.length <= 1 ? (lista[0] ?? '') : `${lista.slice(0, -1).join(', ')} y ${lista[lista.length - 1]}`)

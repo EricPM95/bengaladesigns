@@ -18,6 +18,8 @@ import { useMiNombreYFoto } from '../../store/useMiPerfil'
  * (menú de pastillas arriba). /admin/logros y /admin/sonidos llevan a su apartado. Logros y Sonidos son lo de siempre, dentro del panel. Se baja a demanda.
  */
 const LogrosYSonidos = lazy(() => import('./logros/LogrosYSonidos'))
+// (V57) «Probar Reorganizar»: el probador del motor para el administrador. Se baja solo al abrir ese apartado (ningún viajero lo descarga).
+const ProbarReorganizar = lazy(() => import('./reorganizar/ProbarReorganizar'))
 
 export const SECCIONES = [
   { id: 'inicio', nombre: 'Inicio', icono: 'M4 11l8-7 8 7v9h-5v-6H9v6H4z' },
@@ -27,6 +29,7 @@ export const SECCIONES = [
   { id: 'ventas', nombre: 'Ventas', icono: 'M17 6a6 6 0 1 0 0 12M5 10h9M5 14h9' },
   { id: 'usuarios', nombre: 'Usuarios', icono: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M17 11a2.5 2.5 0 1 0 0-5M21 19c0-2.4-1.6-4.4-4-5' },
   { id: 'logros', nombre: 'Logros y sonidos', icono: 'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z' },
+  { id: 'reorganizar', nombre: 'Probar Reorganizar', icono: 'M4 7h12M4 12h8M4 17h12M18 5l2 2-2 2M16 15l4 2-4 2' },
 ] as const
 type Id = (typeof SECCIONES)[number]['id']
 
@@ -89,6 +92,7 @@ export function PanelJutrip(): ReactNode {
       {seccion === 'destinos' && <Destinos movil={movil} />}
       {seccion === 'ventas' && <Ventas movil={movil} />}
       {seccion === 'usuarios' && <Usuarios movil={movil} />}
+      {seccion === 'reorganizar' && <ProbarReorganizar movil={movil} />}
       {seccion === 'logros' && <LogrosYSonidos movil={movil} pestana={window.location.pathname.includes('/sonidos') ? 'sonidos' : (parametros.get('pestana') ?? undefined)} />}
     </Suspense>
   )

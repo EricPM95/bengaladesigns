@@ -6,7 +6,7 @@ import { useRouteStore } from '../../../../store/useRouteStore'
 import { useDestinationExcursions } from '../../../../lib/destinationExcursions'
 import { dayOfReservation } from '../../../../lib/bookings'
 import { addDaysToIso, formatWeekdayAbbrEs, isoToLocalDate } from '../../../../lib/dateRange'
-import { esDiaDeLlegada, nombreDelDia, tituloSinHorasSiYaNoEsVerdad, viajeDelDia } from '../../../../lib/tituloDelDia'
+import { esDiaDeExcursion, esDiaDeLlegada, nombreDelDia, tituloSinHorasSiYaNoEsVerdad, viajeDelDia } from '../../../../lib/tituloDelDia'
 import { numberedStopsOf } from '../../../../lib/stopKind'
 import { displayStopName } from '../../../../lib/format'
 import { hasRealCoordinates } from '../../../../lib/distanceMock'
@@ -41,7 +41,12 @@ import { CabeceraHoy } from './HoyAntesV2'
 import { HojaMasParaTuDia } from './HojasV2'
 import { TarjetaDiaDePrueba, TarjetaP3 } from './TarjetasPase'
 import { CabeceraParada, LineaDelLogro, TarjetaParada, TuDia, ojoDeParada, useAhoraMin, useUltimaSuma } from './ParadaHoy'
-import { HoyVuelvesH14 } from './VueltaH14'
+import { HoyVuelvesH14, datosDeLaSalida } from './VueltaH14'
+import { HoyDespuesV2 } from './HoyDespuesV2'
+import { FilaDeAviso, D_AVISO } from './AvisosHoy'
+import { esDiaRecienReorganizado } from '../../../../lib/reorganizarDia'
+import { useReorganizarStore } from '../../../../store/useReorganizarStore'
+import { useReservasFocusStore } from '../../../../store/useReservasFocusStore'
 import { useUbicacionHoy } from './useUbicacionHoy'
 import { cuentaDelDia, horaCorta, mananaH13, minutosDe, salidaDeCasa, trayectoHasta, urlComoLlegar } from '../../../../lib/hoyParada'
 import { esDestinoDeCoche } from '../../../../lib/experienceCategoryBank'
@@ -324,7 +329,24 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const salidaManana = conPaseOPrueba && siguiente && vistas === 0 && !esLlegada && !esVuelta ? salidaDeCasa({ day, primera: siguiente, zona: zonaCoords, enCoche }) : null
   const minSalida = salidaManana ? minutosDe(salidaManana.hora) : null
   const esPorLaManana = Boolean(salidaManana && minSalida != null && ahoraMinHoy < minSalida)
-  const vuelveH14 = (conPase: boolean) => (tarjetaVuelve || fichas.vuelta.hora || route.planVuelta?.hora ? <HoyVuelvesH14 route={route} day={day} tarjeta={tarjetaVuelve} mitad={fichas.vuelta} info={infoLlegada} conPase={conPase} onVerComoIr={() => fichas.abrir('vuelta')} /> : null)
+  // (V57) El día de vuelta NUNCA sale vacío: con vuelo, su tarjeta (con «Sal hacia el aeropuerto a las …»); sin vuelo (avión), «Añade tu vuelo de vuelta…» con [Añadir mi vuelo] (la hoja «Tu vuelo» de RESERVAS).
+  const vueloPuesto = Boolean(tarjetaVuelve || fichas.vuelta.hora || route.planVuelta?.hora)
+  const pideVuelo = esVuelta && !vueloPuesto && (enCoche || fichas.vuelta.mode === 'avion')
+  const anadirVuelo = () => { setMode('bookings'); useReservasFocusStore.getState().pedir('llegada', 'departure') }
+  const vuelveH14 = (conPase: boolean) => (vueloPuesto || pideVuelo ? <HoyVuelvesH14 route={route} day={day} tarjeta={tarjetaVuelve} mitad={fichas.vuelta} info={infoLlegada} conPase={conPase} onVerComoIr={() => fichas.abrir('vuelta')} onAnadirVuelo={pideVuelo && conPase ? anadirVuelo : undefined} /> : null)
+  // (V57) Cuándo hay que salir hacia el aeropuerto (la misma cuenta de la tarjeta) y el estado del vuelo: ¿ya ha salido? ¿las paradas que quedan caben antes de salir?
+  const salidaVuelta = esVuelta && vueloPuesto ? datosDeLaSalida({ route, day, mitad: fichas.vuelta, info: infoLlegada }) : null
+  const vueloMin = minutosDe(salidaVuelta?.hora ?? null)
+  const saleMin = minutosDe(salidaVuelta?.hasta ?? null)
+  const vueloYaSalio = vueloMin != null && ahoraMinHoy >= vueloMin
+  const vueloNoCabe = Boolean(salidaVuelta) && !vueloYaSalio && !esDiaRecienReorganizado(day) && saleMin != null && vigentes.some((s) => !s.checkedInAt && minutosDe(s.time) != null && (minutosDe(s.time) as number) + (s.durationMinutes || 30) > saleMin)
+  const adaptarMiDia = async () => {
+    const { diasQueCambian } = await import('../../../../lib/reorganizarDia')
+    const cambios = await diasQueCambian([day.id])
+    const st = useReorganizarStore.getState()
+    st.poner(cambios.map((c) => c.dayId), [day.id], cambios)
+    if (cambios.length > 0) st.abrirAlerta()
+  }
   // (V44 §3) Saltar MIRA TODO EL DÍA DE GOLPE: lo que al saltarla también ha cerrado sale en el MISMO aviso («Han cerrado A y B»), no uno detrás de otro; y lleva [Deshacer] (todo lo que cambia la ruta lo lleva).
   const saltar = (stop: Stop) => {
     const texto = AVISO_SALTADA
@@ -363,12 +385,24 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       const iso = addDaysToIso(dateIso, c.dayNumber - day.dayNumber)
       return { w: formatWeekdayAbbrEs(iso).toUpperCase(), n: Number(iso.slice(8, 10)) }
     })
-  if (day.interruptor?.mode === 'excursion' && !(sinPase && (esLlegada || !pase.puede))) {
+  // (V57) Día de excursión = el interruptor O el tipo del día (Lanzarote, La Graciosa: `dayType: 'excursion'` sin interruptor salía como «Hoy libre»).
+  if (esDiaDeExcursion(day) && !(sinPase && (esLlegada || !pase.puede))) {
     return (
       <>
         {cabecera}
         <TodayExcursion route={route} day={day} />
         {!sinPase && <VolverAlAlojamiento route={route} desde={ubicacion ?? origenCerca} casa={zonaCoords} enCoche={enCoche} />}
+      </>
+    )
+  }
+  // (V57) El vuelo de vuelta ya ha salido: nada de «Tu vuelo sale a las…», «Devuelve el coche» ni «0 paradas hoy». Dos horas después, HOY pasa a lo de después del viaje; antes, «Buen viaje de vuelta».
+  if (vueloYaSalio) {
+    const iso = route.answers.dateRange?.start
+    return ahoraMinHoy >= (vueloMin as number) + 120 && iso ? (
+      <HoyDespuesV2 route={route} startIso={iso} />
+    ) : (
+      <>
+        <CabeceraHoy ojo={`${ojo} · último día`} titulo="Buen viaje de vuelta" />
       </>
     )
   }
@@ -411,7 +445,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const cocheDeAlquiler = recogerCoche ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`Alquiler de coches ${llegadaMitad.point?.nombre ?? `aeropuerto de ${route.destination}`}`)}` : null
 
   // ── HOY2 (Completa 9): el último día, «Hoy vuelves a casa» ──
-  const tarjetaDeVuelta = esVuelta && !sinParadasDeVuelta ? vuelveH14(true) : null
+  const tarjetaDeVuelta = esVuelta ? vuelveH14(true) : null
   const diaTerminado = !sinParadasDeVuelta && !siguiente && paradas.length > 0 && !mostrarPrueba
   // (HOY2b 5, pantalla 33) Un día sin ruta (ni de llegada ni de vuelta): «Hoy libre», a tu aire.
   const aTuAire = conPaseOPrueba && paradas.length === 0 && !esVuelta && !esLlegada
@@ -425,7 +459,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
     cabecera
   ) : bienvenida ? (
     <CabeceraHoy ojo={`${ojo} · llegada a ${route.destination}`} titulo={`Bienvenido a ${route.destination}`} />
-  ) : esVuelta && (tarjetaDeVuelta || tarjetaVuelve) ? (
+  ) : esVuelta && tarjetaDeVuelta ? (
     <CabeceraHoy ojo={`${ojo} · último día`} titulo="Hoy vuelves a casa" />
   ) : comidaDeAhora && siguiente ? (
     <CabeceraHoy ojo={ojoDeParada(dateIso, tituloLimpio)} titulo={comidaDeAhora.mealTime === 'dinner' ? 'Hora de cenar' : 'Hora de comer'} />
@@ -442,6 +476,12 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {sinPase && pase.puede && fila?.tipo === 'hoy_es_prueba' && !cerrados.includes('prueba') && (
         <AvisoDeHoy id="prueba" prio={0}>
           <FranjaDiaDePrueba fila={fila} onCerrar={() => cerrarAviso('prueba')} />
+        </AvisoDeHoy>
+      )}
+      {/* (V57) Con vuelo y sin Reorganizar, si las paradas que quedan no caben antes de salir hacia el aeropuerto: aviso de arriba con [Adaptar mi día] (abre Reorganizar). Si ya reorganizó, no sale. */}
+      {vueloNoCabe && !cerrados.includes('vuelo-no-cabe') && (
+        <AvisoDeHoy id="vuelo-no-cabe" prio={1.2}>
+          <FilaDeAviso tono="amarillo" icono={D_AVISO.reloj} titulo={`Tu vuelo sale a las ${horaCorta(salidaVuelta?.hora ?? null)} y hoy no te da tiempo a todo`} boton={{ texto: 'Adaptar mi día', onClick: () => void adaptarMiDia(), datos: { 'data-hoy-adaptar-dia': '1' } }} onIrse={() => cerrarAviso('vuelo-no-cabe')} datos={{ 'data-hoy-aviso-vuelo': '1' }} />
         </AvisoDeHoy>
       )}
       {/* HOY2 (C): lo que corre peligro ya, el primero de los avisos (prioridad 1) */}
@@ -484,13 +524,12 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {esLlegada && !esVuelta && fichas.llegada.billete && <BilleteDeVuelo billete={fichas.llegada.billete} onOpen={() => fichas.abrir('llegada')} />}
 
       {/* 5: el día de vuelta sin paradas, «Hoy vuelves a casa» */}
-      {sinParadasDeVuelta && tarjetaVuelve && vuelveH14(true)}
 
       {/* HOY2b (5): el día sin ruta, a tu aire */}
       {aTuAire && <ATuAire route={route} dateIso={dateIso} desde={ubicacion ?? zonaCoords} onVolverALaRuta={() => setMode('route')} />}
 
       {/* HOY2 (Completa 9): el último día, la tarjeta «Hoy vuelves a casa» es la principal; con el billete de vuelta y la maleta debajo */}
-      {esVuelta && !sinParadasDeVuelta && (
+      {esVuelta && (
         <>
           {tarjetaDeVuelta ?? <TarjetaVueltaV2 route={route} mitad={fichas.vuelta} onVerComoIr={() => fichas.abrir('vuelta')} />}
           {tarjetaDeVuelta && pagoActivo() && fichas.vuelta.billete && <BilleteDeVuelo billete={fichas.vuelta.billete} onOpen={() => fichas.abrir('vuelta')} />}
@@ -672,7 +711,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {!sinParadasDeVuelta && paradas.length > 0 && !diaTerminado && <CercaDeTiFila route={route} origen={origenCerca} conPase={pagoActivo()} />}
 
       {/* 4: la tarde del último día */}
-      {esVuelta && !sinParadasDeVuelta && (
+      {esVuelta && !(salidaVuelta?.sinTiempo) && !pideVuelo && (
         <div className="flex flex-none items-center gap-3 rounded-[20px] py-3.5 pl-[18px] pr-3.5" style={{ border: '1px dashed rgba(28,34,48,.25)' }}>
           <span className="flex-1" style={{ font: "400 20px/1.1 'Instrument Serif',serif", textWrap: 'balance' as never }}>La tarde es tuya hasta que te vayas</span>
           <button type="button" onClick={() => explorar('atracciones', null, true)} className="flex h-11 flex-none items-center gap-1.5 rounded-full bg-[#1C2230] pl-[11px] pr-3.5 text-[13px] font-semibold text-[#FFFDF8]">

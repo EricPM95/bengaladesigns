@@ -1,0 +1,128 @@
+[
+  {
+    "id": "1-por-que-vacio",
+    "texto": "Por qué salió vacío el día de vuelta",
+    "estado": "ok",
+    "explicacion": "Era un fallo real, no solo del viaje de prueba: con el vuelo puesto en RESERVAS pero sin el plan del motor (sin «Sí, adaptarlos»), HOY no pintaba nada porque exigía esa tarjeta del motor. Ahora la tarjeta sale con solo la hora del vuelo."
+  },
+  {
+    "id": "1-con-vuelo-billete",
+    "texto": "Con vuelo: el billete de vuelta",
+    "estado": "ok",
+    "explicacion": "Debajo de la tarjeta sale el billete QR de HOY (VUELTA · FIUMICINO, 19:40, «+ Añade tu tarjeta de embarque»). Capturas vuelta_roma_con_vuelo_* y vuelta_lanza_con_vuelo_*."
+  },
+  {
+    "id": "1-con-vuelo-sal-hacia",
+    "texto": "Con vuelo: «Sal hacia el aeropuerto a las …»",
+    "estado": "medias",
+    "explicacion": "En Roma sale con hora y trayecto («a las 16:00 · Al aeropuerto: 70 min»). En Lanzarote sale solo después de Reorganizar (15:47, límite del coche 17:10); antes solo «Devuelve el coche en la T1», porque la cuenta del coche es del motor y no se inventa."
+  },
+  {
+    "id": "1-con-vuelo-paradas",
+    "texto": "Con vuelo: las paradas que da tiempo a ver",
+    "estado": "medias",
+    "explicacion": "Si el día tiene paradas salen debajo como siempre, y el día sin paradas lleva «La tarde es tuya / Añadir lugares». El motor de Roma no pone paradas el día de vuelta y no pude ver un día de vuelta con paradas reales."
+  },
+  {
+    "id": "1-sin-vuelo",
+    "texto": "Sin vuelo: «Añade tu vuelo de vuelta…» con [Añadir mi vuelo]",
+    "estado": "ok",
+    "explicacion": "Sale en Roma y Lanzarote. El botón abre RESERVAS en la hoja «Tu vuelo» (vuelta_roma_sin_vuelo, vuelta_lanza_sin_vuelo). El toque del botón no lo pulsé en captura."
+  },
+  {
+    "id": "1-ya-salio",
+    "texto": "Vuelo ya salido: «Buen viaje de vuelta» / después del viaje",
+    "estado": "ok",
+    "explicacion": "Con el vuelo a las 18:05, a las 19:00 sale solo «Buen viaje de vuelta», sin botones; a las 22:00 pasa a lo de después del viaje. Ya no sale «Devuelve el coche» ni «0 paradas»."
+  },
+  {
+    "id": "1-sin-reorganizar-sin-tiempo",
+    "texto": "Aviso «Tu vuelo sale a las … y hoy no te da tiempo» con [Adaptar mi día]",
+    "estado": "medias",
+    "explicacion": "En Roma sale (vuelo 13:30 con paradas puestas a mano). En Lanzarote no sale hasta reorganizar, porque la hora de salir la da el motor. [Adaptar mi día] calcula y abre Reorganizar, pero no lo pulsé en captura."
+  },
+  {
+    "id": "1-sin-pase",
+    "texto": "Sin pase, con su candado como ahora",
+    "estado": "ok",
+    "explicacion": "Sin pase sale la tarjeta con «Con el Pase Roma/Lanzarote, te decimos hasta qué hora tienes el día» y el candado (vuelta_roma_sin_pase, vuelta_lanza_sin_pase)."
+  },
+  {
+    "id": "2-comprobar-viaje-normal",
+    "texto": "Comprobar con un viaje normal si fallaba también",
+    "estado": "ok",
+    "explicacion": "Falla también con un viaje generado por la app: La Graciosa (Lanzarote) tiene tipo excursión pero sin interruptor y HOY solo miraba el interruptor. En Roma la reserva marca el día como excursión sin interruptor: mismo fallo."
+  },
+  {
+    "id": "2-dia-excursion",
+    "texto": "HOY como día de excursión, nunca «Hoy libre»",
+    "estado": "ok",
+    "explicacion": "Sale la tarjeta «Excursión del día» con nombre, hora de salida y ✓ Reservada (excursion_roma, excursion_lanza). Punto de encuentro solo si lo trae la excursión o la reserva."
+  },
+  {
+    "id": "2-no-se-pasan-sitios",
+    "texto": "A un día de excursión no se le pasan sitios",
+    "estado": "medias",
+    "explicacion": "Quitado de «Pasar a otro día» (hoja de HOY, Lugares pendientes, «Hoy ya no da tiempo», saltar y recomendaciones). Lo comprobé en el código y con tsc, no en captura."
+  },
+  {
+    "id": "3-apartado",
+    "texto": "Apartado «Probar Reorganizar» en /admin",
+    "estado": "ok",
+    "explicacion": "Está en el menú del panel (/admin/reorganizar), solo administradores, con las piezas del panel (probador_roma_llegada-1600-ft-1700)."
+  },
+  {
+    "id": "3-se-elige",
+    "texto": "Se elige destino, días, llegada, salida, aeropuerto y Free Tour",
+    "estado": "ok",
+    "explicacion": "Roma y Lanzarote (los que tienen datos de llegada), 2 a 8 días, horas, punto y Free Tour (sin, sin hora, o 10/12/15/17/19/21)."
+  },
+  {
+    "id": "3-linea-motor",
+    "texto": "Una línea con lo que decidió el motor y por qué",
+    "estado": "medias",
+    "explicacion": "Sale la línea con la hora libre, el caso del motor y el aviso. El caso sale con el código del motor sin traducir (free_tour_con_hora_ya_empezado) y un texto del motor dice «El el día 1»."
+  },
+  {
+    "id": "3-antes-despues",
+    "texto": "Primer y último día antes y después, lado a lado",
+    "estado": "medias",
+    "explicacion": "Las tarjetas de DÍAS salen en dos columnas, antes y después (visto el primer día). El último día no lo vi en captura (baja de la pantalla)."
+  },
+  {
+    "id": "3-casos",
+    "texto": "Casos preparados con un toque",
+    "estado": "medias",
+    "explicacion": "Los siete botones están (llegada 9, 14, 21; salida 10, 18; 16:00 con Free Tour 17:00; 18:00 con Free Tour sin hora). Solo probé uno en captura."
+  },
+  {
+    "id": "3-mismo-motor",
+    "texto": "Mismo motor de la app, sin copias, sin guardar nada",
+    "estado": "ok",
+    "explicacion": "Usa la generación y propuestaDeVuelos de la app sobre una copia en memoria; no toca el viaje del administrador ni Supabase. Con un cambio mínimo en adaptarVuelos y la generación para recibir datos por parámetro."
+  },
+  {
+    "id": "4-capturas-vuelta",
+    "texto": "Capturas del día de vuelta en Roma y Lanzarote",
+    "estado": "ok",
+    "explicacion": "En docs/dias/V57_capturas: con vuelo (primera hora, mediodía, media tarde, reorganizado), sin vuelo, sin reorganizar y sin tiempo, sin pase, ya salió (tarde y noche)."
+  },
+  {
+    "id": "4-capturas-excursion",
+    "texto": "Capturas de la excursión en Roma y Lanzarote",
+    "estado": "ok",
+    "explicacion": "excursion_roma.jpg y excursion_lanza.jpg."
+  },
+  {
+    "id": "4-captura-probador",
+    "texto": "Captura del probador con un caso preparado",
+    "estado": "ok",
+    "explicacion": "probador_roma_llegada-1600-ft-1700.jpg, en ordenador (1280)."
+  },
+  {
+    "id": "4-build",
+    "texto": "tsc y npm run build sin errores; peso de arranque",
+    "estado": "ok",
+    "explicacion": "tsc y build sin errores. El peso al abrir pasa de 338,1 a 338,4 KB (tope 340)."
+  }
+]

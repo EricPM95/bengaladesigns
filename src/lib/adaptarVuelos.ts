@@ -153,9 +153,12 @@ async function pedirDiaAlMotor(route: Route, reservations: Reservation[], vuelo:
   return promesa
 }
 
-async function datosDelVuelo(route: Route, reservations: Reservation[]): Promise<{ vuelo: DatosParaMotor; info: ArrivalInfo | null }> {
+/** (V57) La reserva del coche de alquiler (horas de recogida y devolución). El probador de Reorganizar del panel la pasa él (sin tocar el estado); la app, sin pasarla, lee la del viaje de verdad. */
+export type CocheReservado = { horaRecogida?: string | null; horaDevolucion?: string | null } | null
+
+async function datosDelVuelo(route: Route, reservations: Reservation[], coche: CocheReservado = useRouteStore.getState().rentalVehicleBooking): Promise<{ vuelo: DatosParaMotor; info: ArrivalInfo | null }> {
   const info = await fetchArrivalInfo(route.destination).catch(() => null)
-  return { vuelo: datosParaMotor(route, reservations, info, { paraAvisos: true, coche: useRouteStore.getState().rentalVehicleBooking }), info }
+  return { vuelo: datosParaMotor(route, reservations, info, { paraAvisos: true, coche }), info }
 }
 
 function movidasDe(antes: DayPlan, despues: DayPlan): string[] {
@@ -178,8 +181,7 @@ async function diaDeVueltaNuevo(route: Route, day: DayPlan, generado: GeneratedD
  * (LL, Lanzarote) Un día de un destino en coche, rehecho por el motor desde la zona del viajero y con SUS vuelos: el día 1 es el de llegada (con la hora útil), el último es el de vuelta
  * (con la hora límite del coche en la T1), y lo que va en medio se reparte en consecuencia. Un solo camino para todos los días: el del motor. null si el día no cambia.
  */
-async function adaptarUnDiaDeCoche(route: Route, day: DayPlan, vuelo: DatosParaMotor): Promise<DiaAdaptado | null> {
-  const { reservations } = useRouteStore.getState()
+async function adaptarUnDiaDeCoche(route: Route, day: DayPlan, vuelo: DatosParaMotor, reservations: Reservation[] = useRouteStore.getState().reservations): Promise<DiaAdaptado | null> {
   const zona = route.accommodationZone
   const deCoche = esDestinoDeCoche(route.destination)
   const coche = route.answers.coche ?? 'alquiler'
@@ -212,16 +214,16 @@ async function adaptarUnDiaDeCoche(route: Route, day: DayPlan, vuelo: DatosParaM
 }
 
 /** Cómo se adapta un día de la ruta a los vuelos de ahora. */
-async function adaptarUnDia(route: Route, day: DayPlan, vuelo: DatosParaMotor, info: ArrivalInfo | null, generadoDeVuelta: GeneratedDay | null): Promise<DiaAdaptado | null> {
+async function adaptarUnDia(route: Route, day: DayPlan, vuelo: DatosParaMotor, info: ArrivalInfo | null, generadoDeVuelta: GeneratedDay | null, reservations?: Reservation[]): Promise<DiaAdaptado | null> {
   if (!sePuedeRehacer(day)) return null
-  if (esDestinoDeCoche(route.destination)) return adaptarUnDiaDeCoche(route, day, vuelo)
+  if (esDestinoDeCoche(route.destination)) return adaptarUnDiaDeCoche(route, day, vuelo, reservations)
   if (day.isReturnLeg) return vuelo.vuelta && generadoDeVuelta ? diaDeVueltaNuevo(route, day, generadoDeVuelta) : null
   const ciudad = route.days.filter((other) => !other.isReturnLeg)
   const esPrimero = ciudad[0]?.id === day.id
   const esUltimo = ciudad[ciudad.length - 1]?.id === day.id
   const hayDiaDeVuelta = route.days.some((other) => other.isReturnLeg)
   // (LL parte 2) Un solo camino: los días de la llegada, el reparto y la vuelta los monta el motor. Solo el último día de ciudad SIN día de vuelta aparte (una sola fecha de vuelta) se recorta hasta la salida, como antes.
-  if ((vuelo.llegada || vuelo.vuelta) && !(esUltimo && !hayDiaDeVuelta && vuelo.vuelta)) return adaptarUnDiaDeCoche(route, day, vuelo)
+  if ((vuelo.llegada || vuelo.vuelta) && !(esUltimo && !hayDiaDeVuelta && vuelo.vuelta)) return adaptarUnDiaDeCoche(route, day, vuelo, reservations)
   const tiempos = tiemposDelVuelo(route, info)
   const llegada = vuelo.llegada ? enMinutos(vuelo.llegada.hora) : null
   const salida = vuelo.vuelta ? enMinutos(vuelo.vuelta.hora) : null
@@ -346,9 +348,10 @@ function diasDeVuelo(route: Route): DayPlan[] {
  * Pide al motor lo que cambia con los vuelos de ahora: los planes (siempre) y los días que cambiarían (primero, último y vuelta; solo los que se pueden adaptar). No toca la ruta.
  * Devuelve null si la ruta no es de las que rehace el motor.
  */
-export async function propuestaDeVuelos(route: Route, reservations: Reservation[]): Promise<PropuestaDeVuelos | null> {
+export async function propuestaDeVuelos(route: Route, reservations: Reservation[], opciones: { /** (V57, probador del panel) Forzar con o sin pase en vez de leerlo de la cuenta. */ pase?: boolean; coche?: CocheReservado } = {}): Promise<PropuestaDeVuelos | null> {
   if (!esRutaDelMotor(route)) return null
-  const { vuelo, info } = await datosDelVuelo(route, reservations)
+  const conPase = opciones.pase ?? pagoActivo()
+  const { vuelo, info } = await datosDelVuelo(route, reservations, opciones.coche)
   const ciudad = route.days.filter((day) => !day.isReturnLeg)
   const planes: PropuestaDeVuelos['planes'] = {}
   // Los planes: la llegada sale del día 1 con el orden que el motor decide (el mismo plan que daba el rehacer); la vuelta, del día de vuelta.
@@ -366,10 +369,10 @@ export async function propuestaDeVuelos(route: Route, reservations: Reservation[
   }
   // Los días que cambiarían (solo con pase: lo gratis nunca mueve paradas).
   const dias: DiaAdaptado[] = []
-  if (pagoActivo()) {
+  if (conPase) {
     // (LL) Lanzarote: el reparto entero depende del día de llegada y del de vuelta, así que se miran todos los días.
     for (const day of esDestinoDeCoche(route.destination) || vuelo.llegada || vuelo.vuelta ? route.days : diasDeVuelo(route)) {
-      const adaptado = await adaptarUnDia(route, day, vuelo, info, generadoDeVuelta)
+      const adaptado = await adaptarUnDia(route, day, vuelo, info, generadoDeVuelta, reservations)
       if (adaptado) dias.push(adaptado)
     }
   }
@@ -377,9 +380,9 @@ export async function propuestaDeVuelos(route: Route, reservations: Reservation[
   const vueltaPropuesta = dias.find((dia) => route.days.find((other) => other.id === dia.dayId)?.isReturnLeg)
   const hayOtrosCambios = dias.some((dia) => !route.days.find((other) => other.id === dia.dayId)?.isReturnLeg)
   const vueltaActual = route.days.find((day) => day.isReturnLeg)
-  if (pagoActivo() && !esDestinoDeCoche(route.destination) && vuelo.vuelta && vueltaActual && hayOtrosCambios) {
+  if (conPase && !esDestinoDeCoche(route.destination) && vuelo.vuelta && vueltaActual && hayOtrosCambios) {
     const nueva: Route = { ...route, days: route.days.map((other) => dias.find((dia) => dia.dayId === other.id)?.next ?? other) }
-    const segunda = await adaptarUnDiaDeCoche(nueva, nueva.days.find((day) => day.isReturnLeg) ?? vueltaActual, vuelo)
+    const segunda = await adaptarUnDiaDeCoche(nueva, nueva.days.find((day) => day.isReturnLeg) ?? vueltaActual, vuelo, reservations)
     const resto = dias.filter((dia) => dia !== vueltaPropuesta)
     dias.length = 0
     dias.push(...resto, ...(segunda ? [{ ...segunda, dayId: vueltaActual.id }] : []))

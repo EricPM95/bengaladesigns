@@ -55,7 +55,7 @@ export type Resolucion = { ok: true; accion: AccionResuelta } | { ok: false; nec
 
 const esTexto = (v: unknown): v is string => typeof v === 'string' && v.length > 0
 const dia = (route: Route, dayId: unknown): DayPlan | undefined => (esTexto(dayId) ? route.days.find((d) => d.id === dayId) : undefined)
-const esDiaDeRuta = (d: DayPlan): boolean => !d.isReturnLeg
+const esDiaDeRuta = (d: DayPlan): boolean => !d.isReturnLeg && d.dayType !== 'excursion' && d.interruptor?.mode !== 'excursion'
 const esUnDiaValido = (v: unknown): v is DayPlan => Boolean(v) && typeof v === 'object' && esTexto((v as DayPlan).id) && Array.isArray((v as DayPlan).stops)
 const esUnaParadaValida = (v: unknown): v is Stop => Boolean(v) && typeof v === 'object' && esTexto((v as Stop).name)
 

@@ -64,6 +64,8 @@ export interface DatosDelDiaDeVuelta {
   lugar: string | null
   /** La hora hasta la que tiene el día libre («15:00»). Null sin hora o en coche. */
   hasta: string | null
+  /** (V57) La hora de salir hacia el aeropuerto aunque no quede tiempo para ver nada (`hasta` va a null en ese caso). Null sin hora o en coche. */
+  sale: string | null
   /** Sin hora o en coche: no hay cuenta. */
   conHora: boolean
   /** Con hora pero sin tiempo para ver nada: día de irse con calma, sin [+ Añadir lugares]. */
@@ -81,7 +83,7 @@ export function datosDelDiaDeVuelta(entrada: { modo: MedioDeLaVuelta; hora: stri
   const { modo, hora, punto, medio, info, zonaId } = entrada
   const base = { modo, palabra: PALABRA[modo], sitio: SITIO[modo], hora: hora || null, lugar: punto ? puntoCorto(punto) : null }
   const salida = aMin(hora)
-  if (modo === 'coche' || salida == null) return { ...base, hasta: null, conHora: false, sinTiempo: false, trayecto: null, margen: 0 }
+  if (modo === 'coche' || salida == null) return { ...base, hasta: null, sale: null, conHora: false, sinTiempo: false, trayecto: null, margen: 0 }
   const zona = trayectoDesdeSuZonaMin(info, zonaId, punto)
   let trayecto = zona != null ? { min: zona, de: 'zona' as const } : { min: punto?.al_centro_min ?? 0, de: 'centro' as const }
   const margen = margenDeEstarMin(modo, medio)
@@ -93,7 +95,7 @@ export function datosDelDiaDeVuelta(entrada: { modo: MedioDeLaVuelta; hora: stri
   }
   const hasta = Math.floor(limite / 15) * 15
   const sinTiempo = hasta - INICIO_DEL_DIA_MIN < MINIMO_PARA_VER_ALGO_MIN
-  return { ...base, hasta: sinTiempo ? null : hhmm(hasta), conHora: true, sinTiempo, trayecto, margen }
+  return { ...base, hasta: sinTiempo ? null : hhmm(hasta), sale: hasta >= 0 ? hhmm(hasta) : null, conHora: true, sinTiempo, trayecto, margen }
 }
 
 export interface TextosDelDiaDeVuelta {

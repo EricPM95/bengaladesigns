@@ -1,0 +1,27 @@
+// Escribe docs/dias/V57_puntos.json (V57).
+import fs from 'node:fs'
+const P = (id, texto, estado, explicacion) => ({ id, texto, estado, explicacion })
+const o = [
+  P('1-por-que-vacio', 'Por qué salió vacío el día de vuelta', 'ok', 'Era un fallo real, no solo del viaje de prueba: con el vuelo puesto en RESERVAS pero sin el plan del motor (sin «Sí, adaptarlos»), HOY no pintaba nada porque exigía esa tarjeta del motor. Ahora la tarjeta sale con solo la hora del vuelo.'),
+  P('1-con-vuelo-billete', 'Con vuelo: el billete de vuelta', 'ok', 'Debajo de la tarjeta sale el billete QR de HOY (VUELTA · FIUMICINO, 19:40, «+ Añade tu tarjeta de embarque»). Capturas vuelta_roma_con_vuelo_* y vuelta_lanza_con_vuelo_*.'),
+  P('1-con-vuelo-sal-hacia', 'Con vuelo: «Sal hacia el aeropuerto a las …»', 'medias', 'En Roma sale con hora y trayecto («a las 16:00 · Al aeropuerto: 70 min»). En Lanzarote sale solo después de Reorganizar (15:47, límite del coche 17:10); antes solo «Devuelve el coche en la T1», porque la cuenta del coche es del motor y no se inventa.'),
+  P('1-con-vuelo-paradas', 'Con vuelo: las paradas que da tiempo a ver', 'medias', 'Si el día tiene paradas salen debajo como siempre, y el día sin paradas lleva «La tarde es tuya / Añadir lugares». El motor de Roma no pone paradas el día de vuelta y no pude ver un día de vuelta con paradas reales.'),
+  P('1-sin-vuelo', 'Sin vuelo: «Añade tu vuelo de vuelta…» con [Añadir mi vuelo]', 'ok', 'Sale en Roma y Lanzarote. El botón abre RESERVAS en la hoja «Tu vuelo» (vuelta_roma_sin_vuelo, vuelta_lanza_sin_vuelo). El toque del botón no lo pulsé en captura.'),
+  P('1-ya-salio', 'Vuelo ya salido: «Buen viaje de vuelta» / después del viaje', 'ok', 'Con el vuelo a las 18:05, a las 19:00 sale solo «Buen viaje de vuelta», sin botones; a las 22:00 pasa a lo de después del viaje. Ya no sale «Devuelve el coche» ni «0 paradas».'),
+  P('1-sin-reorganizar-sin-tiempo', 'Aviso «Tu vuelo sale a las … y hoy no te da tiempo» con [Adaptar mi día]', 'medias', 'En Roma sale (vuelo 13:30 con paradas puestas a mano). En Lanzarote no sale hasta reorganizar, porque la hora de salir la da el motor. [Adaptar mi día] calcula y abre Reorganizar, pero no lo pulsé en captura.'),
+  P('1-sin-pase', 'Sin pase, con su candado como ahora', 'ok', 'Sin pase sale la tarjeta con «Con el Pase Roma/Lanzarote, te decimos hasta qué hora tienes el día» y el candado (vuelta_roma_sin_pase, vuelta_lanza_sin_pase).'),
+  P('2-comprobar-viaje-normal', 'Comprobar con un viaje normal si fallaba también', 'ok', 'Falla también con un viaje generado por la app: La Graciosa (Lanzarote) tiene tipo excursión pero sin interruptor y HOY solo miraba el interruptor. En Roma la reserva marca el día como excursión sin interruptor: mismo fallo.'),
+  P('2-dia-excursion', 'HOY como día de excursión, nunca «Hoy libre»', 'ok', 'Sale la tarjeta «Excursión del día» con nombre, hora de salida y ✓ Reservada (excursion_roma, excursion_lanza). Punto de encuentro solo si lo trae la excursión o la reserva.'),
+  P('2-no-se-pasan-sitios', 'A un día de excursión no se le pasan sitios', 'medias', 'Quitado de «Pasar a otro día» (hoja de HOY, Lugares pendientes, «Hoy ya no da tiempo», saltar y recomendaciones). Lo comprobé en el código y con tsc, no en captura.'),
+  P('3-apartado', 'Apartado «Probar Reorganizar» en /admin', 'ok', 'Está en el menú del panel (/admin/reorganizar), solo administradores, con las piezas del panel (probador_roma_llegada-1600-ft-1700).'),
+  P('3-se-elige', 'Se elige destino, días, llegada, salida, aeropuerto y Free Tour', 'ok', 'Roma y Lanzarote (los que tienen datos de llegada), 2 a 8 días, horas, punto y Free Tour (sin, sin hora, o 10/12/15/17/19/21).'),
+  P('3-linea-motor', 'Una línea con lo que decidió el motor y por qué', 'medias', 'Sale la línea con la hora libre, el caso del motor y el aviso. El caso sale con el código del motor sin traducir (free_tour_con_hora_ya_empezado) y un texto del motor dice «El el día 1».'),
+  P('3-antes-despues', 'Primer y último día antes y después, lado a lado', 'medias', 'Las tarjetas de DÍAS salen en dos columnas, antes y después (visto el primer día). El último día no lo vi en captura (baja de la pantalla).'),
+  P('3-casos', 'Casos preparados con un toque', 'medias', 'Los siete botones están (llegada 9, 14, 21; salida 10, 18; 16:00 con Free Tour 17:00; 18:00 con Free Tour sin hora). Solo probé uno en captura.'),
+  P('3-mismo-motor', 'Mismo motor de la app, sin copias, sin guardar nada', 'ok', 'Usa la generación y propuestaDeVuelos de la app sobre una copia en memoria; no toca el viaje del administrador ni Supabase. Con un cambio mínimo en adaptarVuelos y la generación para recibir datos por parámetro.'),
+  P('4-capturas-vuelta', 'Capturas del día de vuelta en Roma y Lanzarote', 'ok', 'En docs/dias/V57_capturas: con vuelo (primera hora, mediodía, media tarde, reorganizado), sin vuelo, sin reorganizar y sin tiempo, sin pase, ya salió (tarde y noche).'),
+  P('4-capturas-excursion', 'Capturas de la excursión en Roma y Lanzarote', 'ok', 'excursion_roma.jpg y excursion_lanza.jpg.'),
+  P('4-captura-probador', 'Captura del probador con un caso preparado', 'ok', 'probador_roma_llegada-1600-ft-1700.jpg, en ordenador (1280).'),
+  P('4-build', 'tsc y npm run build sin errores; peso de arranque', 'ok', 'tsc y build sin errores. El peso al abrir pasa de 338,1 a 338,4 KB (tope 340).'),
+]
+fs.writeFileSync('docs/dias/V57_puntos.json', JSON.stringify(o, null, 2))

@@ -27,31 +27,26 @@ function datosDeCoche(route: Route, day: DayPlan): { hora: string | null; hasta:
 }
 
 /**
+ * (V57) La hora del vuelo y a qué hora hay que salir hacia el aeropuerto/estación/puerto (`hasta`), con el trayecto y el margen. UNA sola cuenta para la tarjeta, el aviso de «hoy no te da tiempo» y el «Buen viaje».
+ * Sin consultas a Supabase: todo sale del viaje y de los datos del destino en memoria.
+ */
+export function datosDeLaSalida({ route, day, mitad, info }: { route: Route; day: DayPlan; mitad: MitadDeHoy; info: ArrivalInfo }): { hora: string | null; hasta: string | null; trayectoMin: number | null; sitio: string | null; margen: string | null; limiteT1: string | null; sinTiempo: boolean } {
+  const d = datosDelDiaDeVuelta({ modo: (mitad.mode === 'coche' ? 'avion' : mitad.mode) as MedioDeLaVuelta, hora: mitad.hora, punto: mitad.point, medio: medioOf(info, mitad.mode), info, zonaId: route.accommodationZone ?? null })
+  if (esDestinoDeCoche(route.destination)) {
+    // Con el día de vuelta del motor (tras Reorganizar) manda su hora y su límite del coche; sin él NO se inventa la hora de salir (el motor de coche cuenta distinto: carretera, devolver el coche, T1): hasta que reorganice, solo «Devuelve el coche en la T1».
+    const c = datosDeCoche(route, day)
+    return { hora: c.hora ?? mitad.hora, hasta: c.hasta, trayectoMin: c.trayectoMin, sitio: 'aeropuerto', margen: textoDelMargen(120), limiteT1: c.limiteT1, sinTiempo: false }
+  }
+  return { hora: mitad.hora, hasta: d.hasta ?? d.sale, trayectoMin: d.trayecto?.min ?? null, sitio: d.sitio, margen: d.margen ? textoDelMargen(d.margen) : null, limiteT1: null, sinTiempo: d.sinTiempo }
+}
+
+/**
  * H14 y H14b: «Hoy vuelves a casa», UNA sola tarjeta con pase y sin pase. Con la cuenta única de `shared/arrival/horaUtil.js` (vía `datosDelDiaDeVuelta`: vuelo − tiempo en el aeropuerto − trayecto desde tu zona − maleta).
  * Con el pase: «Tienes el día libre hasta las…», el trayecto y, en Lanzarote, «Devuelve el coche en la T1» con su hora límite. Sin el pase: lo mismo sin la cuenta, y una línea que dice lo que daría el pase.
  */
-export function HoyVuelvesH14({ route, day, tarjeta, mitad, info, conPase, onVerComoIr }: { route: Route; day: DayPlan; tarjeta: TarjetaHoyVuelvesDato | null; mitad: MitadDeHoy; info: ArrivalInfo; conPase: boolean; onVerComoIr: () => void }) {
+export function HoyVuelvesH14({ route, day, tarjeta, mitad, info, conPase, onVerComoIr, onAnadirVuelo }: { route: Route; day: DayPlan; tarjeta: TarjetaHoyVuelvesDato | null; mitad: MitadDeHoy; info: ArrivalInfo; conPase: boolean; onVerComoIr: () => void; /** (V57) Sin vuelo de vuelta: [Añadir mi vuelo] (abre la hoja «Tu vuelo» de RESERVAS). */ onAnadirVuelo?: () => void }) {
   const enCoche = esDestinoDeCoche(route.destination)
-  let hora = mitad.hora
-  let hasta: string | null = null
-  let trayectoMin: number | null = null
-  let sitio: string | null = 'aeropuerto'
-  let margen: string | null = null
-  let limiteT1: string | null = null
-  if (enCoche) {
-    const c = datosDeCoche(route, day)
-    hora = c.hora ?? hora
-    hasta = c.hasta
-    trayectoMin = c.trayectoMin
-    limiteT1 = c.limiteT1
-    margen = textoDelMargen(120)
-  } else {
-    const d = datosDelDiaDeVuelta({ modo: mitad.mode as MedioDeLaVuelta, hora: mitad.hora, punto: mitad.point, medio: medioOf(info, mitad.mode), info, zonaId: route.accommodationZone ?? null })
-    hasta = d.hasta
-    trayectoMin = d.trayecto?.min ?? null
-    sitio = d.sitio
-    margen = d.margen ? textoDelMargen(d.margen) : null
-  }
+  const { hora, hasta, trayectoMin, sitio, margen, limiteT1 } = datosDeLaSalida({ route, day, mitad, info })
   const modo = enCoche ? 'avion' : mitad.mode
   const t = lineasDeVuelta({ modo, hora, hasta: conPase ? hasta : null, trayectoMin: conPase ? trayectoMin : null, sitio, margen, enCoche, limiteT1: conPase ? limiteT1 : null, conPase, nombreDelPase: nombreDelPase(route.destination) })
   // Sin la hora del vuelo no hay cuenta: lo que dice el motor, tal cual.
@@ -71,7 +66,7 @@ export function HoyVuelvesH14({ route, day, tarjeta, mitad, info, conPase, onVer
         {sinHora ? (
           <span data-hoy-vuelves-texto className="flex items-center gap-2.5">
             <Icono nombre="reloj" size={17} grosor={1.8} style={{ color: ORO_CLARO }} />
-            {tarjeta?.texto ?? 'Aún no sabemos a qué hora sale tu vuelo.'}
+            {onAnadirVuelo ? 'Añade tu vuelo de vuelta para saber a qué hora salir.' : (tarjeta?.texto ?? 'Aún no sabemos a qué hora sale tu vuelo.')}
           </span>
         ) : (
           t.lineas.map((l, i) => (
@@ -82,7 +77,12 @@ export function HoyVuelvesH14({ route, day, tarjeta, mitad, info, conPase, onVer
           ))
         )}
       </div>
-      {conPase ? (
+      {sinHora && onAnadirVuelo ? (
+        <button type="button" onClick={onAnadirVuelo} data-hoy-vuelves="anadir-vuelo" className="flex h-12 items-center justify-center gap-1.5 rounded-2xl px-2.5 text-[13.5px] font-bold" style={BOTON_ORO}>
+          <Icono nombre="anadir" size={17} grosor={1.9} />
+          Añadir mi vuelo
+        </button>
+      ) : conPase ? (
         <button type="button" onClick={onVerComoIr} data-hoy-vuelves="ver-como-ir" className="flex h-12 items-center justify-center gap-1.5 rounded-2xl px-2.5 text-[13.5px] font-bold" style={BOTON_ORO}>
           <Icono nombre="localizar" size={17} grosor={1.9} />
           {sitio === 'estación' ? 'Cómo llegar a la estación' : sitio === 'puerto' ? 'Cómo llegar al puerto' : 'Cómo llegar al aeropuerto'}
