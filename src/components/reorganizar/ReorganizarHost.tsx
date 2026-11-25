@@ -1,5 +1,4 @@
-import { useEffect, useId, useState, type ReactNode } from 'react'
-import { createPortal } from 'react-dom'
+import { useEffect, useId, useMemo, useState, type ReactNode } from 'react'
 import { pagoActivo, usePagoActivo } from '../../lib/pago'
 import { diasPuestosEnDuda } from '../../lib/diasEnDuda'
 import { diasQueCambian, esDiaRecienReorganizado, reorganizarDias } from '../../lib/reorganizarDia'
@@ -11,13 +10,11 @@ import { useFlotantes, useColumnaIzquierda, bottomDeLaFila, DERECHA_DE_LA_COLUMN
 import { useBotonReorganizarVisible } from './useBotonReorganizarVisible'
 import { usePermisosDelViaje } from '../../hooks/usePermisosDelViaje'
 import { AvisoNoCabe } from './AvisoNoCabe'
-import { CruzDeHoja } from '../ui/CruzDeHoja'
-import { TiradorDeHoja } from '../ui/TiradorDeHoja'
-import { BOTON_CLARO, BOTON_ORO } from '../ui/botonesOro'
 import { IconoReorganizar } from './IconoReorganizar'
-import { FONDO_DE_HOJA } from '../ui/fondoDeHoja'
-import { TarjetasDeCambios } from '../route/hoy/v2/CambiarPlan'
-import { tarjetasDeReorganizar } from '../../lib/tarjetasDePropuesta'
+import { HojaDeReorganizar } from './HojaDeReorganizar'
+import { cambiosDeReorganizar, diasDespuesDeCambios, textoDeReorganizar } from '../../lib/tarjetasDePropuesta'
+import type { Route } from '../../lib/types'
+import type { PlanLlegada } from '../../lib/planLlegadaVuelta'
 
 /**
  * EL BOTÓN «REORGANIZAR» DEL PASE (Tanda 10S7, apartado 2; `Piezas/Reorganizar` R1 a R3). Se monta una vez por pantalla del viaje, junto al botón de los logros:
@@ -193,9 +190,20 @@ export function ReorganizarHost(): ReactNode {
   )
 }
 
+/** Lo que dice el texto de arriba de la hoja: la llegada y la vuelta del viaje (si hay vuelo y el día que cambia es el primero o el último). */
+function datosDeVuelo(route: Route, dayIds: string[], planLlegada?: PlanLlegada | null): { llegada: string | null; libreMin: number | null; salida: string | null; vuelo: boolean } {
+  const ciudad = route.days.filter((d) => !d.isReturnLeg)
+  const primero = ciudad[0]?.id
+  const ultimos = new Set([ciudad[ciudad.length - 1]?.id, route.days.find((d) => d.isReturnLeg)?.id])
+  const conLlegada = Boolean(route.arrivalFlightTime) && dayIds.includes(primero ?? '')
+  const conSalida = Boolean(route.departureFlightTime) && dayIds.some((id) => ultimos.has(id))
+  const plan = planLlegada ?? route.planLlegada ?? null
+  const libre = (plan?.interno as { horaUtilMin?: number } | undefined)?.horaUtilMin
+  return { llegada: conLlegada ? (route.arrivalFlightTime ?? null) : null, libreMin: conLlegada && typeof libre === 'number' ? libre : null, salida: conSalida ? (route.departureFlightTime ?? null) : null, vuelo: conLlegada || conSalida }
+}
+
 /**
- * La alerta «¿Reorganizamos tu día?» (R2): hoja de abajo con el texto de Eric. (V55) Con el formato de TODAS las hojas que proponen un cambio: una tarjeta por cada parada que se mueve (su foto, de qué parada a cuál y el cuadrado
- * de la fecha del día; con más de 3, «y 5 más»), la franja verde de lo que sigue igual, el dorado que dice lo que hace y [Dejarlo como está] (que, como siempre, deja el botón redondo).
+ * La alerta «¿Reorganizamos tu día?» (RO1) / «¿Reorganizamos tus días?» (RO2): `HojaDeReorganizar` (V61), con una tarjeta por cada sitio que cambia de verdad y la franja verde concreta. [Dejarlo como está] deja el botón redondo.
  */
 function AlertaReorganizar({ trabajando, onReorganizar }: { trabajando: boolean; onReorganizar: () => void }): ReactNode {
   const ahoraNo = () => useReorganizarStore.getState().ahoraNo()
@@ -213,7 +221,6 @@ function AlertaReorganizar({ trabajando, onReorganizar }: { trabajando: boolean;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [faltan.join('|')])
-  const tarjetas = route ? tarjetasDeReorganizar(cambios.filter((c) => dias.includes(c.dayId)), route) : []
   useEffect(() => {
     const alTeclear = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && !useReorganizarStore.getState().trabajando) useReorganizarStore.getState().ahoraNo()
@@ -221,44 +228,26 @@ function AlertaReorganizar({ trabajando, onReorganizar }: { trabajando: boolean;
     window.addEventListener('keydown', alTeclear)
     return () => window.removeEventListener('keydown', alTeclear)
   }, [])
-  return createPortal(
-    <div data-hoja="reorganizar" data-alerta-reorganizar="1" role="dialog" aria-modal="true" aria-label="¿Reorganizamos tu día?" style={{ position: 'fixed', inset: 0, zIndex: 110, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-      <div className="hoja-fondo" onClick={trabajando ? undefined : ahoraNo} style={{ position: 'absolute', inset: 0, background: FONDO_DE_HOJA }} />
-      <div className="hoja-panel" style={{ position: 'relative', width: '100%', maxWidth: 520, maxHeight: '92dvh', overflowY: 'auto', borderRadius: '32px 32px 0 0', background: '#FBF3E2', color: '#1C2230', padding: '10px 18px calc(28px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', gap: 14, boxShadow: '0 -20px 40px rgba(0,0,0,.25)' }}>
-        <TiradorDeHoja />
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <IconoReorganizar circulo={44} />
-            <span style={{ font: "400 28px/1.1 'Instrument Serif',serif" }}>¿Reorganizamos tu día?</span>
-          </div>
-          <CruzDeHoja enLinea onCerrar={ahoraNo} />
-        </div>
-        <span style={{ font: "400 14.5px/1.45 'Geist',sans-serif", color: 'rgba(28,34,48,.7)' }}>Adaptamos tus paradas a tu viaje y tus reservas a su hora, para que no pierdas tiempo.</span>
-        <TarjetasDeCambios tarjetas={tarjetas} franja="Sigue igual: tus reservas y lo que ya has visto" />
-        <div data-dos-botones="1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-          <button type="button" data-reorganizar-si="1" onClick={onReorganizar} disabled={trabajando} style={{ ...BOTON_ORO, minHeight: 52, padding: '0 10px', lineHeight: 1.2, borderRadius: 16, border: 'none', cursor: 'pointer', font: "700 15px 'Geist',sans-serif", opacity: trabajando ? 0.7 : 1 }}>
-            {dias.length > 1 ? 'Reorganizar mis días' : 'Reorganizar mi día'}
-          </button>
-          <button type="button" data-reorganizar-no="1" onClick={ahoraNo} disabled={trabajando} style={{ ...BOTON_CLARO, minHeight: 52, padding: '0 10px', lineHeight: 1.2, borderRadius: 16, cursor: 'pointer', font: "700 15px 'Geist',sans-serif" }}>
-            Dejarlo como está
-          </button>
-        </div>
-      </div>
-    </div>,
-    document.body,
-  )
+  const mias = cambios.filter((c) => dias.includes(c.dayId))
+  const resumen = useMemo(() => (route ? cambiosDeReorganizar(diasDespuesDeCambios(mias, route), route) : null), [route, mias]) // eslint-disable-line react-hooks/exhaustive-deps
+  if (!route || !resumen) return null
+  const v = datosDeVuelo(route, dias)
+  const texto = textoDeReorganizar({ ...v, dias: dias.length })
+  return <HojaDeReorganizar id="reorganizar" titulo={dias.length > 1 ? '¿Reorganizamos tus días?' : '¿Reorganizamos tu día?'} texto={texto} cambios={resumen} botonSi={dias.length > 1 ? 'Reorganizar mis días' : 'Reorganizar mi día'} trabajando={trabajando} onSi={onReorganizar} onNo={ahoraNo} />
 }
 
 /**
- * (10S7b) La alerta «¿Adaptamos tu primer y tu último día a tus vuelos?»: sale al guardar o cambiar el vuelo, con pase, solo a quien lo cambió y solo si adaptar esos días cambiaría algo. [Sí, adaptarlos] rehace
- * SOLO el día de llegada y el de vuelta (franja «Hemos adaptado tus días a tus vuelos» con [Deshacer]); [Ahora no] no cambia nada y deja el botón «Reorganizar» en esos días.
+ * (V61, RO3) «¿Adaptamos tus días a tu vuelo?»: sale DIRECTAMENTE al guardar o cambiar el vuelo, con pase, solo a quien lo cambió y solo si adaptar esos días cambiaría algo. [Reorganizar mi día] pone esos días
+ * adaptados (franja «Hemos adaptado tus días a tus vuelos» con [Deshacer]) y no deja botón flotante; [Dejarlo como está] no cambia nada y deja el botón «Reorganizar» en esos días.
  */
 function AlertaAdaptarVuelos(): ReactNode {
+  const propuesta = useReorganizarStore((s) => s.vuelos)
+  const route = useRouteStore((s) => s.route)
   const ahoraNo = () => {
-    const propuesta = useReorganizarStore.getState().vuelos
+    const p = useReorganizarStore.getState().vuelos
     useReorganizarStore.getState().cerrarVuelos()
-    if (propuesta) {
-      const ids = propuesta.dias.map((dia) => dia.dayId)
+    if (p) {
+      const ids = p.dias.map((dia) => dia.dayId)
       useReorganizarStore.getState().poner(ids, ids)
     }
   }
@@ -269,29 +258,9 @@ function AlertaAdaptarVuelos(): ReactNode {
     window.addEventListener('keydown', alTeclear)
     return () => window.removeEventListener('keydown', alTeclear)
   }, [])
-  return createPortal(
-    <div data-hoja="adaptar-vuelos" data-alerta-adaptar="1" role="dialog" aria-modal="true" aria-label="¿Adaptamos tu primer y tu último día a tus vuelos?" style={{ position: 'fixed', inset: 0, zIndex: 110, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-      <div className="hoja-fondo" onClick={ahoraNo} style={{ position: 'absolute', inset: 0, background: FONDO_DE_HOJA }} />
-      <div className="hoja-panel" style={{ position: 'relative', width: '100%', maxWidth: 520, borderRadius: '32px 32px 0 0', background: '#FBF3E2', color: '#1C2230', padding: '10px 18px calc(28px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', gap: 14, boxShadow: '0 -20px 40px rgba(0,0,0,.25)' }}>
-        <TiradorDeHoja />
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <IconoReorganizar circulo={44} />
-            <span style={{ font: "400 28px/1.1 'Instrument Serif',serif" }}>¿Adaptamos tu primer y tu último día a tus vuelos?</span>
-          </div>
-          <CruzDeHoja enLinea onCerrar={ahoraNo} />
-        </div>
-        <span style={{ font: "400 14.5px/1.45 'Geist',sans-serif", color: 'rgba(28,34,48,.7)' }}>Solo cambiamos esos dos días, para que no pongan nada antes de que llegues ni después de irte. El resto de tu ruta se queda como está.</span>
-        <div data-dos-botones="1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-          <button type="button" data-adaptar-si="1" onClick={() => void adaptarLosDias()} style={{ ...BOTON_ORO, minHeight: 52, padding: '0 10px', lineHeight: 1.2, borderRadius: 16, border: 'none', cursor: 'pointer', font: "700 15px 'Geist',sans-serif" }}>
-            Sí, adaptarlos
-          </button>
-          <button type="button" data-adaptar-no="1" onClick={ahoraNo} style={{ ...BOTON_CLARO, minHeight: 52, padding: '0 10px', lineHeight: 1.2, borderRadius: 16, cursor: 'pointer', font: "700 15px 'Geist',sans-serif" }}>
-            Ahora no
-          </button>
-        </div>
-      </div>
-    </div>,
-    document.body,
-  )
+  const resumen = useMemo(() => (route && propuesta ? cambiosDeReorganizar(propuesta.dias.map((d) => ({ dayId: d.dayId, despues: d.next })), route) : null), [route, propuesta])
+  if (!route || !propuesta || !resumen) return null
+  const ids = propuesta.dias.map((d) => d.dayId)
+  const texto = textoDeReorganizar({ ...datosDeVuelo(route, ids, propuesta.planes.llegada), dias: ids.length })
+  return <HojaDeReorganizar id="adaptar-vuelos" titulo="¿Adaptamos tus días a tu vuelo?" texto={texto} cambios={resumen} botonSi={ids.length > 1 ? 'Reorganizar mis días' : 'Reorganizar mi día'} onSi={() => void adaptarLosDias()} onNo={ahoraNo} />
 }

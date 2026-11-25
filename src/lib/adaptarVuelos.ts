@@ -33,7 +33,8 @@ import { fechaDelDia } from './nombreDeDia'
 import { useRouteStore } from '../store/useRouteStore'
 import { esDestinoDeCoche } from './experienceCategoryBank'
 import { withUndo } from '../store/useAddFlowStore'
-import { useReorganizarStore } from '../store/useReorganizarStore'
+import { useReorganizarStore, alDeshacerOcultaLaHoja } from '../store/useReorganizarStore'
+import { marcarDiaReorganizado } from './diaReorganizado'
 
 export interface DiaAdaptado {
   dayId: string
@@ -394,13 +395,21 @@ export async function propuestaDeVuelos(route: Route, reservations: Reservation[
  * Para el botón «Reorganizar»: el día adaptado al vuelo si este día es el primero, el último o el de vuelta, hay vuelo, y adaptarlo cambiaría algo. null en cualquier otro caso.
  */
 export async function diaAdaptadoAlVuelo(route: Route, reservations: Reservation[], dayId: string): Promise<DiaAdaptado | null> {
-  if (!pagoActivo() || !esRutaDelMotor(route)) return null
+  return (await adaptacionAlVuelo(route, reservations, dayId)).adaptado
+}
+
+/**
+ * (V61) Lo mismo con una respuesta más: `manda` = el motor de los vuelos es quien decide ESTE día (hay vuelo y el día es de los que rehace el motor). Entonces el orden suelto de
+ * `/api/reorganizar-dia` (que no sabe de vuelos ni de la hora del Free Tour) NO puede volver a tocarlo: si el motor no cambia nada, el día ya está bien y Reorganizar no propone nada (dos veces seguidas = lo mismo).
+ */
+export async function adaptacionAlVuelo(route: Route, reservations: Reservation[], dayId: string): Promise<{ manda: boolean; adaptado: DiaAdaptado | null }> {
+  if (!pagoActivo() || !esRutaDelMotor(route)) return { manda: false, adaptado: null }
   const { vuelo, info } = await datosDelVuelo(route, reservations)
   const day = (esDestinoDeCoche(route.destination) || vuelo.llegada || vuelo.vuelta ? route.days : diasDeVuelo(route)).find((other) => other.id === dayId)
-  if (!day || !sePuedeRehacer(day)) return null
-  if (!vuelo.llegada && !vuelo.vuelta) return null
+  if (!day || !sePuedeRehacer(day)) return { manda: false, adaptado: null }
+  if (!vuelo.llegada && !vuelo.vuelta) return { manda: false, adaptado: null }
   const generado = day.isReturnLeg && vuelo.vuelta ? await pedirDiaAlMotor(route, reservations, vuelo, day.dayNumber, true) : null
-  return adaptarUnDia(route, day, vuelo, info, generado)
+  return { manda: true, adaptado: await adaptarUnDia(route, day, vuelo, info, generado) }
 }
 
 /** Pone los días adaptados (UNA franja con [Deshacer], UN solo aviso para los demás) y los ilumina. Un día que el viajero cambió mientras tanto no se pisa. */
@@ -416,6 +425,12 @@ export function ponerDiasAdaptados(dias: DiaAdaptado[], mensaje = 'Hemos adaptad
     const despues = useRouteStore.getState().route
     if (despues) useRouteStore.setState({ route: conUltimoCambio(antes, despues, { tipo: 'reorganizar', dia_n: vigentes[0].dayNumber, fecha: fechaDelDia(despues, vigentes[0].dayNumber), n: vigentes.length }) })
   })
+  // (V61) [Deshacer] no abre ninguna hoja sola, y los días adaptados quedan marcados: el botón «Reorganizar» no vuelve por ellos hasta que el viajero cambie algo de verdad.
+  alDeshacerOcultaLaHoja()
+  for (const dia of vigentes) {
+    const queda = useRouteStore.getState().route?.days.find((other) => other.id === dia.dayId)
+    if (queda) marcarDiaReorganizado(queda)
+  }
   useReorganizarStore.getState().iluminar(vigentes.flatMap((dia) => dia.movidas))
   useReorganizarStore.getState().ponerNoCaben(vigentes.flatMap((dia) => dia.noCaben ?? []))
   return vigentes.length

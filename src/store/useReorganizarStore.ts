@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import type { NoCabe, PropuestaDeVuelos } from '../lib/adaptarVuelos'
 import type { CambioDeUnDia } from '../lib/reorganizarDia'
+import { useAddFlowStore } from './useAddFlowStore'
 
 /**
  * EL BOTÓN «REORGANIZAR» DEL PASE (Tanda 10S7, apartado 2; `Piezas/Reorganizar` R1-R3). Estado de pantalla (no se guarda con el viaje):
@@ -75,3 +76,27 @@ export const useReorganizarStore = create<ReorganizarState>((set) => ({
   reiniciar: () => set({ dias: [], cambios: [], alerta: false, trabajando: false, iluminadas: [], vuelos: null, noCaben: [] }),
   terminar: () => set({ dias: [], cambios: [], alerta: false, trabajando: false }),
 }))
+
+/**
+ * (V61) Al pulsar [Deshacer] del aviso que hay ahora («Hemos reorganizado tu día», «Hemos adaptado tus días a tus vuelos»): la ruta vuelve EXACTAMENTE a como estaba (el aviso guarda la ruta entera, así que
+ * devuelve todos los días que se tocaron, de una vez) y NO se abre ninguna hoja sola: se cierran la hoja de Reorganizar y la de los vuelos, y se borran los avisos de «no cabe» y lo iluminado.
+ * El botón redondo puede volver si, con los días como estaban, reorganizar los cambiaría otra vez (el mismo cálculo de antes), pero nunca la hoja.
+ */
+export function alDeshacerOcultaLaHoja(): void {
+  const toast = useAddFlowStore.getState().toast
+  if (!toast) return
+  const anterior = toast.alDeshacer
+  useAddFlowStore.setState({
+    toast: {
+      ...toast,
+      alDeshacer: () => {
+        anterior?.()
+        const st = useReorganizarStore.getState()
+        st.cerrarAlerta()
+        st.cerrarVuelos()
+        st.ponerNoCaben([])
+        st.limpiarIluminadas()
+      },
+    },
+  })
+}

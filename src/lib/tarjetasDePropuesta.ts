@@ -1,7 +1,7 @@
 import { addDaysToIso } from './dateRange'
 import { aHora, minDe, type Op, type Propuesta } from './hoyCambiarPlan'
 import type { CambioDeUnDia } from './reorganizarDia'
-import { numberedStopsOf } from './stopKind'
+import { lugarCon } from './articulos'
 import type { DayPlan, Route, Stop } from './types'
 
 /**
@@ -144,25 +144,223 @@ export function tarjetasDePropuesta(p: Propuesta, route: Route): TarjetaDePropue
 export const franjaDePropuesta = (p: Propuesta): string => p.franja ?? `Sigue igual: ${p.mantiene.titulo}`
 
 /**
- * (V55) LAS TARJETAS DE «REORGANIZAR»: una por cada parada que cambia de sitio dentro de su día (de la parada 5 a la 2), con el cuadrado de la fecha de ese día; la que sale de la ruta (al adaptar al vuelo) va a «Si te sobra tiempo».
- * `cambios` son los días que `diasQueCambian` calcula; las paradas se leen de la ruta de ahora.
+ * (V61; Design «Reorganizar Hoja» RO1, RO2 y RO3) LAS TARJETAS DE «REORGANIZAR»: UNA por cada sitio que cambia de verdad (de día, a «Si te sobra tiempo», quitado, o de hora más de 15 min), nunca con número de parada.
+ * Todo se calcula COMPARANDO el día de ahora con el día como quedaría (`despues`): sale igual de lo que devuelve el motor (`reconstruido`), del orden que da el servidor o de un día adaptado al vuelo.
+ * Los sitios se emparejan por su nombre (al rehacer un día el motor cambia los ids). Con varios días, las tarjetas van agrupadas por día (cabecera «VIERNES 27»), cada una en el día al que va.
+ * Pura (sin React ni almacén). Vale igual para Roma, Lanzarote y cualquier destino.
  */
-export function tarjetasDeReorganizar(cambios: CambioDeUnDia[], route: Route): TarjetaDePropuesta[] {
-  const tarjetas: TarjetaDePropuesta[] = []
+export interface DiaDespues {
+  dayId: string
+  /** El día como quedaría tras reorganizar. */
+  despues: DayPlan
+  /** true = solo cambia el ORDEN de las paradas (no trae horas nuevas): se dice «Después de …». */
+  soloOrden?: boolean
+}
+export interface GrupoDeTarjetas {
+  /** «VIERNES 27» (con varios días) o null (un solo día: sin cabecera). */
+  cabecera: string | null
+  tarjetas: TarjetaDePropuesta[]
+}
+export interface CambiosDeReorganizar {
+  grupos: GrupoDeTarjetas[]
+  total: number
+  /** La franja verde, concreta: «Sigue igual: tu cena en Armando al Pantheon y tus reservas». */
+  franja: string
+}
+
+const MARGEN_MIN = 15
+const clave = (s: Stop): string => s.name.trim().toLowerCase()
+const esSitio = (s: Stop): boolean => !s.isArrival && !s.isBreak
+const mayuscula = (t: string): string => t.charAt(0).toUpperCase() + t.slice(1)
+const franjaDelDia = (m: number | null): string => (m == null ? 'ese día' : m < 14 * 60 ? 'por la mañana' : m < 20 * 60 ? 'por la tarde' : 'por la noche')
+/** El máximo de paradas que se quedan en su sitio (la subsecuencia creciente más larga): lo demás son las que se han movido. */
+function movidasDeOrden(antes: string[], despues: string[]): Set<string> {
+  const pos = despues.map((id) => antes.indexOf(id)).filter((i) => i >= 0)
+  const mejor: number[][] = pos.map(() => [])
+  let largo: number[] = []
+  pos.forEach((p, i) => {
+    let base: number[] = []
+    for (let j = 0; j < i; j++) if (pos[j] < p && mejor[j].length > base.length) base = mejor[j]
+    mejor[i] = [...base, p]
+    if (mejor[i].length > largo.length) largo = mejor[i]
+  })
+  const quedan = new Set(largo)
+  return new Set(despues.filter((id) => !quedan.has(antes.indexOf(id))))
+}
+
+/** Una persona con una cena elegida en un día que se queda igual, y lo reservado: la franja verde. */
+function franjaVerde(route: Route, cambiados: Set<string>, cambios: DiaDespues[]): string {
+  const partes: string[] = []
+  const hechas = new Map(cambios.map((c) => [c.dayId, c.despues]))
+  for (const c of cambios) {
+    const dia = hechas.get(c.dayId) as DayPlan
+    for (const m of dia.meals) {
+      const nombre = m.chosenRestaurant?.name
+      if (!nombre || (m.mealTime !== 'dinner' && m.mealTime !== 'lunch')) continue
+      if (cambiados.has(`comida:${c.dayId}:${m.mealTime}`)) continue
+      partes.push(`tu ${m.mealTime === 'dinner' ? 'cena' : 'comida'} ${lugarCon('en', nombre)}`)
+    }
+  }
+  const hayReservas = cambios.some((c) => (c.despues.stops ?? []).some((s) => (s.reservedId || s.isFreeTour) && !cambiados.has(`sitio:${clave(s)}`)))
+  if (hayReservas) partes.push('tus reservas')
+  if (partes.length === 0) return cambios.length > 1 ? 'Sigue igual: el resto de tus días' : `Sigue igual: el resto de tu ${semanaDelDia(route, route.days.find((d) => d.id === cambios[0]?.dayId) ?? route.days[0])}`
+  const lista = partes.length === 1 ? partes[0] : `${partes.slice(0, -1).join(', ')} y ${partes[partes.length - 1]}`
+  return `Sigue igual: ${lista}`
+}
+
+export function cambiosDeReorganizar(cambios: DiaDespues[], route: Route): CambiosDeReorganizar {
+  const dias = new Map(route.days.map((d) => [d.id, d]))
+  const despuesDe = new Map(cambios.map((c) => [c.dayId, c]))
+  const varios = cambios.length > 1
+  // Dónde acaba cada sitio de los días que cambian (por nombre).
+  const destino = new Map<string, { dia: DayPlan; stop: Stop }>()
+  const pendientesDe = new Map<string, DayPlan>()
+  for (const c of cambios) {
+    for (const s of c.despues.stops) if (esSitio(s)) destino.set(clave(s), { dia: c.despues, stop: s })
+    for (const s of c.despues.spareStops ?? []) pendientesDe.set(clave(s), c.despues)
+  }
+  const antesDe = new Map<string, { dia: DayPlan; stop: Stop }>()
+  for (const c of cambios) {
+    const dia = dias.get(c.dayId)
+    if (dia) for (const s of dia.stops) if (esSitio(s)) antesDe.set(clave(s), { dia, stop: s })
+  }
+  const conGrupo: { orden: number; destinoDia: DayPlan; tarjeta: TarjetaDePropuesta; principal: boolean }[] = []
+  const cambiados = new Set<string>()
+  const ponerTarjeta = (dia: DayPlan, t: TarjetaDePropuesta, principal: boolean) => conGrupo.push({ orden: dia.dayNumber, destinoDia: dia, tarjeta: t, principal })
+  const base = (parada: Stop | null, nombre: string, dia: DayPlan, ciudad: string): TarjetaDePropuesta => ({ nombre, fotoUrl: parada?.photoUrl || parada?.fixedPhotoUrl || '', cuando: '', semanaCorta: '', numero: '', destino: nombreDelDia(route, dia), diaDeHoy: semanaDelDia(route, dia), ...(parada ? { parada, ciudad } : {}) })
+
+  /** «a las 10:00» (si es una reserva, el Free Tour, una experiencia de noche o va después de cenar) o la franja del día. */
+  const cuandoEs = (s: Stop, dia: DayPlan): { texto: string; conHora: boolean } => {
+    const m = minDe(s.time)
+    if (m == null) return { texto: 'ese día', conHora: false }
+    const cena = dia.meals.find((x) => x.mealTime === 'dinner')
+    const cenaMin = minDe(cena?.time)
+    const despuesDeCenar = cenaMin != null && m >= cenaMin
+    const conHora = Boolean(s.reservedId || s.isFreeTour || s.isNightExperience || despuesDeCenar)
+    return conHora ? { texto: `a las ${aHora(m, false)}${despuesDeCenar ? ', después de cenar' : ''}`, conHora } : { texto: franjaDelDia(m), conHora }
+  }
+
+  for (const c of cambios) {
+    const antes = dias.get(c.dayId)
+    if (!antes) continue
+    const nuevos = c.despues
+    const sitiosAntes = antes.stops.filter(esSitio)
+    for (const s of sitiosAntes) {
+      if (s.checkedInAt) continue
+      const k = clave(s)
+      const hoy = destino.get(k)
+      const nombre = nombreDe(s)
+      if (hoy && hoy.dia.id !== antes.id) {
+        // Cambia de día: sale en el día al que va.
+        cambiados.add(`sitio:${k}`)
+        const cu = cuandoEs(hoy.stop, hoy.dia)
+        const texto = varios
+          ? `Llega del ${semanaDelDia(route, antes)}, ${cu.conHora ? cu.texto : cu.texto}`
+          : `Al ${nombreDelDia(route, hoy.dia)}${cu.conHora ? ' ' : ', '}${cu.texto}`
+        ponerTarjeta(hoy.dia, { ...base(s, nombre, hoy.dia, hoy.dia.city), cuando: texto, ...cuadradoDelDia(route, hoy.dia) }, true)
+      } else if (hoy) {
+        // Mismo día: solo sale si cambia de hora más de 15 min (o, con solo el orden, si se ha movido de sitio: «Después de …»).
+        const antesMin = minDe(s.time)
+        const despuesMin = minDe(hoy.stop.time)
+        if (c.soloOrden) continue
+        if (antesMin != null && despuesMin != null && Math.abs(despuesMin - antesMin) > MARGEN_MIN) {
+          cambiados.add(`sitio:${k}`)
+          const cu = cuandoEs(hoy.stop, nuevos)
+          ponerTarjeta(nuevos, { ...base(s, nombre, nuevos, nuevos.city), cuando: mayuscula(cu.conHora ? cu.texto : cu.texto), ...cuadradoDelDia(route, nuevos) }, false)
+        }
+      } else if (pendientesDe.has(k) || (nuevos.spareStops ?? []).some((x) => clave(x) === k)) {
+        cambiados.add(`sitio:${k}`)
+        ponerTarjeta(antes, { ...base(s, nombre, antes, antes.city), cuando: 'A Lugares pendientes', aPendientes: true }, true)
+      } else {
+        cambiados.add(`sitio:${k}`)
+        ponerTarjeta(antes, { ...base(s, nombre, antes, antes.city), cuando: 'Se quita de tu viaje', quitar: true }, true)
+      }
+    }
+    // Solo el orden: lo que se ha movido de sitio dentro del día, «Después de …» (nunca el número de parada).
+    if (c.soloOrden) {
+      const idsAntes = sitiosAntes.map((s) => s.id)
+      const idsDespues = nuevos.stops.filter(esSitio).map((s) => s.id)
+      const movidas = movidasDeOrden(idsAntes, idsDespues)
+      idsDespues.forEach((id, i) => {
+        if (!movidas.has(id)) return
+        const s = nuevos.stops.find((x) => x.id === id) as Stop
+        if (s.checkedInAt) return
+        cambiados.add(`sitio:${clave(s)}`)
+        const previo = i > 0 ? nuevos.stops.find((x) => x.id === idsDespues[i - 1]) : null
+        ponerTarjeta(nuevos, { ...base(s, nombreDe(s), nuevos, nuevos.city), cuando: previo ? `Después de ${nombreDe(previo)}` : 'Al empezar el día', ...cuadradoDelDia(route, nuevos) }, false)
+      })
+    }
+    // Sitios nuevos en este día que no estaban en ninguno de los días que cambian (venían de «Si te sobra tiempo»): entran.
+    for (const s of nuevos.stops.filter(esSitio)) {
+      const k = clave(s)
+      if (antesDe.has(k)) continue
+      cambiados.add(`sitio:${k}`)
+      const cu = cuandoEs(s, nuevos)
+      ponerTarjeta(nuevos, { ...base(s, nombreDe(s), nuevos, nuevos.city), cuando: `Entra ${cu.conHora ? cu.texto : cu.texto}`, ...cuadradoDelDia(route, nuevos) }, true)
+    }
+    // Las comidas que se van (el desayuno, una comida sin restaurante elegido).
+    for (const m of antes.meals) {
+      if (m.chosenRestaurant) continue
+      if (nuevos.meals.some((x) => x.mealTime === m.mealTime)) continue
+      cambiados.add(`comida:${antes.id}:${m.mealTime}`)
+      const nombre = m.mealTime === 'dinner' ? 'Cena' : m.mealTime === 'lunch' ? 'Comida' : 'Desayuno'
+      ponerTarjeta(antes, { ...base(null, nombre, antes, antes.city), cuando: 'Se quita de tu día', quitar: true }, true)
+    }
+    // La comida o la cena que se corre más de 15 min.
+    for (const m of antes.meals) {
+      const nueva = nuevos.meals.find((x) => x.mealTime === m.mealTime)
+      const a = minDe(m.time)
+      const b = minDe(nueva?.time)
+      if (!nueva || a == null || b == null || Math.abs(a - b) <= MARGEN_MIN) continue
+      const nombre = nueva.chosenRestaurant?.name ?? (m.mealTime === 'dinner' ? 'Cena' : m.mealTime === 'lunch' ? 'Comida' : 'Desayuno')
+      ponerTarjeta(nuevos, { ...base(null, nombre, nuevos, nuevos.city), cuando: `A las ${aHora(b, false)}`, ...cuadradoDelDia(route, nuevos) }, false)
+    }
+  }
+  void despuesDe
+  const porDia = new Map<string, { dia: DayPlan; tarjetas: { t: TarjetaDePropuesta; principal: boolean }[] }>()
+  for (const x of [...conGrupo].sort((a, b) => a.orden - b.orden)) {
+    const g = porDia.get(x.destinoDia.id) ?? { dia: x.destinoDia, tarjetas: [] }
+    g.tarjetas.push({ t: x.tarjeta, principal: x.principal })
+    porDia.set(x.destinoDia.id, g)
+  }
+  const grupos: GrupoDeTarjetas[] = [...porDia.values()].map((g) => ({
+    cabecera: varios ? nombreDelDia(route, g.dia).toUpperCase() : null,
+    tarjetas: [...g.tarjetas.filter((x) => x.principal), ...g.tarjetas.filter((x) => !x.principal)].map((x) => x.t),
+  }))
+  return { grupos, total: conGrupo.length, franja: franjaVerde(route, cambiados, cambios) }
+}
+
+/** Los cambios que `diasQueCambian` calcula, en la forma de arriba (el día como quedaría: el reconstruido por el motor o, con solo el orden, el mismo día con las paradas en el orden nuevo). */
+export function diasDespuesDeCambios(cambios: CambioDeUnDia[], route: Route): DiaDespues[] {
+  const lista: DiaDespues[] = []
   for (const c of cambios) {
     const dia = route.days.find((d) => d.id === c.dayId)
     if (!dia) continue
-    const cuadrado = cuadradoDelDia(route, dia)
-    const antes = numberedStopsOf(dia)
-    const nuevas = c.reconstruido ? numberedStopsOf(c.reconstruido) : c.order.map((id) => dia.stops.find((s) => s.id === id)).filter((s): s is Stop => Boolean(s) && !s!.isArrival)
-    for (const id of c.movidas) {
-      const parada = antes.find((s) => s.id === id) ?? nuevas.find((s) => s.id === id)
-      if (!parada) continue
-      const base = { nombre: nombreDe(parada), fotoUrl: parada.photoUrl || parada.fixedPhotoUrl || '', destino: nombreDelDia(route, dia), diaDeHoy: semanaDelDia(route, dia), parada, ciudad: dia.city }
-      const nueva = nuevas.findIndex((s) => s.id === id) + 1
-      if (nueva === 0) tarjetas.push({ ...base, cuando: 'A «Si te sobra tiempo»', semanaCorta: '', numero: '', aPendientes: true })
-      else tarjetas.push({ ...base, cuando: `De la parada ${antes.findIndex((s) => s.id === id) + 1} a la ${nueva} · ${semanaDelDia(route, dia)}`, ...cuadrado })
+    if (c.reconstruido) lista.push({ dayId: c.dayId, despues: c.reconstruido })
+    else {
+      const porId = new Map(dia.stops.map((s) => [s.id, s]))
+      const stops = c.order.map((id) => porId.get(id)).filter((s): s is Stop => Boolean(s))
+      lista.push({ dayId: c.dayId, despues: { ...dia, stops }, soloOrden: true })
     }
   }
-  return tarjetas
+  return lista
+}
+
+const HORA = (t: string | undefined | null): string | null => {
+  const m = minDe(t)
+  return m == null ? null : aHora(m, false)
+}
+
+/**
+ * El texto de arriba de la hoja, concreto. Con vuelo de llegada («Aterrizas a las 17:00 y quedas libre hacia las 19:50. Esto es lo que cambia:»), con vuelo de vuelta («Tu vuelo sale a las 10:30. …»); sin vuelo, lo que hace.
+ * `libreMin` (los minutos desde las 0:00 a los que el viajero queda libre) sale del plan de la llegada del motor; si no se sabe, solo se dice la hora de llegada.
+ */
+export function textoDeReorganizar(opciones: { llegada?: string | null; libreMin?: number | null; salida?: string | null; vuelo: boolean; dias: number }): string {
+  const partes: string[] = []
+  const lleg = HORA(opciones.llegada)
+  const sal = HORA(opciones.salida)
+  if (opciones.vuelo && lleg) partes.push(`Aterrizas a las ${lleg}${opciones.libreMin != null ? ` y quedas libre hacia las ${aHora(opciones.libreMin, false)}` : ''}.`)
+  if (opciones.vuelo && sal) partes.push(`Tu vuelo de vuelta sale a las ${sal}.`)
+  if (partes.length === 0) partes.push(opciones.dias > 1 ? 'Hemos puesto tus reservas a su hora y cada sitio cuando está abierto.' : 'Hemos puesto tus reservas a su hora y cada sitio cuando está abierto.')
+  return `${partes.join(' ')} Esto es lo que cambia:`
 }

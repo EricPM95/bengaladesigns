@@ -54,7 +54,7 @@ const DATOS_DE_DESTINO: Record<DestinoDelProbador, { inicio: string; dias: numbe
 export const casoPorDefecto = (destino: DestinoDelProbador = 'Roma'): CasoProbador => ({ destino, dias: DATOS_DE_DESTINO[destino].dias, inicio: DATOS_DE_DESTINO[destino].inicio, llegada: '14:00', salida: '', punto: '', freeTour: 'no' })
 
 /** Los casos con un toque: solo cambian las horas y el Free Tour (el destino, los días, la fecha y el punto se quedan como estén). */
-export const CASOS_RAPIDOS: { id: string; texto: string; cambia: Pick<CasoProbador, 'llegada' | 'salida' | 'freeTour'> }[] = [
+export const CASOS_RAPIDOS: { id: string; texto: string; cambia: Pick<CasoProbador, 'llegada' | 'salida' | 'freeTour'> & Partial<Pick<CasoProbador, 'punto' | 'inicio'>> }[] = [
   { id: 'llegada-0900', texto: 'Llegada 9:00', cambia: { llegada: '09:00', salida: '', freeTour: 'no' } },
   { id: 'llegada-1400', texto: 'Llegada 14:00', cambia: { llegada: '14:00', salida: '', freeTour: 'no' } },
   { id: 'llegada-2100', texto: 'Llegada 21:00', cambia: { llegada: '21:00', salida: '', freeTour: 'no' } },
@@ -62,7 +62,17 @@ export const CASOS_RAPIDOS: { id: string; texto: string; cambia: Pick<CasoProbad
   { id: 'salida-1800', texto: 'Salida 18:00', cambia: { llegada: '', salida: '18:00', freeTour: 'no' } },
   { id: 'llegada-1600-ft-1700', texto: 'Llegada 16:00 + Free Tour 17:00 reservado', cambia: { llegada: '16:00', salida: '', freeTour: '17:00' } },
   { id: 'llegada-1800-ft-sin-hora', texto: 'Llegada 18:00 + Free Tour sin hora', cambia: { llegada: '18:00', salida: '', freeTour: 'sin_hora' } },
+  // (V61) Los de Eric, 25-nov: ida el viernes 27 a Ciampino (punto «cia» de Roma), con el Free Tour sin hora.
+  { id: 'eric-1030', texto: 'Eric · vuelo 10:30 a Ciampino', cambia: { llegada: '10:30', salida: '', freeTour: 'sin_hora', punto: 'cia', inicio: '2026-11-27' } },
+  { id: 'eric-1330', texto: 'Eric · vuelo 13:30 a Ciampino', cambia: { llegada: '13:30', salida: '', freeTour: 'sin_hora', punto: 'cia', inicio: '2026-11-27' } },
+  { id: 'eric-1700', texto: 'Eric · vuelo 17:00 a Ciampino', cambia: { llegada: '17:00', salida: '', freeTour: 'sin_hora', punto: 'cia', inicio: '2026-11-27' } },
 ]
+
+/** (V61) Pone un caso rápido sobre el caso de ahora. El aeropuerto «cia» (Ciampino) solo vale en Roma: en otro destino se deja el punto que elige el motor. */
+export const conCasoRapido = (caso: CasoProbador, cambia: (typeof CASOS_RAPIDOS)[number]['cambia']): CasoProbador => {
+  const siguiente = { ...caso, ...cambia }
+  return caso.destino === 'Roma' ? siguiente : { ...siguiente, punto: caso.punto === 'cia' ? '' : caso.punto, ...(cambia.inicio ? { inicio: caso.inicio } : {}) }
+}
 
 export interface ResultadoProbador {
   antes: Route
@@ -144,31 +154,77 @@ const conVuelos = (ruta: Route, caso: CasoProbador): Route => ({
   departurePointId: caso.punto || null,
 })
 
-const sinDoble = (texto: string): string => texto.replace(/\{dia:(\d+)\}/g, 'el día $1').replace(/\s+/g, ' ').trim()
+/** Un texto del motor sin sus marcas: «{dia:2}» pasa a «el día 2» (y «el {dia:2}» a «el día 2», no «el el día 2»). */
+const sinDoble = (texto: string): string =>
+  texto
+    .replace(/\b([Ee]l|[Dd]el|[Aa]l)\s+\{dia:(\d+)\}/g, (_, art: string, n: string) => `${art} día ${n}`)
+    .replace(/\{dia:(\d+)\}/g, 'el día $1')
+    .replace(/\s+/g, ' ')
+    .trim()
 const textoDelAviso = (aviso: AvisoDelMotor): string => sinDoble(aviso.texto)
 
+/** (V61) Lo que el motor llama «caso» de la llegada, dicho en palabras (el código interno nunca se enseña). */
+const CASOS_DE_LLEGADA: Record<string, string> = {
+  d1_de_siempre: 'el día 1 queda como el de siempre',
+  tranquilo: 'el día 1 queda en su versión tranquila',
+  madrugada: 'llegas de madrugada: el día 1 queda como el de siempre',
+  rapido: 'el día 1 va en su versión rápida, que cabe con tu hora de llegada',
+  de_tarde: 'el día 1 va en su versión de tarde, con lo que queda de día',
+  ruta_del_centro_entera: 'el día 1 es una ruta por el centro, entera',
+  ruta_del_centro: 'el día 1 es una ruta por el centro',
+  anochecer: 'el día 1 es un paseo al anochecer',
+  noche_con_cena: 'el día 1 es solo la noche, con cena',
+  noche_sin_cena: 'el día 1 es solo la noche, sin cena',
+  sin_ruta: 'llegas tan tarde que el día 1 no lleva ruta',
+  excursion_el_dia_1: 'el día 1 es una excursión',
+  reserva_grande_dia_completo: 'una reserva grande llena el día entero',
+  free_tour_no_se_pone: 'el Free Tour no se pone en ningún día',
+  free_tour_dia_siguiente: 'el Free Tour pasa al día siguiente',
+  free_tour_con_hora_entero: 'el Free Tour, con su hora, va entero y el día 1 queda como el de siempre',
+  free_tour_sin_hora_entero: 'el Free Tour, sin hora, va entero: el motor le pone la que deja el día posible',
+  free_tour_con_hora_con_otras_reservas: 'tienes el Free Tour y otras reservas grandes: el reparto lo mandan ellas y no se cambia nada',
+  free_tour_sin_hora_con_otras_reservas: 'tienes el Free Tour sin hora y otras reservas grandes: el reparto lo mandan ellas',
+  free_tour_con_hora_solo_la_parte_del_tour: 'llegas a tiempo solo para la parte del Free Tour: el día 1 es el tour y lo demás pasa al día 2',
+  free_tour_sin_hora_solo_la_parte_del_tour: 'llegas a tiempo solo para la parte del Free Tour: el motor le pone una hora que cabe y el día 1 es el tour',
+  free_tour_con_hora_ya_empezado: 'tu Free Tour ya habrá empezado cuando llegues: se deja a su hora, sin tocarlo, y se avisa',
+  free_tour_sin_hora_ya_empezado: 'el Free Tour ya habría empezado cuando llegues: se deja sin tocar y se avisa',
+}
+/** «free_tour_con_hora_ya_empezado» → su frase; si el motor trae uno nuevo que no conocemos, se escribe legible (sin guiones bajos ni «+»). */
+export const casoEnPalabras = (caso: string): string => {
+  const [principal, ...extras] = caso.split('+')
+  const dicho = CASOS_DE_LLEGADA[principal] ?? principal.replace(/_/g, ' ')
+  return extras.length > 0 ? `${dicho} (y ${extras.map((e) => (e === 'reserva_grande' ? 'hay una reserva grande' : e.replace(/_/g, ' '))).join(', ')})` : dicho
+}
+const MOTIVOS_DE_DIA: Record<string, string> = {
+  free_tour_el_dia_siguiente: 'porque el Free Tour pasa al día siguiente',
+  el_dia_1_pasa_al_dia_2: 'porque el día 1 pasa al día 2',
+  dos_noches_free_tour: 'porque con dos noches y el Free Tour no cabe',
+}
+const motivoEnPalabras = (motivo: string): string => MOTIVOS_DE_DIA[motivo] ?? motivo.replace(/_/g, ' ')
+const cap = (t: string): string => t.charAt(0).toUpperCase() + t.slice(1)
+
 /**
- * LA LÍNEA DEL MOTOR: lo que ha decidido y por qué, con lo que el motor dice de la llegada (`PlanLlegada`) y de la vuelta (`PlanVuelta`). Sin inventar nada: si el motor no da texto, los campos públicos tal cual
- * (caso, fila, Free Tour, qué día pasa o se cae).
+ * LA LÍNEA DEL MOTOR: lo que ha decidido y por qué, EN PALABRAS (V61), con lo que el motor dice de la llegada (`PlanLlegada`) y de la vuelta (`PlanVuelta`). Sin inventar nada: sale de los campos públicos del motor
+ * (caso, Free Tour, avisos, qué día pasa o se cae); el código del caso se traduce con `casoEnPalabras`.
  */
 export function lineaDelMotor(llegada: PlanLlegada | null | undefined, vuelta: PlanVuelta | null | undefined, extra: string[] = []): string {
   const partes: string[] = []
   if (llegada) {
     const interno = llegada.interno as { horaUtilMin?: number } | undefined
-    const cabeza = [llegada.entrada ? `Llegas a las ${llegada.entrada.hora}${llegada.entrada.punto ? ` (${llegada.entrada.punto})` : ''}` : 'Llegada', typeof interno?.horaUtilMin === 'number' ? `libre a las ${minutesToHHMM(interno.horaUtilMin)}` : null].filter(Boolean).join(', ')
-    partes.push(`${cabeza}${llegada.caso ? `: ${llegada.caso}` : ''}${llegada.fila ? ` (fila ${(llegada.fila as { desde?: string }).desde ?? '?'}–${(llegada.fila as { hasta?: string | null }).hasta ?? '?'})` : ''}`)
+    const cabeza = [llegada.entrada ? `Llegas a las ${llegada.entrada.hora}${llegada.entrada.punto ? ` (${llegada.entrada.punto})` : ''}` : 'Llegada', typeof interno?.horaUtilMin === 'number' ? `quedas libre hacia las ${minutesToHHMM(interno.horaUtilMin)}` : null].filter(Boolean).join(' y ')
+    partes.push(`${cabeza}${llegada.caso ? `: ${casoEnPalabras(llegada.caso)}` : ''}`)
     if (llegada.pasa_al_dia_2) partes.push('el día 1 pasa al día 2')
-    if (llegada.dia_caido) partes.push(`se cae ${llegada.dia_caido.nombre ?? llegada.dia_caido.id} (${llegada.dia_caido.motivo})`)
-    if (llegada.free_tour) partes.push(`Free Tour ${llegada.free_tour.sin_hora ? 'sin hora, puesto ' : ''}${llegada.free_tour.hora ? `a las ${llegada.free_tour.hora} ` : ''}el día ${llegada.free_tour.dia}`)
+    if (llegada.dia_caido) partes.push(`se cae ${llegada.dia_caido.nombre ?? llegada.dia_caido.id} (${motivoEnPalabras(llegada.dia_caido.motivo)})`)
+    if (llegada.free_tour) partes.push(`Free Tour ${llegada.free_tour.sin_hora ? 'sin hora reservada, puesto ' : ''}${llegada.free_tour.hora ? `a las ${llegada.free_tour.hora} ` : ''}el día ${llegada.free_tour.dia}`)
     for (const resumen of llegada.resumen ?? []) partes.push(sinDoble(resumen.texto))
     for (const aviso of llegada.avisos ?? []) partes.push(`aviso: ${textoDelAviso(aviso)}`)
   }
   if (vuelta && vuelta.activo !== false) {
-    partes.push(`Vuelta${vuelta.hora ? ` a las ${vuelta.hora}` : ''}${vuelta.madrugada ? ' (madrugada)' : ''}${vuelta.lleva ? `: ${vuelta.lleva}` : ''}`)
+    partes.push(`Vuelta${vuelta.hora ? ` a las ${vuelta.hora}` : ''}${vuelta.madrugada ? ' (de madrugada)' : ''}${vuelta.lleva ? `: ${vuelta.lleva.replace(/_/g, ' ')}` : ''}`)
     for (const aviso of vuelta.avisos ?? []) partes.push(`aviso: ${textoDelAviso(aviso)}`)
   }
   partes.push(...extra)
-  return partes.length > 0 ? partes.join(' · ') : 'El motor no da ninguna decisión para este caso (sin vuelos).'
+  return partes.length > 0 ? partes.map((p, i) => (i === 0 ? cap(p) : p)).join(' · ') : 'El motor no da ninguna decisión para este caso (sin vuelos).'
 }
 
 /** Prueba un caso. Tarda lo que tarda el motor (unos segundos por viaje). Lanza un Error con el motivo si el motor no responde. */

@@ -6,11 +6,11 @@ import type { DayPlan, Route } from './types'
 import type { Reservation } from './bookings'
 import { conUltimoCambio } from './accionDeCambio'
 import { fechaDelDia } from './nombreDeDia'
-import { useReorganizarStore } from '../store/useReorganizarStore'
+import { useReorganizarStore, alDeshacerOcultaLaHoja } from '../store/useReorganizarStore'
 import { isFreeDay } from './freeDays'
 import { useRouteStore } from '../store/useRouteStore'
 import { useAddFlowStore, withUndo } from '../store/useAddFlowStore'
-import { diaAdaptadoAlVuelo, type NoCabe } from './adaptarVuelos'
+import { adaptacionAlVuelo, type NoCabe } from './adaptarVuelos'
 
 export interface OrdenDelDia {
   /** Los mismos ids de las paradas del día, en el orden nuevo. */
@@ -99,13 +99,8 @@ export function sePuedeReorganizar(day: DayPlan): boolean {
   return day.stops.length >= 2 && !day.isReturnLeg && day.dayType !== 'excursion'
 }
 
-// (V49) EL BOTÓN NO VUELVE SOLO. Reorganizar mete en el día lo que el motor monta; el motor, con ese día ya puesto, puede dar otro orden distinto la vez siguiente (depende de lo que ya hay) y el botón volvía a salir una y otra vez.
-// Se apunta la «firma» del día tal como QUEDÓ al reorganizar; mientras el día siga con esa firma, no se vuelve a calcular. En cuanto el viajero cambia algo de verdad (añade, quita o mueve una parada, cambia una hora…),
-// la firma cambia y el botón puede volver a salir. (Deshacer también cambia el día: vuelve el botón.)
-const reorganizados = new Map<string, string>()
-const firmaDeUnDia = (day: DayPlan): string => JSON.stringify([day.stops.map((s) => [s.id, s.name, s.time, s.saltada ? 1 : 0]), day.meals.map((m) => [m.mealTime, m.time]), (day.spareStops ?? []).map((s) => s.name)])
-export const marcarDiaReorganizado = (day: DayPlan): void => void reorganizados.set(day.id, firmaDeUnDia(day))
-export const esDiaRecienReorganizado = (day: DayPlan | undefined): boolean => Boolean(day && reorganizados.get(day.id) === firmaDeUnDia(day))
+export { marcarDiaReorganizado, esDiaRecienReorganizado } from './diaReorganizado'
+import { marcarDiaReorganizado } from './diaReorganizado'
 
 export interface CambioDeUnDia {
   dayId: string
@@ -118,6 +113,67 @@ export interface CambioDeUnDia {
   reconstruido?: DayPlan
   /** (10S7c) Los imprescindibles que no caben ese día con el vuelo: se avisan debajo de la franja. */
   noCaben?: NoCabe[]
+  /**
+   * (V61, CONTRATO PARA LA HOJA RO1-RO3) Lo que cambia de verdad en este día, UNA entrada por sitio: de hora (más de 15 min), a otro día, a «Lugares pendientes» o quitado. Solo en los días que rehace el motor de los
+   * vuelos (`reconstruido`); en el orden suelto va vacío. Sin número de parada ni «hoy»: la hoja escribe el «a dónde va» con `aHora`, `franja` y `aDiaNumero`.
+   */
+  detalle: DetalleDeCambio[]
+}
+
+/** (V61) Un sitio que cambia en un día al reorganizar. */
+export interface DetalleDeCambio {
+  stopId: string
+  nombre: string
+  /** 'hora' = sigue en el mismo día pero a otra hora (más de 15 min); 'otro_dia' = sale de este día y entra en `aDiaNumero`; 'pendientes' = sale a «Lugares pendientes» (por horario, por el vuelo…); 'quitado' = desaparece. */
+  accion: 'hora' | 'otro_dia' | 'pendientes' | 'quitado'
+  /** La hora de antes y la de después («17:00»); `aHora` null si va a pendientes o se quita. */
+  deHora: string | null
+  aHora: string | null
+  /** El día del que sale (su número de día del viaje) y, si pasa a otro día, el día al que va. */
+  deDiaNumero: number
+  aDiaNumero: number | null
+  /** Según `aHora`: 'manana' (antes de las 13:00), 'tarde' (hasta las 20:00) o 'noche'; null sin hora. */
+  franja: 'manana' | 'tarde' | 'noche' | null
+  /** Por qué sale, si el motor lo dijo («Hoy ya ha cerrado: para otro día»). */
+  motivo: string | null
+}
+
+const aMin = (hhmm: string | null | undefined): number | null => {
+  const m = /^(\d{1,2}):(\d{2})/.exec(hhmm ?? '')
+  return m ? Number(m[1]) * 60 + Number(m[2]) : null
+}
+const franjaDe = (hhmm: string | null): DetalleDeCambio['franja'] => {
+  const m = aMin(hhmm)
+  return m == null ? null : m < 13 * 60 ? 'manana' : m < 20 * 60 ? 'tarde' : 'noche'
+}
+const claveDeNombre = (name: string): string => name.trim().toLowerCase().replace(/\s*\([^)]*\)\s*$/, '')
+
+/** (V61) Qué cambia sitio por sitio entre el día de antes y el día rehecho por el motor (`otros`: los demás días rehechos, para saber si lo que sale de aquí entra en otro día). */
+export function detalleDelCambio(antes: DayPlan, despues: DayPlan, otros: DayPlan[]): DetalleDeCambio[] {
+  const lista: DetalleDeCambio[] = []
+  const quedan = new Map(despues.stops.map((stop) => [claveDeNombre(stop.name), stop]))
+  const enPendientes = new Map((despues.spareStops ?? []).map((stop) => [claveDeNombre(stop.name), stop]))
+  for (const stop of antes.stops) {
+    if (stop.isArrival) continue
+    const clave = claveDeNombre(stop.name)
+    const sigue = quedan.get(clave)
+    const base = { stopId: stop.id, nombre: stop.name.replace(/\s*\([^)]*\)\s*$/, ''), deHora: stop.time ?? null, deDiaNumero: antes.dayNumber }
+    if (sigue) {
+      const a = aMin(stop.time)
+      const b = aMin(sigue.time)
+      if (a != null && b != null && Math.abs(a - b) > 15) lista.push({ ...base, accion: 'hora', aHora: sigue.time ?? null, aDiaNumero: antes.dayNumber, franja: franjaDe(sigue.time ?? null), motivo: null })
+      continue
+    }
+    const enOtro = otros.find((otro) => otro.id !== antes.id && otro.stops.some((s) => claveDeNombre(s.name) === clave))
+    if (enOtro) {
+      const llega = enOtro.stops.find((s) => claveDeNombre(s.name) === clave)
+      lista.push({ ...base, accion: 'otro_dia', aHora: llega?.time ?? null, aDiaNumero: enOtro.dayNumber, franja: franjaDe(llega?.time ?? null), motivo: null })
+      continue
+    }
+    const pend = enPendientes.get(clave)
+    lista.push({ ...base, accion: pend ? 'pendientes' : 'quitado', aHora: null, aDiaNumero: null, franja: null, motivo: pend?.spareReason ?? null })
+  }
+  return lista
 }
 
 /**
@@ -132,16 +188,24 @@ export async function diasQueCambian(dayIds: string[]): Promise<CambioDeUnDia[]>
     const day = route.days.find((other) => other.id === dayId)
     if (!day || !sePuedeReorganizar(day)) continue
     // (10S7b) El primer y el último día miran el vuelo: si hay vuelo y el motor lo rehace distinto, ese es el cambio.
-    const adaptado = await diaAdaptadoAlVuelo(route, reservations, dayId).catch(() => null)
+    // (V61) Con vuelo, el motor de los vuelos es quien decide el día: si no cambia nada, el día ya está bien (el orden suelto no sabe de vuelos ni de la hora del Free Tour: no puede proponer otra cosa).
+    const { manda, adaptado } = await adaptacionAlVuelo(route, reservations, dayId).catch(() => ({ manda: false, adaptado: null }))
     if (adaptado) {
-      cambian.push({ dayId, dayNumber: day.dayNumber, order: day.stops.map((stop) => stop.id), mealAfter: {}, movidas: adaptado.movidas, reconstruido: adaptado.next, noCaben: adaptado.noCaben })
+      cambian.push({ dayId, dayNumber: day.dayNumber, order: day.stops.map((stop) => stop.id), mealAfter: {}, movidas: adaptado.movidas, reconstruido: adaptado.next, noCaben: adaptado.noCaben, detalle: [] })
       continue
     }
+    if (manda) continue
     const orden = await pedirOrdenDelDia(route, day, reservations)
     if (!orden || !orden.changed) continue
     const antes = day.stops.map((stop) => stop.id)
     if (orden.order.every((id, i) => id === antes[i])) continue
-    cambian.push({ dayId, dayNumber: day.dayNumber, order: orden.order, mealAfter: orden.mealAfter, movidas: orden.order.filter((id, i) => id !== antes[i]) })
+    cambian.push({ dayId, dayNumber: day.dayNumber, order: orden.order, mealAfter: orden.mealAfter, movidas: orden.order.filter((id, i) => id !== antes[i]), detalle: [] })
+  }
+  // (V61) El detalle sitio por sitio de los días rehechos por el motor (con todos los días ya calculados, para saber a qué día va lo que sale de uno).
+  const rehechos = cambian.flatMap((cambio) => (cambio.reconstruido ? [cambio.reconstruido] : []))
+  for (const cambio of cambian) {
+    const antesDelDia = route.days.find((other) => other.id === cambio.dayId)
+    if (cambio.reconstruido && antesDelDia) cambio.detalle = detalleDelCambio(antesDelDia, cambio.reconstruido, rehechos)
   }
   return cambian
 }
@@ -167,6 +231,8 @@ export async function reorganizarDias(dayIds: string[], { avisar = false }: { av
     const despues = useRouteStore.getState().route
     if (despues) useRouteStore.setState({ route: conUltimoCambio(antes, despues, { tipo: 'reorganizar', dia_n: primero.dayNumber, fecha: fechaDelDia(despues, primero.dayNumber), n: cambian.length }) })
   })
+  // (V61) [Deshacer] devuelve EXACTAMENTE la ruta de antes (todos los días que se tocaron, de una vez: `withUndo` guarda la ruta entera) y no abre ninguna hoja sola: lo que estuviera abierto o propuesto se cierra.
+  alDeshacerOcultaLaHoja()
   // (V49) El día queda como quedó: el botón no vuelve hasta que el viajero cambie algo de verdad.
   for (const cambio of cambian) {
     const queda = useRouteStore.getState().route?.days.find((other) => other.id === cambio.dayId)

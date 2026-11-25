@@ -16,6 +16,7 @@ import {
   DESTINOS_DEL_PROBADOR,
   HORAS_DE_FREE_TOUR,
   casoPorDefecto,
+  conCasoRapido,
   probar,
   puntosDeLlegada,
   type CasoProbador,
@@ -76,24 +77,25 @@ function DiaDelProbador({ ruta, dia, cual }: { ruta: Route; dia: DayPlan; cual: 
   )
 }
 
-function ColumnaDelProbador({ cual, titulo, ruta }: { cual: 'antes' | 'despues'; titulo: string; ruta: Route }): ReactNode {
-  const primero = ruta.days[0]
-  const ultimo = ruta.days.length > 1 ? ruta.days[ruta.days.length - 1] : null
+/** (V61) Un día, ANTES y DESPUÉS lado a lado (en el móvil, uno encima del otro): «Primer día» y «Último día» son dos filas. */
+function ParDeDias({ cual, rotulo, antes, despues, tituloDespues, movil }: { cual: 'primero' | 'ultimo'; rotulo: string; antes: Route; despues: Route; tituloDespues: string; movil: boolean }): ReactNode {
+  const dia = (ruta: Route): DayPlan | undefined => (cual === 'primero' ? ruta.days[0] : ruta.days.length > 1 ? ruta.days[ruta.days.length - 1] : undefined)
+  const a = dia(antes)
+  const d = dia(despues)
+  if (!a || !d) return null
   return (
-    <div data-probador={cual} style={{ ...tarjetaGrande, minWidth: 0, gap: 12 }}>
-      <span style={{ font: `400 22px/1 ${SERIE}` }}>{titulo}</span>
-      {primero && (
-        <>
-          <span style={etiquetaMono}>PRIMER DÍA</span>
-          <DiaDelProbador ruta={ruta} dia={primero} cual="primero" />
-        </>
-      )}
-      {ultimo && (
-        <>
-          <span style={etiquetaMono}>ÚLTIMO DÍA</span>
-          <DiaDelProbador ruta={ruta} dia={ultimo} cual="ultimo" />
-        </>
-      )}
+    <div data-probador-fila={cual} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <span style={etiquetaMono}>{rotulo}</span>
+      <div style={{ display: 'grid', gridTemplateColumns: movil ? '1fr' : '1fr 1fr', gap: 14, alignItems: 'start' }}>
+        <div data-probador="antes" style={{ ...tarjetaGrande, minWidth: 0, gap: 12 }}>
+          <span style={{ font: `400 22px/1 ${SERIE}` }}>Antes (sin vuelos)</span>
+          <DiaDelProbador ruta={antes} dia={a} cual={cual} />
+        </div>
+        <div data-probador="despues" style={{ ...tarjetaGrande, minWidth: 0, gap: 12 }}>
+          <span style={{ font: `400 22px/1 ${SERIE}` }}>{tituloDespues}</span>
+          <DiaDelProbador ruta={despues} dia={d} cual={cual} />
+        </div>
+      </div>
     </div>
   )
 }
@@ -103,7 +105,7 @@ const aplicarDireccion = (base: CasoProbador): { caso: CasoProbador; ejecutar: b
   const destino = (DESTINOS_DEL_PROBADOR as readonly string[]).includes(q.get('destino') ?? '') ? (q.get('destino') as DestinoDelProbador) : base.destino
   let caso: CasoProbador = destino === base.destino ? base : casoPorDefecto(destino)
   const rapido = CASOS_RAPIDOS.find((c) => c.id === q.get('caso'))
-  if (rapido) caso = { ...caso, ...rapido.cambia }
+  if (rapido) caso = conCasoRapido(caso, rapido.cambia)
   const hora = (v: string | null) => (v !== null && /^\d{1,2}:\d{2}$/.test(v) ? v.padStart(5, '0') : null)
   const dias = Number(q.get('dias'))
   if (dias >= 2 && dias <= 14) caso = { ...caso, dias }
@@ -202,7 +204,7 @@ export default function ProbarReorganizar({ movil }: { movil: boolean }): ReactN
         </Fila>
         <Fila titulo="Casos rápidos">
           {CASOS_RAPIDOS.map((c) => (
-            <button key={c.id} type="button" data-probador-caso={c.id} disabled={ocupado} onClick={() => { const siguiente = { ...caso, ...c.cambia }; setCaso(siguiente); void ejecutar(siguiente) }} style={{ ...boton(false, ocupado), minHeight: 40, font: "600 13px 'Geist'" }}>
+            <button key={c.id} type="button" data-probador-caso={c.id} disabled={ocupado} onClick={() => { const siguiente = conCasoRapido(caso, c.cambia); setCaso(siguiente); void ejecutar(siguiente) }} style={{ ...boton(false, ocupado), minHeight: 40, font: "600 13px 'Geist'" }}>
               {c.texto}
             </button>
           ))}
@@ -220,11 +222,18 @@ export default function ProbarReorganizar({ movil }: { movil: boolean }): ReactN
           <p data-probador="linea-del-motor" data-camino={resultado.datos.camino} style={{ margin: 0, padding: '12px 16px', borderRadius: 16, background: '#FFFFFF', border: '1px solid rgba(28,34,48,.08)', font: "600 14px/1.4 'Geist'" }}>
             {resultado.datos.linea}
           </p>
-          <div key={resultado.n} style={{ display: 'grid', gridTemplateColumns: movil ? '1fr' : '1fr 1fr', gap: 14, alignItems: 'start' }}>
-            <ColumnaDelProbador cual="antes" titulo="Antes (sin vuelos)" ruta={resultado.datos.antes} />
-            <ColumnaDelProbador cual="despues" titulo={resultado.datos.camino === 'generacion' ? 'Después (con vuelos y el Free Tour reservado)' : 'Después de Reorganizar'} ruta={resultado.datos.despues} />
+          <div key={resultado.n} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+            {(() => {
+              const tituloDespues = resultado.datos.camino === 'generacion' ? 'Después (con vuelos y el Free Tour reservado)' : 'Después de Reorganizar'
+              return (
+                <>
+                  <ParDeDias cual="primero" rotulo="PRIMER DÍA" antes={resultado.datos.antes} despues={resultado.datos.despues} tituloDespues={tituloDespues} movil={movil} />
+                  <ParDeDias cual="ultimo" rotulo="ÚLTIMO DÍA" antes={resultado.datos.antes} despues={resultado.datos.despues} tituloDespues={tituloDespues} movil={movil} />
+                </>
+              )
+            })()}
           </div>
-        </>
+          </>
       ) : (
         !ocupado && !error && <Vacio>Elige un caso y pulsa «Probar»: el motor monta el viaje sin vuelos y lo reorganiza con ellos. No se guarda nada.</Vacio>
       )}
