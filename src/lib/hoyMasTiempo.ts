@@ -1,5 +1,6 @@
 import { itemsDe, minDe, simularBase, aHora, type Contexto } from './hoyCambiarPlan'
 import type { Peligro } from './hoyPeligro'
+import { puntualidadDe } from './puntualidadEntradas'
 import type { VentanaDeHorario } from './hoyHorarios'
 import { numberedStopsOf } from './stopKind'
 import type { DayPlan } from './types'
@@ -69,6 +70,8 @@ export function evaluarMasTiempo(p: {
   // 1 · Una reserva o un turno al que ya no llegarías (y antes sí): esa opción no se ofrece.
   for (const it of items) {
     if (!it.fija || !con.corrimiento.has(`!${it.stop.id}`) || base.corrimiento.has(`!${it.stop.id}`)) continue
+    // (V54 §2) Una entrada LIBRE o con margen (el Foro y el Palatino) no corre peligro por 15 o 30 min más.
+    if (!it.stop.isFreeTour && puntualidadDe(it.stop.name).tipo !== 'estricta') continue
     const hora = ctx.horaFijaMin?.(it.stop) ?? it.t
     if (hora == null) continue
     const turno = Boolean(it.stop.isFreeTour)

@@ -2,83 +2,155 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Coordinates, DayPlan, Route, Stop } from '../../../../lib/types'
 import { hasRealCoordinates, haversineMeters } from '../../../../lib/distanceMock'
 import { displayStopName } from '../../../../lib/format'
-import { aplicarPropuesta, volverALaRutaOriginal } from '../../../../lib/hoyCambiarPlanAplicar'
-import type { Propuesta } from '../../../../lib/hoyCambiarPlan'
-import { proponerSolucion, quienCorrePeligro, textoDelPeligro } from '../../../../lib/hoyPeligro'
+import { aplicarPropuesta } from '../../../../lib/hoyCambiarPlanAplicar'
+import { aHora, escalonDeRetraso, proponerRetraso, retrasoDeAhora, type Propuesta } from '../../../../lib/hoyCambiarPlan'
+import { conArticulo, proponerSolucion, revisarEntradas, type Peligro } from '../../../../lib/hoyPeligro'
+import { numberedStopsOf } from '../../../../lib/stopKind'
 import { useRadioDeParada } from '../../../../lib/radiosDeHoy'
 import { useSyncStore } from '../../../../store/useSyncStore'
-import { Icono } from '../../../ui/Icono'
-import { AvisoDeHoy, CruzDeAviso, useAvisoCerrado } from './AvisosHoy'
+import { AvisoDeHoy, D_AVISO, FilaDeAviso, avisoCerrado, cerrarAvisoDelDia } from './AvisosHoy'
 import { AvisoPlanActualizado, HojaPropuesta, Titulo, useContexto } from './CambiarPlan'
+import { HojaSolucion } from './HojaSolucion'
+import { HoyYaNoDaTiempo } from './HoyYaNoDaTiempo'
 import { HojaV2 } from './HojasV2'
-import { EnlaceDeAviso } from '../piezas'
 
 /**
- * HOY2 (agente C, apartado 5): «Tu entrada… corre peligro» (29 y 29b) y «¿Qué hacemos con…?» (28).
- *  · `AvisoDePeligro`: aviso de arriba (prioridad 1, el más urgente), con su X y [Ver solución] → «Una solución» (propuesta con el formato común). El que se cierra no vuelve ese día, salvo que otra entrada corra peligro.
+ * HOY2 (agente C, apartado 5) y V54: «Tu entrada…» y «¿Qué hacemos con…?» (28).
+ *  · `AvisoDeEntradas`: los avisos de las entradas con hora, según su PUNTUALIDAD (`puntualidadEntradas.ts`, comprobada en la web de cada sitio):
+ *      – ESTRICTA que no llegas → ROJO «Si no sales ya, no llegas a tu entrada de las 9:15 en el Coliseo» + [Ver solución] (la hoja «Pasar a otro día», `HojaSolucion`). Dos o más: «2 entradas corren peligro · Coliseo 9:15 · Museos Vaticanos 11:00».
+ *      – ESTRICTA cuya hora ya ha pasado → AMARILLO «Tu entrada de las 9:15 en el Coliseo ya ha pasado» (nada de «peligro» ni de protegerla).
+ *      – LIBRE o con margen, con retraso → nunca «peligro»: VERDE que se va a los 5 s si el retraso cabe en el día; AMARILLO «Vas con retraso…» + [Ver cómo queda el día] si ya no cabe todo.
  *  · `PreguntaParadaNoMarcada`: si estuviste en una parada y te alejas sin marcarla, pregunta UNA vez: [Ya lo visité] / [Lo dejo pendiente] / [Ahora no].
  */
 const MARFIL = '#FBF3E2'
 
 /* ------------------------------------------------------------------ */
-/* 29 y 29b: la entrada en peligro                                      */
+/* Las entradas con hora                                                */
 /* ------------------------------------------------------------------ */
 
-export function AvisoDePeligro({ route, day, dateIso, ubicacion, enCoche, ahoraMin }: { route: Route; day: DayPlan; dateIso: string; ubicacion: Coordinates | null; enCoche: boolean; ahoraMin: number }) {
+const alSitio = (s: Stop): string => conArticulo(s).replace(/^el /, 'al ').replace(/^(?!al )/, 'a ')
+
+const horaTexto = (min: number) => aHora(min, false)
+const quita = (min: number) => `${Math.floor(min / 60)}:${String(min % 60).padStart(2, '0')}`
+
+export function AvisoDeEntradas({ route, day, dateIso, ubicacion, enCoche, ahoraMin }: { route: Route; day: DayPlan; dateIso: string; ubicacion: Coordinates | null; enCoche: boolean; ahoraMin: number }) {
   const ctx = useContexto(route, enCoche)
-  const peligro = useMemo(() => quienCorrePeligro({ day, ctx, ahoraMin, ubicacion, enCoche }), [day, ctx, ahoraMin, ubicacion, enCoche])
-  const [cerrado, cerrar] = useAvisoCerrado(`${day.id}:${dateIso}`, `peligro-${peligro?.stop.id ?? 'ninguno'}`)
-  const [abierta, setAbierta] = useState(false)
+  const rev = useMemo(() => revisarEntradas({ day, ctx, ahoraMin, ubicacion, enCoche }), [day, ctx, ahoraMin, ubicacion, enCoche])
+  const dia = `${day.id}:${dateIso}`
+  const [, repintar] = useState(0)
+  const cerrar = (clave: string) => {
+    cerrarAvisoDelDia(dia, clave)
+    repintar((n) => n + 1)
+  }
+  const [hoja, setHoja] = useState<null | 'solucion' | 'retraso' | 'pasada'>(null)
   const [propuestas, setPropuestas] = useState<Propuesta[]>([])
-  const [indice, setIndice] = useState(0)
   const [textoVuelta, setTextoVuelta] = useState<string | null>(null)
   useEffect(() => {
     if (!textoVuelta) return undefined
     const id = window.setTimeout(() => setTextoVuelta(null), 6000)
     return () => window.clearTimeout(id)
   }, [textoVuelta])
-  if (!peligro) return textoVuelta ? <AvisoPlanActualizado texto={textoVuelta} conDeshacer={false} /> : null
-  const esTurno = Boolean(peligro.stop.isFreeTour)
-  const horaTexto = `${Math.floor(peligro.horaMin / 60)}:${String(peligro.horaMin % 60).padStart(2, '0')}`
-  const ver = () => {
-    setPropuestas(proponerSolucion({ day, peligro, ctx, ahoraMin, ubicacion }))
-    setIndice(0)
-    setAbierta(true)
+
+  const peligros = rev.peligros
+  const claveP = `peligro-${peligros.map((p) => p.stop.id).join('+')}`
+  const pasadas = rev.pasadas
+  const claveX = `pasada-${pasadas.map((p) => p.stop.id).join('+')}`
+  const margen = rev.conMargen[0] ?? null
+  const claveM = `margen-${margen?.stop.id ?? 'ninguno'}-${margen?.cabe ? 'cabe' : 'nocabe'}`
+
+  const solucionPara = (p: Peligro, diaDe?: Record<string, string>) => proponerSolucion({ route, day, peligro: p, ctx, ahoraMin, ubicacion, diaDe })
+  const verSolucion = () => {
+    setPropuestas(solucionPara(peligros[0]))
+    setHoja('solucion')
   }
+  const verRetraso = () => {
+    const sig = numberedStopsOf(day).find((s) => !s.saltada && !s.checkedInAt)
+    if (!sig) return
+    setPropuestas(proponerRetraso({ route, day, paradaId: sig.id, minutos: escalonDeRetraso(retrasoDeAhora(ahoraMin, sig.time)), ctx, ahoraMin }))
+    setHoja('retraso')
+  }
+  const cierra = () => setHoja(null)
+  const esTurno = (s: Stop) => Boolean(s.isFreeTour)
+  const palabra = (s: Stop) => (esTurno(s) ? 'turno' : 'entrada')
+  const lista = (xs: { stop: Stop; horaMin: number }[]) => xs.map((x) => `${displayStopName(x.stop.name)} ${quita(x.horaMin)}`).join(' · ')
+
   return (
     <>
-      {!cerrado && (
-        <AvisoDeHoy id={`peligro:${peligro.stop.id}`} prio={1}>
-          <div data-hoy-peligro={peligro.stop.id} className="flex flex-none flex-col gap-1 rounded-[18px] py-2 pl-3.5 pr-2" style={{ background: 'rgb(var(--accent-red) / .07)', border: '1px solid rgb(var(--accent-red) / .3)' }}>
-            <div className="flex items-start gap-2.5">
-              <span className="flex h-8 w-8 flex-none items-center justify-center rounded-[10px] text-white" style={{ background: 'rgb(var(--accent-red))' }}>
-                <Icono nombre="reloj" size={16} />
-              </span>
-              <span data-hoy-peligro-texto className="min-w-0 flex-1 pt-1 text-[13.5px] font-medium leading-[1.35]">{textoDelPeligro(peligro, esTurno)}</span>
-              <CruzDeAviso onClick={cerrar} />
-            </div>
-            <EnlaceDeAviso onClick={ver} texto="Ver solución" color="#8A2A1F" datos={{ 'data-peligro-ver-solucion': '1' }} className="mb-1 ml-[42px]" />
-          </div>
+      {textoVuelta && <AvisoPlanActualizado texto={textoVuelta} conDeshacer={false} />}
+      {peligros.length > 0 && !avisoCerrado(dia, claveP) && (
+        <AvisoDeHoy id="peligro" prio={1}>
+          <FilaDeAviso
+            tono="rojo"
+            icono={D_AVISO.reloj}
+            titulo={peligros.length === 1 ? `Si no sales ya, no llegas a tu ${palabra(peligros[0].stop)} de las ${horaTexto(peligros[0].horaMin)} en ${conArticulo(peligros[0].stop)}` : `${peligros.length} entradas corren peligro`}
+            sub={peligros.length > 1 ? lista(peligros) : undefined}
+            boton={{ texto: 'Ver solución', onClick: verSolucion, datos: { 'data-peligro-ver-solucion': '1' } }}
+            onIrse={() => cerrar(claveP)}
+            datos={{ 'data-hoy-peligro': peligros[0].stop.id }}
+          />
         </AvisoDeHoy>
       )}
-      {abierta && (
-        <HojaPropuesta
-          titulo="Una solución"
+      {pasadas.length > 0 && !avisoCerrado(dia, claveX) && (
+        <AvisoDeHoy id="pasada" prio={2}>
+          <FilaDeAviso
+            tono="amarillo"
+            icono={D_AVISO.reloj}
+            titulo={pasadas.length === 1 ? `Tu ${palabra(pasadas[0].stop)} de las ${horaTexto(pasadas[0].horaMin)} en ${conArticulo(pasadas[0].stop)} ya ha pasado` : `${pasadas.length} entradas ya han pasado`}
+            sub={pasadas.length > 1 ? lista(pasadas) : undefined}
+            boton={{ texto: 'Ver', onClick: () => setHoja('pasada'), datos: { 'data-pasada-ver': '1' } }}
+            onIrse={() => cerrar(claveX)}
+            datos={{ 'data-hoy-entrada-pasada': pasadas[0].stop.id }}
+          />
+        </AvisoDeHoy>
+      )}
+      {margen && !avisoCerrado(dia, claveM) && (
+        <AvisoDeHoy id="margen" prio={margen.cabe ? 3.5 : 2}>
+          {margen.cabe ? (
+            <FilaDeAviso tono="verde" icono={D_AVISO.ok} titulo={`Tranquilo, tienes margen: ${alSitio(margen.stop)} puedes entrar más tarde y tu día sigue igual.`} autoIrse onIrse={() => cerrar(claveM)} datos={{ 'data-hoy-entrada-margen': 'cabe' }} />
+          ) : (
+            <FilaDeAviso
+              tono="amarillo"
+              icono={D_AVISO.reloj}
+              titulo="Vas con retraso"
+              sub={`${alSitio(margen.stop)} puedes entrar más tarde sin problema, pero hoy quizá no te dé tiempo a todo.`}
+              boton={{ texto: 'Ver cómo queda el día', onClick: verRetraso, datos: { 'data-margen-ver-dia': '1' } }}
+              onIrse={() => cerrar(claveM)}
+              datos={{ 'data-hoy-entrada-margen': 'nocabe' }}
+            />
+          )}
+        </AvisoDeHoy>
+      )}
+      {hoja === 'solucion' && peligros[0] && (
+        <HojaSolucion
+          route={route}
+          day={day}
+          enCoche={enCoche}
           propuestas={propuestas}
-          indice={indice}
-          vacio={`Esta vez no hay un cambio pequeño que lo arregle. Si no llegas a las ${horaTexto}, mira si te dejan entrar un poco más tarde.`}
-          onOtra={() => setIndice((i) => (i + 1) % propuestas.length)}
+          vacio={`Esta vez no hay un cambio pequeño que lo arregle. Si no llegas a las ${quita(peligros[0].horaMin)}, mira si te dejan entrar un poco más tarde.`}
+          recalcular={(diaDe) => solucionPara(peligros[0], diaDe).filter((p) => Object.keys(diaDe).every((id) => p.quitadas.some((q) => q.id === id)))}
           onAplicar={(pr) => {
             aplicarPropuesta(route.id, dateIso, pr)
-            setAbierta(false)
+            cierra()
           }}
-          onOriginal={() => {
-            const n = volverALaRutaOriginal()
-            setAbierta(false)
-            setTextoVuelta(n > 0 ? 'Tu ruta vuelve a ser la original.' : 'Tu ruta ya es la original.')
-          }}
-          onCerrar={() => setAbierta(false)}
+          onCerrar={cierra}
         />
+      )}
+      {hoja === 'retraso' && (
+        <HojaPropuesta
+          titulo="Voy con retraso"
+          propuestas={propuestas}
+          indice={0}
+          vacio="No hay nada más que ajustar hoy: tu día sigue igual."
+          onOtra={() => undefined}
+          onAplicar={(pr) => {
+            aplicarPropuesta(route.id, dateIso, pr)
+            cierra()
+          }}
+          onCerrar={cierra}
+        />
+      )}
+      {hoja === 'pasada' && pasadas[0] && (
+        <HoyYaNoDaTiempo route={route} day={day} dateIso={dateIso} info={{ entrada: { nombre: displayStopName(pasadas[0].stop.name), hora: horaTexto(pasadas[0].horaMin), freeTour: esTurno(pasadas[0].stop) } }} enCoche={enCoche} ahoraMin={ahoraMin} onCerrar={cierra} />
       )}
     </>
   )

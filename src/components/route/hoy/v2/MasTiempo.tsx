@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Coordinates, DayPlan, Route } from '../../../../lib/types'
-import { aplicarPropuesta, volverALaRutaOriginal } from '../../../../lib/hoyCambiarPlanAplicar'
+import { aplicarPropuesta } from '../../../../lib/hoyCambiarPlanAplicar'
 import { evaluarMasTiempo } from '../../../../lib/hoyMasTiempo'
 import { proponerSolucion } from '../../../../lib/hoyPeligro'
 import type { Propuesta } from '../../../../lib/hoyCambiarPlan'
-import { HojaPropuesta, useContexto } from './CambiarPlan'
+import { useContexto } from './CambiarPlan'
+import { HojaSolucion } from './HojaSolucion'
 import { useVentanasDeHoy } from './HorarioHoy'
 
 /**
@@ -22,7 +23,7 @@ export function AvisoMasTiempo({ route, day, dateIso, paradaId, minutos, plural 
   const r = useMemo(() => evaluarMasTiempo({ day, paradaId, minutos, ctx, ahoraMin, enCoche, ventanas, plural }), [day, paradaId, minutos, ctx, ahoraMin, enCoche, ventanas, plural])
   const [abierta, setAbierta] = useState(false)
   const [propuestas, setPropuestas] = useState<Propuesta[]>([])
-  const [indice, setIndice] = useState(0)
+  
   // Sin botones, el aviso de «cerrado» y el de «tu ruta sigue igual» se van solos; el de la reserva en peligro espera a que se toque [Ver solución] o se cierre.
   useEffect(() => {
     if (!autoCerrar || r.tipo === 'peligro' || abierta) return undefined
@@ -31,8 +32,7 @@ export function AvisoMasTiempo({ route, day, dateIso, paradaId, minutos, plural 
   }, [r.tipo, abierta, onCerrar, autoCerrar])
   const ver = () => {
     if (!r.peligro) return
-    setPropuestas(proponerSolucion({ day, peligro: r.peligro, ctx, ahoraMin: ahoraMin + minutos, ubicacion }))
-    setIndice(0)
+    setPropuestas(proponerSolucion({ route, day, peligro: r.peligro, ctx, ahoraMin: ahoraMin + minutos, ubicacion }))
     setAbierta(true)
   }
   return (
@@ -46,19 +46,15 @@ export function AvisoMasTiempo({ route, day, dateIso, paradaId, minutos, plural 
         )}
       </div>
       {abierta && (
-        <HojaPropuesta
-          titulo="Una solución"
+        <HojaSolucion
+          route={route}
+          day={day}
+          enCoche={enCoche}
           propuestas={propuestas}
-          indice={indice}
           vacio="Esta vez no hay un cambio pequeño que lo arregle. Mejor no te alargues más en esta parada."
-          onOtra={() => setIndice((i) => (i + 1) % propuestas.length)}
+          recalcular={(diaDe) => (r.peligro ? proponerSolucion({ route, day, peligro: r.peligro, ctx, ahoraMin: ahoraMin + minutos, ubicacion, diaDe }).filter((p) => Object.keys(diaDe).every((id) => p.quitadas.some((q) => q.id === id))) : [])}
           onAplicar={(pr) => {
             aplicarPropuesta(route.id, dateIso, pr)
-            setAbierta(false)
-            onCerrar()
-          }}
-          onOriginal={() => {
-            volverALaRutaOriginal()
             setAbierta(false)
             onCerrar()
           }}

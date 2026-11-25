@@ -4,16 +4,17 @@ import type { Coordinates, DayPlan, Route } from '../../../../lib/types'
 import { useDatosDeHorario } from '../../../../lib/horarioDeParada'
 import { numberedStopsOf } from '../../../../lib/stopKind'
 import { aplicarPropuesta, volverALaRutaOriginal } from '../../../../lib/hoyCambiarPlanAplicar'
-import { aHora, diaAdmite, mejorDiaPara, opcionesDeDia, proponerPasarADia, type Propuesta } from '../../../../lib/hoyCambiarPlan'
+import { aHora, diaAdmite, mejorDiaPara, opcionesDeDia, proponerPasarADia, proponerPasarSitios, unir, type Propuesta } from '../../../../lib/hoyCambiarPlan'
 import { ListaDeDias } from '../../dayDetail/ListaDeDias'
 import { avisarAbajo } from '../../../../store/useAvisoDeAbajo'
-import { conA, paradasJustasDeHoy, parrafoDeHoy, proponerAdelantar, quienLlegaTarde, textoDelAviso, ventanaDeHorario, type VentanaDeHorario } from '../../../../lib/hoyHorarios'
+import { conA, paradasJustasDeHoy, parrafoDeHoy, proponerAdelantar, quienesLlegaTarde, textoDelAviso, ventanaDeHorario, type VentanaDeHorario } from '../../../../lib/hoyHorarios'
 import { useRouteStore } from '../../../../store/useRouteStore'
 import { Icono } from '../../../ui/Icono'
-import { AvisoDeHoy, CruzDeAviso, useAvisoCerrado } from './AvisosHoy'
+import { AvisoDeHoy, CruzDeAviso, D_AVISO, FilaDeAviso, useAvisoCerrado } from './AvisosHoy'
+import { HojaSolucion } from './HojaSolucion'
 import { HojaPropuesta, TarjetaDelSitio, Titulo, useContexto } from './CambiarPlan'
 import { HojaV2 } from './HojasV2'
-import { EnlaceDeAviso, EnlaceDejarlo } from '../piezas'
+import { EnlaceDejarlo } from '../piezas'
 import { BOTON_ORO } from '../../../ui/botonesOro'
 import { displayStopName } from '../../../../lib/format'
 
@@ -65,13 +66,48 @@ export function TarjetaDeHorariosDeHoy({ day, dateIso, ventanas, visible }: { da
 /** En directo: «A este ritmo llegarías a … cuando ya ha cerrado» con [Ver solución]. */
 export function AvisoDeHorarioEnDirecto({ route, day, dateIso, ubicacion, enCoche, ahoraMin, ventanas }: { route: Route; day: DayPlan; dateIso: string; ubicacion: Coordinates | null; enCoche: boolean; ahoraMin: number; ventanas: VentanaDeHorario[] }) {
   const ctx = useContexto(route, enCoche)
-  const tarde = useMemo(() => quienLlegaTarde({ day, ctx, ahoraMin, ubicacion, enCoche, ventanas }), [day, ctx, ahoraMin, ubicacion, enCoche, ventanas])
+  const todos = useMemo(() => quienesLlegaTarde({ day, ctx, ahoraMin, ubicacion, enCoche, ventanas }), [day, ctx, ahoraMin, ubicacion, enCoche, ventanas])
+  // (V54 §1) Varios sitios que ya no llegas: UN solo aviso («Hoy ya no llegas a 3 sitios · A, B y C» [Ver]) y una hoja con una tarjeta por sitio.
+  const cerradosAhora = todos.filter((t) => t.tipo === 'cerrado')
+  const grupo = cerradosAhora.length >= 2 ? cerradosAhora : null
+  const tarde = grupo ? null : (todos[0] ?? null)
+  const claveGrupo = `horario-vivo-grupo-${grupo?.map((g) => g.v.stop.id).join('+') ?? 'ninguno'}`
+  const [grupoCerrado, cerrarGrupo] = useAvisoCerrado(`${day.id}:${dateIso}`, claveGrupo)
+  const [hojaGrupo, setHojaGrupo] = useState<Propuesta | null | undefined>(undefined)
   // Una vez por sitio y día: el que se cierra (o se resuelve) no vuelve ese día.
   const [cerrado, cerrar] = useAvisoCerrado(`${day.id}:${dateIso}`, `horario-vivo-${tarde?.v.stop.id ?? 'ninguno'}`)
   const [abierta, setAbierta] = useState(false)
   const [propuestas, setPropuestas] = useState<Propuesta[]>([])
   const [indice, setIndice] = useState(0)
   const [eligiendo, setEligiendo] = useState(false)
+  if (grupo) {
+    const nombres = grupo.map((g) => displayStopName(g.v.stop.name))
+    const abrirGrupo = () => setHojaGrupo(proponerPasarSitios({ route, day, ctx, stops: grupo.map((g) => g.v.stop), intro: `Hoy ya no llegas a ${unir(nombres)}. Los pasamos a otros días, cada uno donde mejor encaja.` }))
+    return (
+      <>
+        {!grupoCerrado && (
+          <AvisoDeHoy id="horario-vivo:grupo" prio={2}>
+            <FilaDeAviso tono="amarillo" icono={D_AVISO.pin} titulo={`Hoy ya no llegas a ${grupo.length} sitios`} sub={unir(nombres)} boton={{ texto: 'Ver', onClick: abrirGrupo, datos: { 'data-horario-ver-grupo': '1' } }} onIrse={cerrarGrupo} datos={{ 'data-hoy-horario-vivo-grupo': String(grupo.length) }} />
+          </AvisoDeHoy>
+        )}
+        {hojaGrupo !== undefined && (
+          <HojaPropuesta
+            titulo="Pasar a otro día"
+            propuestas={hojaGrupo ? [hojaGrupo] : []}
+            indice={0}
+            vacio="No queda nada que pasar a otro día: tu día sigue igual."
+            onOtra={() => undefined}
+            onAplicar={(pr) => {
+              aplicarPropuesta(route.id, dateIso, pr)
+              cerrarGrupo()
+              setHojaGrupo(undefined)
+            }}
+            onCerrar={() => setHojaGrupo(undefined)}
+          />
+        )}
+      </>
+    )
+  }
   if (!tarde) return null
   const { titulo, hora } = textoDelAviso(tarde)
   // (V50; Design «Aviso Cierre» A2) El texto de arriba de la hoja y el botón, en «tú», con el sitio de la última entrada: «Hoy ya no llegas a los Museos Vaticanos. Te los pasamos al jueves 26, que tiene hueco y está abierto.»
@@ -95,7 +131,7 @@ export function AvisoDeHorarioEnDirecto({ route, day, dateIso, ubicacion, enCoch
       const mejor = mejorDiaPara({ route, day, stop: tarde.v.stop, ctx })
       setPropuestas(mejor ? proponerPasarADia({ route, day, stop: tarde.v.stop, destinoId: mejor.dia.id, ctx }).propuestas.map(conTextoDeCierre) : [])
     } else {
-      setPropuestas(proponerAdelantar({ day, tarde, ctx, ahoraMin, ubicacion, ventanas }))
+      setPropuestas(proponerAdelantar({ route, day, tarde, ctx, ahoraMin, ubicacion, ventanas }))
     }
     setIndice(0)
     setAbierta(true)
@@ -104,20 +140,8 @@ export function AvisoDeHorarioEnDirecto({ route, day, dateIso, ubicacion, enCoch
     <>
       {!cerrado && (
         <AvisoDeHoy id={`horario-vivo:${tarde.v.stop.id}`} prio={2}>
-          {/* (V2b, H2 de Design) Tarjeta pequeña en ámbar, con su icono, el texto en una o dos líneas y su X; [Ver solución] como enlace pequeño dentro. */}
-          <div data-hoy-horario-vivo={tarde.v.stop.id} data-hoy-horario-vivo-tipo={tarde.tipo} className="flex flex-none flex-col rounded-[22px] py-3.5 pl-3.5 pr-2.5" style={{ background: '#FBF1D8', border: '1.5px solid rgba(200,140,40,.6)', color: '#6A3E06' }}>
-            <div className="flex items-start gap-3">
-              <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A8620A" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" className="mt-px flex-none">
-                <path d="M12 8v5M12 16.5h.01M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 2-2L13.7 3.9a2 2 0 0 0-3.4 0z" />
-              </svg>
-              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <span data-hoy-horario-vivo-texto className="text-[14.5px] font-semibold leading-[1.35]">{titulo}</span>
-                {hora && <span data-hoy-horario-vivo-hora className="text-[12.5px] leading-[1.3]" style={{ color: 'rgba(106,62,6,.8)' }}>{hora}</span>}
-              </span>
-              <span className="-my-2 flex flex-none"><CruzDeAviso onClick={cerrar} /></span>
-            </div>
-            <EnlaceDeAviso onClick={ver} texto={tarde.ya ? 'Pasarlo a otro día' : 'Ver solución'} datos={{ 'data-horario-ver-solucion': '1' }} className="-mb-2 ml-[34px]" />
-          </div>
+          {/* (V54; Design «Avisos Hoy Compactos» V3) La fila compacta: el título, el horario en gris y su botón. Se va al resolverse o deslizándola hacia arriba. */}
+          <FilaDeAviso tono="amarillo" icono={D_AVISO.reloj} titulo={titulo} sub={hora || undefined} boton={{ texto: tarde.ya ? 'Pasarlo a otro día' : 'Ver solución', onClick: ver, datos: { 'data-horario-ver-solucion': '1' } }} onIrse={cerrar} datos={{ 'data-hoy-horario-vivo': tarde.v.stop.id, 'data-hoy-horario-vivo-tipo': tarde.tipo }} />
         </AvisoDeHoy>
       )}
       {abierta && tarde.ya && propuestas.length === 0 && !eligiendo && (
@@ -165,9 +189,25 @@ export function AvisoDeHorarioEnDirecto({ route, day, dateIso, ubicacion, enCoch
           </div>
         </HojaV2>
       )}
-      {abierta && (!tarde.ya || propuestas.length > 0) && !eligiendo && (
+      {abierta && !tarde.ya && (
+        <HojaSolucion
+          route={route}
+          day={day}
+          enCoche={enCoche}
+          propuestas={propuestas}
+          vacio={`Esta vez no hay un cambio pequeño que lo arregle. ${tarde.v.nombre.charAt(0).toUpperCase()}${tarde.v.nombre.slice(1)} ${tarde.v.plural ? 'cierran' : 'cierra'} a las ${aHora(tarde.cierra, false)}: si no llegáis, mejor dejadlo para otro día.`}
+          recalcular={(diaDe) => proponerAdelantar({ route, day, tarde, ctx, ahoraMin, ubicacion, ventanas, diaDe }).filter((p) => Object.keys(diaDe).every((id) => p.quitadas.some((q) => q.id === id)))}
+          onAplicar={(pr) => {
+            aplicarPropuesta(route.id, dateIso, pr)
+            cerrar()
+            setAbierta(false)
+          }}
+          onCerrar={() => setAbierta(false)}
+        />
+      )}
+      {abierta && tarde.ya && propuestas.length > 0 && !eligiendo && (
         <HojaPropuesta
-          titulo={tarde.ya ? 'Pasar a otro día' : 'Una solución'}
+          titulo="Pasar a otro día"
           propuestas={propuestas}
           indice={indice}
           vacio={`Esta vez no hay un cambio pequeño que lo arregle. ${tarde.v.nombre.charAt(0).toUpperCase()}${tarde.v.nombre.slice(1)} ${tarde.v.plural ? 'cierran' : 'cierra'} a las ${aHora(tarde.cierra, false)}: si no llegáis, mejor dejadlo para otro día.`}

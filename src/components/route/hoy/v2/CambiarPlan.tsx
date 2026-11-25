@@ -159,7 +159,18 @@ function ResumenDeCambios({ p }: { p: Propuesta }) {
  * (V50; Design «Aviso Cierre» A2/A4) «Pasar a otro día»: LA TARJETA DEL SITIO (foto pequeña, nombre, cuándo en gris y la fecha en su cuadrado oscuro; no se pulsa) y la franja verde de lo que sigue igual.
  * La misma pieza para Cambiar plan › «Pasar a otro día» y para el aviso «Hoy ya no puedes entrar…».
  */
-export function TarjetaDelSitio({ t }: { t: NonNullable<Propuesta['tarjetaDia']> }) {
+export function FranjaVerde({ texto }: { texto: string }) {
+  return (
+    <div data-franja-sigue-igual className="flex items-center gap-2.5 rounded-2xl px-3.5 py-2.5 text-[13.5px] font-semibold leading-[1.3]" style={{ background: '#E6F1E7', color: '#1F5A33' }}>
+      <span className="flex h-[22px] w-[22px] flex-none items-center justify-center rounded-full text-white" style={{ background: '#2B7F45' }} aria-hidden="true">
+        <Icono nombre="hecho" size={12} grosor={3} />
+      </span>
+      {texto}
+    </div>
+  )
+}
+
+export function TarjetaDelSitio({ t, sinFranja = false }: { t: NonNullable<Propuesta['tarjetaDia']>; sinFranja?: boolean }) {
   return (
     <>
       <div data-tarjeta-del-sitio className="flex items-center gap-3 rounded-[20px] bg-[#FFFDF8] p-3" style={{ border: '1px solid rgba(181,138,46,.45)', boxShadow: '0 10px 18px -14px rgba(60,40,10,.4)' }}>
@@ -172,12 +183,7 @@ export function TarjetaDelSitio({ t }: { t: NonNullable<Propuesta['tarjetaDia']>
         </span>
         {t.aPendientes ? <CuadradoPendientes /> : <CuadradoFecha semana={t.semanaCorta} numero={t.numero} datos={{ 'data-tarjeta-fecha': '1' }} />}
       </div>
-      {!t.aPendientes && <div data-franja-sigue-igual className="flex items-center gap-2.5 rounded-2xl px-3.5 py-2.5 text-[13.5px] font-semibold leading-[1.3]" style={{ background: '#E6F1E7', color: '#1F5A33' }}>
-        <span className="flex h-[22px] w-[22px] flex-none items-center justify-center rounded-full text-white" style={{ background: '#2B7F45' }} aria-hidden="true">
-          <Icono nombre="hecho" size={12} grosor={3} />
-        </span>
-        Sigue igual: el resto de tu {t.diaDeHoy}
-      </div>}
+      {!t.aPendientes && !sinFranja && <FranjaVerde texto={`Sigue igual: el resto de tu ${t.diaDeHoy}`} />}
     </>
   )
 }
@@ -200,7 +206,12 @@ export function HojaPropuesta({ titulo, propuestas, indice, onOtra, onAplicar, o
                 {p.entradasPasadas.map((e) => (e.freeTour ? `Tu ${e.nombre} de las ${e.hora} ya ha pasado.` : `Tu entrada de las ${e.hora} en ${e.nombre} ya ha pasado.`)).join(' ')}
               </span>
             )}
-            {p.tarjetaDia ? <TarjetaDelSitio t={p.tarjetaDia} /> : <ResumenDeCambios p={p} />}
+            {p.tarjetasDia && p.tarjetasDia.length > 0 ? (
+              <>
+                {p.tarjetasDia.map((t, k) => <TarjetaDelSitio key={k} t={t} sinFranja />)}
+                {p.franja && <FranjaVerde texto={p.franja} />}
+              </>
+            ) : p.tarjetaDia ? <TarjetaDelSitio t={p.tarjetaDia} /> : <ResumenDeCambios p={p} />}
             {children}
             {extra}
             {(() => {

@@ -285,6 +285,9 @@ export interface Propuesta {
   resumen?: { icono: 'mover' | 'quitar' | 'ok' | 'reloj' | 'mas'; texto: string; /** Una frase pequeña debajo (lo que antes era el «detalle»). */ sub?: string }[]
   /** (V50; Design «Aviso Cierre» A2/A4) «Pasar a otro día»: la tarjeta del sitio (foto pequeña, nombre, cuándo en gris y la fecha en su cuadrado oscuro) y el día de hoy para la franja verde «Sigue igual: el resto de tu martes». */
   tarjetaDia?: { nombre: string; fotoUrl: string; cuando: string; semanaCorta: string; numero: string; destino: string; diaDeHoy: string; /** (V53 §6) El sitio va a «Lugares pendientes», no a un día: a la derecha, el cuadrado del pin con reloj en vez de la fecha. */ aPendientes?: boolean }
+  /** (V54 §3) VARIOS sitios que cambian (una tarjeta por sitio) y la frase de la franja verde («Llegas a tu entrada de las 9:15»). */
+  tarjetasDia?: NonNullable<Propuesta['tarjetaDia']>[]
+  franja?: string
   /** (V43 §2) Entradas o reservas de hoy cuya hora YA pasó: no se protegen (las ve la hoja para decirlo). */
   entradasPasadas?: { nombre: string; hora: string; freeTour?: boolean }[]
   /** Para la prueba y la nota interna (nunca se enseñan): lo que se quita (con su clase), lo que se corre y a dónde va cada cosa. */
@@ -545,6 +548,61 @@ export function proponerPasarLoQueFalta(p: { route: Route; day: DayPlan; ctx: Co
     ops,
     boton: 'Pasar lo que falta a otros días',
     resumen,
+    quitadas,
+    corridas: 0,
+    intactas: [],
+  }
+}
+
+/**
+ * (V54 §1) «Hoy ya no llegas a 3 sitios» › [Ver]: la hoja de «Pasar a otro día» con UNA TARJETA POR SITIO. Cada sitio se pasa al mejor día donde quepa; lo que no cabe en ninguno, a «Lugares pendientes» (no se pierde).
+ * Los sitios son visitas sueltas (nunca una reserva): `proponerPasarADia` ya lo comprueba para uno solo; aquí se cuentan todos seguidos, en un día de trabajo que se va actualizando.
+ */
+export function proponerPasarSitios(p: { route: Route; day: DayPlan; ctx: Contexto; stops: Stop[]; /** Lo que se dice arriba: «Hoy ya no llegas a …». */ intro: string }): Propuesta | null {
+  const { route, day, ctx } = p
+  const fijas = ctx.fijasDe(day)
+  const sitios = p.stops.filter((s) => !fijas.has(s.id) && !s.reservedId)
+  if (sitios.length === 0) return null
+  const ops: Op[] = []
+  const quitadas: Propuesta['quitadas'] = []
+  const tarjetas: NonNullable<Propuesta['tarjetasDia']> = []
+  let trabajoHoy = day
+  let dias: DayPlan[] = route.days
+  const semanaCorta = (iso: string | null) => (iso ? ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'][new Date(`${iso}T12:00:00Z`).getUTCDay()] : 'DÍA')
+  for (const s of sitios) {
+    const mejor = mejorDiaPara({ route, day, stop: s, ctx, dias })
+    const clase = claseDe(s, fijas, ctx.datos)
+    const fotoUrl = s.photoUrl || s.fixedPhotoUrl || ''
+    if (mejor) {
+      const iy = trabajoHoy.stops.findIndex((x) => x.id === s.id)
+      const o: Op[] = [{ t: 'sacar', dia: day.id, stop: s, indice: iy, ...conMeal(trabajoHoy, iy, false) }, ...mejor.col.ops]
+      for (const op of o) {
+        if (op.dia === day.id) trabajoHoy = aplicarOpADia(trabajoHoy, op, 'adelante')
+        else dias = dias.map((d) => (d.id === op.dia ? aplicarOpADia(d, op, 'adelante') : d))
+      }
+      ops.push(...o)
+      const iso = ctx.fechaDe?.(mejor.dia) ?? null
+      quitadas.push({ id: s.id, nombre: nombre(s), clase, destino: 'manana', aDia: mejor.etiqueta })
+      tarjetas.push({ nombre: nombre(s), fotoUrl, cuando: 'Por la mañana', semanaCorta: semanaCorta(iso), numero: iso ? String(Number(iso.slice(8, 10))) : String(mejor.dia.dayNumber), destino: mejor.etiqueta, diaDeHoy: ctx.etiquetaDia(day) })
+    } else {
+      ops.push({ t: 'campo', dia: day.id, id: s.id, antes: { time: s.time, saltada: Boolean(s.saltada) }, despues: { time: s.time, saltada: true } })
+      quitadas.push({ id: s.id, nombre: nombre(s), clase, destino: 'sobra' })
+      tarjetas.push({ nombre: nombre(s), fotoUrl, cuando: 'A Lugares pendientes', semanaCorta: '', numero: '', destino: '', diaDeHoy: ctx.etiquetaDia(day), aPendientes: true })
+    }
+  }
+  const dest = new Set(quitadas.filter((q) => q.destino === 'manana').map((q) => q.aDia))
+  const todosPend = dest.size === 0
+  const plural = sitios.length > 1
+  return {
+    id: 'pasar-sitios',
+    tipo: 'otro_dia',
+    intro: p.intro,
+    cambia: { titulo: `${unir(quitadas.map((q) => q.nombre))} sale de hoy`, detalle: 'Cada sitio, a su mejor día.' },
+    mantiene: { titulo: 'tus reservas', detalle: 'Las horas fijas no se tocan.' },
+    ops,
+    boton: todosPend ? (plural ? 'Guardarlos en pendientes' : 'Guardarlo en pendientes') : dest.size === 1 && quitadas.every((q) => q.destino === 'manana') ? `Pasar${plural ? 'los' : 'lo'} al ${[...dest][0]?.replace(/ \d+$/, '')}` : 'Pasarlos a otro día',
+    tarjetasDia: tarjetas,
+    franja: 'Lo que tienes reservado no se toca',
     quitadas,
     corridas: 0,
     intactas: [],

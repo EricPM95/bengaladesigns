@@ -4,7 +4,7 @@ import { horarioDeParada, type HorarioDeParada } from './horarioDeParada'
 import { aHora, aplicarOpADia, itemsDe, mantieneDe, minDe, nombre as nombreCorto, simularBase, unir, type Contexto, type Propuesta } from './hoyCambiarPlan'
 import { proponerSolucion, type Peligro } from './hoyPeligro'
 import { numberedStopsOf } from './stopKind'
-import type { Coordinates, DayPlan, Stop } from './types'
+import type { Coordinates, DayPlan, Route, Stop } from './types'
 
 /**
  * (HOY2b 8b, Eric 5-nov) LOS AVISOS DE HORARIO, EN HOY (y no en DÍAS). Todo puro (sin React):
@@ -147,11 +147,12 @@ export interface LlegadaTarde {
 }
 
 /** ¿A qué visita por dentro llegarías tarde a tu ritmo (desde donde estás y a la hora de ahora)? La primera por orden; null si a todas llegas bien o se ven por fuera. */
-export function quienLlegaTarde(p: { day: DayPlan; ctx: Contexto; ahoraMin: number; ubicacion: Coordinates | null; enCoche: boolean; ventanas: VentanaDeHorario[]; /** Para comprobar una propuesta ya hecha: no se pide ir más tarde de lo previsto (la propuesta ya cambia las horas previstas). */ sinRetrasoMinimo?: boolean }): LlegadaTarde | null {
+export function quienesLlegaTarde(p: { day: DayPlan; ctx: Contexto; ahoraMin: number; ubicacion: Coordinates | null; enCoche: boolean; ventanas: VentanaDeHorario[]; /** Para comprobar una propuesta ya hecha: no se pide ir más tarde de lo previsto (la propuesta ya cambia las horas previstas). */ sinRetrasoMinimo?: boolean }): LlegadaTarde[] {
   const { day, ctx } = p
+  const salida: LlegadaTarde[] = []
   const vigentes = numberedStopsOf(day).filter((s) => !s.saltada)
   const k = vigentes.findIndex((s) => !s.checkedInAt)
-  if (k < 0) return null
+  if (k < 0) return salida
   const restantes = vigentes.slice(k).filter((s) => !s.checkedInAt)
   const items = itemsDe(restantes, ctx.fijasDe(day), ctx.datos)
   const anterior = k > 0 ? vigentes[k - 1] : null
@@ -169,16 +170,22 @@ export function quienLlegaTarde(p: { day: DayPlan; ctx: Contexto; ahoraMin: numb
     const k2 = v.tramos.findIndex((t) => llegada >= t.abre && llegada <= t.cierra)
     if (k2 < 0) {
       // Después del último cierre: llegarías con todo cerrado. Antes de un tramo (la pausa de mediodía): esperarías, sin más.
-      if (llegada > ultimoTramo.cierra) return { v, llegada, prevista: it.t, limite: limiteFinal, cierra: ultimoTramo.cierra, tipo: 'cerrado', ya: p.ahoraMin >= limiteFinal }
+      if (llegada > ultimoTramo.cierra) salida.push({ v, llegada, prevista: it.t, limite: limiteFinal, cierra: ultimoTramo.cierra, tipo: 'cerrado', ya: p.ahoraMin >= limiteFinal })
       continue
     }
     const limite = limiteDeEntrada(v, llegada)!
     const cierra = v.tramos[k2].cierra
-    if (k2 === v.tramos.length - 1 && v.ultimaEntrada != null && llegada > v.ultimaEntrada) return { v, llegada, prevista: it.t, limite: v.ultimaEntrada, cierra, tipo: 'cerrado', ya: p.ahoraMin >= v.ultimaEntrada }
-    if (limite - llegada < JUSTO_EN_DIRECTO_MIN) return { v, llegada, prevista: it.t, limite, cierra, tipo: 'justo' }
+    if (k2 === v.tramos.length - 1 && v.ultimaEntrada != null && llegada > v.ultimaEntrada) {
+      salida.push({ v, llegada, prevista: it.t, limite: v.ultimaEntrada, cierra, tipo: 'cerrado', ya: p.ahoraMin >= v.ultimaEntrada })
+      continue
+    }
+    if (limite - llegada < JUSTO_EN_DIRECTO_MIN) salida.push({ v, llegada, prevista: it.t, limite, cierra, tipo: 'justo' })
   }
-  return null
+  return salida
 }
+
+/** El primero de los que llegan tarde (o null). */
+export const quienLlegaTarde = (p: Parameters<typeof quienesLlegaTarde>[0]): LlegadaTarde | null => quienesLlegaTarde(p)[0] ?? null
 
 /** «a el Mirador del Río» → «al Mirador del Río» (y «de el» → «del»). */
 export const conA = (nombre: string): string => nombre.replace(/^el /, 'al ').replace(/^(?!al )/, 'a ')
@@ -200,16 +207,16 @@ export function textoDelAviso(t: LlegadaTarde): { titulo: string; hora: string }
  * «Una solución»: adelantar esa visita para llegar a tiempo, quitando ANTES algo (lo opcional, luego lo flexible, luego lo principal; lo imprescindible, solo preguntando; reservas y turnos nunca). Se reutiliza el motor de «tu entrada corre peligro»
  * tratando la visita como si tuviera hora fija en su último momento para entrar (menos 5 min de margen). Nada se mueve solo: es una propuesta con su vista previa y su Deshacer.
  */
-export function proponerAdelantar(p: { day: DayPlan; tarde: LlegadaTarde; ctx: Contexto; ahoraMin: number; ubicacion: Coordinates | null; ventanas: VentanaDeHorario[] }): Propuesta[] {
+export function proponerAdelantar(p: { route?: Route; /** «Elegir otro día». */ diaDe?: Record<string, string>; day: DayPlan; tarde: LlegadaTarde; ctx: Contexto; ahoraMin: number; ubicacion: Coordinates | null; ventanas: VentanaDeHorario[] }): Propuesta[] {
   const { day, tarde, ctx } = p
   const limiteMin = Math.max(tarde.limite - 5, p.ahoraMin)
   const objetivo = tarde.v.stop
   const ctxMod: Contexto = { ...ctx, fijasDe: (d) => new Set([...ctx.fijasDe(d), objetivo.id]), horaFijaMin: (s) => (s.id === objetivo.id ? limiteMin : ctx.horaFijaMin?.(s) ?? null) }
   const peligro: Peligro = { stop: objetivo, horaMin: limiteMin, tardeMin: Math.max(0, tarde.llegada - limiteMin) }
   // (El día queda tal cual —su orden es el de sus horas—; solo la cuenta usa el último momento para entrar como hora fija de esa visita.)
-  const propuestas = proponerSolucion({ day, peligro, ctx: ctxMod, ahoraMin: p.ahoraMin, ubicacion: p.ubicacion, horaDe: { [objetivo.id]: limiteMin } })
   const el = tarde.v.nombre
   const hora = horaCorta(tarde.cierra)
+  const propuestas = proponerSolucion({ route: p.route, diaDe: p.diaDe, day, peligro, ctx: ctxMod, ahoraMin: p.ahoraMin, ubicacion: p.ubicacion, horaDe: { [objetivo.id]: limiteMin }, paraLlegar: `llegar ${conA(el)} antes de que cierre, a las ${hora}`, franja: `Llegas ${conA(el)} antes de que cierre` })
   const conHorario = new Set(p.ventanas.map((v) => v.stop.id))
   // «Se mantiene»: lo fijo de verdad (reservas y turnos del día), no la visita que se adelanta.
   const mantiene = mantieneDe(itemsDe(numberedStopsOf(day).filter((s) => !s.saltada && !s.checkedInAt), ctx.fijasDe(day), ctx.datos), ctx)
@@ -237,12 +244,9 @@ export function proponerAdelantar(p: { day: DayPlan; tarde: LlegadaTarde; ctx: C
     // Solo vale si, con el cambio hecho, ninguna otra visita con horario llega ya cerrada (si no, no es una solución).
     const despues = pr.ops.reduce((d, op) => aplicarOpADia(d, op, 'adelante'), day)
     if (quienLlegaTarde({ day: despues, ctx, ahoraMin: p.ahoraMin, ubicacion: p.ubicacion, enCoche: ctx.enCoche, ventanas: p.ventanas, sinRetrasoMinimo: true })) return
-    const quitados = pr.quitadas.map((q) => q.nombre)
     resultado.push({
       ...pr,
       id: `horario-${objetivo.id}-${i}`,
-      intro: pr.pregunta ? `Para llegar ${conA(el)} antes de que cierre (a las ${hora}) tendríamos que dejar ${unir(quitados)}, que es de lo más importante. ¿Lo dejamos?` : `Para llegar ${conA(el)} antes de que cierre, a las ${hora}, hay que adelantarlo un poco. Este es el cambio más pequeño.`,
-      cambia: { ...pr.cambia, detalle: pr.pregunta ? 'Es de lo más importante: solo lo hacemos si tú quieres.' : `Así llegas ${conA(el)} antes de que cierre.` },
       mantiene,
     })
   })

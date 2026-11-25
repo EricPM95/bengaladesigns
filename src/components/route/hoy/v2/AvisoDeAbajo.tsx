@@ -10,7 +10,7 @@ const ORO_CLARO = '#F3D88F'
 /**
  * Los avisos de HOY (V43 §6, regla en CLAUDE.md). Los pone cualquiera con `avisarAbajo(...)`; los pinta este host, montado una sola vez en HOY.
  *  · CON [Deshacer]: exactamente como el resto de la app, TAPANDO el menú de abajo y todos en el mismo sitio (`AvisoSobreLaBarra`). 12 s.
- *  · SIN [Deshacer]: arriba, bajo la cabecera. Se van solos a los 5 s, o deslizándolos. Nunca más de uno: si hay varios, se juntan en uno (lo hace el almacén).
+ *  · SIN [Deshacer]: arriba, bajo la cabecera. Se van solos a los 5 s, o deslizándolos. Nunca más de uno a la vez (V54): el siguiente espera su turno.
  * El texto dice qué ha pasado («Piazza Navona, añadida a tu día»).
  */
 export function AvisoDeAbajoHost() {

@@ -15,7 +15,7 @@ export interface AvisoDeAbajo {
   ms?: number
   /** Se llama al irse (solo o con la acción). */
   alIrse?: () => void
-  /** (V43 §6) Los ids de los avisos sin [Deshacer] que se han juntado en este (nunca hay más de uno a la vista). */
+  /** (V43 §6, ya sin uso desde la V54) */
   juntos?: string[]
 }
 
@@ -34,11 +34,7 @@ export const useAvisoDeAbajo = create<Estado>((set, get) => ({
   avisar: (a) => {
     const { actual, cola } = get()
     if (actual?.id === a.id || actual?.juntos?.includes(a.id) || cola.some((x) => x.id === a.id)) return
-    // (V43 §6) Sin [Deshacer], nunca más de uno a la vista: si hay varios, se juntan en uno.
-    if (actual && !actual.accion && !a.accion) {
-      set({ actual: { ...actual, texto: `${actual.texto} ${a.texto}`, juntos: [...(actual.juntos ?? [actual.id]), a.id], alIrse: () => { actual.alIrse?.(); a.alIrse?.() } } })
-      return
-    }
+    // (V54) Ya no se juntan en un texto largo: arriba va UNA sola fila; el siguiente espera su turno y sale cuando el de ahora se va.
     if (!actual) set({ actual: a })
     else set({ cola: [...cola, a] })
   },

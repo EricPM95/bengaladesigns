@@ -1,0 +1,136 @@
+[
+  {
+    "id": "1-fila",
+    "texto": "Arriba, una sola fila compacta (icono, título, sitio en gris, botón)",
+    "estado": "ok",
+    "captura": "v54_1_un_aviso.jpg",
+    "explicacion": "Los avisos de arriba ahora son una fila como la del dibujo: rojo para lo urgente, amarillo para lo informativo, azul para el tiempo."
+  },
+  {
+    "id": "1-juntar-mismo-tipo",
+    "texto": "Los del mismo tipo se juntan en una frase",
+    "estado": "ok",
+    "captura": "v54_1_dos_del_mismo_tipo.jpg",
+    "nota": "Los sitios que ya no llegas («Hoy ya no llegas a 3 sitios», v54_1_grupo_3_sitios.jpg) también se juntan.",
+    "explicacion": "Dos entradas en peligro salen como «2 entradas corren peligro · Coliseo 9:15 · Museos Vaticanos 9:45»."
+  },
+  {
+    "id": "1-insignia-mas-x",
+    "texto": "Tipos distintos: el más importante con insignia +x",
+    "estado": "ok",
+    "captura": "v54_1_tres_plegados.jpg",
+    "explicacion": "Se ve el más urgente con una insignia «+2», un poco más grande que la de antes."
+  },
+  {
+    "id": "1-desplegado",
+    "texto": "Al tocar +x, lista de todos con su color y «Ocultar avisos»",
+    "estado": "ok",
+    "captura": "v54_1_tres_desplegados.jpg",
+    "nota": "La fila azul de lluvia no se vio en captura: necesita el servicio del tiempo real.",
+    "explicacion": "Se despliegan todos, primero lo rojo, y abajo está «Ocultar avisos»."
+  },
+  {
+    "id": "1-sube-el-siguiente",
+    "texto": "Al resolverse el de arriba sube el siguiente con su +x",
+    "estado": "ok",
+    "captura": "v54_1_sube_el_siguiente.jpg",
+    "explicacion": "Al deslizar el rojo hacia arriba, sube el siguiente y la insignia pasa de +2 a +1."
+  },
+  {
+    "id": "1-no-se-va-solo",
+    "texto": "Ninguno con botón se va solo",
+    "estado": "ok",
+    "captura": "v54_1_un_aviso.jpg",
+    "explicacion": "Se comprobó que el rojo seguía a los 8 segundos. Solo el verde «Tranquilo» se va a los 5 s."
+  },
+  {
+    "id": "1-ver-hoja-pasar",
+    "texto": "[Ver] de «Hoy ya no llegas a N sitios» abre «Pasar a otro día» con una tarjeta por sitio",
+    "estado": "ok",
+    "captura": "v54_1_grupo_hoja.jpg",
+    "explicacion": "La hoja enseña una tarjeta por sitio con su foto y a dónde va."
+  },
+  {
+    "id": "1-claude-md",
+    "texto": "Regla «los avisos se juntan en uno» sustituida en CLAUDE.md",
+    "estado": "ok",
+    "captura": null,
+    "explicacion": "La regla antigua se ha cambiado por la nueva al final de CLAUDE.md."
+  },
+  {
+    "id": "2-puntualidades",
+    "texto": "Puntualidad en los datos de cada sitio, con su web",
+    "estado": "medias",
+    "captura": null,
+    "nota": "Detalle en REPASO_V54.md y DECISIONES_V54.md.",
+    "explicacion": "Hay un archivo por destino con cada sitio y su web. Roma: 7 confirmados, el resto por defecto estrictos. Lanzarote: 6 confirmados, 4 por defecto."
+  },
+  {
+    "id": "2-estricta",
+    "texto": "Estricta: aviso rojo «Si no sales ya, no llegas…» con [Ver solución]",
+    "estado": "ok",
+    "captura": "v54_1_un_aviso.jpg",
+    "explicacion": "El Coliseo (estricto) da el aviso rojo con el texto pedido."
+  },
+  {
+    "id": "2-libre-cabe",
+    "texto": "Libre y el retraso cabe: aviso verde que se va solo",
+    "estado": "ok",
+    "captura": "v54_2_foro_cabe.jpg",
+    "explicacion": "Foro Romano: «Tranquilo, tienes margen…» y desaparece a los 5 segundos."
+  },
+  {
+    "id": "2-libre-no-cabe",
+    "texto": "Libre y ya no cabe todo: aviso amarillo «Vas con retraso» con [Ver cómo queda el día]",
+    "estado": "ok",
+    "captura": "v54_2_foro_no_cabe.jpg",
+    "nota": "Hoja vista en v54_2_foro_no_cabe_hoja.jpg.",
+    "explicacion": "El botón abre la hoja «Voy con retraso»."
+  },
+  {
+    "id": "2-ya-paso",
+    "texto": "Entrada estricta ya pasada: aviso amarillo, sin peligro ni protegerla",
+    "estado": "ok",
+    "captura": "v54_2_coliseo_ya_paso.jpg",
+    "nota": "El botón [Ver] abre la hoja «Hoy ya no da tiempo a todo» (decisión mía: el prompt no dice qué botón lleva).",
+    "explicacion": "A las 9:30 el Coliseo de las 9:15 sale en amarillo «ya ha pasado»."
+  },
+  {
+    "id": "3-hoja-vieja",
+    "texto": "Fuera la hoja vieja «Una solución»",
+    "estado": "ok",
+    "captura": "v54_3_hoja_coliseo.jpg",
+    "explicacion": "Ahora es la hoja «Pasar a otro día» con la tarjeta de «Arco de Constantino» y la franja verde."
+  },
+  {
+    "id": "3-primero-dia",
+    "texto": "Primero propone pasarlo al mejor día",
+    "estado": "ok",
+    "captura": "v54_3_hoja_coliseo.jpg",
+    "nota": "Elegir otro día visto en v54_3_elegir_otro_dia.jpg.",
+    "explicacion": "Propone «Pasarlo al domingo» y [Elegir otro día]; solo va a pendientes si no cabe."
+  },
+  {
+    "id": "3-no-cabe",
+    "texto": "Si no cabe en ningún día: «Guardarlo en pendientes»",
+    "estado": "ok",
+    "captura": "v54_3_hoja_no_cabe.jpg",
+    "explicacion": "Con la tarjeta «A Lugares pendientes» y la franja «Llegas a tu entrada de las 9:15»."
+  },
+  {
+    "id": "3-todas-las-hojas",
+    "texto": "Todas las hojas «Una solución» pasadas igual",
+    "estado": "medias",
+    "captura": null,
+    "nota": "Solo se vio en captura la de PeligroHoy; las otras dos comparten la misma pieza pero no las he capturado.",
+    "explicacion": "Eran tres: PeligroHoy, MasTiempo y HorarioHoy. Las tres usan ahora HojaSolucion."
+  },
+  {
+    "id": "4",
+    "texto": "Sin pruebas; tsc y build; capturas en iPhone",
+    "estado": "ok",
+    "captura": "v54_4_lanzarote_peligro.jpg",
+    "nota": "Capturas: v54_4_lanzarote_peligro.jpg, v54_4_lanzarote_hoja.jpg, v54_4_lanzarote_libre.jpg.",
+    "explicacion": "tsc y build sin errores. Lanzarote: la Cueva de los Verdes (estricta) da el rojo y los Jameos del Agua (libres) el verde."
+  }
+]

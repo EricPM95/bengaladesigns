@@ -8,8 +8,7 @@ import type { Propuesta } from '../../../lib/hoyCambiarPlan'
 import { aplicarPropuesta } from '../../../lib/hoyCambiarPlanAplicar'
 import { proponerSiLlueveRoma, proponerVolverAlPlan } from '../../../lib/hoyLluvia'
 import { useRouteStore } from '../../../store/useRouteStore'
-import { Icono } from '../../ui/Icono'
-import { AvisoDeHoy, CruzDeAviso, useAvisoCerrado } from '../hoy/v2/AvisosHoy'
+import { AvisoDeHoy, D_AVISO, FilaDeAviso, useAvisoCerrado } from '../hoy/v2/AvisosHoy'
 import { HojaPropuesta, useContexto } from '../hoy/v2/CambiarPlan'
 import { useAhoraMin } from '../hoy/v2/ParadaHoy'
 
@@ -97,28 +96,17 @@ export function RainAlert({ day, dateIso, when }: RainAlertProps) {
   }
 
   return (
-    <AvisoDeHoy id="tiempo:lluvia" prio={2}>
-      <div data-aviso-lluvia data-aviso-lluvia-estado={applied ? (paro ? 'paro' : 'usando') : 'aviso'} className="flex flex-none flex-col gap-1 rounded-[18px] py-2 pl-3.5 pr-2" style={{ background: '#E7EEF6', border: '1px solid rgba(28,34,48,.1)' }}>
-        <div className="flex items-start gap-2.5">
-          <span className="flex h-[38px] w-[38px] flex-none items-center justify-center rounded-full" style={{ background: '#FFFDF8' }}>
-            <Icono nombre="lluvia" size={18} className="shrink-0 text-text/60" />
-          </span>
-          <span className="min-w-0 flex-1 pt-1 text-[13.5px] font-medium leading-[1.35]">
-            {applied ? (paro ? 'Ha parado de llover.' : 'Estás usando la alternativa para la lluvia.') : canApply ? `Hay previsión de lluvia ${when_}. Si llueve, aquí tienes una alternativa.` : `Hay previsión de lluvia ${when_}. Lleva paraguas o chubasquero.`}
-          </span>
-          {(!applied || paro) && <CruzDeAviso onClick={applied ? cerrarParo : cerrar} />}
-        </div>
-        {!applied && canApply && (
-          <button type="button" data-ver-alternativa onClick={() => abrir('plan')} className="mb-1 ml-[48px] flex h-11 flex-none items-center self-start rounded-full px-4 text-[12px] font-bold" style={{ background: '#1C2230', color: '#F3D88F' }}>
-            Ver alternativa
-          </button>
-        )}
-        {applied && (
-          <button type="button" data-ver-plan onClick={() => abrir('vuelta')} className="mb-1 ml-[48px] flex h-11 flex-none items-center self-start rounded-full px-4 text-[12px] font-bold" style={{ background: '#1C2230', color: '#F3D88F' }}>
-            {paro ? 'Ver plan' : 'Volver al plan original'}
-          </button>
-        )}
-      </div>
+    <AvisoDeHoy id="tiempo:lluvia" prio={1.5}>
+      {/* (V54; Design «Avisos Hoy Compactos» V1) La fila azul del tiempo: «Va a llover esta tarde · Tenemos un plan a cubierto» [Ver plan]. Solo si hay plan de verdad (si no, sin botón) y mientras «esta tarde» no haya pasado. */}
+      <FilaDeAviso
+        tono="azul"
+        icono={D_AVISO.nube}
+        titulo={applied ? (paro ? 'Ha parado de llover' : 'Estás usando el plan de lluvia') : `Va a llover ${when_}`}
+        sub={applied ? undefined : canApply ? 'Tenemos un plan a cubierto' : 'Lleva paraguas o chubasquero'}
+        boton={applied ? { texto: paro ? 'Ver plan' : 'Volver al plan', onClick: () => abrir('vuelta'), datos: { 'data-ver-plan': '1' } } : canApply ? { texto: 'Ver plan', onClick: () => abrir('plan'), datos: { 'data-ver-alternativa': '1' } } : undefined}
+        onIrse={applied ? (paro ? cerrarParo : undefined) : cerrar}
+        datos={{ 'data-aviso-lluvia': '1', 'data-aviso-lluvia-estado': applied ? (paro ? 'paro' : 'usando') : 'aviso' }}
+      />
       {hoja && (
         <HojaPropuesta
           titulo={hoja === 'plan' ? 'Plan de lluvia' : '¿Volvemos al plan?'}

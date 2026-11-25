@@ -74,7 +74,7 @@ import { TarjetaDeComida, useComidaDeAhora } from './ComerAhora'
 import { SitioDeAtardecer } from './SitioDeAtardecer'
 import { ATuAire } from './ATuAire'
 import { AvisoDeHorarioEnDirecto, TarjetaDeHorariosDeHoy, useVentanasDeHoy } from './HorarioHoy'
-import { AvisoDePeligro, PreguntaParadaNoMarcada } from './PeligroHoy'
+import { AvisoDeEntradas, PreguntaParadaNoMarcada } from './PeligroHoy'
 import { ComoVais } from './ComoVais'
 import { QueHagoAhora } from './QueHagoAhora'
 import { RetoDelDia } from './RetoDelDia'
@@ -443,7 +443,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
         </AvisoDeHoy>
       )}
       {/* HOY2 (C): lo que corre peligro ya, el primero de los avisos (prioridad 1) */}
-      <AvisoDePeligro route={route} day={day} dateIso={dateIso} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMinHoy} />
+      <AvisoDeEntradas route={route} day={day} dateIso={dateIso} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMinHoy} />
       {/* HOY2b (8b): los horarios, en HOY. Por la mañana, «Para hoy: … cierra a las …»; en directo, «A este ritmo llegarías a … cuando ya ha cerrado» */}
       <TarjetaDeHorariosDeHoy day={diaVivo} dateIso={dateIso} ventanas={ventanasDeHoy} visible={esPorLaManana} />
       <AvisoDeHorarioEnDirecto route={route} day={diaVivo} dateIso={dateIso} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMinHoy} ventanas={ventanasDeHoy} />
