@@ -1,15 +1,15 @@
-# Estado de la tanda noche
+# Estado de la tanda seguido
 
-**Última actualización: 25/11/26, 7:44**
+**Última actualización: 25/11/26, 13:01**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-TERMINADA. Pusheado a main (0a1dc358), jutrip.app carga en iPhone. Pasada completa: 349 pruebas, 10 en rojo todas en DECISIONES. Cerrados: Vite, esbuild, Chrome; 0 agentes; API reiniciada
+Empezando: V52 (leyendo el prompt)
 
 ## Qué falta
-Nada: apagando el PC
+V52 a V58, CHECKLIST_V52_V58 y REPASO_V52_V58
 
 ## Procesos abiertos ahora mismo
-- node: 2
+- node: 1
 - esbuild: 0
 - Chrome de prueba (con remote-debugging-port): 0
