@@ -23,7 +23,7 @@ import {
 } from '../../../../lib/hoyParada'
 import { useLogrosStore } from '../../../../store/useLogrosStore'
 import { useRouteStore } from '../../../../store/useRouteStore'
-import { Icono } from '../../../ui/Icono'
+import { Icono, IconoRuta } from '../../../ui/Icono'
 import type { HorarioDeParada } from '../../../../lib/horarioDeParada'
 import { abrirAvisoPase } from '../../../../lib/avisoPase'
 import { avisarAbajo } from '../../../../store/useAvisoDeAbajo'
@@ -230,16 +230,16 @@ const COLOR_CAJA: Record<TonoDeCaja | 'gris', string> = { negro: '#1C2230', verd
  * (V47; Design «Parada Tarjeta» T1-T3) UNA caja de las tres de la tarjeta de la parada: la etiqueta con su icono (HORARIO, A PIE / EN COCHE, VISITA), lo grande y la línea pequeña de debajo.
  * Tres en una fila: a 375 px caben sin cortar texto (lo largo baja a otra línea).
  */
-export function CajaDeParada({ icono, etiqueta, grande, tono = 'negro', sub, subTono = 'gris', dato, extra, datos }: { icono: Parameters<typeof Icono>[0]['nombre']; etiqueta: string; grande: string; tono?: TonoDeCaja; sub: string; subTono?: TonoDeCaja | 'gris'; dato: string; extra?: ReactNode; datos?: Record<string, string | undefined> }) {
+export function CajaDeParada({ icono, trazo, etiqueta, grande, tono = 'negro', sub, subTono = 'gris', dato, extra, datos }: { icono?: Parameters<typeof Icono>[0]['nombre']; /** (V62) Un trazo suelto (el de Design) en lugar de un icono de la familia: la fila del vuelo (terminal, asiento, referencia) de la tarjeta de llegada. */ trazo?: string; etiqueta: string; grande: string; tono?: TonoDeCaja; sub: string; subTono?: TonoDeCaja | 'gris'; dato: string; extra?: ReactNode; datos?: Record<string, string | undefined> }) {
   return (
     <div data-caja-parada={dato} {...datos} className="flex min-h-[98px] min-w-0 flex-col gap-1.5 rounded-[18px] px-2.5 pb-3 pt-[11px]" style={{ background: '#F7F1E4' }}>
       <span className="flex items-center gap-[5px]" style={{ color: '#6F4E37' }}>
         <span style={{ color: '#6E5018', display: 'flex', flex: 'none' }}>
-          <Icono nombre={icono} size={15} grosor={1.9} />
+          {trazo ? <IconoRuta d={trazo} size={15} grosor={1.9} /> : <Icono nombre={icono ?? "info"} size={15} grosor={1.9} />}
         </span>
         <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.08em' }}>{etiqueta}</span>
       </span>
-      <b data-caja-grande className="whitespace-nowrap font-bold leading-[1.15]" style={{ color: COLOR_CAJA[tono], fontSize: grande.length > 8 ? 14 : 15 }}>{grande}</b>
+      <b data-caja-grande className={`${trazo ? 'break-words' : 'whitespace-nowrap'} font-bold leading-[1.15]`} style={{ color: COLOR_CAJA[tono], fontSize: grande.length > 8 ? 14 : 15 }}>{grande}</b>
       <span data-caja-sub className="text-[11px] font-medium leading-[1.3]" style={{ color: COLOR_CAJA[subTono] }}>{sub}</span>
       {extra}
     </div>

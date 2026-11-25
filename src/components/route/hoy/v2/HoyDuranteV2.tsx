@@ -41,6 +41,7 @@ import { AZUL, VERDE } from '../piezas'
 import { CabeceraHoy } from './HoyAntesV2'
 import { HojaMasParaTuDia } from './HojasV2'
 import { TarjetaDiaDePrueba, TarjetaP3 } from './TarjetasPase'
+import { TarjetaDeLlegada } from './TarjetaDeLlegada'
 import { CabeceraParada, LineaDelLogro, TarjetaParada, TuDia, ojoDeParada, useAhoraMin, useUltimaSuma } from './ParadaHoy'
 import { HoyVuelvesH14, datosDeLaSalida } from './VueltaH14'
 import { HoyDespuesV2 } from './HoyDespuesV2'
@@ -463,12 +464,11 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const aterrizaMin = minutosDe(route.arrivalFlightTime)
   const modoLlegada = tripModes(route).arrival
   const util = esLlegada && !esVuelta && aterrizaMin != null && modoLlegada === 'avion' ? (horaUtilDeBillete({ info: infoLlegada, medio: 'avion', puntoId: route.arrivalPointId ?? null, zona: route.accommodationZone ?? null, hora: route.arrivalFlightTime }) as { min: number } | null) : null
-  const utilRedonda = util ? Math.ceil(util.min / 5) * 5 : null
-  const horaUtil = utilRedonda != null && utilRedonda < 24 * 60 ? `${Math.floor(utilRedonda / 60)}:${String(utilRedonda % 60).padStart(2, '0')}` : null
   const hastaMin = util?.min ?? (aterrizaMin != null ? aterrizaMin + 150 : null)
   const bienvenida = conPaseOPrueba && esLlegada && !esVuelta && aterrizaMin != null && !sinParadasDeVuelta && vistas === 0 && !paradas.some((s) => s.saltada) && (llegadaTarde || (hastaMin != null && ahoraMinHoy < hastaMin))
-  const recogerCoche = enCoche && route.transportContext?.vehicle_ownership === 'rental'
-  const cocheDeAlquiler = recogerCoche ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`Alquiler de coches ${llegadaMitad.point?.nombre ?? `aeropuerto de ${route.destination}`}`)}` : null
+  // (V62) La tarjeta de llegada: el billete (o el coche propio) y la bienvenida en UNA; la de coche de alquiler lleva su recogida dentro (`TarjetaDeLlegada`).
+  // En coche propio no hay hora de llegada ni billete: la tarjeta (con su imagen de coche) sale el primer día del viaje.
+  const tarjetaDeLlegada = !esVuelta && vistas === 0 && !paradas.some((s) => s.saltada) && ((esLlegada && Boolean(llegadaMitad.billete)) || (llegadaMitad.mode === 'coche' && route.days[0]?.id === day.id && conPaseOPrueba))
 
   // ── HOY2 (Completa 9): el último día, «Hoy vuelves a casa» ──
   const tarjetaDeVuelta = esVuelta ? vuelveH14(true) : null
@@ -547,7 +547,8 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {diaCompleto && <p className="flex-none px-1 text-[12.5px] leading-[1.35] text-text/60">{TEXTO_DIA_COMPLETO}</p>}
 
       {/* (V48) El billete de la llegada, arriba del día de llegada, antes de la primera parada (el mismo de DÍAS; al tocarlo, la ficha de llegada). */}
-      {esLlegada && !esVuelta && fichas.llegada.billete && <BilleteDeVuelo billete={fichas.llegada.billete} onOpen={() => fichas.abrir('llegada')} />}
+      {/* (V62) UNA sola tarjeta de llegada (la imagen, el billete, la fila del vuelo, AL CENTRO / HOTEL / TU DÍA y los botones) en lugar del billete y de «Aterrizas a las…». Sale hasta la primera parada hecha. */}
+      {tarjetaDeLlegada && <TarjetaDeLlegada route={route} day={day} dateIso={dateIso} mitad={llegadaMitad} paradas={vigentes} llegadoPorGps={zonaUbi === 'ruta' || zonaUbi === 'destino'} onAbrirFicha={() => fichas.abrir('llegada')} />}
 
       {/* 5: el día de vuelta sin paradas, «Hoy vuelves a casa» */}
 
@@ -575,11 +576,6 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {/* HOY2 (Completa 8): el día de llegada. Sustituye a las viejas 3, 3b y 3c (billete, «comer al llegar» y «llegas tarde»). */}
       {bienvenida && (
         <TarjetaBienvenida
-          conBillete={esLlegada && !esVuelta && Boolean(fichas.llegada.billete)}
-          aterrizaHora={horaCorta(route.arrivalFlightTime)}
-          horaUtil={llegadaTarde ? null : horaUtil}
-          recogerCoche={recogerCoche}
-          comoLlegarCoche={cocheDeAlquiler}
           aviso={
             llegadaTarde ? (
               <span data-hoy-llegada-tarde className="flex items-center gap-2.5">
@@ -593,7 +589,6 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
               </span>
             ) : null
           }
-          onVerBillete={llegadaMitad.billete ? () => fichas.abrir('llegada') : null}
         >
           {(llegadaTarde || comidaAlLlegar) && (
             <button type="button" onClick={() => explorar('restaurantes', null, true)} data-hoy-bienvenida-restaurantes className="flex h-11 items-center justify-center rounded-2xl text-[13.5px] font-semibold" style={{ border: '1px solid rgba(243,216,143,.4)', color: '#F3D88F' }}>

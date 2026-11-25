@@ -1024,6 +1024,8 @@ export interface Route {
   nombreCuenta?: string
   /** Hora de llegada a Roma "HH:MM", puesta por el viajero en RESERVAS (de pago): la lee el motor (`body.llegada`). null/undefined = sin registrar. */
   arrivalFlightTime?: string | null
+  /** (V62) «Vuelo retrasado» en HOY: la hora de llegada de antes (`antes`) y la nueva (`para`). Solo es un recuerdo para tachar la vieja junto a la nueva: la hora de verdad es `arrivalFlightTime` (la misma reserva de RESERVAS); si ya no coincide con `para` (se cambió en RESERVAS), no se enseña. En coche propio (sin reserva) es la hora estimada. */
+  arrivalRetraso?: { antes: string | null; para: string } | null
   /** Hora de salida de Roma "HH:MM", puesta por el viajero en RESERVAS (de pago): la lee el motor (`body.vuelta`). null/undefined = sin registrar. */
   departureFlightTime?: string | null
   /** El medio de la vuelta si es distinto del de la ida (mismos ids que transport_option: 'flight', 'train'…); ausente = el mismo. */

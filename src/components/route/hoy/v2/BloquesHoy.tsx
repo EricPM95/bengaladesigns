@@ -12,7 +12,6 @@ import { Icono } from '../../../ui/Icono'
 import { StopDetailSheet, type DayStopRef } from '../../dayDetail/StopDetailSheet'
 import { HojaPasarAOtroDia } from '../saltar'
 import { ParadaFotoDeParada } from './ParadaFoto'
-import { BOTON_ORO } from '../../../ui/botonesOro'
 
 
 /**
@@ -133,47 +132,13 @@ export function SiTeSobraTiempoHoy({ route, day, dateIso }: { route: Route; day:
 /* El día de llegada (Completa 8)                                       */
 /* ------------------------------------------------------------------ */
 
-export function TarjetaBienvenida({ aterrizaHora, horaUtil, recogerCoche, comoLlegarCoche, aviso, onVerBillete, conBillete, children }: { conBillete?: boolean; aterrizaHora: string | null; horaUtil: string | null; recogerCoche: boolean; comoLlegarCoche: string | null; /** Una línea más (comer antes de ponerte en marcha, o «llegas tarde: descansa»). */ aviso?: ReactNode; onVerBillete?: (() => void) | null; children?: ReactNode }) {
-  // (V58 §3) Con el billete de la llegada encima (la pieza del billete QR) la hora del vuelo ya sale ahí: esta tarjeta NO repite «Tu vuelo · Aterrizas a las…» ni «Ver mi llegada»; solo lleva lo que el billete no tiene (coche, hora de empezar, comer, restaurantes) y, si no hay nada de eso, no sale.
-  if (conBillete && !recogerCoche && !horaUtil && !aviso && !comoLlegarCoche && !children) return null
+export function TarjetaBienvenida({ aviso, children }: { /** Una línea más (comer antes de ponerte en marcha, o «llegas tarde: descansa»). */ aviso?: ReactNode; children?: ReactNode }) {
+  // (V62) El vuelo, la hora, el coche y «Empiezas hacia las…» ya no salen aquí: los lleva la tarjeta de llegada (TarjetaDeLlegada). Esta solo queda con lo que esa no tiene (comer antes de ponerte en marcha, «llegas tarde», restaurantes); sin nada de eso, no sale.
+  if (!aviso && !children) return null
   return (
     <div data-hoy-llegada="1" data-hoy-bienvenida className="flex flex-none flex-col gap-3 rounded-[26px] p-[18px]" style={{ background: '#1C2230', color: MARFIL, boxShadow: '0 18px 30px -18px rgba(28,34,48,.7)' }}>
-      {!conBillete && <div className="flex items-center gap-3">
-        <span className="flex h-[46px] w-[46px] flex-none items-center justify-center rounded-full" style={{ background: 'rgba(251,243,226,.1)', color: ORO_CLARO }}>
-          <Icono nombre="avion" size={22} grosor={1.7} />
-        </span>
-        <span className="flex min-w-0 flex-col gap-0.5">
-          <span style={OJO_ORO}>Tu vuelo</span>
-          <b data-hoy-bienvenida-titulo style={{ font: "400 26px/1.1 'Instrument Serif',serif" }}>{aterrizaHora ? `Aterrizas a las ${aterrizaHora}` : 'Bienvenido'}</b>
-        </span>
-      </div>}
-      <div className="flex flex-col gap-2.5" style={{ font: "500 14px/1.35 'Geist'" }}>
-        {recogerCoche && (
-          <span data-hoy-bienvenida-linea="coche" className="flex items-center gap-2.5">
-            <Icono nombre="coche" size={17} grosor={1.8} style={{ color: ORO_CLARO, flex: 'none' }} />
-            Recoge tu coche en el aeropuerto.
-          </span>
-        )}
-        {horaUtil && (
-          <span data-hoy-bienvenida-linea="hora-util" className="flex items-center gap-2.5">
-            <Icono nombre="reloj" size={17} grosor={1.8} style={{ color: ORO_CLARO, flex: 'none' }} />
-            Empiezas hacia las {horaUtil}.
-          </span>
-        )}
-        {aviso}
-      </div>
-      {comoLlegarCoche && (
-        <a href={comoLlegarCoche} target="_blank" rel="noopener noreferrer" data-hoy-bienvenida-coche className="flex h-12 items-center justify-center gap-1.5 rounded-2xl px-2.5 text-[13.5px] font-bold no-underline" style={BOTON_ORO}>
-          <Icono nombre="localizar" size={17} grosor={1.9} />
-          Cómo llegar al coche de alquiler
-        </a>
-      )}
+      <div className="flex flex-col gap-2.5" style={{ font: "500 14px/1.35 'Geist'" }}>{aviso}</div>
       {children}
-      {onVerBillete && !conBillete && (
-        <button type="button" onClick={onVerBillete} data-hoy-bienvenida-billete className="flex min-h-11 items-center justify-center self-center text-[12.5px] underline underline-offset-2" style={{ color: 'rgba(251,243,226,.75)' }}>
-          Ver mi llegada
-        </button>
-      )}
     </div>
   )
 }

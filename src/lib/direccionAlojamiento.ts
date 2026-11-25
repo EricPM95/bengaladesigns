@@ -22,10 +22,10 @@ export function direccionDelAlojamiento(route: Pick<Route, 'accommodationAddress
  * El enlace de Google Maps para llegar a la dirección, desde donde esté el viajero (sin origen: el mapa usa su ubicación) y en transporte público. Sin dirección, null: nadie construye
  * un enlace con el nombre del hotel ni con la zona.
  */
-export function enlaceComoLlegarAlojamiento(direccion: string | null | undefined, ciudad?: string | null, punto?: { lat: number; lng: number } | null): string | null {
+export function enlaceComoLlegarAlojamiento(direccion: string | null | undefined, ciudad?: string | null, punto?: { lat: number; lng: number } | null, /** (V62) En coche (el coche de alquiler recién recogido) el camino es en coche; por defecto, transporte público. */ modo: 'transit' | 'driving' = 'transit'): string | null {
   // (V45) Con el punto puesto en el mapa, el enlace va a sus coordenadas (exacto, sin depender de que Google entienda la dirección).
   if (punto && Number.isFinite(punto.lat) && Number.isFinite(punto.lng) && (punto.lat !== 0 || punto.lng !== 0) && (direccion ?? '').trim()) {
-    return `https://www.google.com/maps/dir/?${new URLSearchParams({ api: '1', destination: `${punto.lat},${punto.lng}`, travelmode: 'transit' }).toString()}`
+    return `https://www.google.com/maps/dir/?${new URLSearchParams({ api: '1', destination: `${punto.lat},${punto.lng}`, travelmode: modo }).toString()}`
   }
   let limpia = (direccion ?? '').replace(/\s+/g, ' ').trim()
   if (!limpia) return null
@@ -33,6 +33,6 @@ export function enlaceComoLlegarAlojamiento(direccion: string | null | undefined
   const norm = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
   const c = (ciudad ?? '').trim()
   if (c && !norm(limpia).includes(norm(c))) limpia = `${limpia}, ${c}`
-  const params = new URLSearchParams({ api: '1', destination: limpia, travelmode: 'transit' })
+  const params = new URLSearchParams({ api: '1', destination: limpia, travelmode: modo })
   return `https://www.google.com/maps/dir/?${params.toString()}`
 }
