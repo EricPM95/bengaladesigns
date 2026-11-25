@@ -9,7 +9,7 @@ export function ExtraDaySheet({ destination, onChoose, onClose }: { destination:
   return createPortal(
     <div className="fixed inset-0 z-[95] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="extra-day-heading">
       <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={onClose} />
-      <div className="trazo-notice-panel relative flex max-h-[88dvh] w-full flex-col rounded-t-[28px] bg-bg-card shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[440px] md:rounded-[28px]">
+      <div className="trazo-notice-panel relative flex max-h-[88dvh] w-full flex-col rounded-t-[32px] bg-bg-card shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[440px] md:rounded-[28px]">
         <div className="flex shrink-0 justify-center pt-2.5" aria-hidden="true">
           <span className="h-1 w-[42px] rounded-full bg-text/20" />
         </div>

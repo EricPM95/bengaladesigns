@@ -51,11 +51,11 @@ export function BotonAnadirDocumento({
         data-billete-anadir={datos}
         data-anadir-doc={datos}
         data-con-candado={cerrado ? '1' : '0'}
-        className={estilo === 'borde' ? 'flex h-[48px] w-full items-center justify-center gap-2 rounded-[15px] border-[1.5px] border-text/25 bg-transparent text-[14.5px] font-bold text-text' : 'flex h-[50px] w-full items-center justify-center gap-2 rounded-[15px] text-[15.5px] font-bold'}
-        style={estilo === 'borde' ? undefined : BOTON_ORO}
+        className={estilo === 'borde' ? 'flex h-[46px] w-full items-center justify-center gap-1.5 whitespace-nowrap rounded-[15px] px-2 text-[13.5px] font-bold' : 'flex h-[50px] w-full items-center justify-center gap-2 rounded-[15px] text-[15.5px] font-bold'}
+        style={estilo === 'borde' ? { background: '#FFF8E4', border: '1px solid rgba(181,138,46,.7)', color: '#4A3510' } : BOTON_ORO}
       >
         {estilo === 'borde' ? (
-          <span aria-hidden="true" className="text-[19px] font-medium leading-none">+</span>
+          <svg className="flex-none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
         ) : icono ?? (
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A3510" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d={ICONOS.pase} />
@@ -74,7 +74,7 @@ export function BotonAnadirDocumento({
 }
 
 /** La papelera roja de 44 × 44, abajo a la derecha de su tarjeta (rosa suave, la papelera en rojo). `etiqueta` es lo que lee el lector de pantalla («Quitar la ida»). */
-export function PapeleraRoja({ onClick, etiqueta, datos = 'papelera', atributos }: { onClick: () => void; etiqueta: string; datos?: string; /** Atributos `data-*` de más (las pruebas viejas buscan `data-eliminar`). */ atributos?: Record<string, string> }) {
+export function PapeleraRoja({ onClick, etiqueta, datos = 'papelera', atributos, enLinea = false }: { onClick: () => void; etiqueta: string; datos?: string; /** Dentro de una cabecera (junto a otros botones), no abajo a la derecha. */ enLinea?: boolean; /** Atributos `data-*` de más (las pruebas viejas buscan `data-eliminar`). */ atributos?: Record<string, string> }) {
   return (
     <button
       type="button"
@@ -85,7 +85,7 @@ export function PapeleraRoja({ onClick, etiqueta, datos = 'papelera', atributos 
       aria-label={etiqueta}
       data-papelera={datos}
       {...atributos}
-      className="flex h-11 w-11 flex-none items-center justify-center self-end rounded-full border-none"
+      className={`flex h-11 w-11 flex-none items-center justify-center rounded-full border-none ${enLinea ? '' : 'self-end'}`}
       style={{ background: 'oklch(0.52 0.19 25 / .14)', color: 'oklch(0.52 0.19 25)' }}
     >
       <Icono nombre="papelera" size={18} />

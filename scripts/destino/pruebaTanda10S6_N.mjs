@@ -157,7 +157,8 @@ try {
   await flecha(3)
   await toque(195, 40) // tocar fuera (arriba del todo)
   h = await hoja()
-  debe(h && h.otraVacia === '0' && h.otraTexto !== '08:30' && /^\d\d:\d\d$/.test(h.otraTexto ?? ''), 'rueda', `tocar fuera guarda la hora elegida (${h?.otraTexto})`)
+  // (V50, 24-nov) La hoja de la hora se cierra tocando fuera SIN guardar (sin la X): solo el ✓ y la papelera cambian la hora. La casilla sigue vacía.
+  debe(h && h.otraVacia === '1', 'rueda', `tocar fuera NO guarda la hora (V50): la casilla sigue vacía (${h?.otraTexto})`)
   debe(await ev("!document.querySelector('[data-hoja-de-hora]')"), 'rueda', 'y la hoja de la hora se cierra')
   // Otra vez: ✓
   await ev("document.querySelector('[data-campo-de-hora=\"otra\"]')?.click(); true")

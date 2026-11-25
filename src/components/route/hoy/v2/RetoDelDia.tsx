@@ -1,3 +1,5 @@
+import { CruzDeHoja } from '../../../ui/CruzDeHoja'
+import { BOTON_AZUL } from '../piezas'
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Route, Stop } from '../../../../lib/types'
@@ -116,14 +118,10 @@ export function RetoDelDia({ route }: { route: Route }) {
 function ListaDeColecciones({ retos, onElegir, onCerrar }: { retos: RetoDeHoy[]; onElegir: (coleccion: string) => void; onCerrar: () => void }) {
   return createPortal(
     <div data-reto-lista role="dialog" aria-modal="true" aria-label="Más colecciones de hoy" className="fixed inset-0 z-[90] flex items-end justify-center">
-      <div className="absolute inset-0" style={{ background: 'rgba(28,34,48,.4)' }} onClick={onCerrar} />
-      <div className="relative flex max-h-[80dvh] w-full max-w-[520px] flex-col gap-2.5 overflow-y-auto rounded-t-[28px] px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-3" style={{ background: '#FBF3E2', boxShadow: '0 -10px 30px -12px rgba(0,0,0,.4)', scrollbarWidth: 'none' }}>
-        <span className="h-1 w-[42px] flex-none self-center rounded bg-[rgba(28,34,48,.18)]" aria-hidden="true" />
-        <button type="button" onClick={onCerrar} aria-label="Cerrar" className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full bg-[#1C2230]/8">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1C2230" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M6 6l12 12M18 6L6 18" />
-          </svg>
-        </button>
+      <div className="absolute inset-0" style={{ background: 'rgba(20,16,10,.5)' }} onClick={onCerrar} />
+      <div className="relative flex max-h-[80dvh] w-full max-w-[520px] flex-col gap-2.5 overflow-y-auto rounded-t-[32px] px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-3" style={{ background: '#FBF3E2', boxShadow: '0 -20px 40px rgba(0,0,0,.25)', scrollbarWidth: 'none' }}>
+        <span className="h-1 w-[44px] flex-none self-center rounded-sm bg-[rgba(28,34,48,.25)]" aria-hidden="true" />
+        <CruzDeHoja onCerrar={onCerrar} />
         <span style={{ font: "400 26px/1.1 'Instrument Serif',serif" }} className="pr-12 pt-1">{textoColeccionesMas(retos.length)}</span>
         {retos.map((r) => (
           <button key={r.coleccion} type="button" data-reto-lista-item={r.coleccion} onClick={() => onElegir(r.coleccion)} className="flex min-h-14 items-center gap-3 rounded-[20px] p-2.5 text-left" style={{ background: '#FFFDF8', border: '1px solid rgba(28,34,48,.12)' }}>
@@ -147,14 +145,10 @@ export function AlbumDeColeccion({ reto, ciudad, onCerrar }: { reto: RetoDeHoy; 
   const tengo = reto.total - reto.faltan
   return createPortal(
     <div data-album-de-coleccion={reto.coleccion} role="dialog" aria-modal="true" aria-label={reto.nombre} className="fixed inset-0 z-[90] flex items-end justify-center">
-      <div className="absolute inset-0" style={{ background: 'rgba(28,34,48,.4)' }} onClick={onCerrar} />
-      <div className="relative flex max-h-[92dvh] w-full max-w-[520px] flex-col gap-3.5 overflow-y-auto rounded-t-[28px] px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-3" style={{ background: '#F5EFE4', boxShadow: '0 -10px 30px -12px rgba(0,0,0,.4)', scrollbarWidth: 'none' }}>
-        <span className="h-1 w-[42px] flex-none self-center rounded bg-[rgba(28,34,48,.18)]" aria-hidden="true" />
-        <button type="button" onClick={onCerrar} aria-label="Cerrar" className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full bg-[#1C2230]/8" style={{ zIndex: 2 }}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1C2230" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M6 6l12 12M18 6L6 18" />
-          </svg>
-        </button>
+      <div className="absolute inset-0" style={{ background: 'rgba(20,16,10,.5)' }} onClick={onCerrar} />
+      <div className="relative flex max-h-[92dvh] w-full max-w-[520px] flex-col gap-3.5 overflow-y-auto rounded-t-[32px] px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-3" style={{ background: '#F5EFE4', boxShadow: '0 -20px 40px rgba(0,0,0,.25)', scrollbarWidth: 'none' }}>
+        <span className="h-1 w-[44px] flex-none self-center rounded-sm bg-[rgba(28,34,48,.25)]" aria-hidden="true" />
+        <CruzDeHoja onCerrar={onCerrar} />
         <div className="flex flex-col items-center gap-1.5 pb-1 pt-2 text-center">
           <Insignia coleccion={reto.coleccion} ganados={reto.sitios.filter((s) => s.ganado).map((s) => s.sitio)} completa={false} tam={130} />
           <span data-album-nombre style={{ font: "400 28px/1.05 'Instrument Serif',serif" }}>{reto.nombre}</span>
@@ -197,7 +191,7 @@ function Cromo({ s, ciudad, onAnadir }: { s: SitioDeReto; ciudad: string; onAnad
         {e.texto}
       </span>
       {e.clave === 'fuera' && (
-        <button type="button" onClick={onAnadir} data-album-anadir className="mb-0.5 flex h-11 items-center justify-center rounded-full text-[12.5px] font-bold" style={{ background: '#1C2230', color: '#FFFDF8' }}>
+        <button type="button" onClick={onAnadir} data-album-anadir className="mb-0.5 flex h-11 items-center justify-center rounded-2xl text-[12.5px] font-bold" style={BOTON_AZUL}>
           Añadir
         </button>
       )}

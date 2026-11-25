@@ -118,7 +118,7 @@ if (toca('pelicula')) {
     const fuera = [], cortados = [], pisadas = []
     const cajas = []
     const tituloHoja = Array.from(P.querySelectorAll('span')).find((x) => x.children.length === 0 && x.textContent.trim() === '¿Cuántos sois?')
-    const hoja = tituloHoja ? tituloHoja.closest('div[style*="border-radius: 30px"]') : null
+    const hoja = tituloHoja ? tituloHoja.closest('[data-hoja-cuantos-sois]') : null
     for (const e of hojas) {
       const cs = getComputedStyle(e)
       if (cs.visibility === 'hidden' || cs.display === 'none') continue

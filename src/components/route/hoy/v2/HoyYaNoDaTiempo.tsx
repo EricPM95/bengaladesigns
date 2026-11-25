@@ -5,6 +5,7 @@ import { aplicarPropuesta } from '../../../../lib/hoyCambiarPlanAplicar'
 import { BOTON_CLARO, BOTON_ORO } from '../../../ui/botonesOro'
 import { HojaPropuesta, Titulo, useContexto } from './CambiarPlan'
 import { HojaV2 } from './HojasV2'
+import { EnlaceDejarlo } from '../piezas'
 
 /**
  * V43 §2: la hoja «Hoy ya no da tiempo a todo». Sale UNA vez al día: con más de una hora de retraso, o al abrir HOY con la mañana ya pasada y nada hecho.
@@ -46,9 +47,7 @@ export function HoyYaNoDaTiempo({ route, day, dateIso, info, enCoche, ahoraMin, 
         <button type="button" onClick={pasar} data-ya-no-pasar className="flex min-h-[46px] items-center justify-center rounded-2xl px-3 text-center text-[14px] font-bold" style={BOTON_CLARO}>
           Pasar lo que falta a otro día
         </button>
-        <button type="button" onClick={onCerrar} data-ya-no-dejar className="flex h-9 items-center justify-center text-[13px] font-semibold text-[#1C2230]/60">
-          Dejarlo como está
-        </button>
+        <EnlaceDejarlo onClick={onCerrar} datos={{ 'data-ya-no-dejar': '1' }} />
       </div>
     </HojaV2>
   )

@@ -3,7 +3,10 @@ import { createPortal } from 'react-dom'
 import type { DayPlan, Route } from '../../lib/types'
 import { fichaDelDia } from '../../lib/nombreDeDia'
 import { tituloSimpleDelDia } from '../../lib/tituloDelDia'
-import { Icono } from './Icono'
+import { CuadradoFecha } from './CuadradoFecha'
+import { CruzDeHoja } from './CruzDeHoja'
+import { TiradorDeHoja } from './TiradorDeHoja'
+import { DORADO } from './botonesOro'
 
 /**
  * (Tanda 10N8, apartado 3i) LA HOJA PARA ELEGIR UN DÍA, exactamente como `Piezas/Hoja Dia` de Design. Una sola para toda la app: siempre que haya que elegir un día (añadir algo a un día, pasar algo a otro,
@@ -94,7 +97,7 @@ export function HojaDia({
           boxShadow: '0 -20px 40px rgba(0,0,0,.25)',
         }}
       >
-        <span aria-hidden="true" style={{ display: 'block', width: 44, height: 4, borderRadius: 2, background: 'rgba(28,34,48,.25)', margin: '0 auto 2px', flex: 'none' }} />
+        <TiradorDeHoja />
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
           <span style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
             <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.18em', color: '#6F4E37', textTransform: 'uppercase' }}>{etiqueta}</span>
@@ -102,9 +105,7 @@ export function HojaDia({
               {titulo}
             </span>
           </span>
-          <button className="zona-toque" type="button" onClick={onCerrar} disabled={ocupado} aria-label="Cerrar" style={{ width: 36, height: 36, flex: 'none', borderRadius: '50%', border: 'none', background: 'rgba(28,34,48,.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#1C2230' }}>
-            <Icono nombre="cerrar" size={18} grosor={2} />
-          </button>
+          <CruzDeHoja enLinea onCerrar={onCerrar} deshabilitada={ocupado} />
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 9, paddingTop: 4 }}>
@@ -135,9 +136,9 @@ export function HojaDia({
                   color: activo ? '#FBF3E2' : texto,
                 }}
               >
-                <span style={{ width: 54, height: 58, flex: 'none', borderRadius: 16, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1, background: activo ? 'rgba(233,199,122,.16)' : bloqueado ? 'rgba(28,34,48,.06)' : '#F3E3B2' }}>
-                  <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.12em', color: activo ? '#E9C77A' : bloqueado ? 'rgba(28,34,48,.4)' : '#6E5018' }}>{fila.semana}</span>
-                  <span style={{ font: "400 26px/1 'Instrument Serif',serif", color: activo ? '#FBF3E2' : bloqueado ? 'rgba(28,34,48,.45)' : '#1C2230' }}>{fila.numero}</span>
+                {/* (Noche 24-25 nov) El cuadrado de la fecha de toda la app; el día elegido lleva el borde dorado y el bloqueado sale apagado. */}
+                <span style={{ flex: 'none', display: 'flex', opacity: bloqueado ? 0.45 : 1 }}>
+                  <CuadradoFecha semana={fila.semana} numero={fila.numero} marcado={activo} />
                 </span>
                 <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
                   <span style={{ font: "600 15px/1.25 'Geist'" }}>{fila.titulo}</span>
@@ -177,7 +178,7 @@ export function HojaDia({
             height: 54,
             borderRadius: 16,
             border: 'none',
-            background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)',
+            background: DORADO,
             color: '#4A3510',
             font: "700 16px 'Geist'",
             boxShadow: '0 10px 20px -12px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55)',

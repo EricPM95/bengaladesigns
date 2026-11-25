@@ -147,8 +147,9 @@ try {
   await a.hasta('window.__photon.length >= 1 && document.querySelectorAll("[data-sugerencia-alojamiento]").length > 0', { segundos: 8 })
   await a.esp(1500)
   const llamadas = await ev('window.__photon.slice()')
-  debe(llamadas.length === 1, 'una peticion', `«Via del Corso» (13 letras) = UNA petición a Photon al dejar de escribir (${llamadas.length})`)
-  debe(llamadas.every((u) => /^https:\/\/photon\.komoot\.io\/api\/\?/.test(u) && /q=Via\+del\+Corso/.test(u)), 'url', `la petición lleva la búsqueda entera (${llamadas[0]})`)
+  // (V50, 24-nov) El buscador del alojamiento pide las CALLES primero y, si hace falta, una segunda general (sin repetidos): 1 o 2 peticiones al dejar de escribir, nunca una por letra.
+  debe(llamadas.length >= 1 && llamadas.length <= 2, 'una peticion', `«Via del Corso» (13 letras) = 1 o 2 peticiones a Photon al dejar de escribir (${llamadas.length})`)
+  debe(llamadas.every((u) => /^https:\/\/photon\.komoot\.io\/api\/\?/.test(u) && /q=via\+del\+corso/i.test(u)), 'url', `la petición lleva la búsqueda entera (${llamadas[0]})`)
   debe(llamadas.every((u) => /lat=41\.\d+/.test(u) && /lon=12\.\d+/.test(u)), 'sesgo', 'con el sesgo a la ciudad del viaje (lat y lon del destino)')
   const sug = await ev(`Array.from(document.querySelectorAll('[data-sugerencia-alojamiento]')).map((x) => x.innerText.replace(/\\s+/g, ' ').trim())`)
   debe(sug.length === 3 && sug.every((t) => !/Milano/.test(t)), 'solo la ciudad', `4 resultados, el de Milán se descarta: 3 de Roma (${JSON.stringify(sug)})`)
@@ -163,7 +164,7 @@ try {
   await a.esp(1500)
   const tras = await ev(`(() => ({ dir: document.querySelector('[data-direccion-del-punto]')?.innerText.replace(/\\s+/g, ' ').trim(), sugs: document.querySelectorAll('[data-sugerencia-alojamiento]').length, foto: window.__photon.length }))()`)
   debe(/^Via del Corso, 18 00186 Roma$/.test(tras.dir ?? '') && tras.sugs === 0, 'elegir', `al tocar una sugerencia, el mapa va allí y la tarjeta dice la dirección (${tras.dir})`)
-  debe(tras.foto === 1, 'sin reverse al elegir', `elegir una sugerencia no pide otra dirección (${tras.foto} llamadas)`)
+  debe(tras.foto === llamadas.length, 'sin reverse al elegir', `elegir una sugerencia no pide otra dirección (${tras.foto} llamadas; había ${llamadas.length})`)
   await foto('v45_mapa_m2_elegido.jpg')
 
   // Guardar el punto.

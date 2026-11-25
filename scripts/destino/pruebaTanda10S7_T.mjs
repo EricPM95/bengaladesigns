@@ -241,7 +241,7 @@ async function pasada(version) {
         eliminar: b.querySelector('[data-papelera="alojamiento"]') ? 'papelera' : null,
       }
     })()`)
-    debe(a1.boton === '+Añade tu reserva' && a1.ayuda === null && a1.candado === (sin ? '1' : '0'), 'a1', `A1: [+ Añade tu reserva] sin línea de ayuda, con candado solo sin pase (${a1.boton} · ${a1.candado})`)
+    debe(a1.boton === 'Añade tu reserva' && a1.ayuda === null && a1.candado === (sin ? '1' : '0'), 'a1', `A1: [+ Añade tu reserva] sin línea de ayuda, con candado solo sin pase (${a1.boton} · ${a1.candado})`)
     debe(a1.filas === 0 && a1.codigo === false, 'a1', 'A1: sin filas de reserva y SIN código')
     debe(a1.cabecera.length === 2 && a1.cabecera[0] === 'Alojamiento' && !/noches/.test(a1.cabecera.join(' ')), 'cabecera', `la cabecera sin línea debajo del título (solo el estado): ${JSON.stringify(a1.cabecera)}`)
     debe(a1.precio?.includes('280') && a1.eliminar === 'papelera', 'diez_s4', `sigue lo de la 10S4: el precio y la papelera abajo a la derecha (${a1.precio} · ${a1.eliminar})`)

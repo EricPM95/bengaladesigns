@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Viajero Roma</title>
+<style>
+body{font-family:system-ui,sans-serif;max-width:900px;margin:24px auto;padding:0 16px;color:#222}
+h1{font-size:22px} h2{font-size:17px;margin-top:28px;border-bottom:1px solid #ccc}
+.h{border:1px solid #ddd;border-radius:8px;padding:10px 14px;margin:12px 0;display:flex;gap:14px}
+.h img{width:200px;height:auto;border:1px solid #ccc;flex:none;align-self:flex-start}
+.h .t{font-size:13px;line-height:1.45}
+.t b.n{font-size:14px}
+.tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:9px;background:#eee;margin-right:4px}
+.alta{background:#f6c9c9}.media{background:#fbe7b5}.duda{background:#d6e4f7}
+@media(max-width:640px){.h{flex-direction:column}}
+</style></head><body>
+<h1>Viajero «ROMA» · 4 días (17-20 oct 2026) con vuelo, alojamiento, una entrada (Coliseo, dom 18 a las 10:00) y la excursión (Pompeya, lun 19 a las 08:00)</h1>
+<p>iPhone 390x844. Día simulado con <code>window.__horaFalsa</code> y <code>setDevSimulatedTodayIso</code>. Scripts: <code>scripts/destino/viajero_roma_*.mjs</code>. Nada arreglado. Capturas en <code>VIAJEROS_capturas/roma_*.jpg</code>. «hora» = hora simulada. Nota: el vuelo, el alojamiento (Hotel Quirinale), la entrada y la excursión se pusieron con el store (<code>transportBookings</code>, <code>accommodationSelections</code>, <code>addReservation</code>), no por la UI; lo dudoso va como «duda». No se pudo comprobar sonido (Chrome sin ventana y sin audio): ningún momento sonoro se ha evaluado.</p>
+
+<h2>Sin lógica / contradicciones (importantes)</h2>
+
+<div class="h"><img src="VIAJEROS_capturas/roma_hoy_d2_1900.jpg"><div class="t"><span class="tag alta">sin lógica</span><b class="n"> Sitio cerrado como «Primera parada»</b><br>
+<b>Pantalla:</b> HOY, dom 18. <b>Hora:</b> 19:00 y 22:40 (también a las 13:00).<br>
+El Coliseo sigue de «Primera parada · Parada 1 de 13» con 0 hechas; la caja dice «Cerrado · Abre mañana a las 8:30» y debajo la hoja «Hoy ya no da tiempo a todo». A las 13:00 sigue también de primera parada con «Tu entrada a el Coliseo · 10:00 ✓» (3 h pasada; la hoja dice «Tu entrada de las 10:00 en Coliseo ya ha pasado»). El viajero no marcó nada: la app no avanza a la siguiente parada abierta.<br>
+<b>Repetir:</b> viaje de prueba + reserva Coliseo dom 18 10:00; <code>hoy('2026-10-18', 19*60)</code>. Capturas: <code>roma_hoy_d2_1900.jpg</code>, <code>roma_hoy_d2_1300.jpg</code>, <code>roma_hoy_d2_2240.jpg</code>.</div></div>
+
+<div class="h"><img src="VIAJEROS_capturas/roma_hoy_d3_1300.jpg"><div class="t"><span class="tag alta">sin lógica</span><span class="tag alta">contradicción</span><b class="n"> El día de la excursión sale como «Hoy libre / A tu aire»</b><br>
+<b>Pantalla:</b> HOY, lun 19. <b>Hora:</b> 08:30, 13:00, 19:00, 22:40 (idénticas).<br>
+RESERVAS marca «✓ Excursión a Pompeya y Sorrento» (reservada lunes 19 a las 08:00) y el día 3 tiene <code>dayType: excursion</code>, pero HOY dice «Hoy tienes el día a tu aire» y lista Coliseo, Foro, Trevi… sin la excursión, ni hora de recogida, ni punto de encuentro. Duda: la excursión se creó con <code>addReservation</code> + objeto de excursión sin <code>selectedExcursionId</code> en el día; si el flujo real lo rellena, no se da. Aun así, con reserva y día de excursión HOY no debería decir «a tu aire».<br>
+<b>Repetir:</b> <code>hoy('2026-10-19', 13*60)</code>. Captura: <code>roma_hoy_d3_1300.jpg</code>.</div></div>
+
+<div class="h"><img src="VIAJEROS_capturas/roma_acc_d2_otrodia.jpg"><div class="t"><span class="tag alta">sin lógica</span><b class="n"> «Pasar lo que falta a otros días» manda 10 sitios al día de la excursión</b><br>
+<b>Pantalla:</b> HOY dom 18 › hoja «Hoy ya no da tiempo a todo». <b>Hora:</b> 17:00.<br>
+Todos los sitios (Arco de Constantino, Foro, Campidoglio, Venecia, Altar de la Patria, Barrio Judío, Torre Argentina, San Luigi, Panteón, Gesù, Navona) «pasan al lunes 19», que es el día de excursión de 12 h (Pompeya 08:00). Además, a las 17:00 aún faltan 1,5 h de luz y la hoja propone quitar casi todo el día. El Foro y el Palatino, que cierran a las 18:30, estaban a tiempo.<br>
+<b>Repetir:</b> <code>hoy('2026-10-18', 17*60)</code> con la entrada del Coliseo y la excursión del lunes; abrir la hoja «Hoy ya no da tiempo a todo». Captura: <code>roma_acc_d2_otrodia.jpg</code>.</div></div>
+
+<div class="h"><img src="VIAJEROS_capturas/roma_hoy_d4_1900.jpg"><div class="t"><span class="tag alta">pantalla vacía</span><b class="n"> Día de vuelta vacío</b><br>
+<b>Pantalla:</b> HOY, mar 20 (día de vuelta). <b>Hora:</b> 08:30, 13:00, 19:00, 22:40: idéntica.<br>
+Solo «Hoy vuelves a casa · Roma → Madrid» y el resto en blanco: sin billete de vuelta, sin hora del vuelo (19:40 puesta), sin recordatorio de hacer el equipaje/ir al aeropuerto, sin nada que hacer por la mañana. A las 22:40, con el vuelo ya salido, sigue «Hoy vuelves a casa». En HOY del día de llegada sí hay billete QR.<br>
+<b>Repetir:</b> <code>hoy('2026-10-20', 19*60)</code>. Captura: <code>roma_hoy_d4_1900.jpg</code>.</div></div>
+
+<div class="h"><img src="VIAJEROS_capturas/roma_hoy_d1_2240.jpg"><div class="t"><span class="tag alta">sin lógica</span><b class="n"> A las 22:40 el día de llegada sigue en «Parada 1 de 7 · Piazza Navona»</b><br>
+<b>Pantalla:</b> HOY, sáb 17. <b>Hora:</b> 19:00 y 22:40.<br>
+Con 0 hechas, «Primera parada: Piazza Navona (A pie 9 min Desde el centro)» a las 22:40, más la hoja «Lo que tenías por la mañana ya ha pasado» (a las 19:00, 22:40 no es «por la mañana»). Duda: la hoja a esa hora quizá deba cerrar el día en lugar de ofrecer «Ver lo que queda hoy».<br>
+<b>Repetir:</b> <code>hoy('2026-10-17', 22*60+40)</code>. Capturas: <code>roma_hoy_d1_1900.jpg</code>, <code>roma_hoy_d1_2240.jpg</code>.</div></div>
+
+<div class="h"><img src="VIAJEROS_capturas/roma_hoy_d1_0830.jpg"><div class="t"><span class="tag alta">contradicción</span><b class="n"> Alojamiento puesto en DÍAS/RESERVAS, pero HOY lo pide y dice «Desde el centro»</b><br>
+<b>Pantalla:</b> HOY (todos los días) frente a DÍAS y RESERVAS. <b>Hora:</b> cualquiera.<br>
+DÍAS: «ALOJAMIENTO · ROMA · Hotel Quirinale»; RESERVAS: «✓ Alojamiento · Listo». HOY: «Pon tu alojamiento para volver con un toque · Añadir» y la tarjeta de parada «A pie 14 min · Desde el centro» (no «Desde el alojamiento»). Duda: se guardó con <code>accommodationSelections[primerDia.id]</code> (la clave del segmento); sin dirección ni coordenadas, HOY quizá no lo cuenta; pero entonces RESERVAS no debería decir «Listo».<br>
+Captura: <code>roma_hoy_d1_0830.jpg</code> (abajo, «Pon tu alojamiento…» está tapado por la barra), <code>roma_acc_dias.jpg</code>.</div></div>
+
+<h2>Textos</h2>
+
+<div class="h"><img src="VIAJEROS_capturas/roma_acc_d2_0900_llegado.jpg"><div class="t"><span class="tag media">texto</span><b class="n"> «Tu entrada a el Coliseo» y «en Coliseo» sin artículo</b><br>
+<b>Pantalla:</b> HOY dom 18, aviso verde arriba y hoja del retraso. <b>Hora:</b> 09:00 y 11:30.<br>
+«Tu entrada a el Coliseo · 10:00 ✓» (debe ser «al Coliseo»); en la hoja «Tu entrada de las 10:00 en Coliseo ya ha pasado» (falta «el»). También «Tu Coliseo, el domingo 18» en el aviso de abajo (suena a «tu Coliseo»).<br>
+Capturas: <code>roma_acc_d2_0900_llegado.jpg</code>, <code>roma_hoy_d2_1900.jpg</code>.</div></div>
+
+<div class="h"><div class="t"><span class="tag media">texto</span><b class="n"> «¿Cómo vais?» (segunda persona del plural)</b><br>
+<b>Pantalla:</b> HOY dom 18, tarjeta con «Con fuerzas / Cansados» (aparece al volver a HOY tras «Pasar a otro día»). <b>Hora:</b> 17:00.<br>
+Texto volcado: «¿Cómo vais? Con fuerzas · Cansados». El viaje es de pareja (companion=couple) y la app habla de «tú» en el resto de textos; «vais» es plural/vosotros. Captura de la pantalla relacionada: <code>roma_acc_d2_otrodia.jpg</code> (la tarjeta queda detrás de la hoja).</div></div>
+
+<h2>Algo que tapa un botón o texto</h2>
+
+<div class="h"><img src="VIAJEROS_capturas/roma_acc_d2_0900_llegado.jpg"><div class="t"><span class="tag media">tapa</span><b class="n"> Los botones flotantes tapan «Necesito más tiempo» y los círculos de ✓</b><br>
+<b>Pantalla:</b> HOY, tarjeta «Ya estás aquí» (dom 18, 09:00 con GPS en el Coliseo): «Necesito más tiempo» queda cortado bajo Avisos/Cámara/Logros. En «Hoy libre» (<code>roma_hoy_d3_1300.jpg</code>) los tres botones tapan el ✓ de «Boca de la Verdad» y «Circo Máximo» (no se puede marcar como visto sin hacer scroll). En DÍAS tapan el chip verde de la primera parada. Probable duda: regla V42 dice que los flotantes van a la derecha; el contenido debería dejar margen.<br>
+<b>Repetir:</b> <code>window.__pos = {lat:41.8902,lng:12.4922}; window.__perm='granted'</code> y pulsar «Ya he llegado». Capturas: <code>roma_acc_d2_0900_llegado.jpg</code>, <code>roma_hoy_d3_1300.jpg</code>, <code>roma_acc_dias.jpg</code>.</div></div>
+
+<div class="h"><img src="VIAJEROS_capturas/roma_hoy_d1_0830.jpg"><div class="t"><span class="tag media">tapa</span><span class="tag duda">duda</span><b class="n"> La barra «Tu Coliseo, el domingo 18 · Deshacer» no se va</b><br>
+<b>Pantalla:</b> HOY sáb 17 y dom 18 (<code>roma_hoy_d1_0830.jpg</code>, <code>roma_acc_d2_0900_llegado.jpg</code>). Sale tras añadir la reserva y se queda tapando lo de abajo (menú «Pon tu alojamiento», «Tu día») aunque cambie de día simulado. Duda: puede ser efecto de cambiar el día simulado sin recargar.</div></div>
+
+<h2>Dudas</h2>
+
+<div class="h"><div class="t"><span class="tag duda">duda</span><b class="n"> Atardecer «Hoy el sol se pone a las 18:25» y sugerencias lejos</b><br>
+HOY dom 18 a las 17:00 (<code>roma_acc_d2_otrodia.jpg</code> y texto): «Hoy el sol se pone a las 18:25… Ponte Sisto a 22 min a pie · Mirador de San Pietro in Montorio a 26 min a pie». El 18 oct en Roma el sol se pone hacia las 18:05-18:10 (hora de verano), así que son unos 15-20 min de diferencia; y con el Coliseo de primera parada, los dos sitios sugeridos quedan a 22-26 min: no se llega a verlo.</div></div>
+
+<div class="h"><img src="VIAJEROS_capturas/roma_acc_reservas.jpg"><div class="t"><span class="tag duda">duda</span><b class="n"> Cabecera de RESERVAS «Domingo 18 · 2 de 3» con un viaje de 4 días</b><br>
+RESERVAS (dom 18, 12:00): «Domingo 18 · 2 de 3»; RUTA dice «4 días · 3 noches»; DÍAS tiene 4 días. Si «2 de 3» son noches, no se entiende. También «3 de 5 listo» con la excursión en ✓ y «Entradas 1/3» (¿tres entradas necesarias? la ruta de 4 días solo tiene una reservada). Captura: <code>roma_acc_reservas.jpg</code>.</div></div>
+
+<div class="h"><img src="VIAJEROS_capturas/roma_hoy_d1_0830.jpg"><div class="t"><span class="tag duda">duda</span><b class="n"> Dos tarjetas del mismo vuelo el día de llegada</b><br>
+HOY sáb 17 08:30: el billete «LLEGADA · VUELO VY6102 · 11:15 FCO» y justo debajo «TU VUELO · Aterrizas a las 11:15». Dos cosas que dicen lo mismo con diseño distinto (claro y oscuro). A las 08:30 aún no ha salido el vuelo y a las 13:00 el billete sigue sin «Tarjeta de embarque guardada». Captura: <code>roma_hoy_d1_0830.jpg</code>.</div></div>
+
+<div class="h"><img src="VIAJEROS_capturas/roma_acc_dias.jpg"><div class="t"><span class="tag duda">duda</span><b class="n"> DÍAS: horarios con distinto formato y una iglesia cerrada a la hora prevista</b><br>
+DÍAS día 18: «Coliseo 8:30–18:30», «Foro 9:00–18:30» pero «Iglesia del Gesù 7:45–13:30 / 16:30–20:00» (otro formato, tramos partidos), y el Gesù va en TARDE tras el Panteón, antes de Piazza Navona, sin hora visible: no se ve si cae en el cierre de 13:30–16:30. Además «Hecho · Ver tu día» en el día 17 aunque HOY mostraba «0 de 7 hechas». Captura: <code>roma_acc_dias.jpg</code>.</div></div>
+
+<div class="h"><div class="t"><span class="tag duda">duda</span><b class="n"> Perfil con datos de demostración</b><br>
+Perfil (<code>roma_acc_perfil.jpg</code>): «Hola, Viajero · Nivel 8 · Explorador», «33 logros», recuerdos «ROMA 13 OCT 2026» y «Antes de la app · 4 países» con el viaje de prueba en ?logrosDemo=1; «Roma, 17–20 oct 2026 · 4 días · 20 paradas» cuenta 7+13 paradas aunque el día 3 sea excursión. No se apunta como fallo (modo demo), pero no cuadra «13 OCT 2026» con un viaje del 17.</div></div>
+
+<h2>Tercera pasada (día 1 con GPS, RESERVAS)</h2>
+
+<div class="h"><img src="VIAJEROS_capturas/roma_flu_d1_1500_gps.jpg"><div class="t"><span class="tag duda">duda</span><b class="n"> GPS puesto pero HOY sigue diciendo «Sin tu ubicación no sabemos cuándo llegas»</b><br>
+<b>Pantalla:</b> HOY sáb 17. <b>Hora:</b> 15:00 (GPS simulado en Piazza Navona), 12:00 (GPS en Fiumicino) y 20:30 (GPS en Trevi).<br>
+Con <code>__pos</code> y <code>__perm='granted'</code> la barra «Usar mi ubicación» no cambia y en el de 20:30 sigue «Primera parada: Piazza Navona · A pie 9 min · Desde el centro». Muy probable que sea el simulador (el <code>watchPosition</code> de prueba no emite posiciones); no se apunta como fallo de la app. Con eso «Ya he llegado» no se pudo probar en el día 1 (a las 15:00 la tarjeta es «Es hora de comer»).<br>
+Capturas: <code>roma_flu_d1_1500_gps.jpg</code>, <code>roma_flu_d1_1200_aeropuerto.jpg</code>, <code>roma_flu_d1_2030_fontana.jpg</code>.</div></div>
+
+<div class="h"><img src="VIAJEROS_capturas/roma_flu_d1_1500_gps.jpg"><div class="t"><span class="tag media">sin lógica</span><b class="n"> «Es hora de comer» a las 15:00 con la comida ya apuntada en «Mediodía»</b><br>
+HOY sáb 17, 15:00: tarjeta «Es hora de comer / Elegir sitio / Cambiar / Ya he comido» encima del plan, y el plan dice «MEDIODÍA · Comida, cerca de tu alojamiento» sin hora ni restaurante. Un viajero que aterrizó a las 11:15 y empezó a las 14:10 recibe «Piazza Navona (A pie 9 min)» solo después de dar a «Ya he comido»; la hoja «Hoy ya no da tiempo a todo» no sale a esa hora pero sí a las 19:00. Además la barra «Tu Coliseo, el domingo 18 · Deshacer» sigue tapando el pie.</div></div>
+
+<div class="h"><img src="VIAJEROS_capturas/roma_flu_res_llegada.jpg"><div class="t"><span class="tag duda">duda</span><b class="n"> RESERVAS › Llegada y vuelta: pulsar la tarjeta abre la hoja «Tu vuelo» en edición, no se ve el vuelo guardado abierto</b><br>
+RESERVAS (sáb 17): el texto de la página (detrás de la hoja) enseña «IDA sábado 17 · Llegas a las 11:15 · Vuelo VY6102» y «VUELTA martes 20 · Sales a las 19:40», con «+ Añade tu tarjeta de embarque o escribe los datos a mano» dos veces; al pulsar «Llegada y vuelta» salta la hoja «Tu vuelo» de edición con «Sales de · Madrid (Barajas) · SALE A LAS (opcional) 08:30» (gris, de ejemplo, no es mío) y «¿Cuánto ha costado en total? 0». Es el mismo patrón que CLAUDE.md V45 pide (cada vuelo guardado abierto); aquí duda si la hoja debía abrirse sola. Captura: <code>roma_flu_res_llegada.jpg</code> (no se pudo hacer DÍAS día 3 y día 4: el script falló con un error de sintaxis mío).</div></div>
+
+<h2>Lo que no se pudo ver</h2>
+<p>Esta pasada se hizo con 3 scripts por la cola de Chrome (la cola estuvo ocupada por la batería durante ~40 min). Se recorrieron los 4 días a 4 horas cada uno, «llegar», «Cambiar plan» (retraso, comer, otro día, saltar, añadir sitio: solo se vieron las opciones y la hoja de «otros días»), «llegar tarde» al Coliseo (11:30), DÍAS, RESERVAS, EXPLORAR, RUTA y Perfil. Sonidos no comprobables. Si <code>viajero_roma_3_flujo.mjs</code> llegó a correr, sus capturas están en <code>roma_flu_*.jpg</code> (GPS en el día 1, saltar, aeropuerto, DÍAS día 3 y 4, RESERVAS abiertas) y no están analizadas aquí.</p>
+</body></html>

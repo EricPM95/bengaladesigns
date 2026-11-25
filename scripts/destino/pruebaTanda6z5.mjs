@@ -240,7 +240,7 @@ ponerVersion('completa')
 useRouteStore.setState({ ...estadoBase, route, dev_simulated_today_iso: INICIO })
 const hoja = aTexto(renderToStaticMarkup(createElement(HojaPasarAOtroDia, { dias: [{ id: 'd2', dayNumber: 2, city: 'Roma' }, { id: 'd3', dayNumber: 3, city: 'Roma' }], onElegir() {}, onCerrar() {} })))
 // (HOY1, 4-nov) Antes: la hoja lista «Jue 11 Mar». Ahora: «Jueves 11 Mar» (la lista de días compartida con DÍAS ya salía así desde antes de la HOY1: el fallo era anterior a esta tanda). Decisión de Eric (4-nov): la prueba acepta las dos formas.
-debe(/Pasarla a otro día/.test(hoja) && /Jue(?:ves)? 11 Mar/.test(hoja) && /Vie(?:rnes)? 12 Mar/.test(hoja), 'B9 hoja', `la hoja de [Pasarla a otro día] no lista los días como «Mover a otro día» (${plano(hoja)})`)
+debe(/Pasar a otro día/.test(hoja) /* (V50) el título de la hoja es «Pasar a otro día» */ && /Jue(?:ves)? 11 Mar/.test(hoja) && /Vie(?:rnes)? 12 Mar/.test(hoja), 'B9 hoja', `la hoja de [Pasarla a otro día] no lista los días como «Mover a otro día» (${plano(hoja)})`)
 // La lista de días es la misma pieza que usa el menú «···» de DÍAS.
 const menuFuente = fs.readFileSync('src/components/route/dayDetail/StopMenu.tsx', 'utf8')
 const hoyFuente = fs.readFileSync('src/components/route/hoy/saltar.tsx', 'utf8')

@@ -3,6 +3,7 @@ import { abrirPase, usePasePintable } from '../../lib/pago'
 import { abrirAvisoPase } from '../../lib/avisoPase'
 import { AVISO_PASE_TEXTOS_POR_DESTINO } from '../../lib/avisoPaseTextos'
 import { useRouteStore } from '../../store/useRouteStore'
+import { DORADO } from '../ui/botonesOro'
 
 /** El candado de Design (`Piezas/Pase Estilo` 01), tal cual: 13 px, trazo de 2,4 en marrón oscuro. */
 export function CandadoDeDesign({ size = 13, color = '#4A3510' }: { size?: number; color?: string }) {
@@ -16,7 +17,7 @@ export function CandadoDeDesign({ size = 13, color = '#4A3510' }: { size?: numbe
 /** Los colores de lo bloqueado por el pase (Tanda 10N5 §6b, `Piezas/Pase Estilo` 01): azul oscuro con dorado, los mismos en la caja, en las pastillas y en las tarjetas bloqueadas. */
 export const AZUL_PASE = 'linear-gradient(135deg,#1C2230,#252F55 60%,#1C2230)'
 export const SOMBRA_PASE = 'inset 0 0 0 1.3px rgba(233,199,122,.55),0 10px 18px -12px rgba(14,21,48,.7)'
-export const ORO_PASE = 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)'
+export const ORO_PASE = DORADO
 
 /** El destino del pase: el del viaje abierto (nunca escrito a mano). */
 export function useDestinoDelPase(): string {

@@ -11,6 +11,7 @@ import { elSitio, sitioEnPlural } from '../../lib/articulos'
 import { pasarImprescindibleAOtroDia } from '../../lib/pasarImprescindible'
 import type { NoCabe } from '../../lib/adaptarVuelos'
 import { repartirNoCaben, textoYMasSitios } from '../../lib/imprescindiblesGrandes'
+import { DORADO } from '../ui/botonesOro'
 
 /** «El Coliseo no cabe el jueves.» (sin fechas, «el día 1»). Con plural: «Los Museos Capitolinos no caben el jueves.» */
 export function textoNoCabe(item: NoCabe, sinFechas: boolean): string {
@@ -55,7 +56,7 @@ export function AvisoNoCabe(): ReactNode {
                 <span data-no-cabe-texto="1" style={{ flex: 1, minWidth: 0, font: "500 14px/1.3 'Geist',sans-serif" }}>
                   {textoNoCabe(item, sinFechas)}
                 </span>
-                <button type="button" data-pasar-otro-dia="1" onClick={() => setEligiendo(item)} style={{ flex: 'none', height: 34, padding: '0 12px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510', font: "700 13px 'Geist',sans-serif" }}>
+                <button type="button" data-pasar-otro-dia="1" onClick={() => setEligiendo(item)} style={{ flex: 'none', height: 34, padding: '0 12px', borderRadius: 12, border: 'none', cursor: 'pointer', background: DORADO, color: '#4A3510', font: "700 13px 'Geist',sans-serif" }}>
                   Pasarlo a otro día
                 </button>
                 <button type="button" className="zona-toque" aria-label="Cerrar el aviso" data-no-cabe-cerrar="1" onClick={() => useReorganizarStore.getState().quitarNoCaben(item.stopId)} style={{ flex: 'none', width: 30, height: 30, borderRadius: '50%', border: 'none', background: 'rgba(251,243,226,.12)', color: '#FBF3E2', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>

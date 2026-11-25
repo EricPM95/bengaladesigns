@@ -19,6 +19,7 @@ import { useLogrosPantallas, type PantallaDe } from './useLogrosPantallas'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
 import { marcarSelloEstampado, selloYaEstampado } from '../../../lib/selloEstampado'
 import { prepararSonido, sonar } from '../../../lib/sonidos'
+import { TiradorDeHoja } from '../../ui/TiradorDeHoja'
 
 const BURDEOS = 'linear-gradient(150deg,#7A2034,#4A1220 60%,#36101A)'
 const ORO = 'oklch(0.8 0.14 70)'
@@ -343,9 +344,9 @@ export default function PasaporteScreen({ pantalla, ejemplo }: { pantalla: Panta
         {lista && (
           <>
             <div onClick={() => setLista(false)} style={{ position: 'absolute', inset: 0, zIndex: 30, background: 'rgba(28,34,48,.4)', animation: 'muFade .25s ease both' }} />
-            <div role="dialog" aria-label="Países del pasaporte" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 31, borderRadius: '26px 26px 0 0', background: '#FFFDF8', padding: '10px 18px calc(28px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', animation: 'muSheet .35s cubic-bezier(.2,.8,.2,1) both' }}>
+            <div role="dialog" aria-label="Países del pasaporte" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 31, borderRadius: '32px 32px 0 0', background: '#FFFDF8', padding: '10px 18px calc(28px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', animation: 'muSheet .35s cubic-bezier(.2,.8,.2,1) both' }}>
               <CruzDeHoja onCerrar={() => setLista(false)} estilo={{ top: 8, right: 8 }} />
-              <span style={{ alignSelf: 'center', width: 42, height: 4, borderRadius: 4, background: 'rgba(28,34,48,.18)' }} />
+              <TiradorDeHoja />
               <div style={{ maxHeight: 560, overflowY: 'auto', scrollbarWidth: 'none', display: 'flex', flexDirection: 'column' }}>
                 {([['Tus países', (p: PaginaDePasaporte) => p.estado !== 'por_conseguir'], ['Por descubrir', (p: PaginaDePasaporte) => p.estado === 'por_conseguir']] as const).map(([titulo, filtro]) => {
                   const filas = paginas.map((p, k) => [p, k] as const).filter(([p]) => filtro(p))
@@ -373,9 +374,9 @@ export default function PasaporteScreen({ pantalla, ejemplo }: { pantalla: Panta
         {aviso && (
           <>
             <div onClick={() => setAviso(null)} style={{ position: 'absolute', inset: 0, zIndex: 30, background: 'rgba(28,34,48,.4)', animation: 'muFade .25s ease both' }} />
-            <div role="dialog" aria-label={`Aún no has estado en ${aviso.ciudad}`} data-hoja-por-conseguir style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 31, borderRadius: '26px 26px 0 0', background: '#FFFDF8', padding: '10px 20px calc(30px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center', animation: 'muSheet .35s cubic-bezier(.2,.8,.2,1) both' }}>
+            <div role="dialog" aria-label={`Aún no has estado en ${aviso.ciudad}`} data-hoja-por-conseguir style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 31, borderRadius: '32px 32px 0 0', background: '#FFFDF8', padding: '10px 20px calc(30px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center', animation: 'muSheet .35s cubic-bezier(.2,.8,.2,1) both' }}>
               <CruzDeHoja onCerrar={() => setAviso(null)} />
-              <span style={{ width: 42, height: 4, borderRadius: 4, background: 'rgba(28,34,48,.18)' }} />
+              <TiradorDeHoja />
               <span style={{ marginTop: 8, font: "400 26px/1.1 'Instrument Serif',serif" }}>Aún no has estado en {aviso.ciudad}</span>
               {/* (V11) Tocar «Por conseguir» NUNCA crea un viaje: [Planear un viaje] solo abre el formulario de siempre. */}
               <button type="button" data-planear-un-viaje onClick={crearViaje} style={{ marginTop: 6, width: '100%', height: 52, border: 'none', borderRadius: 999, background: ORO, color: '#17120a', font: "700 15px 'Geist'", cursor: 'pointer' }}>
@@ -388,9 +389,9 @@ export default function PasaporteScreen({ pantalla, ejemplo }: { pantalla: Panta
         {sinSello && (
           <>
             <div onClick={() => setSinSello(null)} style={{ position: 'absolute', inset: 0, zIndex: 30, background: 'rgba(28,34,48,.4)', animation: 'muFade .25s ease both' }} />
-            <div role="dialog" aria-label={`El sello de ${sinSello.ciudad}`} data-hoja-sin-sello style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 31, borderRadius: '26px 26px 0 0', background: '#FFFDF8', padding: '10px 20px calc(30px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center', animation: 'muSheet .35s cubic-bezier(.2,.8,.2,1) both' }}>
+            <div role="dialog" aria-label={`El sello de ${sinSello.ciudad}`} data-hoja-sin-sello style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 31, borderRadius: '32px 32px 0 0', background: '#FFFDF8', padding: '10px 20px calc(30px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center', animation: 'muSheet .35s cubic-bezier(.2,.8,.2,1) both' }}>
               <CruzDeHoja onCerrar={() => setSinSello(null)} />
-              <span style={{ width: 42, height: 4, borderRadius: 4, background: 'rgba(28,34,48,.18)' }} />
+              <TiradorDeHoja />
               <span style={{ marginTop: 8, font: "400 26px/1.1 'Instrument Serif',serif" }}>Tu sello de {sinSello.ciudad} aún no está</span>
               <span style={{ font: "400 14px/1.45 'Geist'", color: 'rgba(28,34,48,.7)' }}>
                 {sinSello.vistas < sinSello.minimas ? `Te ${sinSello.minimas - sinSello.vistas === 1 ? 'falta 1 sitio' : `faltan ${sinSello.minimas - sinSello.vistas} sitios`} para tu sello. ` : ''}

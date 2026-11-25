@@ -192,8 +192,9 @@ console.log('3. La zona y las fechas')
     useRouteStore.setState({ accommodationSelections: { d1: { name: 'Hotel Artemide', id: 'h1' } } })
     return plano(aTexto(html(AlojamientoReservas, { route: tomaRuta(), info, pago: true, abierto: true, onToggle() {} })))
   }
-  debe(/Falta la zona/.test(estadoAloj(null)), '3 con hora se pide', 'con hotel y sin zona, el bloque de Alojamiento no pide la zona')
-  debe(/Falta la zona/.test(estadoAloj('nose')), '3 aún no lo sé vale', '«Aún no lo sé» debe seguir contando «Falta la zona»')
+  // (V45 §3, 24-nov) «Listo» en cuanto están el hotel y las fechas: la zona ya NO lo enciende ni lo apaga (antes, sin zona decía «Falta la zona»).
+  debe(!/Falta/.test(estadoAloj(null)) && /Listo/.test(estadoAloj(null)), '3 con hora se pide', 'con hotel y fechas y sin zona, el bloque de Alojamiento dice «Listo» (la zona ya no cuenta; V45 §3)')
+  debe(!/Falta/.test(estadoAloj('nose')) && /Listo/.test(estadoAloj('nose')), '3 aún no lo sé vale', '«Aún no lo sé» tampoco cambia el «Listo» (V45 §3)')
   debe(!/Falta la zona/.test(estadoAloj('monti')) && /Listo/.test(estadoAloj('monti')), '3 con hora se pide', 'con la zona elegida el bloque de Alojamiento debe decir «Listo»')
   // «¿Llegas o te vas otro día? Cambia las fechas del viaje» debajo de la hora, en las dos mitades de la hoja del vuelo; abre el calendario de siempre.
   poner(viaje({ extra: { arrivalFlightTime: '11:20', arrivalPointId: 'fco' } }))
@@ -354,12 +355,12 @@ console.log('7. El billete')
   debe(b && b.encabezado === 'LLEGADA · VUELO IB3214' && b.horaRoma === '11:20' && b.codigoRoma === 'FCO' && b.horaOtra === null && b.codigoOtro === null, '7 datos sin casillas', `billete sin casillas: ${JSON.stringify(b)}`)
   let h = html(BilleteDeVuelo, { billete: b, onOpen() {} })
   let t = plano(aTexto(h))
-  debe(t.includes('LLEGADA · VUELO IB3214') && t.includes('Reservado') && t.includes('11:20') && t.includes('FCO') && !t.includes('BCN') && !t.includes('08:55'), '7 solo Roma', `el billete sin casillas debe traer solo el lado de Roma: ${t}`)
+  debe(t.includes('LLEGADA · VUELO IB3214') && t.includes('Añade tu tarjeta de embarque') /* (V48) el billete nuevo: sin tarjeta guardada dice «+ Añade tu tarjeta de embarque» (antes «Reservado») */ && t.includes('11:20') && t.includes('FCO') && !t.includes('BCN') && !t.includes('08:55'), '7 solo Roma', `el billete sin casillas debe traer solo el lado de Roma: ${t}`)
   debe(/data-billete="llegada"/.test(h) && /role="button"/.test(h), '7 se toca', 'el billete no es un botón que abra la ficha')
   // Con casillas: BCN → FCO.
   b = billeteDe({ route: { ...base, arrivalOtroPunto: 'Barcelona-El Prat (BCN)', arrivalOtraHora: '08:55' }, kind: 'llegada', mode: 'avion', point: fco })
   t = plano(aTexto(html(BilleteDeVuelo, { billete: b, onOpen() {} })))
-  debe(t.indexOf('08:55') < t.indexOf('11:20') && t.indexOf('BCN') < t.indexOf('FCO') && t.includes('Reservado'), '7 BCN a FCO', `en la llegada el otro lado va a la izquierda: ${t}`)
+  debe(t.indexOf('08:55') < t.indexOf('11:20') && t.indexOf('BCN') < t.indexOf('FCO') && t.includes('Añade tu tarjeta de embarque'), '7 BCN a FCO', `en la llegada el otro lado va a la izquierda: ${t}`)
   // Vuelta: FCO → BCN y «VUELTA».
   b = billeteDe({ route: { ...base, departureCodigo: 'VY6204', departureOtroPunto: 'Barcelona-El Prat (BCN)', departureOtraHora: '20:30' }, kind: 'vuelta', mode: 'avion', point: fco })
   t = plano(aTexto(html(BilleteDeVuelo, { billete: b, onOpen() {} })))
@@ -377,7 +378,7 @@ console.log('7. El billete')
   for (const [modo, punto, enc, cod] of casos) {
     const bb = billeteDe({ route: { ...base, arrivalCodigo: null }, kind: 'llegada', mode: modo, point: punto })
     const tt = plano(aTexto(html(BilleteDeVuelo, { billete: bb, onOpen() {} })))
-    debe(bb.encabezado === enc && tt.includes(enc) && tt.includes('Reservado') && tt.includes(cod), '7 medios', `${modo}: ${tt}`)
+    debe(bb.encabezado === `LLEGADA · ${cod}` /* (V48) sin código de billete el encabezado nombra la estación: «LLEGADA · TERMINI» (antes «LLEGADA · TREN») */ && tt.includes(`LLEGADA · ${cod}`) && tt.includes('Añade tu billete') /* (V48) sin billete guardado: «+ Añade tu billete» (antes «Reservado») */ && tt.includes(cod), '7 medios', `${modo}: ${tt}`)
     debe(!/VUELO|AVI[ÓO]N/i.test(tt), '7 medios', `el billete de ${modo} habla de vuelo: ${tt}`)
     const bv = billeteDe({ route: base, kind: 'vuelta', mode: modo, point: punto })
     debe(bv.encabezado.startsWith('VUELTA · '), '7 medios', `${modo}: la vuelta no empieza por VUELTA`)
@@ -403,10 +404,10 @@ console.log('7. El billete')
   if (dia1) {
     const t1 = plano(aTexto(dia1))
     // (10S) Antes: el billete «LLEGADA · VUELO IB3214 · Reservado · BCN · FCO». Ahora, la tarjeta de la llegada de DÍAS: «LLEGADA · … Aterrizas a las 11:20 · Fiumicino · Cómo llegar desde el aeropuerto». Tanda 10N11, Eric 29-oct-2026.
-    debe(/LLEGADA/.test(t1) && t1.includes('FCO 11:20') && t1.includes('Fiumicino') && t1.includes('Cómo llegar desde el aeropuerto'), '7 DÍAS llegada', `el día de llegada no trae la tarjeta de la llegada: ${t1.slice(0, 300)}`)
+    debe(/LLEGADA/.test(t1) && t1.includes('11:20 FCO') && t1.includes('LLEGADA · VUELO IB3214') && /data-billete="llegada"/.test(dia1), '7 DÍAS llegada', `el día de llegada no trae la tarjeta de la llegada: ${t1.slice(0, 300)}`)
     const dv = panelDe(ruta.days.at(-1))
     const tv = plano(aTexto(dv))
-    debe(/data-billete="vuelta"/.test(dv) && tv.includes('VUELTA · VUELO') && tv.includes('Reservado') && tv.includes('18:05'), '7 DÍAS vuelta', `el día de vuelta no trae el billete: ${tv.slice(0, 300)}`)
+    debe(/data-billete="vuelta"/.test(dv) && /VUELTA · (VUELO|FIUMICINO)/.test(tv) /* (V48) sin número de vuelo, el billete dice el aeropuerto: «VUELTA · FIUMICINO» */ && tv.includes('Añade tu tarjeta de embarque') && tv.includes('18:05'), '7 DÍAS vuelta', `el día de vuelta no trae el billete: ${tv.slice(0, 300)}`)
     // Sin hora: la barra de siempre (con «+ Vuelo»), no el billete.
     poner(viaje())
     const sin = panelDe(tomaRuta().days[0])
@@ -416,7 +417,7 @@ console.log('7. El billete')
     ponerVersion('gratis')
     const gr = panelDe(ruta.days[0])
     // (10S) Antes: en la gratis no había billete. Ahora la tarjeta de la llegada sale también sin pase (guardar el vuelo es gratis). Tanda 10G, Eric 24-oct-2026.
-    debe(plano(aTexto(gr)).includes('FCO 11:20'), '7 DÍAS gratis', 'en la gratis debe salir la tarjeta de la llegada (guardar el vuelo es gratis)')
+    debe(plano(aTexto(gr)).includes('11:20 FCO'), '7 DÍAS gratis', 'en la gratis debe salir la tarjeta de la llegada (guardar el vuelo es gratis)')
     ponerVersion('completa')
     // En coche: sin billete.
     poner(viaje({ ida: 'car', extra: { arrivalFlightTime: '11:20' } }))
@@ -572,7 +573,7 @@ console.log('11. Los textos nuevos')
   const emoji = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u
   for (const f of nuevos) {
     const s = leer(f)
-    debe(!emoji.test(s), '11 emojis', `${f} lleva un emoji`)
+    debe(!emoji.test(s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')) /* (noche) los comentarios no se ven: «✓ Tarjeta de embarque guardada» en una nota no es un emoji en pantalla */, '11 emojis', `${f} lleva un emoji`)
   }
   // Lo que ve el viajero, sin taxi ni empresas ni horas calculadas.
   ponerVersion('completa')

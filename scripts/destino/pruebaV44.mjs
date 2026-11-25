@@ -173,7 +173,7 @@ try {
     debe(/\d+ min/.test(caja) && /Desde (el|la|los|las) /.test(caja) && !/—/.test(caja), 'sin', `sin ubicación, el tiempo del plan con «Desde …» (${caja})`)
     debe((await txt('[data-hoy-sin-ubicacion]'))?.includes('Sin tu ubicación no sabemos cuándo llegas') ?? false, 'sin', 'el recuadro «Sin tu ubicación no sabemos cuándo llegas»')
     // el reproductor, azul oscuro desde el principio
-    const fondo = await a.evaluar("getComputedStyle(document.querySelector('[data-hoy-escuchar-camino]') ?? document.body).backgroundColor")
+    const fondo = await a.evaluar("getComputedStyle(document.querySelector('[data-hoy-escuchar-camino]') ?? document.body).backgroundImage") // (V47) el fondo es el degradado #232A3C → #1C2230
     debe(/rgb\(28, 34, 48\)/.test(fondo ?? ''), 'reproductor', `«Escucha su historia por el camino» en azul oscuro desde el principio (${fondo})`)
     await a.captura(png('v44_sin_ubicacion'))
   })

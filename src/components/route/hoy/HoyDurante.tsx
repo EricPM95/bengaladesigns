@@ -1,3 +1,4 @@
+import { BOTON_ORO } from '../../ui/botonesOro'
 import { useState } from 'react'
 import { PendienteDeParada } from '../../logros/visto/PendienteDeParada'
 import { logrosActivos } from '../../../lib/logros'
@@ -324,7 +325,7 @@ export function HoyDurante({ route, day, dateIso }: { route: Route; day: DayPlan
       {ofrecerFoto && !logrosActivos() && (
         <div className="flex flex-none items-center gap-2 rounded-2xl bg-white px-3.5 py-2.5" style={{ border: '1px solid rgba(28,34,48,.08)' }}>
           <span className="min-w-0 flex-1 truncate text-[13px] text-text/70">Visto: {displayStopName(ofrecerFoto.name)}</span>
-          <BotonFoto dayId={day.id} dayNumber={day.dayNumber} stopName={ofrecerFoto.name} etiqueta="Añadir foto" onSubida={() => setOfrecerFoto(null)} className="flex h-10 flex-none items-center gap-1.5 rounded-full btn-champan px-3.5 text-[13px] font-semibold ">
+          <BotonFoto dayId={day.id} dayNumber={day.dayNumber} stopName={ofrecerFoto.name} etiqueta="Añadir foto" onSubida={() => setOfrecerFoto(null)} className="flex h-10 flex-none items-center gap-1.5 rounded-2xl px-3.5 text-[13px] font-bold" style={BOTON_ORO}>
             <Icono nombre="camara" size={16} />
             Añadir foto
           </BotonFoto>

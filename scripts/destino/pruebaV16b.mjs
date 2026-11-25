@@ -107,9 +107,11 @@ console.log('3. La página para elegir')
   debe(ids.every((id) => opciones[id].candidatas.length === 3), 'elegir', 'cada sitio con 3 candidatas')
   debe(ids.every((id) => opciones[id].candidatas.every((c) => /^(CC BY(-SA)? [0-9.]+|CC0.*|Public domain.*)$/i.test(c.licencia) && c.pagina.startsWith('https://commons.wikimedia.org/wiki/File:') && c.autor)), 'elegir', 'todas de Wikimedia Commons con licencia libre (CC BY, CC BY-SA, CC0 o dominio público), con su autor y su página')
   debe((html.match(/<img /g) ?? []).length === 12 && /name="viewport"/.test(html) && ids.every((id) => html.includes(opciones[id].sitio)), 'elegir', 'la página lleva las 12 fotos, el nombre de cada sitio y se ve en el móvil (viewport)')
-  const sinFotoAun = ['Lungotevere', 'Borgo Pio', 'Mirador de San Pietro in Montorio', 'Colle Oppio']
+  // (V30, «fotos de Roma (2 de 4)») Eric eligió 2 de las 4 candidatas: Lungotevere y el Mirador de San Pietro in Montorio ya tienen su foto (dia_*.jpg, de Commons con crédito); Borgo Pio y Colle Oppio siguen sin foto propia.
+  const sinFotoAun = ['Borgo Pio', 'Colle Oppio']
   const lugaresRoma = (catalogos.roma.places ?? []).map((p) => p.name)
-  debe(sinFotoAun.every((n) => !lugaresRoma.some((l) => norma(l) === norma(n)) || !entradaDe('roma', n)), 'elegir', 'esos 4 siguen sin foto propia (se ponen con lo que elija Eric)')
+  debe(sinFotoAun.every((n) => !lugaresRoma.some((l) => norma(l) === norma(n)) || !entradaDe('roma', n)), 'elegir', 'Borgo Pio y Colle Oppio siguen sin foto propia (se ponen con lo que elija Eric)')
+  debe(['Lungotevere', 'Mirador de San Pietro in Montorio'].every((n) => entradaDe('roma', n)?.credito?.licencia), 'elegir', 'Lungotevere y el Mirador de San Pietro in Montorio ya tienen su foto, con su crédito (V30)')
 }
 
 console.log(`\n${comprobaciones} comprobaciones · ${fallos.length} fallos`)

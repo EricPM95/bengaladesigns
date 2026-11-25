@@ -53,7 +53,7 @@ export default async function ({ debe, leer, archivos, sinComentarios }) {
   debe(/minHeight: 44, borderRadius: 18/.test(texto(ficheros.pagina)), '44px', 'cada colección de la página mide al menos 44')
   debe(/height: 44, padding: 0, border: 'none'/.test(texto(ficheros.coleccion)), '44px', '[Cómo llegar] tiene 44 de zona de toque (el dibujo es de 28)')
   debe(/minHeight: 44, border: 'none'/.test(texto(ficheros.mi)), '44px', 'cada hueco de Mi colección mide al menos 44')
-  debe(/width: 48, height: 48/.test(texto(ficheros.mi)), '44px', 'cerrar la hoja de «cómo conseguirlo» mide 48')
+  debe(/width: 48, height: 48/.test(texto(ficheros.mi)) || (/<CruzDeHoja /.test(texto(ficheros.mi)) && /width: 48, height: 48/.test(texto('src/components/ui/CruzDeHoja.tsx'))), '44px', 'cerrar la hoja de «cómo conseguirlo» mide 48')
   // Los emblemas ocultos que faltan: solo «?», nunca cuáles son.
   const pag = texto(ficheros.pagina)
   debe(/faltan/.test(pag) && />\?<\/span>/.test(pag), 'secretos', 'los emblemas que faltan se pintan como «?»')

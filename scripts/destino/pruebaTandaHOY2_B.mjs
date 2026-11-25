@@ -372,14 +372,15 @@ try {
     debe(caso === casoEsperado, `26${casoEsperado} caso`, `sale el caso ${casoEsperado} (sale ${caso})`)
     const t = (await hoja(a)) ?? ''
     // V43 §4 (antes → ahora): el resumen único, [Pasarlo al {día}] y [Elegir otro día]; sin [Ver otra opción] ni «Volver a mi ruta original».
-    debe((await hay(a, '[data-propuesta-resumen]')) && /Pasarlo al/.test(t) && /Elegir otro día/.test(t) && !/Ver otra opción|Volver a mi ruta original|Cambia:|Aplicar/.test(t), `26${casoEsperado} formato`, 'con el formato nuevo')
+    // (V50; Design «Aviso Cierre» A2/A4) «Pasar a otro día» lleva la TARJETA DEL SITIO (con su fecha) y la franja verde «Sigue igual», en lugar del resumen de líneas.
+    debe((await hay(a, '[data-tarjeta-del-sitio]')) && (await hay(a, '[data-franja-sigue-igual]')) && /Pasarlo al/.test(t) && /Elegir otro día/.test(t) && !/Ver otra opción|Volver a mi ruta original|Cambia:|Aplicar/.test(t), `26${casoEsperado} formato`, 'con el formato nuevo')
     await foto(a, `26${casoEsperado}`)
     return { t, jueves }
   }
   await sec(async () => {
     const antes = await foto3(a, 0)
     const { t, jueves } = await pasar('a', `const d5 = dia(5); d5.meals.find((m) => m.mealTime === 'dinner').time = '21:30';`, 'a')
-    debe(/pasa al/.test(t) && /Mirador del R/i.test(t), '26a texto', `«Mirador del Río pasa al …» (${t.slice(0, 160)})`)
+    debe(/Podemos pasarte Mirador del R\S* al /i.test(t), '26a texto', `«Podemos pasarte Mirador del Río al …» (${t.slice(0, 160)})`)
     await clic(a, '[data-propuesta-aplicar]')
     await a.esp(800)
     const enJueves = await ev(`${R}.getState().route.days.find((d) => d.id === ${JSON.stringify(jueves)}).stops.some((s) => s.name.startsWith('Mirador del R'))`)
@@ -393,7 +394,8 @@ try {
   })
   await sec(async () => {
     const { t, jueves } = await pasar('b', `const d5 = dia(5); d5.meals.find((m) => m.mealTime === 'dinner').time = '21:30'; parada(d5, 'El paseo').optional = true; parada(d5, 'El paseo').durationMinutes = 60; parada(d5, 'Faro').durationMinutes = 150;`, 'b')
-    debe(/tendríamos que quitar/.test(t) && /Si te sobra tiempo/.test(t), '26b texto', `«Para meter … tendríamos que quitar …» y lo quitado queda en «Si te sobra tiempo» (${t.slice(0, 200)})`)
+    // (V50) La hoja ya no lista «Playa Blanca pasa a «Si te sobra tiempo»»: lo dice el texto de arriba; que lo quitado queda en «Si te sobra tiempo» lo comprueba «26b aplicar».
+    debe(/tendríamos que quitar/.test(t), '26b texto', `«Para meter … tendríamos que quitar …» (${t.slice(0, 200)})`)
     await clic(a, '[data-propuesta-aplicar]')
     await a.esp(800)
     const r = await ev(`(async () => { const d = ${R}.getState().route.days.find((x) => x.id === ${JSON.stringify(jueves)}); return [d.stops.some((s) => s.name.startsWith('Mirador del R')), (d.spareStops ?? []).some((s) => s.name.startsWith('El paseo')), d.stops.some((s) => s.name.startsWith('El paseo'))] })()`)

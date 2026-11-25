@@ -1,4 +1,5 @@
 import type { CambioPropuesto } from '../../lib/propuesta'
+import { DORADO } from '../ui/botonesOro'
 
 /**
  * UNA FILA DE LA LISTA DE LA PROPUESTA (Tanda 10N, apartado 6; «Propuesta Cambios · 2 · Las hojas de la propuesta»). Un cambio por idea y en palabras normales:
@@ -128,7 +129,7 @@ export function FilaDeCambio({
                 e.stopPropagation()
                 onAceptar?.()
               }}
-              style={{ minHeight: 44, padding: '0 17px', borderRadius: 999, border: 'none', background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510', font: "700 12.5px 'Geist'", cursor: 'pointer', opacity: ocupado ? 0.6 : 1 }}
+              style={{ minHeight: 44, padding: '0 17px', borderRadius: 999, border: 'none', background: DORADO, color: '#4A3510', font: "700 12.5px 'Geist'", cursor: 'pointer', opacity: ocupado ? 0.6 : 1 }}
             >
               Aceptar
             </button>

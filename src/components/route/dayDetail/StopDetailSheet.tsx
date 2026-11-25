@@ -39,6 +39,7 @@ import { TusRecuerdos } from '../fotos/TusRecuerdos'
 import { Escuchar } from '../hoy/Escuchar'
 import { accesoHistoria, textoHistoria } from '../../../lib/historia'
 import { FichaComoLlegar, FichaDondeAparcar, FichaHorario, FichaPestanas, FichaPorElCamino, FichaQueVeras, FichaTip, type FilaHorario } from './FichaPiezas'
+import { TiradorDeHoja } from '../../ui/TiradorDeHoja'
 
 // Mismos límites que el tirador de RouteView.tsx (mapa arriba + panel abajo) — ninguno de los dos
 // lados puede llegar a desaparecer del todo.
@@ -486,7 +487,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
               (20 px) subía 28 px sobre el mapa y el mapa quedaba pintado 8 px por debajo de él, entre el tirador y el título. */}
           <div className="relative z-[5] -mt-7 flex min-h-0 flex-1 flex-col rounded-t-[28px] bg-bg shadow-[0_-12px_30px_-14px_rgba(28,34,48,.4)]" data-ficha-panel>
             <div onPointerDown={handleDragStart} className="flex shrink-0 cursor-row-resize touch-none items-center justify-center pb-1 pt-3">
-              <span className="h-1 w-11 rounded-sm bg-[rgba(28,34,48,.25)]" />
+              <TiradorDeHoja />
             </div>
 
             <div className="flex-1 overflow-y-auto">

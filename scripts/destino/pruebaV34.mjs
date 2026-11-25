@@ -57,7 +57,7 @@ console.log('1. Una cuenta nueva nunca ve ORIGEN/DESTINO antes de las preguntas 
     await esperar(a, "Boolean(document.querySelector('[data-mapa-primera-vez]'))")
     await a.esp(800)
     const f = (await J(a, 'JSON.stringify({ fuga: window.__fuga, fotogramas: window.__fotogramas })'))
-    debe(f.fotogramas > 30 && f.fuga === 0, 'sin_origen_destino', `en ${f.fotogramas} fotogramas, desde que cargó hasta el Perfil, la pantalla de ORIGEN/DESTINO no se vio NI UN fotograma (fotogramas con fuga: ${f.fuga})`)
+    debe(f.fotogramas > 15 && f.fuga === 0 /* (noche 24-nov) antes > 30: la carga hasta el Perfil es ahora más corta (la apertura de la V40) y en un Chrome sin ventana salen ~22 fotogramas; lo que importa es que en ninguno se vea ORIGEN/DESTINO */, 'sin_origen_destino', `en ${f.fotogramas} fotogramas, desde que cargó hasta el Perfil, la pantalla de ORIGEN/DESTINO no se vio NI UN fotograma (fotogramas con fuga: ${f.fuga})`)
   } finally {
     a.cerrar()
   }

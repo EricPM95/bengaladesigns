@@ -8,6 +8,8 @@ import { AvisoArriba } from '../../ui/AvisoArriba'
 import { AvisoSobreLaBarra } from '../../ui/AvisoSobreLaBarra'
 import { deSitio, enSitio } from '../../../lib/articulos'
 import type { DestinoDeFoto, Hoja } from './vistoStore'
+import { CruzDeHoja } from '../../ui/CruzDeHoja'
+import { TiradorDeHoja } from '../../ui/TiradorDeHoja'
 
 /**
  * LAS PANTALLAS DEL VISTO Y LAS FOTOS (Tanda 8b), dibujadas como en «Visto Fotos» y «Ayudas» (docs/diseno/proyecto/Piezas/). Solo pintan: lo que hacen lo decide `VistoFlujo.tsx`.
@@ -49,9 +51,7 @@ export function Capa({ children, onCerrar, etiqueta, z = 80 }: { children: React
 
 export function Cruz({ onCerrar, oscura = false }: { onCerrar: () => void; oscura?: boolean }) {
   return (
-    <button type="button" onClick={onCerrar} aria-label="Cerrar" className="absolute right-2.5 top-2.5 z-[2] flex h-11 w-11 items-center justify-center rounded-full border-0" style={{ background: oscura ? 'rgba(255,253,248,.12)' : '#F1EADC', color: oscura ? '#FFFDF8' : TINTA }}>
-      <Trazo d={TRAZO.cerrar} tam={13} grosor={2.2} />
-    </button>
+    <CruzDeHoja onCerrar={onCerrar} oscura={oscura} />
   )
 }
 
@@ -165,7 +165,7 @@ export function HojaDelVisto({ hoja, acciones }: { hoja: Hoja; acciones: Accione
       {tipo === 'ganado' && hoja.pedazo && <PedazoGanado nombre={nombre} coleccion={hoja.pedazo.nombre} coleccionId={typeof hoja.pedazo.coleccion === 'string' ? hoja.pedazo.coleccion : null} ganados={Array.isArray(hoja.pedazo.sitios) ? (hoja.pedazo.sitios as string[]) : []} linea={hoja.pedazo.linea ?? null} />}
       <div data-visto={`hoja-${tipo}`} className="relative flex flex-col gap-3 overflow-hidden rounded-t-[26px] px-[18px] pb-8 pt-3" style={{ ...caja, boxShadow: '0 -12px 34px -18px rgba(0,0,0,.5)' }}>
         {oscura && <span className="pointer-events-none absolute -right-[70px] -top-20 h-60 w-60 rounded-full" style={{ background: 'repeating-conic-gradient(rgba(243,213,154,.18) 0 7deg,transparent 7deg 20deg)', WebkitMaskImage: 'radial-gradient(circle,#000 20%,transparent 68%)', maskImage: 'radial-gradient(circle,#000 20%,transparent 68%)', animation: 'vistoRays 24s linear infinite' }} />}
-        <span className="self-center" style={{ width: 42, height: 4, borderRadius: 4, background: oscura ? 'rgba(255,253,248,.25)' : 'rgba(28,34,48,.18)' }} />
+        <TiradorDeHoja oscura />
         <Cruz onCerrar={acciones.onCerrar} oscura={oscura} />
         <div className="relative flex items-start gap-3.5 pr-11">
           {oscura ? (
@@ -221,7 +221,7 @@ export function NotaCorta({ texto, onFin }: { texto: string; onFin: () => void }
     return () => window.clearTimeout(t)
   }, [onFin, texto])
   return createPortal(
-    <AvisoArriba z={85} datos={{ 'data-visto': 'nota' }} onIrse={onFin} estilo={{ background: TINTA, font: "500 13.5px 'Geist'" }}>
+    <AvisoArriba z={85} datos={{ 'data-visto': 'nota' }} onIrse={onFin} estilo={{ font: "500 13.5px 'Geist'" }}>
       <Trazo d={TRAZO.check} tam={14} grosor={2.4} />
       {texto}
     </AvisoArriba>,
@@ -269,7 +269,7 @@ export function HojaFotoDentro({ destino, onSeguir, onCerrar }: { destino: Desti
   return (
     <Capa onCerrar={onCerrar} etiqueta="Antes de la foto">
       <div data-visto="foto-dentro" className="relative flex flex-col gap-3 rounded-t-[26px] bg-[#FFFDF8] px-[18px] pb-8 pt-3" style={{ color: TINTA }}>
-        <span className="self-center" style={{ width: 42, height: 4, borderRadius: 4, background: 'rgba(28,34,48,.18)' }} />
+        <TiradorDeHoja />
         <Cruz onCerrar={onCerrar} />
         <div className="flex items-start gap-3.5 pr-11">
           <span className="flex h-[52px] w-[52px] flex-none items-center justify-center rounded-[14px] bg-[#F1EADC]">
@@ -293,8 +293,8 @@ export function HojaFotoDentro({ destino, onSeguir, onCerrar }: { destino: Desti
 export function HojaGaleria({ nombreSitio, linea, error, subiendo, onElegir, onCerrar }: { nombreSitio: string; linea: string | null; error: string | null; subiendo: boolean; onElegir: () => void; onCerrar: () => void }) {
   return (
     <Capa onCerrar={onCerrar} etiqueta="Tu galería">
-      <div data-visto="galeria" className="relative flex flex-col gap-2.5 rounded-t-[28px] bg-[#FFFDF8] px-[18px] pb-[30px] pt-3" style={{ color: TINTA }}>
-        <span className="self-center" style={{ width: 42, height: 4, borderRadius: 4, background: 'rgba(28,34,48,.18)' }} />
+      <div data-visto="galeria" className="relative flex flex-col gap-2.5 rounded-t-[32px] bg-[#FFFDF8] px-[18px] pb-[30px] pt-3" style={{ color: TINTA }}>
+        <TiradorDeHoja />
         <Cruz onCerrar={onCerrar} />
         <span className="mt-1 pr-11" style={{ font: `600 10px ${MONO}`, letterSpacing: '.16em', textTransform: 'uppercase', color: 'rgba(28,34,48,.55)' }}>Tu galería</span>
         <span className="pr-11" style={{ font: `400 24px/1 ${SERIF}` }}>{nombreSitio}</span>

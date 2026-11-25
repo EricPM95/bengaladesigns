@@ -12,6 +12,7 @@ import { Icono } from '../../../ui/Icono'
 import { AvisoDeHoy, CruzDeAviso, useAvisoCerrado } from './AvisosHoy'
 import { HojaPropuesta, Titulo, useContexto } from './CambiarPlan'
 import { HojaV2 } from './HojasV2'
+import { EnlaceDeAviso, EnlaceDejarlo } from '../piezas'
 import { BOTON_ORO } from '../../../ui/botonesOro'
 import { displayStopName } from '../../../../lib/format'
 
@@ -103,20 +104,18 @@ export function AvisoDeHorarioEnDirecto({ route, day, dateIso, ubicacion, enCoch
       {!cerrado && (
         <AvisoDeHoy id={`horario-vivo:${tarde.v.stop.id}`} prio={2}>
           {/* (V2b, H2 de Design) Tarjeta pequeña en ámbar, con su icono, el texto en una o dos líneas y su X; [Ver solución] como enlace pequeño dentro. */}
-          <div data-hoy-horario-vivo={tarde.v.stop.id} data-hoy-horario-vivo-tipo={tarde.tipo} className="flex flex-none flex-col rounded-2xl py-2.5 pl-3.5 pr-2.5" style={{ background: '#FFF1D6', border: '1px solid #E5B565', color: '#8A4F08' }}>
-            <div className="flex items-start gap-2.5">
-              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C9801C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 flex-none">
+          <div data-hoy-horario-vivo={tarde.v.stop.id} data-hoy-horario-vivo-tipo={tarde.tipo} className="flex flex-none flex-col rounded-[22px] py-3.5 pl-3.5 pr-2.5" style={{ background: '#FBF1D8', border: '1.5px solid rgba(200,140,40,.6)', color: '#6A3E06' }}>
+            <div className="flex items-start gap-3">
+              <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A8620A" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" className="mt-px flex-none">
                 <path d="M12 8v5M12 16.5h.01M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 2-2L13.7 3.9a2 2 0 0 0-3.4 0z" />
               </svg>
               <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <span data-hoy-horario-vivo-texto className="text-[13px] font-medium leading-[1.35]">{titulo}</span>
-                {hora && <span data-hoy-horario-vivo-hora className="text-[12px] leading-[1.3]" style={{ color: 'rgba(138,79,8,.8)' }}>{hora}</span>}
+                <span data-hoy-horario-vivo-texto className="text-[14.5px] font-semibold leading-[1.35]">{titulo}</span>
+                {hora && <span data-hoy-horario-vivo-hora className="text-[12.5px] leading-[1.3]" style={{ color: 'rgba(106,62,6,.8)' }}>{hora}</span>}
               </span>
               <span className="-my-2 flex flex-none"><CruzDeAviso onClick={cerrar} /></span>
             </div>
-            <button type="button" onClick={ver} data-horario-ver-solucion className="-mb-1 -mt-0.5 ml-7 flex h-11 flex-none items-center self-start text-[12.5px] font-bold underline underline-offset-2" style={{ color: '#8A4F08' }}>
-              {tarde.ya ? 'Pasar a otro día' : 'Ver solución'}
-            </button>
+            <EnlaceDeAviso onClick={ver} texto={tarde.ya ? 'Pasarlo a otro día' : 'Ver solución'} datos={{ 'data-horario-ver-solucion': '1' }} className="-mb-2 ml-[34px]" />
           </div>
         </AvisoDeHoy>
       )}
@@ -153,13 +152,12 @@ export function AvisoDeHorarioEnDirecto({ route, day, dateIso, ubicacion, enCoch
                   cerrar()
                   setAbierta(false)
                 }}
-                className="flex h-10 items-center text-[13px] font-semibold text-[#1C2230]/70 underline underline-offset-2"
+                className="flex min-h-11 items-center text-[13.5px] font-semibold underline underline-offset-[3px]"
+                style={{ color: 'rgba(28,34,48,.7)' }}
               >
                 {tarde.v.plural ? 'Quitarlos del viaje' : 'Quitarlo del viaje'}
               </button>
-              <button type="button" onClick={() => setAbierta(false)} data-propuesta-dejar className="flex h-9 items-center text-[13px] font-semibold text-[#1C2230]/60">
-                Dejarlo como está
-              </button>
+              <EnlaceDejarlo onClick={() => setAbierta(false)} datos={{ 'data-propuesta-dejar': '1' }} />
             </div>
           </div>
         </HojaV2>

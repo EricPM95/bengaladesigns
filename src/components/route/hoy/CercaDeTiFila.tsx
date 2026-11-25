@@ -1,3 +1,4 @@
+import { CruzDeHoja } from '../../ui/CruzDeHoja'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Coordinates, Route } from '../../../lib/types'
@@ -171,9 +172,7 @@ function HojaCerca({ clave, route, origenRespaldo, onCerrar }: { clave: ClaveCer
             </span>
             <span style={{ font: `400 28px/1 ${SERIF}` }}>{TITULO[clave]}</span>
           </span>
-          <button type="button" onClick={onCerrar} aria-label="Cerrar" className="zona-toque flex h-9 w-9 items-center justify-center rounded-full" style={{ background: 'rgba(28,34,48,.08)' }}>
-            <Trazo d={ICONOS.cerrar} tam={17} color={TINTA} grosor={2} />
-          </button>
+          <CruzDeHoja onCerrar={onCerrar} enLinea />
         </div>
         {clave === 'gasolineras' && (
           <p data-aviso-gasolineras="1" style={{ font: "400 12.5px/1.4 'Geist'", color: 'rgba(28,34,48,.65)' }}>

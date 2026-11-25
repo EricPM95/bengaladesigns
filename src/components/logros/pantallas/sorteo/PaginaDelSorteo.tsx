@@ -4,6 +4,7 @@ import { useLogrosPantallas, type PantallaDe } from '../useLogrosPantallas'
 import { miles } from '../perfil/util'
 import { pedirSorteo, type EstadoDelSorteo } from './api'
 import './sorteo.css'
+import { DORADO } from '../../../ui/botonesOro'
 
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
 /** «2027-08-31» → «31 de agosto de 2027». */
@@ -169,7 +170,7 @@ export default function PaginaDelSorteo({ pantalla: _pantalla }: { pantalla: Pan
                 </span>
               )}
               {datos.estado === 'dentro' && (
-                <span data-sorteo-boton="dentro" className="flex h-14 flex-1 items-center justify-center gap-2.5 rounded-[18px]" style={{ background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#3A2A0A', font: "700 16px 'Geist'", boxShadow: '0 12px 22px -12px rgba(110,80,24,.8),inset 0 1px 0 rgba(255,255,255,.55)' }}>
+                <span data-sorteo-boton="dentro" className="flex h-14 flex-1 items-center justify-center gap-2.5 rounded-[18px]" style={{ background: DORADO, color: '#3A2A0A', font: "700 16px 'Geist'", boxShadow: '0 12px 22px -12px rgba(110,80,24,.8),inset 0 1px 0 rgba(255,255,255,.55)' }}>
                   <Visto tam={18} color="#3A2A0A" grosor={3.2} />
                   Estás dentro del sorteo
                 </span>

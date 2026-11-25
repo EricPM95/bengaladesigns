@@ -31,7 +31,8 @@ console.log('1. El código')
   const hoja = sinComentarios(leerArchivo('src/components/ui/HojaDeHora.tsx'))
   debe(/createPortal/.test(hoja) && /items-end/.test(hoja) && /data-hoja-de-hora-guardar/.test(hoja) && /data-hoja-de-hora-quitar/.test(hoja), 'o1', 'HojaDeHora sube desde abajo, en un portal, con ✓ y papelera')
   // antes → ahora → decisión de Eric (10S9, 1-nov): antes `onClick={guardar}`; ahora `guardar(false)` (el ✓ es `guardar(true)` y guarda aunque no se mueva la rueda). Tocar el fondo sigue guardando.
-  debe(/onClick=\{\(\) => guardar\(false\)\} data-hoja-de-hora-fondo/.test(hoja) && /onClick=\{\(\) => guardar\(true\)\} aria-label="Guardar la hora"/.test(hoja), 'o1', 'tocar el fondo GUARDA (no cierra sin más) y el ✓ guarda siempre')
+  // (V50, 24-nov) Sin la X: tocar el fondo o deslizar cierra SIN guardar (`cerrarSinGuardar`); solo el ✓ (`guardar(true)`) y la papelera cambian la hora.
+  debe(/onClick=\{cerrarSinGuardar\} data-hoja-de-hora-fondo/.test(hoja) && /onClick=\{\(\) => guardar\(true\)\} aria-label="Guardar la hora"/.test(hoja), 'o1', 'tocar el fondo NO guarda (V50) y el ✓ guarda')
   debe(!/Toca fuera para cerrar/.test(hoja) && !/>\s*Quitar la hora\s*</.test(hoja), 'o1', 'sin las frases viejas «Toca fuera para cerrar» ni «Quitar la hora» escritas')
   const vuelo = sinComentarios(leerArchivo('src/components/route/reservas/HojaDelVuelo.tsx'))
   debe(/<CampoDeHora/.test(vuelo) && !/<RuedaDeHora/.test(vuelo) && !/Toca fuera para cerrar|data-mi-vuelo-otra-hora-quitar/.test(vuelo), 'o1', 'la hoja del vuelo usa CampoDeHora y ya no pinta su rueda ni las frases viejas')
@@ -51,7 +52,9 @@ try {
   await poner(a, `s.useRouteStore.setState((st) => ({ route: { ...st.route, origin: 'Londres', originPlace: undefined, arrivalFlightTime: null, departureFlightTime: null, arrivalPointId: null, departurePointId: null, arrivalOtroPunto: null, arrivalOtraHora: null, departureOtroPunto: null, departureOtraHora: null } }))`)
   await poner(a, `e.setMode('bookings')`)
   await esp(2200)
-  const abre = await clic(a, '[data-blk="llegada"] [class*="cursor-pointer"]')
+  // (V50) Sin vuelos, «Llegada y vuelta» es plegable: se abre la cabecera (si no lo está) y se toca [Añadir mi vuelo], que abre la hoja «Tu vuelo» de siempre.
+  if (!(await a.evaluar("Boolean(document.querySelector('[data-anadir-mi-vuelo]'))"))) { await clic(a, '[data-blk="llegada"] [class*="cursor-pointer"]'); await esp(700) }
+  const abre = await clic(a, '[data-anadir-mi-vuelo]')
   await esp(1500)
   debe(abre, 'o2', 'se abre la hoja del vuelo desde RESERVAS')
 
@@ -100,7 +103,8 @@ try {
     await clic(a, '[data-hoja-de-hora-fondo]')
     await esp(700)
     c = await campo('otra')
-    debe((await hoja()) === null && c && c.vacia === '0' && c.texto === '08:30', `o2 ${lado} fuera guarda`, `tocar fuera guarda la hora elegida y cierra (${c?.texto})`)
+    // (V50, 24-nov) Tocar fuera cierra SIN guardar: la casilla sigue como estaba (vacía, con el ejemplo en gris).
+    debe((await hoja()) === null && c && c.vacia === '1', `o2 ${lado} fuera guarda`, `tocar fuera cierra SIN guardar la hora (V50) (${c?.texto})`)
 
     // El ✓ guarda
     await abrir('otra')
@@ -138,7 +142,8 @@ try {
     await clic(a, '[data-hoja-de-hora-fondo]')
     await esp(700)
     c = await campo('roma')
-    debe(c && c.texto === '11:15', `o2 ${lado} roma fuera`, `tocar fuera guarda también la hora de Roma (${c?.texto})`)
+    // (V50, 24-nov) Tocar fuera cierra SIN guardar, también en la hora de Roma: la casilla sigue vacía (el ejemplo en gris).
+    debe(c && c.vacia === '1', `o2 ${lado} roma fuera`, `tocar fuera NO guarda la hora de Roma (V50) (${c?.texto})`)
     await a.captura(foto(`3_${lado}_guardada`))
   }
 } catch (e) {

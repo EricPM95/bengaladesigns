@@ -3,6 +3,9 @@ import { diaConFecha, diaProsa, fichaDelDia } from '../../../lib/nombreDeDia'
 import { esDiaDeExcursion, tituloSimpleDelDia, useNombreDeDias } from '../../../lib/tituloDelDia'
 import type { Route } from '../../../lib/types'
 import { Icono } from '../../ui/Icono'
+import { CuadradoFecha } from '../../ui/CuadradoFecha'
+import { Etiqueta } from '../../ui/Etiqueta'
+import { MARFIL, ORO_BORDE } from '../../ui/botonesOro'
 
 /** La etiqueta de un día de excursión entera en la lista: no se mueven paradas a una excursión. */
 export const ETIQUETA_DIA_DE_EXCURSION = 'Día de excursión'
@@ -59,23 +62,15 @@ function ListaDeDiasDeLaRuta({ route, dias, onElegir, ahora, recomendado, cerrad
             onClick={() => onElegir(dia.id)}
             data-dia-destacado={destacado ? '1' : undefined}
             className={`flex w-full items-center gap-3 text-left ${destacado ? 'mb-1.5 min-h-[72px] rounded-[18px] px-3 py-2.5' : 'min-h-[58px] rounded-2xl px-2 py-[7px]'} ${excursion ? 'cursor-not-allowed' : destacado ? '' : 'hover:bg-bg-hover'}`}
-            style={destacado ? { background: '#FFFDF8', border: '1.5px solid #B58A2E', boxShadow: '0 10px 18px -14px rgba(110,80,24,.55)' } : undefined}
+            style={destacado ? { background: MARFIL, border: `1.5px solid ${ORO_BORDE}` } : undefined}
           >
-            <span className={`flex h-[46px] w-11 shrink-0 flex-col items-center justify-center rounded-xl border border-text/[.08] bg-bg-hover ${excursion ? 'opacity-50' : ''}`}>
-              {ficha ? (
-                <>
-                  <span className="font-mono text-[8.5px] font-semibold uppercase leading-none tracking-[.12em] text-accent">{ficha.semana}</span>
-                  <span className="mt-[3px] font-display text-[21px] leading-none">{ficha.numero}</span>
-                </>
-              ) : (
-                <span className="font-display text-[22px] leading-none">{dia.dayNumber}</span>
-              )}
+            <span className={excursion ? 'opacity-50' : ''}>
+              {/* (Noche 24-25 nov) El cuadrado de la fecha de toda la app: azul oscuro con el día y el número en dorado. */}
+              <CuadradoFecha semana={ficha?.semana ?? 'DÍA'} numero={ficha?.numero ?? dia.dayNumber} />
             </span>
             <span className={`flex min-w-0 flex-1 flex-col gap-0.5 ${excursion ? 'opacity-60' : ''}`}>
               {destacado && (
-                <span data-dia-recomendado="1" className="self-start rounded-full px-2 py-[3px] text-[10.5px] font-bold leading-none text-white" style={{ background: '#B58A2E' }}>
-                  Te lo recomendamos
-                </span>
+                <Etiqueta tono="destacada" datos={{ 'data-dia-recomendado': '1' }}>Te lo recomendamos</Etiqueta>
               )}
               {/* Tanda 10O: «Jue 26 Nov · Roma antigua y Centro histórico» (la fecha en negrita, el nombre del día detrás). */}
               <span data-dia-etiqueta="1" className="flex items-start gap-[5px] text-[13.5px] leading-[1.3]">
@@ -86,13 +81,13 @@ function ListaDeDiasDeLaRuta({ route, dias, onElegir, ahora, recomendado, cerrad
                 </span>
               </span>
               {cerrado && (
-                <span data-dia-cerrado-texto="1" className="text-[11.5px] leading-none" style={{ color: '#B5704A' }}>
+                <span data-dia-cerrado-texto="1" className="text-[11.5px] leading-none text-accent-warm">
                   Cerrado ese día
                 </span>
               )}
             </span>
             {excursion ? (
-              cerrado ? null : <span className="shrink-0 rounded-full border border-text/15 px-2 py-[3px] text-[10.5px] font-medium leading-none text-text/60">{ETIQUETA_DIA_DE_EXCURSION}</span>
+              cerrado ? null : <Etiqueta tono="gris">{ETIQUETA_DIA_DE_EXCURSION}</Etiqueta>
             ) : (
               <Icono nombre="adelante" size={14} className={`shrink-0 ${destacado ? 'text-accent' : 'text-text/35'}`} />
             )}

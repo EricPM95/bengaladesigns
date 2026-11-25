@@ -176,7 +176,7 @@ console.log('3. El código')
   debe(/data-hueco-solo-anadir/.test(leer('src/components/route/dayDetail/StopConnector.tsx')) && /data-hueco-solo-anadir/.test(leer('src/index.css')), 'franja', 'el hueco que solo traía «+ Añadir parada» desaparece cuando esa herramienta no se ve (la franja blanca)')
   const lista = leer('src/components/route/DayList.tsx')
   debe(!/#F3EEE2|#CFC8B6/.test(lista), 'gris', 'los días «Hecho» ya no llevan el gris (ni el fondo ni la franja)')
-  debe(!/\bml-2\.5 rounded-3xl/.test(lista) && !/-left-\[34px\]/.test(lista), 'alineado', 'las tarjetas de los días ya no se desplazan a la derecha para dejar sitio al asa')
+  debe(/\bml-2\.5 rounded-3xl/.test(lista) && /-left-\[34px\]/.test(lista), 'alineado', '(V38, decisión de Eric: «las tres rayas de DÍAS otra vez a la izquierda») todas las tarjetas llevan el mismo desplazamiento de 10 px para dejar sitio al asa')
   debe(/!pasado && \(day\.excursions/.test(lista), 'reservar', 'en un día «Hecho» no sale «Sin reservar»')
 }
 
@@ -242,7 +242,7 @@ try {
   console.log('  ', medidas.slice(0, 600))
   debe(m.n >= 4 && m.pasados === 2, 'hecho', `con hoy = 19 oct, los días 1 y 2 salen «Hecho» (${m.pasados} de ${m.n})`)
   debe(new Set(m.izq).size === 1 && new Set(m.anch).size === 1, 'alineado', `todos los días (con asa o sin ella, «Hecho» o no) tienen el mismo borde izquierdo y el mismo ancho (${[...new Set(m.izq)].join('/')} · ${[...new Set(m.anch)].join('/')})`)
-  debe(m.bloqueIzq === null || m.bloqueIzq === m.izq[0], 'alineado', `y es el mismo borde que el del bloque del alojamiento o del vehículo (${m.bloqueIzq})`)
+  debe(m.bloqueIzq === null || m.bloqueIzq + 10 === m.izq[0], 'alineado', `(V38) y solo se desplaza los 10 px del asa respecto al bloque del alojamiento o del vehículo (${m.bloqueIzq} + 10 = ${m.izq[0]})`)
   debe(m.fondo.length > 0 && m.fondo.every((f) => f === m.normal[0]), 'gris', `un día «Hecho» tiene el fondo de un día normal, sin gris (${m.fondo[0]} · ${m.normal[0]})`)
   debe(m.sinReservar.every((x) => x === false), 'reservar', 'ningún día «Hecho» dice «Sin reservar»')
   debe(!(m.titulos[3] === m.titulos[2] && /Graciosa/.test(m.titulos[2])), 'nombre', `el día 4 no lleva el nombre de la excursión del día 3 (${m.titulos[2]} · ${m.titulos[3]})`)

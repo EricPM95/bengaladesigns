@@ -8,7 +8,6 @@ import { HoyDespues } from '../../src/components/route/hoy/HoyDespues'
 import { FILTROS_DE_CAMBIAR_PARADA, tituloDeCambiarParada } from '../../src/components/route/dayDetail/CambiarParada'
 import { PlaceExplorerScreen, stopFromPlace } from '../../src/components/route/placeExplorer/PlaceExplorerScreen'
 import { TrazoCalendar } from '../../src/components/trazo/TrazoCalendar'
-import { TripCard } from '../../src/components/myTrips/TripCard'
 import { rangoDelViaje } from '../../src/components/route/ReservasPanel'
 import { resumenDeViaje } from '../../src/lib/viajesPerfil'
 import { useRouteStore } from '../../src/store/useRouteStore'
@@ -36,7 +35,6 @@ export {
   PlaceExplorerScreen,
   stopFromPlace,
   TrazoCalendar,
-  TripCard,
   rangoDelViaje,
   resumenDeViaje,
   useRouteStore,

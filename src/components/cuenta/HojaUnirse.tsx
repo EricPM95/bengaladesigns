@@ -6,6 +6,7 @@ import { useArrastreParaCerrar } from '../ui/Hoja'
 import { normalizarCodigo } from '../../lib/invitaciones'
 import { abrirViajeRecienUnido, unirseConCodigo } from '../../lib/unirseConCodigo'
 import { EVENTO_FRANJA_UNION, leerFranjaDeUnion, olvidarFranjaDeUnion, textosDeLaFranja, type FranjaDeUnion } from '../../lib/franjaDeUnion'
+import { TiradorDeHoja } from '../ui/TiradorDeHoja'
 
 /**
  * LA HOJA «ESCRIBE EL CÓDIGO» (Tanda 10N5, apartado 3, `Piezas/Unirse Codigo` 01 y 02, exactamente igual): una hoja desde abajo con «UNIRME A UN VIAJE» / «Escribe el código», la ✕, los ocho huecos
@@ -113,7 +114,7 @@ export function HojaUnirse({ onCerrar }: { onCerrar: () => void }): ReactNode {
         }}
       >
         <span data-hoja-tirador="1" {...arrastre.props} style={{ alignSelf: 'stretch', height: 24, margin: '-8px 40px -8px', flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', touchAction: 'none', cursor: 'grab' }}>
-          <span aria-hidden="true" style={{ display: 'block', width: 44, height: 4, borderRadius: 2, background: 'rgba(28,34,48,.25)' }} />
+          <TiradorDeHoja />
         </span>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10, paddingTop: 6 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>

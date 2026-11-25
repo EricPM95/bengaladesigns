@@ -1,7 +1,7 @@
 import { botonChampan } from '../../lib/marcaBoton'
 import { useEffect, useRef, useState, type PointerEvent as EventoPuntero, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { Icono } from './Icono'
+import { CruzDeHoja } from './CruzDeHoja'
 
 /**
  * La hoja que sube desde abajo (el diseño de las cuentas: «Pase Cuenta»): fondo que oscurece, asa, equis de 44 px y el contenido. Se cierra con la equis, tocando fuera o con Esc.
@@ -55,7 +55,7 @@ export function Hoja({
           transition: arrastre.arrastrando ? 'none' : 'translate .2s ease-out',
           overflowY: 'auto',
           scrollbarWidth: 'none',
-          borderRadius: '26px 26px 0 0',
+          borderRadius: '32px 32px 0 0',
           background: oscura ? '#1C2230' : '#FFFDF8',
           color: oscura ? '#FFFDF8' : '#1C2230',
           padding: baja ? '10px 18px calc(20px + env(safe-area-inset-bottom))' : '12px 18px calc(30px + env(safe-area-inset-bottom))',
@@ -71,16 +71,7 @@ export function Hoja({
           <span aria-hidden="true" style={{ width: 42, height: 4, borderRadius: 4, background: 'rgba(128,128,128,.35)' }} />
         </span>
         {!sinCerrar && onCerrar && (
-          <button
-            type="button"
-            onClick={onCerrar}
-            aria-label="Cerrar"
-            style={{ position: 'absolute', right: 8, top: 8, width: 44, height: 44, border: 'none', background: 'transparent', color: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-          >
-            <span style={{ width: 34, height: 34, borderRadius: '50%', background: 'rgba(128,128,128,.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Icono nombre="cerrar" size={13} grosor={2.2} />
-            </span>
-          </button>
+          <CruzDeHoja onCerrar={onCerrar} oscura={oscura} estilo={{ right: 8, top: 8 }} />
         )}
         {etiqueta && <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: oscura ? '#F3D59A' : 'rgb(var(--accent-hover))' }}>{etiqueta}</span>}
         {titulo && <span style={{ paddingRight: 34, font: baja ? "400 21px/1.15 'Instrument Serif',serif" : "400 25px/1.12 'Instrument Serif',serif", textWrap: 'pretty' }}>{titulo}</span>}

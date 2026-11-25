@@ -1,10 +1,11 @@
+import { BOTON_ORO } from '../../../ui/botonesOro'
+import { CuadradoFecha } from '../../../ui/CuadradoFecha'
 import { abrirPase } from '../../../../lib/pago'
 import { nombreDelPase } from '../../../../lib/nombrePase'
 import type { FilaDeHoy } from '../../../../lib/diaDePrueba'
 import { Icono } from '../../../ui/Icono'
 import { TextoConPase } from '../../../cuenta/TextoConPase'
 
-const ORO = 'linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A)'
 const BORDE_ORO = 'linear-gradient(120deg,oklch(0.72 0.13 65),oklch(0.92 0.1 90) 45%,oklch(0.72 0.13 65))'
 
 /** P3 (App · Pase y cuenta): el día de llegada sin pase. La misma pieza que en RESERVAS, aquí en HOY. «Ver el pase» abre la compra (el evento de pago de la app). */
@@ -15,7 +16,7 @@ export function TarjetaP3({ etiqueta, destino }: { etiqueta: string; destino: st
       <span style={{ font: "400 24px/1.15 'Instrument Serif',serif", textWrap: 'balance' as never }}>
         <TextoConPase texto={`¿Acabas de llegar? Con el ${nombreDelPase(destino)}, tu primer día se ajusta a tu vuelo.`} grande />
       </span>
-      <button type="button" onClick={abrirPase} className="h-[54px] rounded-full text-[15px] font-bold text-[#17120a]" style={{ background: ORO }}>
+      <button type="button" onClick={abrirPase} className="h-[54px] rounded-2xl text-[15px] font-bold" style={BOTON_ORO}>
         {`Ver el ${nombreDelPase(destino)}`}
       </button>
     </div>
@@ -47,14 +48,13 @@ export function TarjetaDiaDePrueba({ dias, fila = null, destino }: { dias: { w: 
         {dias.length > 0 && (
           <div className="relative mt-1 grid gap-1.5" style={{ gridTemplateColumns: "repeat(4,1fr)" }}>
             {dias.slice(0, 8).map((d) => (
-              <span key={`${d.w}${d.n}`} className="flex h-[50px] flex-col items-center justify-center gap-0.5 rounded-[13px] bg-[#F5EFE4]" style={{ border: '1px solid rgba(28,34,48,.06)' }}>
-                <span style={{ font: "600 9px 'Geist Mono',monospace", letterSpacing: '.12em', color: 'rgba(28,34,48,.55)' }}>{d.w}</span>
-                <span style={{ font: "400 20px/1 'Instrument Serif',serif" }}>{d.n}</span>
+              <span key={`${d.w}${d.n}`} className="flex justify-center">
+                <CuadradoFecha semana={d.w} numero={d.n} />
               </span>
             ))}
           </div>
         )}
-        <button type="button" onClick={abrirPase} className="relative mt-1.5 flex h-[54px] items-center justify-center gap-2 rounded-full text-[15px] font-bold text-[#1C2230]" style={{ background: ORO, boxShadow: '0 12px 24px -12px oklch(0.75 0.13 70)' }}>
+        <button type="button" onClick={abrirPase} className="relative mt-1.5 flex h-[54px] items-center justify-center gap-2 rounded-2xl text-[15px] font-bold" style={BOTON_ORO}>
           {`Ver el ${nombreDelPase(destino)}`}
           <Icono nombre="flecha" size={15} grosor={2.2} />
         </button>

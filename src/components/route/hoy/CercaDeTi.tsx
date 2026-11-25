@@ -1,3 +1,4 @@
+import { CruzDeHoja } from '../../ui/CruzDeHoja'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Coordinates } from '../../../lib/types'
@@ -52,12 +53,10 @@ function ListaCercaCoche({ tipo, origen, destino, onClose }: { tipo: 'gasolinera
   const titulo = tipo === 'gasolineras' ? 'Gasolineras cerca de ti' : 'Aparcamientos cerca de ti'
   return createPortal(
     <div className="fixed inset-0 z-[120] flex flex-col justify-end bg-black/40" data-cerca-coche={tipo} onClick={onClose}>
-      <div className="flex max-h-[80%] flex-col gap-2 rounded-t-[24px] bg-bg px-4 pb-6 pt-4" onClick={(e) => e.stopPropagation()}>
+      <div className="flex max-h-[80%] flex-col gap-2 rounded-t-[32px] bg-[#FBF3E2] px-[18px] pb-7 pt-4" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center gap-2">
           <span className="flex-1 font-display text-[24px] leading-none">{titulo}</span>
-          <button type="button" onClick={onClose} aria-label="Cerrar" className="zona-toque flex h-9 w-9 items-center justify-center rounded-full bg-bg-card text-accent">
-            <Icono nombre="cerrar" size={16} />
-          </button>
+          <CruzDeHoja onCerrar={onClose} enLinea />
         </div>
         {tipo === 'gasolineras' && <p className="text-[13px] leading-[1.4] text-text/70" data-aviso-gasolineras>{AVISO_GASOLINERAS_NORTE}</p>}
         <div className="flex flex-col divide-y divide-text/[.07] overflow-y-auto">

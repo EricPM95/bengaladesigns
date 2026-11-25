@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import type { DestinationPlace } from '../../../lib/destinationPlacesApi'
 import { historiaCorta, lineaDeSitio, TITULO_OTROS_SITIOS } from '../../../lib/useSitiosNuestros'
 import { Icono } from '../../ui/Icono'
+import { Etiqueta } from '../../ui/Etiqueta'
 
 /**
  * (Tanda 10S5, apartado 1) La fila de un sitio NUESTRO en «Añadir parada» y en AttractionsFinder: su foto (o el recuadro neutro mientras llega), su nombre, su horario y si lleva entrada, y su historia en una línea.
@@ -16,7 +17,7 @@ export function FilaSitioNuestro({ place, foto, activa = false, yaEnRuta = false
         <span className="min-w-0 flex-1 space-y-0.5">
           <span className="flex items-center gap-1.5">
             <span className="truncate text-small font-semibold text-text">{place.name}</span>
-            {yaEnRuta && <span className="shrink-0 rounded-full bg-accent-soft px-1.5 py-0.5 text-caption font-semibold text-accent-hover">En tu ruta</span>}
+            {yaEnRuta && <Etiqueta>En tu ruta</Etiqueta>}
           </span>
           <span data-sitio-nuestro-linea className="block truncate text-caption text-text-soft">{lineaDeSitio(place)}</span>
           {historia && <span data-sitio-nuestro-historia className="line-clamp-2 block text-caption text-text-muted">{historia}</span>}

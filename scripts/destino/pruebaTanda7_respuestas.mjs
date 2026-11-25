@@ -95,6 +95,8 @@ const recorrer = (carpeta, salida = []) => {
 {
   for (const ruta of [...recorrer('data'), ...recorrer('src'), ...recorrer('shared'), ...recorrer('server')]) {
     if (ruta.startsWith('data/archivo')) continue
+    // (LZ, 4-nov) La regla es del Vaticano (Roma). Lanzarote tiene su propio «Viernes por la noche: Noches de Jameos con cena y concierto» (un evento real de otro sitio).
+    if (/lanzarote/i.test(ruta)) continue
     const t = leer(ruta)
     if (/viernes (por la )?noche|viernes nocturn/i.test(t)) debe(false, '2 viernes', `${ruta}: queda el «viernes noche»`)
   }

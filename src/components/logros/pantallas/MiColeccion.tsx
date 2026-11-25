@@ -7,6 +7,8 @@ import { BotonVolver, Esperando, FONDO_PAPEL, useCarga } from './destino/piezas'
 import './destino/destino.css'
 import { Capa } from './Capa'
 import { useLogrosPantallas, type PantallaDe } from './useLogrosPantallas'
+import { CruzDeHoja } from '../../ui/CruzDeHoja'
+import { TiradorDeHoja } from '../../ui/TiradorDeHoja'
 
 /**
  * «MI COLECCIÓN» (8C2; M1 y M2 de «Mi vitrina»): los logros de viajero, página a página (un grupo por página, con 9 huecos de 3 × 3; un grupo con más logros sigue en otra página).
@@ -125,11 +127,9 @@ function ComoConseguirlo({ logro, grupo, cerrar }: { logro: LogroDeColeccion; gr
   return (
     <>
       <div className="dst-fondo" onClick={cerrar} style={{ position: 'absolute', inset: 0, zIndex: 40, background: 'rgba(28,34,48,.45)' }} />
-      <div role="dialog" aria-modal="true" aria-label={nombre} className="dst-hoja" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 41, borderRadius: '28px 28px 0 0', background: '#FFFDF8', color: '#1C2230', padding: '12px 18px calc(env(safe-area-inset-bottom,0px) + 34px)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, textAlign: 'center' }}>
-        <button type="button" aria-label="Cerrar" onClick={cerrar} style={{ position: 'absolute', right: 6, top: 6, width: 48, height: 48, border: 'none', background: 'transparent', cursor: 'pointer', color: '#1C2230' }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
-        </button>
-        <span style={{ width: 42, height: 4, borderRadius: 4, background: 'rgba(28,34,48,.18)' }} />
+      <div role="dialog" aria-modal="true" aria-label={nombre} className="dst-hoja" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 41, borderRadius: '32px 32px 0 0', background: '#FFFDF8', color: '#1C2230', padding: '12px 18px calc(env(safe-area-inset-bottom,0px) + 34px)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, textAlign: 'center' }}>
+        <CruzDeHoja onCerrar={cerrar} />
+        <TiradorDeHoja />
         <span style={{ marginTop: 8, display: 'flex', filter: hay ? 'none' : 'grayscale(1)', opacity: hay ? 1 : 0.45 }}><ChapaDe l={logro} tam={130} /></span>
         <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase', color: COLOR_DE_GRUPO[logro.grupo] ?? 'rgba(28,34,48,.55)' }}>{grupo}</span>
         <span style={{ font: "400 28px/1.05 'Instrument Serif',serif" }}>{nombre}</span>

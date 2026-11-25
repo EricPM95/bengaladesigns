@@ -95,12 +95,12 @@ ponerVersion('completa')
   {
     const r = conParadas(rutaMano(5), { 2: 2, 3: 1, 4: 3 })
     const aviso = texto(r, 3)
-    debe(aviso?.text === 'Se quitarán el vie 12 y el sáb 13, con sus paradas.', '2 aviso', `varios días con paradas: «${aviso?.text}»`)
+    debe(aviso?.text === 'Se quitarán el viernes 12 y el sábado 13, con sus paradas.', '2 aviso', `varios días con paradas: «${aviso?.text}»`)
     debe(aviso?.removed.length === 2 && aviso.removed.every((d) => d.hasContent), '2 aviso', 'no marca los dos días como con paradas')
     // La pregunta es la de siempre al eliminar: «¿Estás seguro?» con [Eliminar] y [Cancelar], y una sola.
     const html = renderToStaticMarkup(createElement(ManualShrinkDialog, { notice: aviso, onConfirm() {}, onCancel() {} }))
     const lineas = aTexto(html).split('\n')
-    debe(lineas.includes('¿Quitamos esos días de tu viaje?')&& lineas.includes('Se quitarán el vie 12 y el sáb 13, con sus paradas.'), '2 aviso', `la ventana no dice «¿Estás seguro?» y qué días se quitan: ${lineas.join(' | ')}`)
+    debe(lineas.includes('¿Quitamos esos días de tu viaje?')&& lineas.includes('Se quitarán el viernes 12 y el sábado 13, con sus paradas.'), '2 aviso', `la ventana no dice «¿Estás seguro?» y qué días se quitan: ${lineas.join(' | ')}`)
     debe(lineas.includes('Sí, quitar') && !lineas.includes('Cancelar') && (html.match(/<button/g) ?? []).length === 2 && (html.match(/aria-label="Cerrar"/g) ?? []).length === 1, '2 aviso', 'la ventana no tiene exactamente [Sí, quitar] y la ✕ de la hoja, sin [Cancelar] (Tanda 10N8)')
     debe(lineas.filter((l) => l === '¿Quitamos esos días de tu viaje?').length === 1 && !/Qué hago con|Pasarl[ao]s? a otro d/.test(html), '2 aviso', 'sale más de una pregunta o la vieja «¿Qué hago con ellas?»')
     debe(/role="dialog"/.test(html) && /data-hoja="confirmar"/.test(html) && /data-confirmar="1"/.test(html) && /aria-label="¿Quitamos esos días de tu viaje\?"/.test(html), '2 aviso', 'no es el diálogo de confirmación de siempre (ConfirmDialog, ahora una hoja desde abajo: Tanda 10N §6c)')
@@ -109,16 +109,16 @@ ponerVersion('completa')
   {
     const r = conParadas(rutaMano(5), { 2: 1, 3: 1, 4: 1 })
     const aviso = texto(r, 4)
-    debe(aviso?.text === 'Se quitará el sáb 13, con sus paradas.', '2 aviso', `un día con paradas: «${aviso?.text}»`)
+    debe(aviso?.text === 'Se quitará el sábado 13, con sus paradas.', '2 aviso', `un día con paradas: «${aviso?.text}»`)
   }
   // 2c. Días sin paradas: el mismo diálogo, un solo aviso aunque sean varios.
   {
     const vacios = texto(rutaMano(5), 3)
-    debe(vacios?.text === 'Se quitarán el vie 12 y el sáb 13.' && vacios.removed.every((d) => !d.hasContent), '2 aviso', `varios días vacíos: «${vacios?.text}»`)
+    debe(vacios?.text === 'Se quitarán el viernes 12 y el sábado 13.' && vacios.removed.every((d) => !d.hasContent), '2 aviso', `varios días vacíos: «${vacios?.text}»`)
     const uno = texto(rutaMano(5), 4)
-    debe(uno?.text === 'Se quitará el sáb 13.', '2 aviso', `un día vacío: «${uno?.text}»`)
+    debe(uno?.text === 'Se quitará el sábado 13.', '2 aviso', `un día vacío: «${uno?.text}»`)
     const tres = texto(rutaMano(6), 3)
-    debe(tres?.text === 'Se quitarán el vie 12, el sáb 13 y el dom 14.', '2 aviso', `tres días vacíos: «${tres?.text}»`)
+    debe(tres?.text === 'Se quitarán el viernes 12, el sábado 13 y el domingo 14.', '2 aviso', `tres días vacíos: «${tres?.text}»`)
     // Mezcla: si alguno lleva paradas, dice «con sus paradas».
     const mezcla = texto(conParadas(rutaMano(5), { 4: 2 }), 2)
     debe(/con sus paradas\.$/.test(mezcla?.text ?? ''), '2 aviso', `mezcla de vacíos y con paradas: «${mezcla?.text}»`)
@@ -147,7 +147,7 @@ ponerVersion('completa')
     debe(despues.days.length === 3 && ids(despues).join() === 'day-manual-1,day-manual-2,day-manual-5', '2 sí', `con «sí» no quedan los días esperados: ${ids(despues)}`)
     debe(despues.answers.dateRange.end === rango(3).end && despues.answers.days === 3, '2 sí', 'con «sí» no se guardan las fechas nuevas')
     debe(totalParadas(despues) === 2 && despues.days[1].stops.map((s) => s.name).join() === 'Sitio 2.1,Sitio 2.2', '2 sí', 'con «sí» las paradas del día quitado pasan a otro día o se pierden las de otro')
-    debe(despues.days.map((d) => d.dayNumber).join() === '1,2,3' && despues.days.map((d) => d.title).join('|') === 'mié 10 mar|jue 11 mar|vie 12 mar', '2 sí', `con «sí» no se renumeran los días ni siguen a las fechas: ${despues.days.map((d) => d.title)}`)
+    debe(despues.days.map((d) => d.dayNumber).join() === '1,2,3' && despues.days.map((d) => d.title).join('|') === 'Miércoles 10 mar|Jueves 11 mar|Viernes 12 mar', '2 sí', `con «sí» no se renumeran los días ni siguen a las fechas: ${despues.days.map((d) => d.title)}`)
     // También cae lo que no son paradas: comida elegida y excursión.
     const base = conParadas(rutaMano(5), { 2: 1 })
     const llena = {
@@ -158,7 +158,7 @@ ponerVersion('completa')
     }
     estado(llena)
     const avisoLlena = texto(llena, 3)
-    debe(avisoLlena?.text === 'Se quitarán el vie 12 y el sáb 13, con sus paradas.', '2 sí', `comida y excursión: «${avisoLlena?.text}»`)
+    debe(avisoLlena?.text === 'Se quitarán el viernes 12 y el sábado 13, con sus paradas.', '2 sí', `comida y excursión: «${avisoLlena?.text}»`)
     useRouteStore.getState().setRouteDateRange(avisoLlena.dateRange)
     const sin = useRouteStore.getState().route
     debe(ids(sin).join() === 'day-manual-1,day-manual-2,day-manual-5' && sin.days.every((d) => !d.selectedExcursionId && d.meals.length === 0), '2 sí', 'con «sí» el día con comida o excursión no se quita con todo')
@@ -192,7 +192,7 @@ ponerVersion('completa')
     const entrada = { id: 'res-1', kind: 'entrada', refId: 'colosseo', name: 'Coliseo', placeNames: ['Sitio 4.1'], dateIso: sumaDias(INICIO, 2), dayNumber: null, time: '10:00' }
     estado(r, { reservations: [entrada] })
     const aviso = texto(r, 4, INICIO, [entrada])
-    debe(/tu entrada a Coliseo del vie 12\.$/.test(aviso?.text ?? '') && !/se quedan en RESERVAS/.test(aviso?.text ?? ''), '2 reservas', `el aviso no nombra la reserva del día quitado: ${aviso?.text}`)
+    debe(/tu entrada a Coliseo del viernes 12\.$/.test(aviso?.text ?? '') && !/se quedan en RESERVAS/.test(aviso?.text ?? ''), '2 reservas', `el aviso no nombra la reserva del día quitado: ${aviso?.text}`)
     useRouteStore.getState().setRouteDateRange(aviso.dateRange)
     debe(useRouteStore.getState().reservations.length === 0 && useRouteStore.getState().route.days.length === 4, '2 reservas', 'quitar el día no quita su reserva')
     const sinReserva = texto(rutaMano(5), 3, INICIO, [{ ...entrada, dateIso: INICIO }])
@@ -202,7 +202,7 @@ ponerVersion('completa')
     const conExc = { ...base, days: base.days.map((d) => (d.dayNumber === 4 ? { ...d, selectedExcursionId: 'pompeya', dayType: 'excursion' } : d)) }
     estado(conExc, { reservations: [exc] })
     const av2 = texto(conExc, 3, INICIO, [exc])
-    debe(av2 && av2.removed.some((d) => d.label === 'sáb 13') && /tu excursión a Pompeya\.$/.test(av2.text), '2 reservas', `una excursión reservada fija su día o no se nombra: ${av2?.text}`)
+    debe(av2 && av2.removed.some((d) => d.label === 'sábado 13') && /tu excursión a Pompeya\.$/.test(av2.text), '2 reservas', `una excursión reservada fija su día o no se nombra: ${av2?.text}`)
     useRouteStore.getState().setRouteDateRange(av2.dateRange)
     debe(!useRouteStore.getState().route.days.some((d) => d.selectedExcursionId) && useRouteStore.getState().route.days.length === 3, '2 reservas', 'se queda el día de la excursión reservada (días de más)')
   }

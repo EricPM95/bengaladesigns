@@ -37,6 +37,7 @@ import { excursionReservationOf, viewedExcursion, volverAlDiaPropuesto } from '.
 import { diaDeHoy, diaQueSeAbreAlEntrar } from '../../lib/diaDeHoy'
 import { esDiaCompleto, TEXTO_DIA_COMPLETO } from '../../lib/diaCompleto'
 import { Icono } from '../ui/Icono'
+import { CuadradoFecha } from '../ui/CuadradoFecha'
 import { usePagoActivo } from '../../lib/pago'
 import { reorganizarDias, sePuedeReorganizar } from '../../lib/reorganizarDia'
 import { PiezaSegura } from '../PiezaSegura'
@@ -282,20 +283,8 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
             >
               {/* El cuadrado, en el color neutro de siempre en todos los días: la franja ya dice qué color es. Con fechas es la ficha de la fecha («LUN» y «13»);
                   sin fechas, el número del día (tanda 6z3, punto 5). */}
-              {ficha ? (
-                <span
-                  className={`flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-xl transition-colors ${expanded ? 'bg-text text-bg' : 'bg-bg-hover text-text'}`}
-                >
-                  <span className="font-mono text-[8.5px] font-medium uppercase leading-none tracking-[.12em] opacity-60">{ficha.semana}</span>
-                  <span className="mt-[3px] font-display text-[19px] leading-none">{ficha.numero}</span>
-                </span>
-              ) : (
-                <span
-                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-display text-[19px] leading-none transition-colors ${expanded ? 'bg-text text-bg' : 'bg-bg-hover text-text'}`}
-                >
-                  {day.dayNumber}
-                </span>
-              )}
+              {/* (Noche 24-25 nov) El cuadrado de la fecha de toda la app (CuadradoFecha: azul oscuro, día y número en dorado); el día abierto lleva el borde dorado. Sin fechas, el número del día en el mismo cuadrado. */}
+              <CuadradoFecha semana={ficha?.semana ?? 'DÍA'} numero={ficha?.numero ?? day.dayNumber} marcado={expanded} datos={{ 'data-dia-cuadrado': day.id }} />
 
               <div className="flex min-w-0 flex-1 flex-col gap-[2px]">
                 {/* Con fechas la ficha ya dice qué día es: la línea pequeña solo queda sin fechas («DÍA 3»). */}

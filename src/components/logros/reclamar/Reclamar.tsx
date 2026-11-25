@@ -57,7 +57,7 @@ function Miniatura({ url, tam = 44 }: { url: string; tam?: number }) {
 function Subiendo({ hechas, total }: { hechas: number; total: number }) {
   return (
     <Capa onCerrar={() => undefined} etiqueta="Comprobando tus fotos" z={90}>
-      <div data-reclamar="subiendo" className="relative flex flex-col gap-3 rounded-t-[28px] bg-[#FFFDF8] px-[18px] pb-[34px] pt-5" style={{ color: TINTA }}>
+      <div data-reclamar="subiendo" className="relative flex flex-col gap-3 rounded-t-[32px] bg-[#FFFDF8] px-[18px] pb-[34px] pt-5" style={{ color: TINTA }}>
         <span style={ETIQUETA}>Reclamar con tus fotos</span>
         <span data-reclamar="progreso" style={{ font: `400 28px/1.05 ${SERIF}` }}>
           Comprobando {Math.min(hechas + 1, total)} de {total}…
@@ -92,7 +92,7 @@ function Pregunta({ foto, tripId }: { foto: FotoDelReclamo; tripId: string }) {
   )
   return (
     <Capa onCerrar={() => void responderPregunta(tripId, foto, null)} etiqueta="¿De qué sitio es esta foto?" z={90}>
-      <div data-reclamar="pregunta" className="relative flex max-h-[85vh] flex-col gap-2.5 overflow-y-auto rounded-t-[28px] bg-[#FFFDF8] px-[18px] pb-[26px] pt-5" style={{ color: TINTA }}>
+      <div data-reclamar="pregunta" className="relative flex max-h-[85vh] flex-col gap-2.5 overflow-y-auto rounded-t-[32px] bg-[#FFFDF8] px-[18px] pb-[26px] pt-5" style={{ color: TINTA }}>
         <Cruz onCerrar={() => void responderPregunta(tripId, foto, null)} />
         <span style={ETIQUETA}>{quedan > 1 ? `${quedan} fotos sin ubicación` : 'Una foto sin ubicación'}</span>
         <div className="flex items-center gap-3">
@@ -120,7 +120,7 @@ function Resumen() {
   const s = useReclamarStore()
   return (
     <Capa onCerrar={cerrarResumen} etiqueta="Resumen de tus fotos" z={90}>
-      <div data-reclamar="resumen" className="relative flex max-h-[88vh] flex-col gap-3 overflow-y-auto rounded-t-[28px] px-[18px] pb-[26px] pt-5 text-[#FFFDF8]" style={{ background: 'radial-gradient(120% 80% at 50% 0%,#3A3550 0%,#1C2230 65%)' }}>
+      <div data-reclamar="resumen" className="relative flex max-h-[88vh] flex-col gap-3 overflow-y-auto rounded-t-[32px] px-[18px] pb-[26px] pt-5 text-[#FFFDF8]" style={{ background: 'radial-gradient(120% 80% at 50% 0%,#3A3550 0%,#1C2230 65%)' }}>
         <Cruz onCerrar={cerrarResumen} oscura />
         <span data-reclamar="titulo" className="pr-10" style={{ font: `400 30px/1.05 ${SERIF}` }}>{s.sinPase && s.sitios.length === 0 ? 'Tus fotos están guardadas' : fraseDelResumen(s.pedazos, s.emblemas)}</span>
         {s.sinPase && <span style={{ font: "400 13.5px/1.45 'Geist'", color: 'rgba(255,253,248,.8)' }}>Sin el pase no se gana nada con las fotos; van a tus recuerdos.</span>}

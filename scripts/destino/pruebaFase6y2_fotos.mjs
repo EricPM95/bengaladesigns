@@ -117,7 +117,9 @@ if (!SERVIDOR) {
     const j = await pedir(lugar)
     if (j.photo_source === 'unsplash') { unsplash = { lugar, j }; break }
   }
-  ok(unsplash && unsplash.j.unsplash_photographer && /utm_source=/.test(unsplash.j.unsplash_photographer_url ?? ''), '3f no se encuentra ningún lugar de Roma con foto de Unsplash y su autor enlazado')
+  // (noche 24-nov) Con las fotos propias de Eric (V16b, V28, V30) y las de Wikipedia, ya ningún lugar de Roma cae a Unsplash (es el último recurso). Si hay alguno, se mira como siempre; si no, se comprueba en el código del servidor que cualquier foto de Unsplash saldría con su autor enlazado y el utm.
+  const codigoServidor = leer('server/index.js')
+  ok(unsplash ? Boolean(unsplash.j.unsplash_photographer && /utm_source=/.test(unsplash.j.unsplash_photographer_url ?? '')) : codigoServidor.includes('unsplash_photographer: photo.user?.name') && codigoServidor.includes('${photo.user.links.html}?${UNSPLASH_UTM}') && codigoServidor.includes("UNSPLASH_UTM = 'utm_source="), '3f ninguna foto de Unsplash sale sin su autor enlazado (con utm)')
   // Una excursión que NO está rechazada sigue su camino de siempre (no es un efecto de la regla).
   const tivoli = await pedir('Excursión a Tívoli')
   ok(tivoli.photo_source !== undefined, '3g la excursión a Tívoli no responde')
@@ -146,7 +148,8 @@ console.log('El cliente')
   // Lo que pinta quien recibe null.
   const ex = leer('src/components/route/excursions/ExcursionsPage.tsx')
   const cab = ex.slice(ex.indexOf('function ExcursionPhoto'), ex.indexOf('function ExcursionPhoto') + 1800)
-  ok(!/<img/.test(cab) && /url \? \{ backgroundImage/.test(cab) && /bg-bg-hover/.test(cab), '4d la cabecera de excursiones pinta una imagen sin foto (hueco roto) en vez del recuadro neutro')
+  // (V42 §3) la foto grande es un <img> (lazy), pero SOLO si hay url: sin foto queda el recuadro neutro, nunca un hueco roto
+  ok(/\{url && <img /.test(cab) && !/<img[^>]*src=\{(?!url\})/.test(cab) && /bg-bg-hover/.test(cab), '4d la cabecera de excursiones pinta una imagen sin foto (hueco roto) en vez del recuadro neutro')
   const ficha = leer('src/components/route/dayDetail/StopDetailSheet.tsx')
   // (Tanda 6y4: la ficha nueva pinta la imagen solo si hay foto —`(foto) && <img …>`— sobre el recuadro neutro de la foto; antes era un ternario con el recuadro en la otra rama.)
   ok(/\(photo\?\.small \?\? stop\.photoUrl\) (\? \(\s*|&&\s*)<img/.test(ficha), '4e la ficha pinta una imagen aunque no haya foto')

@@ -12,6 +12,9 @@ import { nombreDelPase } from '../../lib/nombrePase'
 import { useRouteStore } from '../../store/useRouteStore'
 import { SECCIONES_DE_LA_LISTA } from './lista/disenoLista'
 import { listaParaDestino } from './lista/listaDeCoche'
+import { CruzDeHoja } from '../ui/CruzDeHoja'
+import { TiradorDeHoja } from '../ui/TiradorDeHoja'
+import { DORADO } from '../ui/botonesOro'
 
 /**
  * LA LISTA DEL PASE POR PUNTOS (Tanda 10N11, apartado 5; `Piezas/Pase Lista` de Design, pantalla 1). Antes (10N10) era la última escena de la película; ahora es un componente propio, fiel al diseño y sin el código de la película
@@ -86,7 +89,6 @@ export function ListaDelPase({ destino, tripId, desde, onCerrar, configInicial =
   // La elegida arriba del todo (con su borde de oro), luego el euro y el resto por orden.
   monedas.sort((x, y) => (x === activa ? -1 : y === activa ? 1 : x === 'EUR' ? -1 : y === 'EUR' ? 1 : x.localeCompare(y)))
 
-  const botonX: CSSProperties = { width: 32, height: 32, borderRadius: '50%', background: 'rgba(28,34,48,.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: 0, padding: 0 }
   const redondo: CSSProperties = { width: 42, height: 42, borderRadius: '50%', background: '#FFFDF8', border: '1px solid rgba(28,34,48,.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', font: "500 24px/1 'Geist'", cursor: 'pointer', color: '#1C2230' }
 
   return createPortal(
@@ -162,8 +164,8 @@ export function ListaDelPase({ destino, tripId, desde, onCerrar, configInicial =
       {hoja && !conPase && (
         <>
           <div onClick={() => setHoja('')} style={{ position: 'absolute', inset: 0, background: 'rgba(10,8,5,.6)', zIndex: 15 }} />
-          <div data-hoja-cuantos-sois="1" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 16, maxWidth: 480, margin: '0 auto', borderRadius: '30px 30px 0 0', background: CREMA, color: '#1C2230', padding: '14px 20px max(26px, env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', gap: 12, boxShadow: '0 -20px 40px rgba(0,0,0,.35)', maxHeight: '88%', overflowY: 'auto' }}>
-            <span style={{ alignSelf: 'center', width: 44, height: 4, borderRadius: 2, background: 'rgba(28,34,48,.25)' }} />
+          <div data-hoja-cuantos-sois="1" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 16, maxWidth: 480, margin: '0 auto', borderRadius: '32px 32px 0 0', background: CREMA, color: '#1C2230', padding: '14px 20px max(26px, env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', gap: 12, boxShadow: '0 -20px 40px rgba(0,0,0,.35)', maxHeight: '88%', overflowY: 'auto' }}>
+            <TiradorDeHoja />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ font: `400 28px/1 ${SERIF}` }}>{hoja === 'cur' ? 'Moneda' : '¿Cuántos sois?'}</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -175,11 +177,7 @@ export function ListaDelPase({ destino, tripId, desde, onCerrar, configInicial =
                     </svg>
                   </span>
                 )}
-                <button type="button" aria-label="Cerrar" onClick={() => (hoja === 'cur' ? setHoja('buy') : setHoja(''))} style={botonX}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1C2230" strokeWidth="2" strokeLinecap="round">
-                    <path d="M6 6l12 12M18 6L6 18" />
-                  </svg>
-                </button>
+                <CruzDeHoja enLinea onCerrar={() => (hoja === 'cur' ? setHoja('buy') : setHoja(''))} />
               </span>
             </div>
 
@@ -246,7 +244,7 @@ export function ListaDelPase({ destino, tripId, desde, onCerrar, configInicial =
                     {textos.linea_legal_compra}
                   </p>
                 )}
-                <span role="button" data-comprar="1" onClick={() => void comprar(cuantos.plan, cuantos.personas)} style={{ height: 50, borderRadius: 15, background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510', display: 'flex', alignItems: 'center', justifyContent: 'center', font: "700 15px 'Geist'", cursor: 'pointer', boxShadow: '0 10px 20px -12px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55)' }}>
+                <span role="button" data-comprar="1" onClick={() => void comprar(cuantos.plan, cuantos.personas)} style={{ height: 50, borderRadius: 15, background: DORADO, color: '#4A3510', display: 'flex', alignItems: 'center', justifyContent: 'center', font: "700 15px 'Geist'", cursor: 'pointer', boxShadow: '0 10px 20px -12px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55)' }}>
                   {cuantos.comprarTxt}
                 </span>
                 <span style={{ textAlign: 'center', font: "400 12px 'Geist'", color: 'rgba(28,34,48,.6)' }}>Se paga una vez y no caduca</span>

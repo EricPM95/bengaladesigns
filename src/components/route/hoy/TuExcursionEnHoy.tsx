@@ -1,3 +1,4 @@
+import { BOTON_AZUL } from './piezas'
 import { useState } from 'react'
 import type { Route } from '../../../lib/types'
 import type { Reservation } from '../../../lib/bookings'
@@ -48,7 +49,7 @@ export function TuExcursionEnHoy({ route, reserva, puntoDeEncuentro }: { route: 
       )}
       {/* (V49) Fuera [Cómo llegar al punto de encuentro]. */}
       {false && enlace && (
-        <a href={enlace} target="_blank" rel="noopener noreferrer" data-hoy-punto-de-encuentro className="flex h-[46px] items-center justify-center gap-2 rounded-[14px]" style={{ background: '#1C2230', color: '#F3D88F', font: "700 14.5px 'Geist'" }}>
+        <a href={enlace} target="_blank" rel="noopener noreferrer" data-hoy-punto-de-encuentro className="flex h-[46px] items-center justify-center gap-2 rounded-2xl" style={{ ...BOTON_AZUL, font: "700 14.5px 'Geist'" }}>
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#F3D88F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M13 4a1 1 0 1 0 0 .01M10 21l2-7-3-3 1-5 4 2 3 1M7 12l3-1" />
           </svg>

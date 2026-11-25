@@ -10,6 +10,7 @@ import type { Route } from '../../../../lib/types'
 import type { ColeccionDeEstado } from '../api'
 import { ListaDeColeccion } from '../../ficha/ListaDeColeccion'
 import { sinSorteo } from '../../../../lib/sorteo'
+import { ICONOS } from '../../../../lib/iconos'
 
 /**
  * LO DE LA HOJA DE LOGROS «ANTES DEL VIAJE» (V25, Design `Logros Antes Viaje`): lo que te puedes llevar, la franja de colecciones que se abre una a una, y el bloque que vende el pase (sin pase). Solo piezas: los números salen
@@ -120,7 +121,7 @@ export function ColeccionesAntes({ estado, sinPase, ciudad, destino, cerrarHoja 
                   </span>
                   {sinPase && (
                     <svg data-candado-pequeno="1" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.45)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }} aria-hidden="true">
-                      <path d="M6 11h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1zM8 11V8a4 4 0 0 1 8 0v3" />
+                      <path d={ICONOS.candado} />
                     </svg>
                   )}
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none', transform: abierto ? 'rotate(180deg)' : 'none', transition: 'transform .3s' }} aria-hidden="true">

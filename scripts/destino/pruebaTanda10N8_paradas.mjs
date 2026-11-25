@@ -8,7 +8,7 @@ const sinCom = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm
 console.log('1. Código')
 {
   const hd = L('src/components/ui/HojaDia.tsx')
-  debe(['#FBF3E2', '#1C2230', '#E9C77A', 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', 'Instrument Serif'].every((t) => hd.includes(t)), 'ap3i', 'HojaDia con los colores y la letra de Piezas/Hoja Dia')
+  debe(['#FBF3E2', '#1C2230', '#E9C77A', 'DORADO', 'Instrument Serif'].every((t) => hd.includes(t)), 'ap3i', 'HojaDia con los colores y la letra de Piezas/Hoja Dia')
   for (const f of ['route/freeDay/AddToDaySheet', 'route/reservas/FreeTourDiaSheet', 'route/dayDetail/MoverADia', 'route/excursions/ExcursionSinHueco', 'route/excursions/WhereSheet', 'propuesta/HojaRecomendacion', 'route/reservas/VolverExcursionARuta', 'route/dayDetail/DayPositionPicker'])
     debe(/HojaDia/.test(L(`src/components/${f}.tsx`)), 'ap3i', `${f} usa HojaDia`)
   debe(!/entradas con hora/.test(sinCom(L('src/components/route/freeDay/AddToDaySheet.tsx'))), 'ap3g', 'al añadir un sitio no se bloquea ningún día por entradas con hora')

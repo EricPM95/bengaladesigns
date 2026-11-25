@@ -11,6 +11,7 @@ import { RemoveReservationDialog, useExcursionReservation } from '../reservas/Re
 import { Icono } from '../../ui/Icono'
 import { useExcursionesCompletas } from '../../../lib/excursionesDatos'
 import { etiquetasDeExcursion } from '../../../lib/excursionEtiquetas'
+import { CruzDeHoja } from '../../ui/CruzDeHoja'
 
 /**
  * (V18, Design «Excursion Bloque» E1 a E4) EL BLOQUE DE LA EXCURSIÓN en DÍAS, rehecho:
@@ -187,16 +188,14 @@ export function HojaMasExcursiones({ opciones, dia, onElegir, onCerrar }: { opci
   return createPortal(
     <div className="fixed inset-0 z-[95]" role="dialog" aria-modal="true" aria-label="Más excursiones" data-hoja-mas-excursiones>
       <div onClick={onCerrar} style={{ position: 'absolute', inset: 0, background: 'rgba(28,34,48,.42)' }} />
-      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, maxHeight: '86dvh', overflowY: 'auto', borderRadius: '30px 30px 0 0', background: '#FFFDF8', padding: '10px 16px calc(env(safe-area-inset-bottom,0px) + 22px)', display: 'flex', flexDirection: 'column', gap: 12, boxShadow: '0 -20px 40px -20px rgba(28,34,48,.5)' }}>
+      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, maxHeight: '86dvh', overflowY: 'auto', borderRadius: '32px 32px 0 0', background: '#FFFDF8', padding: '10px 16px calc(env(safe-area-inset-bottom,0px) + 22px)', display: 'flex', flexDirection: 'column', gap: 12, boxShadow: '0 -20px 40px -20px rgba(28,34,48,.5)' }}>
         <span style={{ alignSelf: 'center', width: 42, height: 5, borderRadius: 5, background: 'rgba(28,34,48,.18)' }} />
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
           <span style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             {dia && <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', color: 'rgba(28,34,48,.5)', textTransform: 'uppercase' }}>{dia}</span>}
             <span style={{ font: "400 27px/1.05 'Instrument Serif',serif" }}>Más excursiones</span>
           </span>
-          <button type="button" aria-label="Cerrar" onClick={onCerrar} style={{ flex: 'none', width: 44, height: 44, borderRadius: '50%', border: 'none', background: '#F1EADC', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
-          </button>
+          <CruzDeHoja enLinea onCerrar={onCerrar} />
         </div>
         {opciones.map((m) => {
           const foto = fotoDeLista(m)

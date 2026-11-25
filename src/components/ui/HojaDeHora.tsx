@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Icono } from './Icono'
+import { TiradorDeHoja } from './TiradorDeHoja'
+import { PapeleraRoja } from '../route/reservas/BotonesDeReserva'
 import { RuedaDeHora } from './RuedaDeHora'
 import { TimeListWheel } from './TimeListWheel'
 
@@ -82,7 +84,7 @@ export function HojaDeHora({
   return createPortal(
     <div className="fixed inset-0 z-[140] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-label={titulo} data-hoja-de-hora>
       <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={cerrarSinGuardar} data-hoja-de-hora-fondo />
-      <div className="trazo-notice-panel relative flex w-full flex-col rounded-t-[28px] bg-bg-card pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[400px] md:rounded-[28px]">
+      <div className="trazo-notice-panel relative flex w-full flex-col rounded-t-[32px] bg-bg-card pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[400px] md:rounded-[28px]">
         <div
           className="flex shrink-0 touch-none justify-center pt-2.5 pb-1"
           aria-hidden="true"
@@ -96,15 +98,13 @@ export function HojaDeHora({
             if (y0 != null && e.changedTouches[0].clientY - y0 > 50) cerrarSinGuardar()
           }}
         >
-          <span className="h-1 w-[42px] rounded-full bg-text/20" />
+          <TiradorDeHoja />
         </div>
         <div className="flex items-center justify-between gap-3 px-6 pt-3">
           <h2 className="min-w-0 flex-1 font-display text-[24px] leading-[1.15] text-text">{titulo}</h2>
           <div className="flex shrink-0 items-center gap-2">
             {quitable && (
-              <button type="button" onClick={quitar} aria-label="Quitar la hora" data-hoja-de-hora-quitar className="zona-toque flex h-10 w-10 items-center justify-center rounded-full bg-[#F1EADC] text-text">
-                <Icono nombre="papelera" size={18} />
-              </button>
+              <PapeleraRoja enLinea onClick={quitar} etiqueta="Quitar la hora" datos="hora" atributos={{ 'data-hoja-de-hora-quitar': '1' }} />
             )}
             <button type="button" onClick={() => guardar(true)} aria-label="Guardar la hora" data-hoja-de-hora-guardar className="zona-toque flex h-10 w-10 items-center justify-center rounded-full bg-text text-[#F3D88F]">
               <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">

@@ -108,28 +108,28 @@ export function HojaComerAhora({ route, day, dateIso, siguiente, ubicacion, enCo
       <HojaV2 onCerrar={onCerrar} etiqueta={tituloHoja} fondo={MARFIL}>
         <div data-comer-hoja="lista" className="flex flex-col gap-3">
           <Titulo texto={tituloHoja} onCerrar={onCerrar} />
-          <div data-comer-filtros className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-0.5">
+          <div data-comer-filtros className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-0.5" style={{ scrollbarWidth: 'none' }}>
             {[{ id: null, label: 'Todos' }, ...RESTAURANT_SUB_CATEGORIES].map((c) => (
-              <button key={String(c.id)} type="button" onClick={() => setSub(c.id)} data-comer-filtro={c.id ?? 'todos'} aria-pressed={sub === c.id} className="flex h-9 flex-none items-center rounded-full px-3.5 text-[13px] font-bold" style={sub === c.id ? { background: TINTA, color: '#F3D88F' } : { background: '#FFFDF8', border: '1px solid rgba(28,34,48,.14)', color: TINTA }}>
+              <button key={String(c.id)} type="button" onClick={() => setSub(c.id)} data-comer-filtro={c.id ?? 'todos'} aria-pressed={sub === c.id} className="flex h-9 flex-none items-center rounded-full px-3.5 text-[13px] font-bold" style={sub === c.id ? { background: TINTA, color: '#F3D88F' } : { background: '#FFFDF8', border: '1px solid rgba(28,34,48,.16)', color: TINTA }}>
                 {c.label}
               </button>
             ))}
           </div>
           {exacto ? (
-            <span data-comer-ubicacion className="text-[12.5px] text-[#1C2230]/60">Cerca de ti</span>
+            <span data-comer-ubicacion className="text-[13px] font-medium leading-[1.3] text-[#1C2230]/65">Cerca de ti</span>
           ) : !gps.ubicacion ? (
-            <span data-comer-ubicacion data-comer-sin-ubicacion className="flex flex-wrap items-center gap-x-1 text-[12.5px] text-[#1C2230]/60">
+            <span data-comer-ubicacion data-comer-sin-ubicacion className="flex flex-wrap items-center gap-x-1 text-[13px] font-medium leading-[1.3] text-[#1C2230]/65">
               No tienes la ubicación activada ·
               <button type="button" onClick={() => (gps.estado === 'no' ? setHojaUbicacion(true) : gps.pedir())} data-comer-usar-ubicacion className="inline-flex min-h-11 items-center font-bold underline underline-offset-[3px]" style={{ color: '#8E6820' }}>
                 {gps.estado === 'pidiendo' ? 'Buscando…' : 'Usar mi ubicación'}
               </button>
             </span>
           ) : (
-            <span data-comer-ubicacion className="text-[12.5px] text-[#1C2230]/60">Contamos desde tu parada de ahora</span>
+            <span data-comer-ubicacion className="text-[13px] font-medium leading-[1.3] text-[#1C2230]/65">Contamos desde tu parada de ahora</span>
           )}
           {hojaUbicacion && <HojaActivaUbicacion onCerrar={() => setHojaUbicacion(false)} onReintentar={() => { setHojaUbicacion(false); gps.pedir() }} />}
           {lista.length > 0 && (
-            <div data-comer-mapa className="h-[190px] flex-none overflow-hidden rounded-[22px]" style={{ border: '1px solid rgba(28,34,48,.12)' }}>
+            <div data-comer-mapa className="h-[112px] flex-none overflow-hidden rounded-[18px]">
               <StopsMapView markers={marcadores} activeStopId={activo} onSelectStop={(id) => setActivo(id)} userPosition={ubicacionUtil} />
             </div>
           )}
@@ -145,7 +145,7 @@ export function HojaComerAhora({ route, day, dateIso, siguiente, ubicacion, enCo
               <div key={r.nombre} data-comer-fila={r.nombre} onClick={() => setActivo(r.nombre)} className="flex items-center gap-3 rounded-[20px] py-2.5 pl-3 pr-2.5" style={{ background: '#FFFDF8', border: activo === r.nombre ? '1.5px solid #B58A2E' : '1px solid rgba(28,34,48,.12)' }}>
                 <span data-comer-numero className="flex h-7 w-7 flex-none items-center justify-center rounded-full text-[13px] font-bold" style={{ background: activo === r.nombre ? '#B58A2E' : TINTA, color: '#fff' }}>{i + 1}</span>
                 <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
-                  <b className="truncate" style={{ font: "400 20px/1.1 'Instrument Serif',serif" }}>{displayStopName(r.nombre)}</b>
+                  <b className="truncate" style={{ font: "700 14px/1.15 'Geist'" }}>{displayStopName(r.nombre)}</b>
                   <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[12.5px] text-[#1C2230]/65">
                     {r.tipo && <span data-comer-tipo>{r.tipo}</span>}
                     <span data-comer-minutos>{r.minutos} min {r.modo === 'coche' ? 'en coche' : 'a pie'}</span>
@@ -160,7 +160,7 @@ export function HojaComerAhora({ route, day, dateIso, siguiente, ubicacion, enCo
                   )}
                 </span>
                 {!noAbiertos && (
-                  <button type="button" onClick={(e) => { e.stopPropagation(); irAqui(r) }} data-comer-ir-aqui className="flex h-11 flex-none items-center rounded-2xl px-4 text-[13.5px] font-bold" style={BOTON_ORO}>
+                  <button type="button" onClick={(e) => { e.stopPropagation(); irAqui(r) }} data-comer-ir-aqui className="zona-toque flex h-[34px] flex-none items-center rounded-xl px-3 text-[12.5px] font-bold" style={BOTON_ORO}>
                     Elegir
                   </button>
                 )}

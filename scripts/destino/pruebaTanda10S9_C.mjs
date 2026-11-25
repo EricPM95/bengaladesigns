@@ -29,7 +29,7 @@ const clic = (a, sel) => a.evaluar(`(() => { const b = document.querySelector(${
 console.log('1. El código')
 {
   const hoja = sinComentarios(leerArchivo('src/components/ui/HojaDeHora.tsx'))
-  debe(/guardar\(true\)\} aria-label="Guardar la hora"/.test(hoja) && /if \(conTick \|\| valida \|\| tocada\.current\)/.test(hoja), 'c1', 'el ✓ guarda siempre la hora que se ve, se haya movido o no')
+  debe(/guardar\(true\)\} aria-label="Guardar la hora"/.test(hoja) && /if \(valida \|\| tocada\.current\)/.test(hoja), 'c1', '(V49) el ✓ guarda lo que se ve solo si ya había hora o se movió la rueda: nunca inventa la de ejemplo')
   const vuelo = sinComentarios(leerArchivo('src/components/route/reservas/HojaDelVuelo.tsx'))
   debe(!/data-mi-vuelo-resumen/.test(vuelo) && !/resumen\(k\)/.test(vuelo) && /\{k === 'ida' \? 'Ida' : 'Vuelta'\}/.test(vuelo), 'c2', 'las pestañas del vuelo dicen siempre «Ida» y «Vuelta» (sin resumen con día y hora)')
   debe(!/\?\? HORA_DE_SERIE/.test(vuelo) && /faltaHora/.test(vuelo) && /data-vuelo-falta-hora/.test(vuelo), 'c3', 'la hora de ejemplo ya no se guarda como si fuera elegida: sin hora elegida, [Guardar] se frena')
@@ -61,7 +61,9 @@ try {
   await poner(a, `s.useRouteStore.setState((st) => ({ route: { ...st.route, origin: 'Londres', originPlace: undefined, arrivalFlightTime: null, departureFlightTime: null, arrivalPointId: null, departurePointId: null, arrivalOtroPunto: null, arrivalOtraHora: null, departureOtroPunto: null, departureOtraHora: null } }))`)
   await poner(a, `e.setMode('bookings')`)
   await esp(2200)
-  const abre = await clic(a, '[data-blk="llegada"] [class*="cursor-pointer"]')
+  // (V50) Sin vuelos, «Llegada y vuelta» es plegable: se abre la cabecera (si no lo está) y se toca [Añadir mi vuelo].
+  if (!(await a.evaluar("Boolean(document.querySelector('[data-anadir-mi-vuelo]'))"))) { await clic(a, '[data-blk="llegada"] [class*="cursor-pointer"]'); await esp(700) }
+  const abre = await clic(a, '[data-anadir-mi-vuelo]')
   await esp(1500)
   debe(abre, 'v0', 'se abre la hoja del vuelo desde RESERVAS')
 
@@ -73,6 +75,8 @@ try {
     await clic(a, `[role=dialog] [data-campo-de-hora="${clave}"]`)
     await esp(800)
   }
+  // (V49) Nunca se guarda lo que el viajero no escribe: para que el ✓ guarde hay que mover la rueda (elegir en ella).
+  const elegir = (col, v) => a.evaluar(`(() => { const o = Array.from(document.querySelectorAll('[role="dialog"] [data-rueda-columna="${col}"] [role="option"]')).find((x) => x.textContent.trim() === '${v}'); o?.click(); return true })()`)
   const tick = async () => {
     await clic(a, '[data-hoja-de-hora-guardar]')
     await esp(700)
@@ -94,16 +98,28 @@ try {
     debe((await guardarActivo()) === false && /Elige la hora/.test(await aviso()), 'v4', `con el aeropuerto elegido pero sin hora, [Guardar] sigue sin activarse y dice qué falta (${await aviso()})`)
   } else console.log('   (esta ruta no ofrece aeropuertos que elegir: se pasa el aviso por la hora de fuera)')
 
-  // El ✓ sin mover la rueda guarda lo que se ve: la hora de fuera de la ida es 08:30 de ejemplo.
+  // (V49) El ✓ SIN mover la rueda no inventa la hora de ejemplo; moviéndola, guarda lo elegido: la hora de fuera de la ida, 08:30.
   await abrir('otra')
   await tick()
   let otra = await campo('otra')
-  debe(otra && otra.vacia === '0' && otra.texto === '08:30', 'v5', `abrir la rueda y tocar el ✓ SIN moverla guarda 08:30 (${JSON.stringify(otra)})`)
+  debe(otra && otra.vacia === '1', 'v5', `abrir la rueda y tocar el ✓ SIN moverla NO guarda nada (${JSON.stringify(otra)})`)
+  await abrir('otra')
+  await elegir('Horas', '08')
+  await esp(300)
+  await elegir('Minutos', '30')
+  await esp(300)
+  await tick()
+  otra = await campo('otra')
+  debe(otra && otra.vacia === '0' && otra.texto === '08:30', 'v5', `moviendo la rueda, el ✓ guarda 08:30 (${JSON.stringify(otra)})`)
   // Y con la hora de llegada (11:15 de ejemplo).
   await abrir('roma')
+  await elegir('Horas', '11')
+  await esp(300)
+  await elegir('Minutos', '15')
+  await esp(300)
   await tick()
   roma = await campo('roma')
-  debe(roma && roma.vacia === '0' && roma.texto === '11:15', 'v6', `el ✓ sin mover guarda también la de Roma (${JSON.stringify(roma)})`)
+  debe(roma && roma.vacia === '0' && roma.texto === '11:15', 'v6', `el ✓ guarda también la de Roma al elegirla (${JSON.stringify(roma)})`)
   t1 = await pestana('ida')
   debe(t1 && t1.texto === 'Ida' && t1.puesto === '1' && t1.tick, 'v7', `la pestaña de la ida sigue diciendo «Ida» (sin día ni hora) y lleva ✓ (${JSON.stringify(t1)})`)
   debe((await guardarActivo()) === true, 'v8', 'con la hora elegida, [Guardar el vuelo] se activa')
@@ -161,10 +177,24 @@ try {
   const ahoraEnFondo = await h('horaSalida')
   debe(ahoraEnFondo && ahoraEnFondo.vacia === '1' && ahoraEnFondo.texto === '11:00', 'a5', `al tocar «Salida» no se pone sola la hora de ahora (${JSON.stringify(ahoraEnFondo)})`)
   await a.captura(foto('4_alojamiento_rueda'))
+  // (V49) el ✓ sin mover NO guarda; eligiendo en la rueda sí.
   await clic(a, '[data-hoja-de-hora-guardar]')
   await esp(700)
   s1 = await h('horaSalida')
-  debe(s1 && s1.vacia === '0' && s1.texto === '11:00', 'a6', `el ✓ sin mover guarda las 11:00 (${JSON.stringify(s1)})`)
+  debe(s1 && s1.vacia === '1', 'a6', `el ✓ sin mover NO guarda las 11:00 (${JSON.stringify(s1)})`)
+  await clic(a, '[role=dialog] [data-campo-de-hora="aloj-horaSalida"]')
+  await esp(700)
+  await a.evaluar("(() => { const o = Array.from(document.querySelectorAll('[role=\"dialog\"] [data-rueda-columna=\"Horas\"] [role=\"option\"]')).find((x) => x.textContent.trim() === '12'); o?.click(); return true })()")
+  await esp(300)
+  await a.evaluar("(() => { const o = Array.from(document.querySelectorAll('[role=\"dialog\"] [data-rueda-columna=\"Horas\"] [role=\"option\"]')).find((x) => x.textContent.trim() === '11'); o?.click(); return true })()")
+  await a.evaluar("(() => { const o = Array.from(document.querySelectorAll('[role=\"dialog\"] [data-rueda-columna=\"Minutos\"] [role=\"option\"]')).find((x) => x.textContent.trim() === '05'); o?.click(); return true })()")
+  await esp(300)
+  await a.evaluar("(() => { const o = Array.from(document.querySelectorAll('[role=\"dialog\"] [data-rueda-columna=\"Minutos\"] [role=\"option\"]')).find((x) => x.textContent.trim() === '00'); o?.click(); return true })()")
+  await esp(300)
+  await clic(a, '[data-hoja-de-hora-guardar]')
+  await esp(700)
+  s1 = await h('horaSalida')
+  debe(s1 && s1.vacia === '0' && s1.texto === '11:00', 'a6', `moviendo la rueda, el ✓ guarda las 11:00 (${JSON.stringify(s1)})`)
   // Entrada: tocar fuera sin mover y vacía la deja vacía.
   await clic(a, '[role=dialog] [data-campo-de-hora="aloj-horaEntrada"]')
   await esp(800)

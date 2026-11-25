@@ -23,6 +23,7 @@ import { stopFromPlace } from '../placeExplorer/PlaceExplorerScreen'
 import { normalizarTexto } from '../../../lib/busqueda'
 import { FilaSitioNuestro, TituloOtrosSitios } from './FilaSitioNuestro'
 import { useHuecoAlFinal } from '../../propuesta/BotonDePropuesta'
+import { Etiqueta } from '../../ui/Etiqueta'
 
 /** Radio de búsqueda de categorías/bbox del buscador alrededor del centro del destino del día. */
 const CITY_SEARCH_RADIUS_METERS = 6000
@@ -565,9 +566,7 @@ export function AddStopScreen({
                         <div className="flex items-center gap-1.5">
                           <p className="truncate text-small font-semibold text-text">{candidate.name}</p>
                           {alreadyInRoute && (
-                            <span className="shrink-0 rounded-full bg-accent-soft px-1.5 py-0.5 text-caption font-semibold text-accent-hover">
-                              En tu ruta
-                            </span>
+                            <Etiqueta>En tu ruta</Etiqueta>
                           )}
                         </div>
                         <p className="flex items-center gap-1.5 text-caption text-text-soft">

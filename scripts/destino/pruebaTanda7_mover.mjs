@@ -38,7 +38,7 @@ const sinComentarios = (t) => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/
 
 const { M, ponerVersion } = await prepararSSR('scripts/destino/_7_mover_entrada.tsx', { piezasFalsas: [{ filtro: /map\/StopsMapView$/, exporta: 'StopsMapView' }] })
 const {
-  createElement, renderToStaticMarkup, ListaDeDias, ETIQUETA_DIA_DE_EXCURSION, StopAccordion, HojaPasarAOtroDia, HoyDespues, FILTROS_DE_CAMBIAR_PARADA, tituloDeCambiarParada, PlaceExplorerScreen, stopFromPlace, TrazoCalendar, TripCard,
+  createElement, renderToStaticMarkup, ListaDeDias, ETIQUETA_DIA_DE_EXCURSION, StopAccordion, HojaPasarAOtroDia, HoyDespues, FILTROS_DE_CAMBIAR_PARADA, tituloDeCambiarParada, PlaceExplorerScreen, stopFromPlace, TrazoCalendar,
   rangoDelViaje, resumenDeViaje, useRouteStore, useAddFlowStore, moverParadaAOtroDia, cambiarParadaPorOtra, mensajeDeCambiarParada, textoDeDuracion, textoDeDias, textoDeNoches, diasDelViaje, ICONOS, CERRADO_ESTE_DIA, shellFromStop,
   fetchDestinationPlaces, fetchDestinationExcursions, fetchArrivalInfo, cargaDatosDeHorario, horarioDeParada,
 } = M
@@ -135,7 +135,7 @@ const sinHoras = (t) => !/\b\d{1,2}:\d{2}\b/.test(t)
   estado(route)
   const hoja = html(HojaPasarAOtroDia, { dias, ahora: 2, onElegir() {}, onCerrar() {} })
   const th = aTexto(hoja)
-  debe(hoja.includes('data-lista-de-dias="1"') && /Ahora: jueves 11/.test(th) && /Día de excursión/.test(th) && /Pasarla a otro día/.test(th), 'A4 hoja', `la hoja de HOY no lleva la misma lista con «Ahora:» (${plano(th).slice(0, 200)})`)
+  debe(hoja.includes('data-lista-de-dias="1"') && /Ahora: jueves 11/.test(th) && /Día de excursión/.test(th) && /Pasar a otro día/.test(th) /* (V50) el título de la hoja es «Pasar a otro día» (el enlace «Pasarla a otro día» es del aviso, no de la hoja) */, 'A4 hoja', `la hoja de HOY no lleva la misma lista con «Ahora:» (${plano(th).slice(0, 200)})`)
   const menuSrc = sinComentarios(SRC('src/components/route/dayDetail/StopMenu.tsx'))
   const saltarSrc = sinComentarios(SRC('src/components/route/hoy/saltar.tsx'))
   const hoySrc = sinComentarios(SRC('src/components/route/hoy/HoyDurante.tsx'))
@@ -302,11 +302,7 @@ const sinHoras = (t) => !/\b\d{1,2}:\d{2}\b/.test(t)
   const resumen = resumenDeViaje(rutaDe(), null, '2027-01-01')
   debe(resumen.duracion === '6 días · 5 noches' && /6 días · 5 noches$/.test(resumen.rotulo) && resumen.resumen.startsWith('6 días · 5 noches · '), 'C11 Perfil', `el Perfil no dice «6 días · 5 noches» (${resumen.duracion} / ${resumen.rotulo} / ${resumen.resumen})`)
   debe(resumen.dias === 5, 'C11 Perfil', `la cifra del mapa «días» debe seguir contando los días de ruta (${resumen.dias})`)
-  const trip = (route) => ({ id: 't', route, bookings: {}, wishlist: [], uiState: { mode: 'days', activeDayId: null }, generationState: null })
-  const tarjetaSin = aTexto(html(TripCard, { trip: trip(rutaDe({ fechas: false })), onOpen() {}, onDelete() {} }))
-  debe(/6 días · 5 noches/.test(tarjetaSin), 'C11 Mis viajes', `la tarjeta de Mis viajes sin fechas no dice «6 días · 5 noches» (${plano(tarjetaSin)})`)
-  const tarjetaCon = aTexto(html(TripCard, { trip: trip(rutaDe()), onOpen() {}, onDelete() {} }))
-  debe(!/\d+ días(?! ·)/.test(tarjetaCon) && /mar/i.test(tarjetaCon), 'C11 Mis viajes', `la tarjeta con fechas enseña otra cosa que su rango (${plano(tarjetaCon)})`)
+  // (V17, 19-nov) La pantalla «Mis viajes» y su tarjeta (`TripCard`) ya no existen: con todos los viajes hechos la app abre el Perfil, que dice «6 días · 5 noches» (comprobado arriba con `resumenDeViaje`).
   estado(rutaDe())
   const despues = aTexto(html(HoyDespues, { route: rutaDe(), startIso: INICIO }))
   debe(/6 días · 5 noches · /.test(despues) && !/(^|\n)5 días/.test(despues), 'C11 HOY', `HOY después del viaje no dice «6 días · 5 noches» (${plano(despues).slice(0, 220)})`)
@@ -342,6 +338,7 @@ const sinHoras = (t) => !/\b\d{1,2}:\d{2}\b/.test(t)
     'src/components/logros/visto/fechas.ts', // «Te quedan 10 días para reclamar»: plazo, no duración del viaje
     'src/components/route/hoy/v2/HoyAntesV2.tsx', // la cuenta atrás de HOY: «faltan N días»
     'src/components/route/hoy/HoySinPase.tsx', // (10N11/10N12) la cuenta atrás de HOY sin pase: «se activa dentro de N días»
+    'src/components/panel/api.ts', // (V35) el panel de administración: «hace 3 días» en las fechas de actividad, no es la duración de un viaje
     'src/components/logros/pantallas/perfil/TarjetaDeViaje.tsx', // (10N11) la cuenta atrás de la tarjeta de Mis viajes: «En N días» y los chips «4 días · 3 noches» (con su plural); la línea de fechas ya va sin días (10S)
   ].map((p) => p.replace(/\//g, path.sep))
   const sueltos = []

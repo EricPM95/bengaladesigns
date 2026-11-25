@@ -1,5 +1,6 @@
 import { Icono } from '../../ui/Icono'
-import { PickerSheet } from '../../ui/PickerSheet'
+import { HojaV2 } from './v2/HojasV2'
+import { Titulo } from './v2/CambiarPlan'
 import { ListaDeDias } from '../dayDetail/ListaDeDias'
 import { botonOro, clasesBotonBorde } from './piezas'
 
@@ -62,8 +63,12 @@ export function AvisoSaltada({ nombre, onDeshacer, onOtroDia }: { nombre: string
 /** La hoja con los días a los que pasar la parada: la misma lista que «Mover a otro día» del menú de cada parada en DÍAS (ListaDeDias). */
 export function HojaPasarAOtroDia({ dias, ahora, onElegir, onCerrar }: { dias: { id: string; dayNumber: number; city: string }[]; ahora?: number; onElegir: (dayId: string) => void; onCerrar: () => void }) {
   return (
-    <PickerSheet title="Pasarla a otro día" onClose={onCerrar} onDone={onCerrar} doneLabel="Cancelar">
-      <ListaDeDias dias={dias} ahora={ahora} onElegir={onElegir} />
-    </PickerSheet>
+    // (Noche 24-25 nov) La MISMA hoja que «Cambiar plan › Pasar a otro día»: HojaV2 + título con su X + la lista de días.
+    <HojaV2 onCerrar={onCerrar} etiqueta="Pasar a otro día" fondo="#FBF3E2">
+      <div data-hoja-pasar-a-otro-dia className="flex flex-col gap-2">
+        <Titulo texto="Pasar a otro día" onCerrar={onCerrar} />
+        <ListaDeDias dias={dias} ahora={ahora} onElegir={onElegir} />
+      </div>
+    </HojaV2>
   )
 }

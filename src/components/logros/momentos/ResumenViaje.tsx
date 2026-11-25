@@ -366,7 +366,7 @@ function HojaDeSorpresas({ lista, ciudad, tripId, inicio, quedanSecretos, onCerr
   return (
     <div role="dialog" aria-modal="true" aria-label="Sorpresas por reclamar" data-hoja-sorpresas style={{ position: 'fixed', inset: 0, zIndex: 9100 }}>
       <div onClick={onCerrar} style={{ position: 'absolute', inset: 0, background: 'rgba(28,34,48,.5)' }} />
-      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, maxHeight: 'min(88%, calc(100% - env(safe-area-inset-top,0px) - 28px))', borderRadius: '30px 30px 0 0', background: '#FFFDF8', padding: '12px 0 calc(env(safe-area-inset-bottom,0px) + 28px)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, color: '#1C2230' }}>
+      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, maxHeight: 'min(88%, calc(100% - env(safe-area-inset-top,0px) - 28px))', borderRadius: '32px 32px 0 0', background: '#FFFDF8', padding: '12px 0 calc(env(safe-area-inset-bottom,0px) + 28px)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, color: '#1C2230' }}>
         <CruzDeHoja onCerrar={onCerrar} fuerte />
         <span style={{ flex: 'none', width: 40, height: 5, borderRadius: 3, background: 'rgba(28,34,48,.2)' }} />
         <span style={{ font: "400 26px/1.1 'Instrument Serif',serif", textAlign: 'center', padding: '0 56px', textWrap: 'balance' as never }}>{`Te quedan ${lista.length} ${lista.length === 1 ? 'sorpresa' : 'sorpresas'} por reclamar`}</span>

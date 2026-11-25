@@ -1,3 +1,4 @@
+import { BOTON_ORO } from '../../../ui/botonesOro'
 import { useEffect, useState } from 'react'
 import type { Route } from '../../../../lib/types'
 import { addDaysToIso, formatHeaderDateRangeShortEs } from '../../../../lib/dateRange'
@@ -43,7 +44,7 @@ function ConResumen({ route, startIso }: { route: Route; startIso: string }) {
         <span className="relative text-[#FFFDF8]/75" style={{ font: "500 12px 'Geist Mono',monospace" }}>
           {textoDeDuracion(totalDias)} · {formatHeaderDateRangeShortEs(startIso, finIso)}
         </span>
-        <button type="button" onClick={() => useMomentosUI.getState().abrirResumenViaje()} className="relative mt-3 flex h-[52px] items-center justify-center gap-2 rounded-full text-[14.5px] font-bold text-[#1C2230]" style={{ background: 'linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A)' }}>
+        <button type="button" onClick={() => useMomentosUI.getState().abrirResumenViaje()} className="relative mt-3 flex h-[52px] items-center justify-center gap-2 rounded-2xl text-[15px] font-bold" style={BOTON_ORO}>
           Ver el resumen de mi viaje
           <Icono nombre="flecha" size={15} grosor={2.2} />
         </button>
@@ -55,7 +56,7 @@ function ConResumen({ route, startIso }: { route: Route; startIso: string }) {
         <span className="min-w-0 flex-1" style={{ font: "400 22px/1.05 'Instrument Serif',serif", textWrap: 'balance' as never }}>
           ¿A dónde vamos <em style={{ color: '#E9C77A' }}>ahora</em>?
         </span>
-        <button type="button" onClick={() => setNuevoViaje(true)} className="flex h-11 flex-none items-center gap-1.5 rounded-full btn-champan pl-3 pr-4 text-[13.5px] font-semibold ">
+        <button type="button" onClick={() => setNuevoViaje(true)} className="flex h-11 flex-none items-center gap-1.5 rounded-2xl pl-3 pr-4 text-[13.5px] font-bold" style={BOTON_ORO}>
           <Icono nombre="anadir" size={15} grosor={2.2} />
           Nuevo viaje
         </button>

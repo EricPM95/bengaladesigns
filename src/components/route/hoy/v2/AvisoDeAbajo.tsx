@@ -1,10 +1,9 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useAvisoDeAbajo } from '../../../../store/useAvisoDeAbajo'
 import { AvisoSobreLaBarra } from '../../../ui/AvisoSobreLaBarra'
+import { AvisoArriba } from '../../../ui/AvisoArriba'
 
-const TINTA = '#1C2230'
-const MARFIL = '#FBF3E2'
 const ORO_CLARO = '#F3D88F'
 
 /**
@@ -16,7 +15,6 @@ const ORO_CLARO = '#F3D88F'
 export function AvisoDeAbajoHost() {
   const actual = useAvisoDeAbajo((s) => s.actual)
   const siguiente = useAvisoDeAbajo((s) => s.siguiente)
-  const inicio = useRef<{ x: number; y: number } | null>(null)
   useEffect(() => {
     if (!actual) return undefined
     const id = window.setTimeout(siguiente, actual.ms ?? (actual.accion ? 12000 : 5000))
@@ -46,30 +44,20 @@ export function AvisoDeAbajoHost() {
       document.body,
     )
   }
-  const cabecera = typeof document !== 'undefined' ? document.querySelector('header')?.getBoundingClientRect().bottom : null
+  // (Noche 24-25 nov; Design «Avisos Arriba» A1) El aviso de arriba SOLO informa: la MISMA pieza que el resto de la app (`AvisoArriba`), con la tarjeta clara de filo dorado y su icono en un círculo (el reloj si habla de un cierre; si no, «i»).
   return createPortal(
-    <div className="pointer-events-none fixed inset-x-0 z-[80] px-[14px]" style={{ top: Math.max(cabecera ?? 0, 56) + 8 }}>
-      <div
-        data-aviso-de-abajo={actual.id}
-        data-aviso-arriba="1"
-        role="status"
-        onTouchStart={(e) => {
-          inicio.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
-        }}
-        onTouchEnd={(e) => {
-          const i = inicio.current
-          inicio.current = null
-          if (!i) return
-          const dx = e.changedTouches[0].clientX - i.x
-          const dy = e.changedTouches[0].clientY - i.y
-          if (Math.abs(dx) > 50 || dy < -30) siguiente()
-        }}
-        className="pointer-events-auto flex min-h-12 w-full items-center rounded-[15px] px-3.5 py-2.5 text-[13px] font-medium leading-[1.35]"
-        style={{ background: TINTA, color: MARFIL, boxShadow: '0 14px 22px -14px rgba(28,34,48,.6)' }}
-      >
-        <span className="flex-1">{actual.texto}</span>
-      </div>
-    </div>,
+    <AvisoArriba
+      z={80}
+      datos={{ 'data-aviso-de-abajo': actual.id }}
+      onIrse={siguiente}
+    >
+      <span aria-hidden="true" className="flex h-8 w-8 flex-none items-center justify-center rounded-full" style={{ background: '#F3E6C4' }}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E5018" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d={/cerrad|cierr|hora/i.test(actual.texto) ? 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2' : 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 11v5M12 8h.01'} />
+        </svg>
+      </span>
+      <span className="flex-1">{actual.texto}</span>
+    </AvisoArriba>,
     document.body,
   )
 }

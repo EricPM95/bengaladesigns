@@ -78,7 +78,9 @@ const rutaDe = (a) =>
 async function abrirHoja(a) {
   await poner(a, `e.setMode('bookings')`)
   await esp(2200)
-  const abre = await clic(a, '[data-blk="llegada"] [class*="cursor-pointer"]')
+  // (V50) Sin vuelos, «Llegada y vuelta» es plegable: se abre la cabecera (si no lo está) y se toca [Añadir mi vuelo], que abre la hoja «Tu vuelo» de siempre.
+  if (!(await a.evaluar("Boolean(document.querySelector('[data-anadir-mi-vuelo]'))"))) { await clic(a, '[data-blk="llegada"] [class*="cursor-pointer"]'); await esp(700) }
+  const abre = await clic(a, '[data-anadir-mi-vuelo]')
   await esp(1500)
   return abre
 }
@@ -218,23 +220,22 @@ console.log('3. El billete en DÍAS')
 {
   const a = await conViaje({ version: 'gratis', ancho: 375, alto: 667 })
   try {
+    // (V48) El billete con QR (Design «Billete QR»): arriba «LLEGADA · FIUMICINO» (o «VUELO IB3214»); las dos horas grandes («08:30» / «11:15»), cada una con su código debajo («BCN» / «FCO»), y la línea punteada en medio.
     const medir = () =>
       a.evaluar(`(() => {
-        const c = document.querySelector('[data-llegada-dias]')
+        const c = document.querySelector('[data-billete="llegada"]')
         if (!c) return null
         c.scrollIntoView({ block: 'center' })
-        const roma = c.querySelector('[data-llegada-roma]')
-        const fuera = c.querySelector('[data-llegada-fuera]')
-        const cb = c.getBoundingClientRect(), rb = roma ? roma.getBoundingClientRect() : null
-        const col = roma?.parentElement?.getBoundingClientRect()
-        const ver = Array.from(c.querySelectorAll('span')).find((x) => (x.textContent || '').trim() === 'Ver')?.getBoundingClientRect()
+        const roma = c.querySelector('[data-billete-lado="roma"]')
+        const fuera = c.querySelector('[data-billete-lado="fuera"]')
+        const cb = c.getBoundingClientRect()
+        const entero = (l) => (l ? Array.from(l.querySelectorAll('span')).every((x) => x.scrollWidth <= x.clientWidth + 1) && l.getBoundingClientRect().right <= cb.right && l.getBoundingClientRect().left >= cb.left : true)
+        const lado = (l) => (l ? Array.from(l.children).map((x) => x.textContent.trim()).join(' ') : null)
         return {
           texto: c.innerText.split(String.fromCharCode(10)).join(' | '),
-          roma: roma ? roma.textContent.trim() : null,
-          fuera: fuera ? fuera.textContent.trim() : null,
-          cortado: roma ? roma.scrollWidth > roma.clientWidth + 1 : null,
-          cabe: rb && col ? rb.right <= col.right + 1 && rb.left >= col.left - 1 : null,
-          dentro: rb ? rb.right <= cb.right && (!ver || rb.right <= ver.left) : null,
+          roma: lado(roma),
+          fuera: lado(fuera),
+          cortado: !entero(roma) || !entero(fuera),
           ancho: Math.round(cb.width),
         }
       })()`)
@@ -245,41 +246,40 @@ console.log('3. El billete en DÍAS')
       return { nombre, m: await medir() }
     }
     const base = `s.useRouteStore.setState((st) => ({ route: { ...st.route, origin: 'Barcelona', originPlace: undefined, arrivalPointId: 'fco', arrivalFlightTime: '11:15', arrivalOtroPunto: null, arrivalOtraHora: null } }))`
-    // 03: los dos lados, el código entre paréntesis.
+    // 03: los dos lados, el código de cada uno debajo de su hora.
     let c = await caso('dos lados', `${base}; e.setLegOtroPunto('arrival', 'Barcelona-El Prat (BCN)'); e.setLegOtraHora('arrival', '08:30')`)
-    debe(c.m && /LLEGADA · BARCELONA → ROMA/.test(c.m.texto) && /BCN 08:30/.test(c.m.texto) && /FCO 11:15/.test(c.m.texto) && /Fiumicino · Cómo llegar desde el aeropuerto/.test(c.m.texto), '3 dos lados', `«BCN 08:30 → FCO 11:15»: ${c.m && c.m.texto}`)
-    debe(c.m && !c.m.cortado && c.m.cabe && c.m.dentro, '3 dos lados sin cortar', `la hora de llegada a Roma no se corta a 375 px: ${JSON.stringify(c.m)}`)
+    debe(c.m && /LLEGADA · FIUMICINO/.test(c.m.texto) && c.m.fuera === '08:30 BCN' && c.m.roma === '11:15 FCO', '3 dos lados', `«08:30 BCN → 11:15 FCO»: ${c.m && c.m.texto}`)
+    debe(c.m && !c.m.cortado, '3 dos lados sin cortar', `las dos horas no se cortan a 375 px: ${JSON.stringify(c.m)}`)
     await a.captura(foto('billete_dias_03'))
     // El texto largo nunca: sin código entre paréntesis, el de la ciudad de salida.
     c = await caso('texto largo', `${base}; e.setLegOtroPunto('arrival', 'BARCELONA-EL PRAT'); e.setLegOtraHora('arrival', '08:30')`)
-    debe(c.m && /BCN 08:30/.test(c.m.texto) && !/EL PRAT/i.test(c.m.texto.replace(/Fiumicino.*/, '')), '3 código de la ciudad', `sin paréntesis sale el código de la ciudad de salida, nunca el texto largo: ${c.m && c.m.texto}`)
+    debe(c.m && c.m.fuera === '08:30 BCN' && !/EL PRAT/i.test(c.m.texto), '3 código de la ciudad', `sin paréntesis sale el código de la ciudad de salida, nunca el texto largo: ${c.m && c.m.texto}`)
     c = await caso('Madrid', `s.useRouteStore.setState((st) => ({ route: { ...st.route, origin: 'Madrid', originPlace: undefined, arrivalPointId: 'fco', arrivalFlightTime: '11:15', arrivalOtroPunto: 'Madrid-Barajas Adolfo Suárez', arrivalOtraHora: '07:10' } }))`)
-    debe(c.m && /MAD 07:10/.test(c.m.texto) && /LLEGADA · MADRID → ROMA/.test(c.m.texto) && !/BARAJAS/i.test(c.m.texto), '3 Madrid', `«MAD 07:10 → FCO 11:15»: ${c.m && c.m.texto}`)
+    debe(c.m && c.m.fuera === '07:10 MAD' && c.m.roma === '11:15 FCO' && !/BARAJAS/i.test(c.m.texto), '3 Madrid', `«07:10 MAD → 11:15 FCO»: ${c.m && c.m.texto}`)
     // Solo la hora de fuera, sin texto: también el código de la ciudad.
     c = await caso('solo hora', `${base}; e.setLegOtraHora('arrival', '08:30')`)
-    debe(c.m && /BCN 08:30/.test(c.m.texto), '3 solo hora', `con solo la hora de salida sale «BCN 08:30»: ${c.m && c.m.texto}`)
+    debe(c.m && c.m.fuera === '08:30 BCN', '3 solo hora', `con solo la hora de salida sale «08:30 BCN»: ${c.m && c.m.texto}`)
     // 03b: sin el de fuera, solo el de Roma.
     c = await caso('solo Roma', base)
-    debe(c.m && c.m.roma === 'FCO 11:15' && /LLEGADA · ROMA/.test(c.m.texto) && !/→/.test(c.m.texto.split('|')[1] ?? '') && !/BCN/.test(c.m.texto), '3 solo Roma', `sin el lado de fuera: «FCO 11:15» y «LLEGADA · ROMA»: ${c.m && c.m.texto}`)
-    debe(c.m && !c.m.cortado && c.m.cabe && c.m.dentro, '3 solo Roma sin cortar', `FCO 11:15 entero: ${JSON.stringify(c.m)}`)
+    debe(c.m && c.m.roma === '11:15 FCO' && c.m.fuera === null && /LLEGADA · FIUMICINO/.test(c.m.texto) && !/BCN/.test(c.m.texto), '3 solo Roma', `sin el lado de fuera: «11:15 FCO» y «LLEGADA · FIUMICINO»: ${c.m && c.m.texto}`)
+    debe(c.m && !c.m.cortado, '3 solo Roma sin cortar', `11:15 FCO entero: ${JSON.stringify(c.m)}`)
     await a.captura(foto('billete_dias_03b'))
-    // Si no cabe en una línea: el lado de fuera arriba, pequeño, y «FCO 11:15» grande debajo, entero.
+    // En una tarjeta estrecha (270 px) y en una ancha (372 px) las dos horas siguen enteras y dentro de la tarjeta.
     c = await caso('estrecha', `${base}; e.setLegOtroPunto('arrival', 'Barcelona-El Prat (BCN)'); e.setLegOtraHora('arrival', '08:30')`)
-    await a.evaluar("(() => { const c = document.querySelector('[data-llegada-dias]'); c.style.width = '270px'; c.style.maxWidth = '270px'; return true })()")
+    await a.evaluar("(() => { const c = document.querySelector('[data-billete=\"llegada\"]'); c.style.width = '270px'; c.style.maxWidth = '270px'; return true })()")
     await esp(800)
-    const apilado = await medir()
-    debe(apilado && apilado.fuera && /BCN 08:30/.test(apilado.fuera) && apilado.roma === 'FCO 11:15' && !apilado.cortado && apilado.cabe, '3 apilado', `en una tarjeta estrecha: «BCN 08:30 →» arriba y «FCO 11:15» debajo, entero: ${JSON.stringify(apilado)}`)
+    const estrecho = await medir()
+    debe(estrecho && estrecho.fuera === '08:30 BCN' && estrecho.roma === '11:15 FCO' && !estrecho.cortado, '3 estrecha', `en una tarjeta estrecha las dos horas siguen enteras: ${JSON.stringify(estrecho)}`)
     await a.captura(foto('billete_dias_03_estrecha'))
-    // En una tarjeta ancha, todo en una línea: «BCN 08:30 → FCO 11:15».
-    await a.evaluar("(() => { const c = document.querySelector('[data-llegada-dias]'); c.style.width = '372px'; c.style.maxWidth = '372px'; return true })()")
+    await a.evaluar("(() => { const c = document.querySelector('[data-billete=\"llegada\"]'); c.style.width = '372px'; c.style.maxWidth = '372px'; return true })()")
     await esp(800)
     const ancha = await medir()
-    debe(ancha && !ancha.fuera && /BCN 08:30 → FCO 11:15/.test(ancha.texto) && !ancha.cortado && ancha.cabe, '3 una línea', `en una tarjeta ancha, «BCN 08:30 → FCO 11:15» en una línea y entero: ${ancha && ancha.texto}`)
+    debe(ancha && ancha.fuera === '08:30 BCN' && ancha.roma === '11:15 FCO' && !ancha.cortado, '3 ancha', `en una tarjeta ancha, las dos horas enteras: ${JSON.stringify(ancha)}`)
     await a.captura(foto('billete_dias_03_ancha'))
-    await a.evaluar("(() => { const c = document.querySelector('[data-llegada-dias]'); c.style.width = ''; c.style.maxWidth = ''; return true })()")
+    await a.evaluar("(() => { const c = document.querySelector('[data-billete=\"llegada\"]'); c.style.width = ''; c.style.maxWidth = ''; return true })()")
     await esp(800)
     const vuelve = await medir()
-    debe(vuelve && vuelve.roma === 'FCO 11:15' && !vuelve.cortado && vuelve.cabe, '3 vuelve', `al volver al ancho de siempre (${vuelve && vuelve.ancho} px), la hora de Roma sigue entera: ${JSON.stringify(vuelve)}`)
+    debe(vuelve && vuelve.roma === '11:15 FCO' && !vuelve.cortado, '3 vuelve', `al volver al ancho de siempre (${vuelve && vuelve.ancho} px), la hora de Roma sigue entera: ${JSON.stringify(vuelve)}`)
     // El mismo código en cada sitio donde hay billete (DÍAS vuelta y HOY usan billeteDe).
     const cod = await a.evaluar(`import('/src/lib/billete.ts').then((m) => {
       const ruta = (o) => ({ arrivalFlightTime: '11:15', departureFlightTime: '18:05', origin: 'Madrid', ...o })

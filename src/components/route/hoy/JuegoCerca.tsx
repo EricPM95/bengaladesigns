@@ -1,3 +1,5 @@
+import { BOTON_ORO } from '../../ui/botonesOro'
+import { CruzDeHoja } from '../../ui/CruzDeHoja'
 import { createPortal } from 'react-dom'
 import { useCamaraViajeStore } from '../../../lib/camaraViaje'
 import { EstilosDelVisto } from '../../logros/visto/Hojas'
@@ -67,11 +69,7 @@ export function HojaLlegadaOculta({ sitio, onCerrar }: { sitio: SitioCerca; onCe
       <div className="relative mx-auto flex w-full max-w-[520px] flex-col gap-3 overflow-hidden px-[18px] pb-8 pt-3" style={{ borderRadius: '26px 26px 0 0', background: 'radial-gradient(120% 90% at 85% 0%,#3A3550 0%,#1C2230 60%)', color: '#FFFDF8', boxShadow: '0 -12px 34px -18px rgba(0,0,0,.5)', animation: 'vistoSheet .5s cubic-bezier(.2,.8,.2,1) both' }}>
         <span className="pointer-events-none absolute -right-[70px] -top-20 h-60 w-60 rounded-full" style={{ background: 'repeating-conic-gradient(rgba(243,213,154,.18) 0 7deg,transparent 7deg 20deg)', WebkitMaskImage: 'radial-gradient(circle,#000 20%,transparent 68%)', maskImage: 'radial-gradient(circle,#000 20%,transparent 68%)', animation: 'vistoRays 24s linear infinite' }} />
         <span className="self-center" style={{ width: 42, height: 4, borderRadius: 4, background: 'rgba(255,253,248,.25)' }} />
-        <button type="button" onClick={onCerrar} aria-label="Cerrar" className="absolute right-2.5 top-2.5 z-[2] flex h-11 w-11 items-center justify-center rounded-full border-0" style={{ background: 'rgba(255,253,248,.12)', color: '#FFFDF8' }}>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M6 6l12 12M18 6L6 18" />
-          </svg>
-        </button>
+        <CruzDeHoja onCerrar={onCerrar} oscura />
         <div className="relative flex items-start gap-3.5 pr-11">
           <span className="flex h-16 w-16 flex-none items-center justify-center">
             <span className="flex h-[46px] w-[46px] rotate-45 items-center justify-center rounded-xl" style={{ background: 'linear-gradient(140deg,#F7E6BE,#D9B86A 55%,#B8903E)', boxShadow: '0 0 22px rgba(243,213,154,.55),inset 0 1px 0 rgba(255,255,255,.6)' }}>
@@ -92,7 +90,7 @@ export function HojaLlegadaOculta({ sitio, onCerrar }: { sitio: SitioCerca; onCe
             useCamaraViajeStore.getState().abrir({ sitio: sitio.sitio, nombre: sitio.nombre, oculto: true })
           }}
           className="relative flex min-h-12 items-center justify-center gap-2 rounded-2xl"
-          style={{ background: 'linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A)', color: '#2A1D10', font: "700 14px 'Geist'", border: 'none' }}
+          style={{ ...BOTON_ORO, font: "700 14px 'Geist'", border: 'none' }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M4 8h3l2-3h6l2 3h3v11H4zM12 11a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z" />

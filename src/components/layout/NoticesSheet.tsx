@@ -15,6 +15,8 @@ import { FilaDeAviso, letraDeAviso, SIN_SELECCION, type SeleccionDeAvisos } from
 import { useFotosDePerfil } from '../../hooks/useFotosDePerfil'
 import { useViajeCompartido } from '../../store/useViajeCompartido'
 import { ICONOS_OPCION, OpcionTarjeta } from '../ui/HojaOpciones'
+import { CruzDeHoja } from '../ui/CruzDeHoja'
+import { TiradorDeHoja } from '../ui/TiradorDeHoja'
 
 const ETIQUETA: Record<AppNotice['kind'], string> = { error: 'Error', warning: 'Aviso', info: 'Información', friend: 'Amigos' }
 const ICONO_DE_TIPO: Record<AppNotice['kind'], NombreIcono> = { error: 'error', warning: 'alerta', info: 'info', friend: 'compartido' }
@@ -249,11 +251,7 @@ export function NoticesSheet({ items, onAction, onClose }: { items: AppNotice[];
                     Seleccionar
                   </button>
                 )}
-                <button className="zona-toque" type="button" onClick={cerrar} aria-label="Cerrar" data-campana-cerrar style={{ width: 36, height: 36, borderRadius: '50%', border: 'none', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1C2230', cursor: 'pointer' }}>
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
-                    <path d="M6 6l12 12M18 6L6 18" />
-                  </svg>
-                </button>
+                <CruzDeHoja enLinea onCerrar={cerrar} datos={{ 'data-campana-cerrar': '1' }} />
               </>
             )}
           </div>
@@ -321,7 +319,7 @@ export function NoticesSheet({ items, onAction, onClose }: { items: AppNotice[];
             transition: hojaVisible ? 'transform .35s cubic-bezier(0.2,0.8,0.2,1), visibility 0s' : 'transform .3s ease-in, visibility 0s .3s',
           }}
         >
-          <span aria-hidden="true" style={{ display: 'block', width: 44, height: 4, borderRadius: 2, background: 'rgba(28,34,48,.25)', margin: '0 auto' }} />
+          <TiradorDeHoja />
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {todosLeidos ? (
               <OpcionTarjeta tono="arena" icono={ICONOS_OPCION.campana} titulo="Marcar como no leído" linea="Vuelven a salir como nuevos" datos="no-leido" onClick={() => marcar(false)} />

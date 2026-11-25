@@ -31,6 +31,7 @@ try {
       if (${JSON.stringify(yo)} !== 'eric') { sessionStorage.setItem('trazo:invitado', '1'); sessionStorage.setItem('trazo:permiso', 'recomendar') }
       for (const [m, n] of [['store/useViajeCompartido.ts', 'useViajeCompartido']]) {
         const urls = [...new Set(performance.getEntriesByType('resource').map((e) => e.name).filter((x) => x.includes(m)))]
+        if (!urls.length) urls.push('/src/' + m)
         for (const u of urls) { const st = (await import(/* @vite-ignore */ u))[n]; st.setState({ cargar: async () => {} }); st.getState().poner({ gente: g }) }
       }
       return true
@@ -38,6 +39,7 @@ try {
   const poner = (modulo_, nombre, estado) =>
     ev(`(async () => {
       const urls = [...new Set(performance.getEntriesByType('resource').map((e) => e.name).filter((x) => x.includes(${JSON.stringify(modulo_)})))]
+      if (!urls.length) urls.push('/src/' + ${JSON.stringify(modulo_)}) // (Noche final) el buffer de recursos de Chrome (250) ya no guarda los módulos tardíos: se importa directo
       for (const u of urls) { const st = (await import(/* @vite-ignore */ u))[${JSON.stringify(nombre)}]; st.setState({ cargar: async () => {}, ...${JSON.stringify(estado)} }) }
       return true
     })()`)

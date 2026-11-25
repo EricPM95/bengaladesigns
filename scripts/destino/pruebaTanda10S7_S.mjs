@@ -188,7 +188,7 @@ try {
   // — E1: la entrada reservada sin billete —
   let f1 = await fila()
   // antes → ahora → decisión de Eric (10S8, 31-oct): E1 con «Desde el PDF…» → sin esa línea (Design no la lleva).
-  debe(f1 && f1.estado === 'sin-billete' && f1.anadir === '+Sube tu entrada' && f1.ayuda === null, 'E1', `la entrada sin billete lleva [+ Sube tu entrada] (V45: de borde), sin línea de ayuda (${JSON.stringify(f1)})`)
+  debe(f1 && f1.estado === 'sin-billete' && f1.anadir === 'Sube tu entrada' && f1.ayuda === null, 'E1', `la entrada sin billete lleva [+ Sube tu entrada] (V45: de borde), sin línea de ayuda (${JSON.stringify(f1)})`)
   // antes → ahora → decisión de Eric (10S8, 31-oct): sin billete la tarjeta lleva los dos lápices y la papelera, y ningún botón del código.
   debe(f1 && !f1.botonesTarjeta.includes('CODIGO') && f1.botonesTarjeta.length === 2 /* (10S9b) antes → ahora → decisión de Eric (10S9, 1-nov): sin documento un solo lápiz arriba; los botones son «entrada-arriba» y «entrada», ya no 3 */, 'L2', `sin billete, la tarjeta no lleva código (${JSON.stringify(f1?.botonesTarjeta)})`)
   await ev(`document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"]')?.scrollIntoView({ block: 'center' }); true`)
@@ -213,7 +213,7 @@ try {
 
 
   // antes → ahora → decisión de Eric (10S9b, 1-nov): antes la hora de la hoja «Añadir» se ponía sola (rueda siempre abierta) → ahora la casilla sale con un ejemplo en gris, la hora no cuenta hasta elegirla (se abre la hoja de la hora y el ✓ guarda lo que se ve).
-  await ev(`(async () => { const c = document.querySelector('[data-campo-de-hora="anadir"]'); if (!c) return false; if (c.getAttribute('data-vacia') === '1') { c.click(); await new Promise((r) => setTimeout(r, 600)); document.querySelector('[data-hoja-de-hora-guardar]')?.click(); await new Promise((r) => setTimeout(r, 500)) } return true })()`)
+  await ev(`(async () => { const c = document.querySelector('[data-campo-de-hora="anadir"]'); if (!c) return false; if (c.getAttribute('data-vacia') === '1') { c.click(); await new Promise((r) => setTimeout(r, 600)); /* (V49) el ✓ no inventa la hora: se elige una en la rueda */ (() => { const os = Array.from(document.querySelectorAll('[data-hoja-de-hora] [role="option"]')); (os.find((x) => /^10/.test(x.textContent.trim())) ?? os.at(-1))?.click() })(); await new Promise((r) => setTimeout(r, 300)); document.querySelector('[data-hoja-de-hora-guardar]')?.click(); await new Promise((r) => setTimeout(r, 500)) } return true })()`)
   await a.hasta("(() => { const b = document.querySelector('[data-guardar-reserva]'); return Boolean(b) && !b.disabled })()", { segundos: 30 })
   await ev(`document.querySelector('[data-guardar-reserva]')?.click(); true`)
   await a.hasta("!document.querySelector('#add-reservation-heading')", { segundos: 30 })

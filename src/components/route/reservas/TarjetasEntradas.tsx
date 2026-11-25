@@ -3,6 +3,7 @@ import { Icono } from '../../ui/Icono'
 import { BotonCodigoDeEntrada } from './EntradaConBillete'
 import type { Stop } from '../../../lib/types'
 import { useFotoDeParada } from '../hoy/v2/useFotoDeParada'
+import { DORADO } from '../../ui/botonesOro'
 
 /**
  * (10S6) Las tarjetas del bloque «Entradas y Free Tour», exactamente como Design `Piezas/Entradas Lista` (L1 y L2):
@@ -134,7 +135,7 @@ export function TarjetaPorReservar({
             style={
               delGrupo
                 ? { background: '#1C2230', color: '#F3D88F', boxShadow: 'inset 0 0 0 1.2px rgba(233,199,122,.6)', font: "700 13px/1.1 'Geist'" }
-                : { background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510', font: "700 14px 'Geist'", boxShadow: 'inset 0 1px 0 rgba(255,255,255,.55),0 8px 16px -12px rgba(110,80,24,.7)' }
+                : { background: DORADO, color: '#4A3510', font: "700 14px 'Geist'", boxShadow: 'inset 0 1px 0 rgba(255,255,255,.55),0 8px 16px -12px rgba(110,80,24,.7)' }
             }
           >
             {buyLabel}

@@ -31,17 +31,18 @@ import { useHistoriaDeParada, type HistoriaDeParada } from './useHistoriaDeParad
 import { etiquetaDePedazos, nombreDePedazos, piezaDeParada, usePedazosDeParada } from './usePedazosDeParada'
 import { fotoDeParada } from '../../../logros/visto/VistoFlujo'
 import { TuEntradaEnHoy } from '../TuEntradaEnHoy'
-import { HojaV2 } from './HojasV2'
+import { Cruz, HojaV2 } from './HojasV2'
 import { ParadaFotoDeParada } from './ParadaFoto'
 import { useFotoDeParada } from './useFotoDeParada'
 import { ExtraDeParada } from './ExtraDeParada'
-import { BotonCambiarPlan } from './CambiarPlan'
+import { BotonCambiarPlan, D_RELOJ, Opcion } from './CambiarPlan'
 import { AvisoMasTiempo } from './MasTiempo'
 import { BOTON_CLARO, BOTON_ORO, DORADO } from '../../../ui/botonesOro'
 import { HojaActivaUbicacion } from './HojaActivaUbicacion'
 import { desdeDonde, type ZonaUbicacion } from '../../../../lib/ubicacionHoy'
 import { estadoDelHorario, type TonoDeCaja } from '../../../../lib/horarioDeLaCaja'
 import { InsigniaPartes } from '../../../logros/dibujos/InsigniaPartes'
+import { Etiqueta, RecuadroDePuntos } from '../piezas'
 
 /** Los colores del diseño «Hoy Estados» (apartado 04): tinta, marfil, oro. */
 const TINTA = '#1C2230'
@@ -144,11 +145,12 @@ function FotoDeLaParada({ parada, ciudad, dateIso, alto, children }: { parada: S
   )
 }
 
-const PILDORA_FOTO = { background: 'rgba(28,34,48,.5)', border: '1px solid rgba(255,255,255,.28)', backdropFilter: 'blur(10px)', color: '#fff' } as const
-const NOMBRE_SOBRE_FOTO = { font: "400 38px/1 'Instrument Serif',serif", color: '#fff', textShadow: '0 2px 16px rgba(0,0,0,.55)', textWrap: 'balance' as never }
+/** (Noche 24-25 nov; Design «Parada Tarjeta» T1-T3) La tarjeta de la parada: esquinas de 28, fondo marfil claro, filo finito y sombra suave. */
+const TARJETA_PARADA = { background: '#FFFDF8', border: '1px solid rgba(28,34,48,.07)', boxShadow: '0 20px 34px -24px rgba(28,34,48,.5)' } as const
+const PILDORA_FOTO = { background: 'rgba(28,34,48,.55)', color: '#FFFDF8' } as const
+const NOMBRE_SOBRE_FOTO = { font: "400 34px/1 'Instrument Serif',serif", color: '#FFFDF8', textShadow: '0 2px 16px rgba(0,0,0,.55)', textWrap: 'balance' as never }
 const BOTON_ORO_A = BOTON_ORO
-const BOTON_BLANCO_A = { background: '#fff', border: '1px solid rgba(28,34,48,.2)', color: TINTA }
-const BOTON_ICONO = { background: 'linear-gradient(180deg,#FFFDF8,#F3EBDB)', border: '1px solid rgba(181,138,46,.4)', boxShadow: 'inset 0 1px 0 #fff,0 6px 10px -8px rgba(110,80,24,.5)' }
+const BOTON_BLANCO_A = { background: '#FFFDF8', border: '1px solid rgba(28,34,48,.18)', color: TINTA }
 
 /** «9:30–16:45»: del primer tramo que abre al último que cierra (null si no hay horario o ese día no abre). */
 export function rangoDeHorario(h: HorarioDeParada | null): string | null {
@@ -222,13 +224,15 @@ const COLOR_CAJA: Record<TonoDeCaja | 'gris', string> = { negro: '#1C2230', verd
  */
 function CajaDeParada({ icono, etiqueta, grande, tono = 'negro', sub, subTono = 'gris', dato, extra, datos }: { icono: Parameters<typeof Icono>[0]['nombre']; etiqueta: string; grande: string; tono?: TonoDeCaja; sub: string; subTono?: TonoDeCaja | 'gris'; dato: string; extra?: ReactNode; datos?: Record<string, string | undefined> }) {
   return (
-    <div data-caja-parada={dato} {...datos} className="flex min-h-[98px] min-w-0 flex-col gap-1 rounded-2xl px-2 py-2.5" style={{ background: '#F6F0E2' }}>
-      <span className="flex items-center gap-1" style={{ color: '#6F4E37' }}>
-        <Icono nombre={icono} size={12} grosor={1.9} />
-        <span style={{ font: "700 9.5px 'Geist Mono',monospace", letterSpacing: '.1em' }}>{etiqueta}</span>
+    <div data-caja-parada={dato} {...datos} className="flex min-h-[98px] min-w-0 flex-col gap-1.5 rounded-[18px] px-2.5 pb-3 pt-[11px]" style={{ background: '#F7F1E4' }}>
+      <span className="flex items-center gap-[5px]" style={{ color: '#6F4E37' }}>
+        <span style={{ color: '#6E5018', display: 'flex', flex: 'none' }}>
+          <Icono nombre={icono} size={15} grosor={1.9} />
+        </span>
+        <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.08em' }}>{etiqueta}</span>
       </span>
-      <b data-caja-grande className="whitespace-nowrap text-[14.5px] leading-[1.15]" style={{ color: COLOR_CAJA[tono] }}>{grande}</b>
-      <span data-caja-sub className="text-[11px] font-medium leading-[1.25]" style={{ color: COLOR_CAJA[subTono] }}>{sub}</span>
+      <b data-caja-grande className="whitespace-nowrap font-bold leading-[1.15]" style={{ color: COLOR_CAJA[tono], fontSize: grande.length > 8 ? 14 : 15 }}>{grande}</b>
+      <span data-caja-sub className="text-[11px] font-medium leading-[1.3]" style={{ color: COLOR_CAJA[subTono] }}>{sub}</span>
       {extra}
     </div>
   )
@@ -236,9 +240,9 @@ function CajaDeParada({ icono, etiqueta, grande, tono = 'negro', sub, subTono = 
 
 function BotonIcono({ icono, etiqueta, dato, onClick, oro = false, candado = false, texto }: { icono: Parameters<typeof Icono>[0]['nombre']; etiqueta: string; dato: string; onClick: () => void; oro?: boolean; candado?: boolean; /** (V47) El nombre debajo del icono («Qué ver», «Escuchar historia», «Hacer foto»). */ texto?: string }) {
   return (
-    <button type="button" onClick={onClick} aria-label={etiqueta} data-hoy-icono={dato} className={`relative flex min-w-0 flex-1 items-center justify-center rounded-[18px] ${texto ? 'h-[72px] flex-col gap-1' : 'h-[60px]'}`} style={oro ? BOTON_ORO : { ...BOTON_ICONO, color: TINTA }}>
-      <Icono nombre={icono} size={texto ? 22 : 26} grosor={1.6} />
-      {texto && <span data-boton-nombre className="px-1 text-center text-[12px] font-bold leading-[1.1]">{texto}</span>}
+    <button type="button" onClick={onClick} aria-label={etiqueta} data-hoy-icono={dato} className={`relative flex min-w-0 flex-1 items-center justify-center rounded-[18px] ${texto ? 'h-[78px] flex-col gap-[7px]' : 'h-[60px]'}`} style={oro ? BOTON_ORO : BOTON_CLARO}>
+      <Icono nombre={icono} size={texto ? 24 : 26} grosor={1.8} />
+      {texto && <span data-boton-nombre className="px-1 text-center text-[12.5px] font-bold leading-[1.15]">{texto}</span>}
       {candado && (
         <span className="absolute right-1.5 top-1.5 flex h-[18px] w-[18px] items-center justify-center rounded-full" style={{ background: TINTA, color: ORO_CLARO }}>
           <Icono nombre="candado" size={10} grosor={2.2} />
@@ -248,30 +252,30 @@ function BotonIcono({ icono, etiqueta, dato, onClick, oro = false, candado = fal
   )
 }
 
+/** El círculo con la chincheta del recuadro de la ubicación (T1: 32 px, fondo #F3E3B2). */
+function IconoDeUbicacion() {
+  return (
+    <span aria-hidden="true" className="flex h-8 w-8 flex-none items-center justify-center rounded-full" style={{ background: '#F3E3B2' }}>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E5018" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 21s-6-5.5-6-10a6 6 0 0 1 12 0c0 4.5-6 10-6 10zM12 8.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z" />
+      </svg>
+    </span>
+  )
+}
+
 /** La hoja «Más tiempo aquí» con +15 y +30 (H3b). */
 function HojaMasTiempo({ onElegir, onCerrar }: { onElegir: (min: 15 | 30) => void; onCerrar: () => void }) {
   return (
     <HojaV2 onCerrar={onCerrar} etiqueta="Más tiempo aquí" fondo={MARFIL}>
       <div className="flex items-center justify-between" data-hoy-mas-tiempo>
         <span style={{ font: "400 30px/1 'Instrument Serif',serif" }}>Más tiempo aquí</span>
-        <button type="button" onClick={onCerrar} aria-label="Cerrar" className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-[#1C2230]/8">
-          <Icono nombre="cerrar" size={15} grosor={2} />
-        </button>
+        <Cruz onClick={onCerrar} />
       </div>
       {([
         [15, '+15 min', 'Un poco más, sin prisa'],
         [30, '+30 min', 'Un buen rato más, sin prisa'],
       ] as const).map(([min, titulo, sub]) => (
-        <button key={min} type="button" onClick={() => onElegir(min)} data-hoy-mas-tiempo-opcion={min} className="flex items-center gap-3.5 rounded-[22px] py-3 pl-3 pr-3.5 text-left" style={{ background: '#FFFDF8', border: '1px solid rgba(181,138,46,.4)' }}>
-          <span className="flex h-[52px] w-[52px] flex-none items-center justify-center rounded-2xl" style={{ background: '#F3E3B2', color: '#4A3510' }}>
-            <Icono nombre="reloj" size={24} grosor={1.8} />
-          </span>
-          <span className="flex flex-1 flex-col gap-0.5">
-            <span style={{ font: "400 22px/1.1 'Instrument Serif',serif" }}>{titulo}</span>
-            <span className="text-[13.5px] leading-[1.3] text-[#1C2230]/60">{sub}</span>
-          </span>
-          <Icono nombre="adelante" size={16} grosor={2} />
-        </button>
+        <Opcion key={min} dato={`mas-tiempo-${min}`} d={D_RELOJ} titulo={titulo} sub={sub} onClick={() => onElegir(min)} datos={{ 'data-hoy-mas-tiempo-opcion': String(min) }} />
       ))}
     </HojaV2>
   )
@@ -378,19 +382,19 @@ export function TarjetaParada(p: PropsParada) {
   if (aqui) {
     return (
       <>
-        <div data-hoy-siguiente data-hoy-estado="aqui" data-tarjeta="clara" className="flex-none overflow-hidden rounded-[30px]" style={{ background: '#FFFDF8', boxShadow: '0 24px 40px -26px rgba(28,34,48,.55)' }}>
-          <FotoDeLaParada parada={siguiente} ciudad={day.city} dateIso={dateIso} alto={236}>
-            <div className="absolute inset-x-5 bottom-4 flex flex-col gap-[9px]">
-              <span data-hoy-insignia className="flex h-[30px] items-center gap-2 self-start rounded-full pl-[11px] pr-3.5" style={{ ...PILDORA_FOTO, font: "700 11.5px 'Geist Mono',monospace", letterSpacing: '.14em' }}>
-                <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#5BD07A', animation: 'hoyYaPulse 2s infinite' }} />
+        <div data-hoy-siguiente data-hoy-estado="aqui" data-tarjeta="clara" className="flex-none overflow-hidden rounded-[28px]" style={TARJETA_PARADA}>
+          <FotoDeLaParada parada={siguiente} ciudad={day.city} dateIso={dateIso} alto={170}>
+            <div className="absolute inset-x-[18px] bottom-3.5 flex flex-col gap-[9px]">
+              <span data-hoy-insignia className="flex h-7 items-center gap-2 self-start rounded-full px-[13px]" style={{ ...PILDORA_FOTO, font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em' }}>
+                <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#4CC46E', animation: 'hoyYaPulse 2s infinite' }} />
                 YA ESTÁS AQUÍ
               </span>
-              <button type="button" onClick={p.onQueVasAVer} data-hoy-titulo aria-label={`Qué vas a ver en ${nombre}`} className="text-left" style={{ ...NOMBRE_SOBRE_FOTO, font: "400 40px/1 'Instrument Serif',serif" }}>
+              <button type="button" onClick={p.onQueVasAVer} data-hoy-titulo aria-label={`Qué vas a ver en ${nombre}`} className="text-left" style={NOMBRE_SOBRE_FOTO}>
                 {nombre}
               </button>
             </div>
           </FotoDeLaParada>
-          <div className="flex flex-col gap-3.5 px-4 pb-4 pt-[18px]">
+          <div className="flex flex-col gap-3 px-3.5 pb-[18px] pt-3.5">
             {/* (V47) Las mismas tres cajas que antes de llegar; en la de minutos, «Aquí · Ya has llegado». */}
             <div data-hoy-cajas className="grid grid-cols-3 gap-2">
               <CajaDeParada dato="horario" icono="reloj" etiqueta="HORARIO" grande={estadoH.grande} tono={estadoH.tono} sub={estadoH.sub} subTono={estadoH.subTono} datos={{ 'data-hoy-horario': estadoH.caso }} />
@@ -398,24 +402,24 @@ export function TarjetaParada(p: PropsParada) {
               <CajaDeParada dato="visita" icono="arena" etiqueta="VISITA" grande={minutosVisita} sub="Lo que recomendamos" datos={{ 'data-hoy-visita': '1' }} />
             </div>
             {cierraEn != null && cierraEn < 45 && (
-              <span data-hoy-cierra-pronto className="inline-flex h-8 min-w-0 items-center gap-1.5 self-start whitespace-nowrap rounded-full pl-2 pr-2.5 text-[12px] font-semibold" style={{ background: '#FBE6E2', border: '1px solid #E5766B', color: '#8A2A1F' }}>
+              <Etiqueta tono="rojo" grande datos={{ 'data-hoy-cierra-pronto': '1' }} className="self-start">
                 <Icono nombre="alerta" size={14} grosor={1.9} />
                 Cierra en {cierraEn} min
-              </span>
+              </Etiqueta>
             )}
             {pedazos && (
-              <div data-hoy-pedazos className="flex items-center gap-3 rounded-[20px] px-3.5 py-3" style={{ background: 'linear-gradient(135deg,#FBF1D2,#F2DEA6)', border: '1px solid #D2B26A' }}>
+              <div data-hoy-pedazos className="flex items-center gap-3 rounded-[18px] px-3.5 py-3" style={{ background: 'linear-gradient(135deg,#FFF4D2,#F1DC9C 60%,#E3C77E)', border: '1px solid rgba(181,138,46,.65)', boxShadow: '0 10px 18px -14px rgba(110,80,24,.8)' }}>
                 {/* (V47) El icono es el trozo de ESE sitio, en color, sobre su círculo blanco (la misma pieza que se gana al terminar); sin ids del servidor, la estrella de siempre. */}
                 {pieza ? (
-                  <span data-hoy-pedazo-icono={pieza.coleccion} className="flex h-[46px] w-[46px] flex-none items-center justify-center rounded-full" style={{ background: '#fff', border: '2px solid #1C2230' }}>
-                    <InsigniaPartes coleccion={pieza.coleccion} ganados={[pieza.sitio]} tam={36} />
+                  <span data-hoy-pedazo-icono={pieza.coleccion} className="flex h-[44px] w-[44px] flex-none items-center justify-center rounded-full" style={{ background: '#fff', border: '2px solid #1C2230' }}>
+                    <InsigniaPartes coleccion={pieza.coleccion} ganados={[pieza.sitio]} tam={34} />
                   </span>
                 ) : (
                   <Icono nombre="estrella" size={20} grosor={1.8} style={{ color: '#8E6820', flex: 'none' }} />
                 )}
-                <span className="flex min-w-0 flex-1 flex-col gap-0.5" style={{ color: '#5A3E0C' }}>
-                  <span data-hoy-pedazos-etiqueta style={{ font: "700 10px 'Geist Mono',monospace", letterSpacing: '.12em', textTransform: 'uppercase' }}>{etiquetaDePedazos(pedazos)}</span>
-                  <span data-hoy-pedazos-nombre style={{ font: "400 19px/1.15 'Instrument Serif',serif" }}>{nombreDePedazos(pedazos)}</span>
+                <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                  <span data-hoy-pedazos-etiqueta style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.1em', textTransform: 'uppercase', color: '#6F4E37' }}>{etiquetaDePedazos(pedazos)}</span>
+                  <span data-hoy-pedazos-nombre style={{ font: "400 20px/1.1 'Instrument Serif',serif", color: '#2A1D0A' }}>{nombreDePedazos(pedazos)}</span>
                 </span>
               </div>
             )}
@@ -428,15 +432,15 @@ export function TarjetaParada(p: PropsParada) {
             </div>
             {verEntrada && reservaSiguiente && <TuEntradaEnHoy route={route} reserva={reservaSiguiente} />}
             <div className="flex gap-[9px]">
-              <button type="button" onClick={p.onTerminado} data-boton-visto data-hoy-he-terminado className="flex h-[52px] flex-[1.1] items-center justify-center gap-[7px] whitespace-nowrap rounded-2xl text-[14.5px] font-bold text-white" style={{ background: 'linear-gradient(180deg,#3F9A5C,#2B7F45)', border: '1px solid #1F6236', boxShadow: 'inset 0 1px 0 rgba(255,255,255,.3),0 10px 16px -10px rgba(31,98,54,.8)' }}>
+              <button type="button" onClick={p.onTerminado} data-boton-visto data-hoy-he-terminado className="flex h-[50px] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-2xl text-[14.5px] font-bold text-white" style={{ background: 'linear-gradient(180deg,#3E9A5E,#2B7F45)', boxShadow: '0 10px 16px -12px rgba(30,100,60,.8),inset 0 1px 0 rgba(255,255,255,.25)' }}>
                 <Icono nombre="hecho" size={17} grosor={2.4} />
                 He terminado
               </button>
-              <button type="button" onClick={() => setHojaTiempo(true)} data-hoy-necesito-mas-tiempo className="flex h-[52px] flex-1 items-center justify-center whitespace-nowrap rounded-2xl text-[13.5px] font-semibold" style={BOTON_BLANCO_A}>
+              <button type="button" onClick={() => setHojaTiempo(true)} data-hoy-necesito-mas-tiempo className="flex h-[50px] flex-1 items-center justify-center whitespace-nowrap rounded-2xl text-[14px] font-bold" style={BOTON_BLANCO_A}>
                 Necesito más tiempo
               </button>
             </div>
-            <button type="button" onClick={p.onSaltar} data-hoy-saltar-parada className="-mt-0.5 flex min-h-11 items-center justify-center gap-1.5 text-[12.5px] font-semibold underline underline-offset-[3px]" style={{ color: ORO_TEXTO }}>
+            <button type="button" onClick={p.onSaltar} data-hoy-saltar-parada className="-mt-0.5 flex min-h-11 items-center justify-center gap-[5px] text-[13.5px] font-semibold underline underline-offset-[3px]" style={{ color: '#6E5018' }}>
               <Icono nombre="adelante" size={14} grosor={2} />
               Saltar parada
             </button>
@@ -455,14 +459,14 @@ export function TarjetaParada(p: PropsParada) {
   const subCaja = zona === 'fuera' ? 'Estás lejos' : zona === 'ruta' ? 'Desde ti' : desdeDonde(origenDelPlan, !p.casa)
   return (
     <>
-      <div data-hoy-siguiente data-hoy-estado="llegar" data-tarjeta="clara" className="flex-none overflow-hidden rounded-[30px]" style={{ background: '#FFFDF8', boxShadow: '0 24px 40px -26px rgba(28,34,48,.55)' }}>
+      <div data-hoy-siguiente data-hoy-estado="llegar" data-tarjeta="clara" className="flex-none overflow-hidden rounded-[28px]" style={TARJETA_PARADA}>
         <div onClick={p.onQueVasAVer} data-hoy-abrir-ficha="1">
-          <FotoDeLaParada parada={siguiente} ciudad={day.city} dateIso={dateIso} alto={210}>
-            <span data-hoy-insignia className="absolute left-4 top-4 flex h-[30px] items-center rounded-full px-3.5" style={{ ...PILDORA_FOTO, font: "700 11.5px 'Geist Mono',monospace", letterSpacing: '.14em' }}>{etiqueta}</span>
-            <span data-hoy-titulo className="absolute inset-x-5 bottom-4 text-left" style={NOMBRE_SOBRE_FOTO}>{nombre}</span>
+          <FotoDeLaParada parada={siguiente} ciudad={day.city} dateIso={dateIso} alto={140}>
+            <span data-hoy-insignia className="absolute left-3.5 top-3.5 flex h-7 items-center rounded-full px-[13px]" style={{ ...PILDORA_FOTO, font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em' }}>{etiqueta}</span>
+            <span data-hoy-titulo className="absolute inset-x-[18px] bottom-3.5 text-left" style={NOMBRE_SOBRE_FOTO}>{nombre}</span>
           </FotoDeLaParada>
         </div>
-        <div className="flex flex-col gap-3.5 px-4 pb-3.5 pt-4">
+        <div className="flex flex-col gap-3 px-3.5 pb-4 pt-3.5">
           {/* (V47) Tres cajas en una fila: HORARIO (según la hora real), A PIE / EN COCHE («Desde el alojamiento», «Desde el Panteón», «Desde ti») y VISITA (el tiempo que recomendamos). */}
           <div data-hoy-cajas className="grid grid-cols-3 gap-2">
             <CajaDeParada dato="horario" icono="reloj" etiqueta="HORARIO" grande={estadoH.grande} tono={estadoH.tono} sub={estadoH.sub} subTono={estadoH.subTono} datos={{ 'data-hoy-horario': estadoH.caso }} />
@@ -491,41 +495,47 @@ export function TarjetaParada(p: PropsParada) {
           )}
           {/* (V46) El recuadro de la ubicación («Estás lejos…» / «Sin tu ubicación…») va DEBAJO de las cajas y ENCIMA de «Escucha su historia» (dibujo T2 y T4). */}
           {zona === 'fuera' && (
-            <div data-hoy-lejos className="flex flex-col gap-1 rounded-2xl p-3" style={{ background: 'transparent', border: '1.5px dashed rgba(181,138,46,.5)' }}>
-              <span className="text-[13px] font-semibold leading-[1.3]" style={{ color: '#4A3510' }}>Estás lejos de {route.destination}. Cuando llegues, contaremos desde donde estés.</span>
-            </div>
+            <RecuadroDePuntos data-hoy-lejos className="flex-col gap-1">
+              <span className="flex items-center gap-2.5 text-[13px] font-medium leading-[1.35]" style={{ color: 'rgba(28,34,48,.75)' }}>
+                <IconoDeUbicacion />
+                Estás lejos de {route.destination}. Cuando llegues, contaremos desde donde estés.
+              </span>
+            </RecuadroDePuntos>
           )}
           {zona === 'sin' && (
-            <div data-hoy-sin-ubicacion className="flex flex-col gap-2.5 rounded-2xl p-3" style={{ background: 'transparent', border: '1.5px dashed rgba(181,138,46,.5)' }}>
-              <span className="text-[13px] font-semibold leading-[1.3]" style={{ color: '#4A3510' }}>Sin tu ubicación no sabemos cuándo llegas</span>
-              <div className="flex gap-2">
-                <button type="button" onClick={() => (p.ubicacionEstado === 'no' ? setHojaUbicacion(true) : p.pedirUbicacion())} disabled={p.ubicacionEstado === 'pidiendo'} data-hoy-usar-ubicacion className="flex h-11 flex-1 items-center justify-center rounded-2xl text-[13.5px] font-bold" style={BOTON_ORO}>
+            <RecuadroDePuntos data-hoy-sin-ubicacion className="flex-col gap-2.5">
+              <span className="flex items-center gap-2.5 text-[13px] font-medium leading-[1.35]" style={{ color: 'rgba(28,34,48,.75)' }}>
+                <IconoDeUbicacion />
+                Sin tu ubicación no sabemos cuándo llegas
+              </span>
+              <div className="flex gap-2.5">
+                <button type="button" onClick={() => (p.ubicacionEstado === 'no' ? setHojaUbicacion(true) : p.pedirUbicacion())} disabled={p.ubicacionEstado === 'pidiendo'} data-hoy-usar-ubicacion className="flex h-11 flex-1 items-center justify-center rounded-[14px] text-[14px] font-bold" style={BOTON_ORO}>
                   {p.ubicacionEstado === 'pidiendo' ? 'Buscando…' : 'Usar mi ubicación'}
                 </button>
-                <button type="button" onClick={() => setForzada(siguiente.id)} data-hoy-ya-he-llegado aria-label={`Ya he llegado a ${nombre}`} className="flex h-11 flex-1 items-center justify-center rounded-2xl text-[13.5px] font-bold" style={BOTON_CLARO}>
+                <button type="button" onClick={() => setForzada(siguiente.id)} data-hoy-ya-he-llegado aria-label={`Ya he llegado a ${nombre}`} className="flex h-11 flex-1 items-center justify-center whitespace-nowrap rounded-[14px] text-[14px] font-bold" style={BOTON_CLARO}>
                   Ya he llegado
                 </button>
               </div>
-            </div>
+            </RecuadroDePuntos>
           )}
           {/* (V44 §2) «Escucha su historia por el camino · 3 min», en azul oscuro DESDE EL PRINCIPIO: al darle al play solo cambia ▶ por ❚❚ y se mueven las ondas. */}
           {historia.hay && (
-            <button type="button" onClick={alEscuchar} data-hoy-escuchar-camino data-escuchar={historia.candado ? 'candado' : historia.estado} aria-label={historia.estado === 'hablando' ? 'Pausar la historia' : 'Escuchar su historia por el camino'} className="flex min-h-[58px] items-center gap-3 rounded-2xl px-3 text-left" style={{ background: TINTA, color: MARFIL }}>
+            <button type="button" onClick={alEscuchar} data-hoy-escuchar-camino data-escuchar={historia.candado ? 'candado' : historia.estado} aria-label={historia.estado === 'hablando' ? 'Pausar la historia' : 'Escuchar su historia por el camino'} className="flex min-h-[68px] items-center gap-3 rounded-[20px] py-3 pl-3 pr-3.5 text-left" style={{ background: 'linear-gradient(135deg,#232A3C,#1C2230)', color: '#FFFDF8', boxShadow: '0 14px 22px -16px rgba(28,34,48,.8)' }}>
               <style>{'@keyframes ondaV44{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}'}</style>
-              <span aria-hidden="true" className="flex h-10 w-10 flex-none items-center justify-center rounded-full" style={{ background: DORADO }}>
+              <span aria-hidden="true" className="flex h-11 w-11 flex-none items-center justify-center rounded-full" style={{ background: DORADO, boxShadow: '0 0 0 4px rgba(243,216,143,.18)' }}>
                 {historia.estado === 'hablando' ? (
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="#4A3510"><path d="M6 4h4v16H6zM14 4h4v16h-4z" /></svg>
                 ) : (
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="#4A3510"><path d="M8 5v14l11-7z" /></svg>
                 )}
               </span>
-              <span className="flex min-w-0 flex-1 flex-col text-[13px] font-semibold leading-[1.25]">
+              <span className="flex min-w-0 flex-1 flex-col gap-0.5 text-[14.5px] font-semibold leading-[1.2]">
                 <span>Escucha su historia por el camino</span>
-                <span className="text-[12px] font-medium opacity-70">{historia.minutos} min</span>
+                <span className="text-[12px] font-normal opacity-60">{historia.minutos} min</span>
               </span>
-              <span aria-hidden="true" className="flex h-5 flex-none items-center gap-[2.5px]">
-                {[8, 14, 10, 18, 12, 16, 9].map((h, i) => (
-                  <i key={i} style={{ display: 'block', width: 2.5, height: h, borderRadius: 2, background: ORO_CLARO, opacity: historia.estado === 'hablando' ? 1 : 0.55, transformOrigin: 'center', animation: historia.estado === 'hablando' ? `ondaV44 .9s ease-in-out ${i * 0.09}s infinite` : 'none' }} />
+              <span aria-hidden="true" className="flex h-7 flex-none items-center gap-[3px]">
+                {[10, 16, 8, 20, 12, 18, 9, 14, 20, 11].map((h, i) => (
+                  <i key={i} style={{ display: 'block', width: 3, height: h, borderRadius: 2, background: 'rgba(243,216,143,.55)', opacity: historia.estado === 'hablando' ? 1 : 0.9, transformOrigin: 'center', animation: historia.estado === 'hablando' ? `ondaV44 .9s ease-in-out ${i * 0.09}s infinite` : 'none' }} />
                 ))}
               </span>
               {historia.candado && <Icono nombre="candado" size={13} grosor={2} />}
@@ -533,12 +543,12 @@ export function TarjetaParada(p: PropsParada) {
           )}
           <div className="flex gap-[9px]">
             {comoLlegar ? (
-              <a href={comoLlegar} target="_blank" rel="noopener noreferrer" className="flex h-[50px] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-2xl text-[14.5px] font-bold no-underline" style={BOTON_ORO_A}>
-                <Icono nombre="localizar" size={17} grosor={1.9} />
+              <a href={comoLlegar} target="_blank" rel="noopener noreferrer" className="flex h-[52px] flex-[1.5] items-center justify-center gap-2 whitespace-nowrap rounded-2xl text-[15px] font-bold no-underline" style={BOTON_ORO_A}>
+                <Icono nombre="localizar" size={17} grosor={2} />
                 Cómo llegar
               </a>
             ) : (
-              <span className="flex h-[50px] flex-1 items-center justify-center rounded-2xl text-[14.5px] font-bold opacity-50" style={BOTON_ORO_A}>Cómo llegar</span>
+              <span className="flex h-[52px] flex-[1.5] items-center justify-center rounded-2xl text-[15px] font-bold opacity-50" style={BOTON_ORO_A}>Cómo llegar</span>
             )}
             {/* HOY2 (B): [Cambiar plan] sustituye a [No me da tiempo] (v2/CambiarPlan.tsx) */}
             <BotonCambiarPlan route={route} day={day} dateIso={dateIso} siguiente={siguiente} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMin} onSaltar={p.onSaltar} />
@@ -720,7 +730,7 @@ export function TuDia({ route, day, dateIso, paradas, siguienteId, reservaDe, ho
                     {displayStopName(s.name)}
                   </span>
                   {/* Solo llevan hora lo fijo (un turno o una reserva) y el atardecer. */}
-                  {hora && <span data-hoy-fila-hora="reserva" className="flex h-6 flex-none items-center rounded-full px-2 text-[11px] font-semibold" style={{ background: 'oklch(0.96 0.035 150)', border: '1px solid oklch(0.55 0.11 150 / .3)', color: 'oklch(0.3 0.08 150)' }}>{hora}</span>}
+                  {hora && <Etiqueta tono="verde" datos={{ 'data-hoy-fila-hora': 'reserva' }}>{hora}</Etiqueta>}
                   {!hora && alAtardecer && <span data-hoy-fila-hora="atardecer" className="text-[12px] font-semibold text-[#1C2230]/55" style={{ fontFamily: "'Geist Mono',monospace" }}>{horaDelSol}</span>}
                   {hecha && (
                     <span className="flex h-6 w-6 flex-none items-center justify-center rounded-full text-white" style={{ background: ORO }} aria-label="Hecha">

@@ -21,7 +21,7 @@ const sinComentarios = (t) => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:
 /* ───────────────────────── 1. El código ───────────────────────── */
 console.log('1. El código')
 const api = leer('src/lib/avisoPase.ts')
-debe(/export function abrirAvisoPase\(clave: string, opciones\?: \{ destino\?: string \}\): void/.test(api) && /if \(pagoActivo\(\)\) return/.test(api), 'api', 'abrirAvisoPase(clave, {destino}) existe y con pase no hace nada')
+debe(/export function abrirAvisoPase\(clave: string, opciones\?: \{ destino\?: string \}\): void/.test(api) && /if \(!avisoDelPaseSeEnsena\(clave\)\) return/.test(api) /* (V45) con pase (o, en un documento, mientras no se sabe) `avisoDelPaseSeEnsena` es falso: no hace nada */, 'api', 'abrirAvisoPase(clave, {destino}) existe y con pase no hace nada')
 const textos = leer('src/lib/avisoPaseTextos.ts')
 for (const c of ['segunda_foto', 'escuchar_historia', 'cerca_de_ti', 'banos', 'fuentes']) debe(new RegExp(`${c}: \\{`).test(textos), 'textos', `el archivo de textos tiene «${c}»`)
 debe(/Ya tienes tu foto de este sitio\./.test(textos) && /guarda fotos sin límite y haz crecer tu álbum de recuerdos\./.test(textos), 'textos', 'los dos textos de la segunda foto, los aprobados')

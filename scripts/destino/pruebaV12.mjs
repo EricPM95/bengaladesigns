@@ -107,10 +107,12 @@ console.log('2. El código')
   debe(/usePortadaDeViaje\(/.test(guardado) && !/urlParaMostrar\(fotos\[0\]\)/.test(guardado), 'portada', 'la portada de los recuerdos sigue la regla única de portada (V15), no la miniatura de la primera foto')
   const conX = [
     'src/components/layout/NewTripSheet.tsx', 'src/components/route/dayDetail/WantInsideDialog.tsx', 'src/components/route/freeDay/DayNameSheet.tsx', 'src/components/route/DatesChangeDialog.tsx',
-    'src/components/route/reservas/ReservedMarks.tsx', 'src/components/ui/HojaDeHora.tsx', 'src/components/route/DateNoticesModal.tsx', 'src/components/route/SeasonCard.tsx',
+    'src/components/route/reservas/ReservedMarks.tsx', 'src/components/route/DateNoticesModal.tsx', 'src/components/route/SeasonCard.tsx',
     'src/components/propuesta/PropuestaEnviada.tsx', 'src/components/logros/momentos/ResumenDia.tsx', 'src/components/logros/momentos/PrimerDia.tsx', 'src/components/logros/pantallas/PasaporteScreen.tsx',
     'src/components/logros/momentos/ResumenViaje.tsx',
   ]
+  // (V50, 24-nov) La hoja de la hora (`HojaDeHora.tsx`) ya NO lleva X: se cierra tocando fuera o deslizando, sin guardar; solo la papelera y el ✓ cambian la hora.
+  debe(!/<CruzDeHoja /.test(leer('src/components/ui/HojaDeHora.tsx')), 'X', 'HojaDeHora.tsx no lleva X (V50)')
   for (const f of conX) debe(/<CruzDeHoja /.test(leer(f)), 'X', `${f.split('/').pop()} lleva su X`)
   const pas = leer('src/components/logros/pantallas/PasaporteScreen.tsx')
   debe((pas.match(/<CruzDeHoja /g) ?? []).length === 3, 'X', 'las 3 hojas del pasaporte (países, «Aún no has estado», «Tu sello aún no está») llevan X')

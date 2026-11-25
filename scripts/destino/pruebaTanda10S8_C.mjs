@@ -135,10 +135,10 @@ async function pasada(version) {
     let ida = await mitad('arrival')
     let vuelta = await mitad('departure')
     debe(ida && vuelta, 'base', 'la ida y la vuelta existen')
-    debe(ida.boton === '+Añade tu tarjeta de embarque' && vuelta.boton === '+Añade tu tarjeta de embarque', 'boton', `cada lado con su [+ Añade tu tarjeta de embarque] (V45: de borde) (${ida.boton} · ${vuelta.boton})`)
+    debe(ida.boton === 'Añade tu tarjeta de embarque' && vuelta.boton === 'Añade tu tarjeta de embarque', 'boton', `cada lado con su [+ Añade tu tarjeta de embarque] (V45: de borde) (${ida.boton} · ${vuelta.boton})`)
     debe(sin ? ida.candado === '1' && vuelta.candado === '1' && ida.candadoDibujado && vuelta.candadoDibujado : ida.candado === '0' && vuelta.candado === '0' && !ida.candadoDibujado && !vuelta.candadoDibujado, 'candado', sin ? 'sin pase: el candado dorado en su círculo azul noche en los dos botones' : 'con pase: nunca candado')
     debe(ida.papelera && vuelta.papelera && ida.papelera.w === 44 && ida.papelera.h === 44 && vuelta.papelera.w === 44, 'papelera', `cada lado con su papelera de 44 x 44 (${JSON.stringify(ida.papelera)})`)
-    debe(ida.papelera && ida.papelera.derecha <= 24 && ida.papelera.abajo <= 24, 'papelera', `la papelera abajo a la derecha (${JSON.stringify(ida.papelera)})`)
+    debe(ida.papelera && ida.papelera.derecha <= 24 && ida.papelera.abajo <= 56, 'papelera', `(V45, Design «Reservas Billete»: va en la MISMA fila que [+ Añade tu tarjeta…], por encima de la línea del pase) la papelera abajo a la derecha (${JSON.stringify(ida.papelera)})`)
     debe(/^oklch\(0\.52 0\.19 25\)$/.test(ida.papeleraColor ?? ''), 'papelera', `la papelera en rojo (${ida.papeleraColor})`)
     debe(!/Eliminar vuelo|Quitar entrada|Eliminar alojamiento/.test(ida.texto + vuelta.texto), 'papelera', 'fuera «Eliminar vuelo»')
     debe(ida.lapizArriba && ida.lapizArriba.w === 44 && ida.lapizArriba.h === 44 && vuelta.lapizArriba.w === 44, 'lapices', `el lápiz de arriba, 44 x 44 (${JSON.stringify(ida.lapizArriba)})`)
@@ -250,7 +250,7 @@ async function pasada(version) {
       await a.esp(150)
     }
     await a.esp(400)
-    await ev("(() => { const h = document.querySelector('[data-hoja-de-hora]'); const b = Array.from(h?.querySelectorAll('button') ?? []).find((x) => /Listo|Guardar|Aceptar|✓/.test(x.textContent || '') || x.getAttribute('aria-label') === 'Hecho'); b?.click(); return Boolean(b) })()")
+    await ev("(() => { const h = document.querySelector('[data-hoja-de-hora]'); const b = h?.querySelector('[data-hoja-de-hora-guardar]'); /* (V50) el ✓ es el único que guarda: Escape y tocar fuera cierran SIN guardar */ b?.click(); return Boolean(b) })()")
     await a.esp(500)
     // Si la rueda no se cerró con un botón, se cierra tocando fuera (guarda).
     if (await ev("Boolean(document.querySelector('[data-hoja-de-hora]'))")) {
@@ -338,7 +338,7 @@ async function pasada(version) {
       await subir(PNG)
       await a.hasta("Boolean(document.querySelector('[data-aviso-tarjeta=\"fecha\"]'))", { segundos: 60 }).catch(() => undefined)
       av = await ev("document.querySelector('[data-aviso-documento=\"fecha\"]')?.innerText.replace(/\\s+/g, ' ') ?? null")
-      debe(/^⚠ Esta tarjeta es del viernes 8 y tu vuelo es el [a-záéíóú]+ \d+\. Revisa que sea la buena\s*Es correcta$/.test(av ?? ''), 'pregunta-fecha', `el aviso de la fecha, DENTRO de la tarjeta (V45 §6) (${av})`)
+      debe(/^⚠ Esta tarjeta( de embarque)? es del viernes 8 y tu vuelo es el [a-záéíóú]+ \d+\. Revisa que sea la buena\s*Es correcta$/.test(av ?? ''), 'pregunta-fecha', `el aviso de la fecha, DENTRO de la tarjeta (V45 §6) (${av})`)
       debe((await ev("window.__ruta.getState().route.arrivalFlightTime")) === '11:25', 'pregunta-fecha', 'sin cambiar nada solo')
       await cap('10_aviso_fecha')
       await ev("document.querySelector('[data-aviso-documento-correcta]')?.click(); true")
@@ -350,7 +350,7 @@ async function pasada(version) {
     await ev("window.__billete.getState().quitar(null, 'arrival')")
     await a.esp(700)
     ida = await mitad('arrival')
-    debe(ida && ida.boton === '+Añade tu billete', 'b3', `tren: [+ Añade tu billete] (${ida?.boton})`)
+    debe(ida && ida.boton === 'Añade tu billete', 'b3', `tren: [+ Añade tu billete] (${ida?.boton})`)
     debe(ida && /Barcelona \(Sants\) → Roma \(Termini\)/.test(ida.trayecto ?? ''), 'b3', `el trayecto con la estación (${ida?.trayecto})`)
     if (sin) {
       await click('[data-blk="llegada"] [data-mitad="arrival"] [data-anadir-doc]')

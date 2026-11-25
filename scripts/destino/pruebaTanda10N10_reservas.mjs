@@ -117,7 +117,9 @@ try {
 
   /* ═══ 7b · el vuelo del administrador (con dos personas) ═══ */
   console.log('7b. Vuelo: pestañas, dinero debajo, un solo botón')
-  await clic('[data-llegada-vacia]')
+  // (V50) Sin vuelos, «Llegada y vuelta» es plegable como Alojamiento: se abre la cabecera (si no lo está) y se toca [Añadir mi vuelo], que abre la hoja «Tu vuelo» de siempre.
+  if (!(await ev("Boolean(document.querySelector('[data-anadir-mi-vuelo]'))"))) { await clic('[data-llegada-vacia]'); await a.esp(700) }
+  await clic('[data-anadir-mi-vuelo]')
   await a.esp(1200)
   let m = await medidas()
   debe(m.pestanas.length === 2 && /Ida/.test(m.pestanas[0]) && /Vuelta/.test(m.pestanas[1]), '7b', `pestañas Ida | Vuelta (${JSON.stringify(m.pestanas)})`)
@@ -151,6 +153,9 @@ try {
   // antes → ahora → decisión de Eric (10S9, 1-nov): antes la vuelta se guardaba con la hora de ejemplo (18:05) sin elegirla; ahora la hora hay que elegirla (el ejemplo en gris no cuenta): se elige con el ✓ de la rueda.
   await clic('[data-campo-de-hora="roma"]')
   await a.esp(500)
+  // (V49, 24-nov) «Nunca se guarda lo que el viajero no escribe»: con la hora vacía y la rueda sin tocar, el ✓ ya no inventa la hora de ejemplo; hay que elegirla en la rueda (aquí las 19).
+  await ev("(() => { const o = Array.from(document.querySelectorAll('[role=\"dialog\"] [data-rueda-columna=\"Horas\"] [role=\"option\"]')).find((x) => x.textContent.trim() === '19'); o?.click(); return true })()")
+  await a.esp(400)
   await clic('[data-hoja-de-hora-guardar]')
   await a.esp(500)
   // Dinero: 180 €, para los dos, lo pagó Eric.
@@ -324,7 +329,7 @@ try {
   await ev(`(() => { const hoja = document.querySelector('#add-reservation-heading')?.closest('[role="dialog"]'); const fichas = Array.from(hoja.querySelectorAll('[role="group"] button')).filter((b) => !b.disabled); (fichas[1] ?? fichas[0]).click(); return true })()`)
   await a.esp(1500)
   // (V45 §4) En grupo la hoja va en DOS pasos: 1) días y hora [Siguiente]; 2) «Casi lista» (¿A qué cuenta lo sumamos?, ¿Quién la ha pagado? solo con la cuenta conjunta, el precio y [Guardar…]).
-  await ev(`(async () => { const hoja = document.querySelector('#add-reservation-heading')?.closest('[role="dialog"]'); const c = hoja.querySelector('[data-campo-de-hora="anadir"]'); if (c && c.getAttribute('data-vacia') === '1') { c.click(); await new Promise((r) => setTimeout(r, 600)); document.querySelector('[data-hoja-de-hora-guardar]')?.click(); await new Promise((r) => setTimeout(r, 500)) } for (let i = 0; i < 30 && hoja.querySelector('[data-siguiente-paso]')?.disabled; i++) await new Promise((r) => setTimeout(r, 300)); hoja.querySelector('[data-siguiente-paso]')?.click(); return true })()`)
+  await ev(`(async () => { const hoja = document.querySelector('#add-reservation-heading')?.closest('[role="dialog"]'); const c = hoja.querySelector('[data-campo-de-hora="anadir"]'); if (c && c.getAttribute('data-vacia') === '1') { c.click(); await new Promise((r) => setTimeout(r, 600)); /* (V49) el ✓ no inventa la hora: se elige una en la rueda */ (() => { const os = Array.from(document.querySelectorAll('[data-hoja-de-hora] [role="option"]')); (os.find((x) => /^10/.test(x.textContent.trim())) ?? os.at(-1))?.click() })(); await new Promise((r) => setTimeout(r, 300)); document.querySelector('[data-hoja-de-hora-guardar]')?.click(); await new Promise((r) => setTimeout(r, 500)) } for (let i = 0; i < 30 && hoja.querySelector('[data-siguiente-paso]')?.disabled; i++) await new Promise((r) => setTimeout(r, 300)); hoja.querySelector('[data-siguiente-paso]')?.click(); return true })()`)
   await a.esp(1200)
   await ev("document.querySelector('[data-a-que-cuenta]')?.scrollIntoView({ block: 'center' }); true")
   await a.esp(500)
@@ -350,7 +355,7 @@ try {
   await ev(`(async () => {
     const hoja = document.querySelector('#add-reservation-heading')?.closest('[role="dialog"]')
     // antes → ahora → decisión de Eric (10S9b, 1-nov): antes la hora de la hoja «Añadir» se ponía sola (rueda siempre abierta) → ahora la casilla sale con un ejemplo en gris, la hora no cuenta hasta elegirla (se abre la hoja de la hora y el ✓ guarda lo que se ve).
-    { const c = hoja.querySelector('[data-campo-de-hora="anadir"]'); if (c && c.getAttribute('data-vacia') === '1') { c.click(); await new Promise((r) => setTimeout(r, 600)); document.querySelector('[data-hoja-de-hora-guardar]')?.click(); await new Promise((r) => setTimeout(r, 500)) } }
+    { const c = hoja.querySelector('[data-campo-de-hora="anadir"]'); if (c && c.getAttribute('data-vacia') === '1') { c.click(); await new Promise((r) => setTimeout(r, 600)); /* (V49) el ✓ no inventa la hora: se elige una en la rueda */ (() => { const os = Array.from(document.querySelectorAll('[data-hoja-de-hora] [role="option"]')); (os.find((x) => /^10/.test(x.textContent.trim())) ?? os.at(-1))?.click() })(); await new Promise((r) => setTimeout(r, 300)); document.querySelector('[data-hoja-de-hora-guardar]')?.click(); await new Promise((r) => setTimeout(r, 500)) } }
     // (V45 §4) En grupo la hoja va en dos pasos: [Siguiente] lleva al «Casi lista», donde está [Guardar…].
     { for (let i = 0; i < 30 && hoja.querySelector('[data-siguiente-paso]')?.disabled; i++) await new Promise((r) => setTimeout(r, 300)); const sg = hoja.querySelector('[data-siguiente-paso]'); if (sg) { sg.click(); await new Promise((r) => setTimeout(r, 900)) } }
     const g = hoja.querySelector('[data-guardar-reserva]')

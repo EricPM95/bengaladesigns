@@ -75,6 +75,11 @@ for (const f of fotos.fotos) {
     debe(['libre', 'revisar antes del lanzamiento'].includes(f.derechos) && !f.credito, 'F5', `${f.archivo}: foto de Eric sin crédito y con sus derechos`)
     continue
   }
+  // (V16b) Una foto con el PERMISO del autor (p. ej. Turismo de Haría) no es de Commons ni de licencia libre: lleva su autor, su permiso y el enlace a su web, y se enseña con su crédito.
+  if (f.derechos === 'con permiso del autor') {
+    debe(f.credito?.autor && f.credito?.licencia === 'con permiso del autor' && /^https:\/\//.test(f.credito?.enlace ?? '') && f.credito_texto, 'F5', `${f.archivo}: con permiso del autor, con su crédito y su enlace`)
+    continue
+  }
   debe(f.credito?.autor && f.credito?.licencia && /^https:\/\/commons\.wikimedia\.org\//.test(f.credito?.enlace ?? ''), 'F5', `${f.archivo}: sin crédito completo`)
   debe(LIBRE.test(f.credito?.licencia ?? ''), 'F6', `${f.archivo}: licencia no libre (${f.credito?.licencia})`)
 }

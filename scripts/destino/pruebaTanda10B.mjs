@@ -33,12 +33,13 @@ console.log('1. Lo que incluye el pase')
   const apartado = doc.slice(doc.indexOf('## EN EL PASE'), doc.indexOf('## MÁS ADELANTE'))
   const hechos = apartado.split('\n').filter((l) => /^\s*- /.test(l) && l.includes('✅')).map((l) => l.replace(/^\s*- /, '').replace(/\*\*/g, ''))
   debe(hechos.length >= 20, 'pase', `se leen ${hechos.length} líneas hechas (✅) en «EN EL PASE»`)
-  const norm = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+  // (V36c/V37, 21-nov) En los textos que ve la gente «sello» es «medalla» (el documento GRATIS_Y_PASE.md sigue diciendo «Los sellos de Roma…»): se comparan con la misma palabra.
+  const norm = (t) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\blos sellos\b/g, 'las medallas').replace(/\bsellos\b/g, 'medallas').replace(/\bsello\b/g, 'medalla')
   for (const linea of hechos) debe(vent.some((v) => norm(linea).startsWith(norm(v.origen))), 'pase', `«${linea.slice(0, 60)}» está en la lista`)
   for (const v of vent) debe(hechos.some((l) => norm(l).startsWith(norm(v.origen))), 'pase', `«${v.texto}» sale de una línea del documento (${v.origen})`)
   // Los logros y los resúmenes, cada cosa por separado (no «los logros» como una sola).
   const textos = vent.map((v) => v.texto).join(' | ')
-  debe(/sellos/i.test(textos) && /colecciones/i.test(textos) && /emblemas/i.test(textos) && /logros de viajero/i.test(textos) && /resumen de cada d/i.test(textos) && /resumen del viaje/i.test(textos), 'pase', 'los sellos, las colecciones, los emblemas, los logros de viajero y los dos resúmenes van cada uno en su línea')
+  debe(/medallas/i.test(textos) && /colecciones/i.test(textos) && /emblemas/i.test(textos) && /logros de viajero/i.test(textos) && /resumen de cada d/i.test(textos) && /resumen del viaje/i.test(textos), 'pase', 'los sellos, las colecciones, los emblemas, los logros de viajero y los dos resúmenes van cada uno en su línea')
   // El número del texto.
   debe(M.textoDeVentajas(21) === 'más de 20 ventajas' && M.textoDeVentajas(30) === 'más de 20 ventajas' && M.textoDeVentajas(32) === 'más de 20 ventajas' && M.textoDeVentajas(99) === 'más de 20 ventajas', 'numero', '21 o más: siempre «más de 20 ventajas» (también con 30 o más)')
   debe(M.textoDeVentajas(20) === '20 ventajas' && M.textoDeVentajas(12) === '12 ventajas' && M.textoDeVentajas(1) === '1 ventaja', 'numero', 'con menos de 21, el número exacto')

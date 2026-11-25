@@ -22,7 +22,7 @@ const ok = (cond, texto) => {
 const carpeta = fs.mkdtempSync(path.join(os.tmpdir(), 'prueba-6z2-'))
 async function cargar(entrada, nombre) {
   const salida = path.join(carpeta, `${nombre}.cjs`)
-  await build({ entryPoints: [entrada], outfile: salida, bundle: true, platform: 'node', format: 'cjs', logLevel: 'silent', define: { 'import.meta.env.DEV': 'false' } })
+  await build({ entryPoints: [entrada], outfile: salida, bundle: true, platform: 'node', format: 'cjs', logLevel: 'silent', define: { 'import.meta.env.DEV': 'false', 'import.meta.env.VITE_MAPBOX_TOKEN': '""' } })
   return require(salida)
 }
 const D = await cargar('src/lib/dinero.ts', 'dinero')
@@ -90,7 +90,7 @@ ok(r.bloques.map((b) => b.id).join() === 'transporte,ruta,util,extras', 'los cua
 ok(!lineas.some((l) => /Free Tour/.test(l.nombre)) && !lineas.some((l) => l.id === 'reserva-c'), 'el Free Tour no suma nunca (aunque tuviera un precio guardado)')
 ok(!lineas.some((l) => l.id === 'reserva-b'), 'lo reservado sin precio no sale (no es un gasto de 0)')
 ok(r.bloques.find((b) => b.id === 'ruta').lineas.map((l) => l.id).join() === 'reserva-d,reserva-a', 'la ruta, por fecha y con su día debajo')
-ok(r.bloques.find((b) => b.id === 'ruta').lineas[0].sub === 'Mar 13', 'el día de la línea, «Mar 13»')
+ok(r.bloques.find((b) => b.id === 'ruta').lineas[0].sub === 'Martes 13', 'el día de la línea, «Martes 13» (el nombre del día entero)')
 ok(r.bloques.every((b) => b.suma.amount === Math.round(b.lineas.reduce((s, l) => s + (l.enMonedaViajero?.amount ?? 0), 0) * 100) / 100), 'cada bloque suma exactamente sus líneas')
 ok(Math.abs(r.total.amount - r.bloques.reduce((s, b) => s + b.suma.amount, 0)) < 0.005, 'el total es la suma de los bloques')
 const taxi = lineas.find((l) => l.id === 'extra-e1')
@@ -99,8 +99,9 @@ ok(r.sinCambio.length === 1 && r.sinCambio[0].id === 'extra-e3', 'una moneda sin
 ok(r.bloques.find((b) => b.id === 'extras').suma.amount === Math.round((40 + 38.5) * 100) / 100, 'lo que no tiene cambio no se suma (los extras suman 40 + 38,50, sin los 10 XYZ)')
 ok(r.hayConversion === true, 'hay conversión (sale la línea «Cambio aproximado del …»)')
 const gratis = P.construirPresupuesto({ ...base, pago: false })
-ok(!gratis.bloques.flatMap((b) => b.lineas).some((l) => l.id === 'llegada'), 'sin lo de pago, el billete de llegada no cuenta')
-ok(gratis.total.amount === Math.round((esperado - 180) * 100) / 100, 'sin lo de pago, el total baja exactamente lo del billete')
+// (10S4, 30-oct) el precio del vuelo, tren, autobús y barco suma SIEMPRE, con pase y sin él: `pago` ya no condiciona los billetes.
+ok(gratis.bloques.flatMap((b) => b.lineas).some((l) => l.id === 'llegada'), 'sin lo de pago, el billete de llegada también cuenta (10S4)')
+ok(gratis.total.amount === esperado, 'sin lo de pago, el total es el mismo (10S4)')
 const vacio = P.construirPresupuesto({ ...base, route: { ...route }, reservations: [], accommodationSelections: {}, insuranceBooking: null, esimPrecios: {}, pago: true })
 ok(vacio.bloques.length === 0 && vacio.total.amount === 0 && vacio.sinCambio.length === 0, 'todo vacío: sin bloques y total 0')
 const mx = P.construirPresupuesto({ ...base, moneda: 'MXN', cambio: { fecha: '2026-10-09', tasas: { MXN: 20 } } })
@@ -137,6 +138,8 @@ console.log('Stay22 y código')
     const lineasCodigo = fs.readFileSync(archivo, 'utf8').split(/\r?\n/)
     lineasCodigo.forEach((linea, i) => {
       if (!linea.includes('€')) return
+      // (noche 24-nov) Dos usos que NO son un precio escrito a mano: `importesTexto.ts` (pasa «180 EUR» de un texto ya escrito a «180 €») y el signo «€» suelto del círculo dorado de la fila de precio de «Llegada y vuelta» (un icono de texto, sin cifra).
+      if (/importesTexto\.ts$/.test(archivo) || (/reservas[\\/]LlegadaYVuelta\.tsx$/.test(archivo) && /^\s*€\s*$/.test(linea))) return
       if (/^\s*(\/\/|\*|\/\*)/.test(linea)) return
       const sinSimbolosDeNivel = linea.replace(/['"]€{1,3}['"]/g, '').replace(/'€{1,3}'\s*\|/g, '')
       // los comentarios al final de la línea no cuentan

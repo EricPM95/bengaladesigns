@@ -115,7 +115,9 @@ for (const file of cliente) {
   if (/window\.open\(/.test(texto) && f !== 'src/components/route/reservas/EntradaCard.tsx') fail('window_open_sin_sellar', f)
   // (Tanda 10I: `location.replace('/')` —recargar la propia app en la raíz, como hace «Empezar de cero»— no abre ningún enlace ajeno: no hay nada que sellar.)
   const sinRecargaPropia = texto.replace(/(?:window\.)?location\.replace\(\s*'\/'\s*\)/g, '')
-  if (/location\.(assign|replace)\(|location\.href\s*=/.test(sinRecargaPropia) && !/shareUrl/.test(f)) fail('location_sin_sellar', f)
+  // (V32-V37, noche 24-nov) Navegaciones propias que no abren ningún enlace de venta: el «mailto:» de Contactar (AjustesScreen), las rutas del panel de administración (/admin/…: `panel/navegar.ts`, `Reportes.tsx`) y la redirección vieja de /?admin=logros a /admin/logros (`main.tsx`).
+  const NAVEGACION_PROPIA = /^src\/components\/ajustes\/AjustesScreen\.tsx$|^src\/components\/panel\/|^src\/main\.tsx$/
+  if (/location\.(assign|replace)\(|location\.href\s*=/.test(sinRecargaPropia) && !/shareUrl/.test(f) && !NAVEGACION_PROPIA.test(f)) fail('location_sin_sellar', f)
 }
 const entradaCard = fs.readFileSync('src/components/route/reservas/EntradaCard.tsx', 'utf8')
 if (!/window\.open\(withCampaign\(/.test(entradaCard)) fail('open_ticket_shop_sin_sellar', 'EntradaCard.tsx')

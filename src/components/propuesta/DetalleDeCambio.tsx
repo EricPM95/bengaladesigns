@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { detalleDelCambio, kilometrosDelRecorrido, textoDeKm, type CambioPropuesto, type MarcaDeParada, type ParadaDelDetalle } from '../../lib/propuesta'
 import type { Route } from '../../lib/types'
 import { colorDelCambio, COLORES_DE_CAMBIO, type DecisionDeFila } from './FilaDeCambio'
+import { DORADO } from '../ui/botonesOro'
 
 const TIPOS: Record<CambioPropuesto['tipo'], string> = {
   mover: 'ORDEN · EN EL MISMO DÍA',
@@ -159,7 +160,7 @@ export function DetalleDeCambio({
             <button type="button" data-detalle-rechazar disabled={ocupado} onClick={onRechazar} style={{ flex: 1, height: 50, borderRadius: 15, border: '1px solid rgba(28,34,48,.25)', background: 'transparent', font: "600 15px 'Geist'", color: '#1C2230', cursor: 'pointer', opacity: ocupado ? 0.6 : 1 }}>
               Rechazar
             </button>
-            <button type="button" data-detalle-aceptar disabled={ocupado} onClick={onAceptar} style={{ flex: 1.3, height: 50, borderRadius: 15, border: 'none', background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510', font: "700 15px 'Geist'", boxShadow: 'inset 0 1px 0 rgba(255,255,255,.55)', cursor: 'pointer', opacity: ocupado ? 0.6 : 1 }}>
+            <button type="button" data-detalle-aceptar disabled={ocupado} onClick={onAceptar} style={{ flex: 1.3, height: 50, borderRadius: 15, border: 'none', background: DORADO, color: '#4A3510', font: "700 15px 'Geist'", boxShadow: 'inset 0 1px 0 rgba(255,255,255,.55)', cursor: 'pointer', opacity: ocupado ? 0.6 : 1 }}>
               Aceptar
             </button>
           </>

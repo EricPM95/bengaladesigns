@@ -1,3 +1,4 @@
+import { BOTON_ORO } from '../../../ui/botonesOro'
 import type { Route } from '../../../../lib/types'
 import { addDaysToIso, formatHeaderDateRangeShortEs, formatWeekdayAbbrEs, isoToLocalDate, todayIso } from '../../../../lib/dateRange'
 import { logrosActivos } from '../../../../lib/logros'
@@ -103,7 +104,7 @@ export function HoyAntesV2({ startIso, simulada, pase, destino, onPonFechas }: {
           </div>
         )}
         {verPase && (
-          <button type="button" onClick={pedirPago} className="relative flex h-[52px] items-center justify-center gap-2 rounded-full text-[14.5px] font-bold text-[#1C2230]" style={{ background: 'linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A)', boxShadow: '0 12px 24px -12px oklch(0.75 0.13 70)' }}>
+          <button type="button" onClick={pedirPago} className="relative flex h-[52px] items-center justify-center gap-2 rounded-2xl text-[15px] font-bold" style={BOTON_ORO}>
             {`Ver el ${nombreDelPase(destino)}`}
             <Icono nombre="flecha" size={15} grosor={2.2} />
           </button>

@@ -29,7 +29,7 @@ if (toca('codigo')) {
   debe(/usePaseEstado\(useSyncStore/.test(leer('src/components/pase/ListaDelPaseHost.tsx')), 'candados', 'un guardián siempre montado pregunta lo del pase (también sin RUTA ni HOY a la vista)')
   const candado = sinComentarios(leer('src/components/pase/Candado.tsx'))
   debe(/estado !== 'sin'\) return null/.test(candado), 'candados', 'la caja del pase no se pinta ni con pase ni mientras no se sabe')
-  debe(/data-caja-pase/.test(candado) && /#1C2230/.test(candado) && /#F3E2B0/.test(candado) && /Instrument Serif/.test(candado), 'caja', 'la caja es la de Pase Estilo 01: azul oscuro, título en la letra de titulares y botón dorado')
+  debe(/data-caja-pase/.test(candado) && /#1C2230/.test(candado) && /DORADO/.test(candado) /* (V43 §9) el degradado dorado ya no se escribe: viene de `DORADO` (ui/botonesOro.ts) */ && /Instrument Serif/.test(candado), 'caja', 'la caja es la de Pase Estilo 01: azul oscuro, título en la letra de titulares y botón dorado')
   // Todos los sitios donde algo pide el pase (menos HOY) usan la caja con título y la frase con «{pase}».
   const usos = []
   const recorre = (d) => {
@@ -127,7 +127,8 @@ if (toca('cajas')) {
     await g.evaluar("(() => { const e = document.querySelector('[data-candado=\"dia-ajuste-llegada\"]'); if (e) e.scrollIntoView({ block: 'center' }); return true })()")
     await g.esp(800)
     c = await g.evaluar(MIDE_CAJA('[data-candado="dia-ajuste-llegada"]'))
-    debe(esCaja(c, 'Tu día de llegada', 'Con el Pase Roma, tu día se ajusta a la hora de tu vuelo.'), 'caja', `DÍAS › primer día: la caja del ajuste (${JSON.stringify(c)?.slice(0, 200)})`)
+    // (10S10 §6) La franja oscura «Tu día de llegada · Con el Pase Roma, tu día se ajusta…» salió de DÍAS (y desde la V48 el primer día lleva el billete con QR): ya NO hay caja del ajuste.
+    debe(!c, 'caja', `DÍAS › primer día: ya NO hay la caja del ajuste (${JSON.stringify(c)?.slice(0, 200)})`)
     const zona = await g.evaluar(MIDE_CAJA('[data-candado="alojamiento-zona"]'))
     debe(!zona || esCaja(zona, '¿En qué zona te alojas?', 'Con el Pase Roma, adaptamos tu ruta a tu alojamiento.'), 'caja', 'DÍAS › primer día: la caja de la zona, si sale, es la misma')
     await g.captura(foto('caja_dias_primer_dia'))

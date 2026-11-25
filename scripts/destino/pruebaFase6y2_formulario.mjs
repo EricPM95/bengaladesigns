@@ -61,7 +61,8 @@ const pintaDias = (route) => {
   const html = pintaDias(ruta)
   const lineas = aTexto(html).split('\n')
   // (Tanda 6y7: un día sin nombre ya no dice «Ponle nombre»: su título sale de lo que se ve ese día y, vacío, es «Día libre». El nombre propio sigue mandando y se cambia desde «···».)
-  debe(lineas.filter((l) => l === 'Día libre').length === 5 && !lineas.includes('Ponle nombre'), '1 ponle nombre', `los 5 días vacíos no dicen «Día libre» (${lineas.filter((l) => l === 'Día libre').length}) o dicen «Ponle nombre»`)
+  // (V42 §5.1, 24-nov) En una ruta a mano, un día vacío de en medio es «Día por organizar» y el de llegada y el de vuelta, «Día de viaje» (antes todos «Día libre»).
+  debe(lineas.filter((l) => l === 'Día por organizar').length === 3 && lineas.filter((l) => l === 'Día de viaje').length === 2 && !lineas.includes('Ponle nombre'), '1 ponle nombre', `los 5 días vacíos no dicen «Día por organizar» ×3 y «Día de viaje» ×2 (${lineas.filter((l) => l === 'Día por organizar').length}/${lineas.filter((l) => l === 'Día de viaje').length}) o dicen «Ponle nombre»`)
   for (const titulo of ['jue 11 mar', 'vie 12 mar', 'sáb 13 mar']) debe(!lineas.includes(titulo), '1 ponle nombre', `el título repite la fecha «${titulo}»`)
   // El cuadrito con la fecha se queda.
   for (const [semana, numero] of [['JUE', '11'], ['VIE', '12'], ['SÁB', '13']]) debe(lineas.includes(semana) && lineas.includes(numero), '1 ponle nombre', `falta el cuadrito de la fecha «${semana} ${numero}»`)
@@ -73,10 +74,10 @@ const pintaDias = (route) => {
   // Un día con nombre lo conserva y deja de decir «Ponle nombre».
   const conNombre = { ...ruta, days: ruta.days.map((d) => (d.dayNumber === 3 ? { ...d, title: 'Compras', curatedTitle: 'Compras', nameByUser: true } : d)) }
   const l2 = aTexto(pintaDias(conNombre)).split('\n')
-  debe(l2.includes('Compras') && l2.filter((l) => l === 'Día libre').length === 4, '1 ponle nombre', 'un día con nombre no lo conserva o los demás dejan de decir «Día libre»')
+  debe(l2.includes('Compras') && l2.filter((l) => l === 'Día por organizar').length === 2 && l2.filter((l) => l === 'Día de viaje').length === 2, '1 ponle nombre', 'un día con nombre no lo conserva o los demás dejan de decir «Día por organizar» / «Día de viaje» (V42)')
   // Sin fechas: igual (el número del día ya está en el cuadrito).
   const l3 = aTexto(pintaDias(rutaMano(4, { fechas: false }))).split('\n')
-  debe(l3.filter((l) => l === 'Día libre').length === 4, '1 ponle nombre', 'sin fechas, los días vacíos no dicen «Día libre»')
+  debe(l3.filter((l) => l === 'Día por organizar').length === 2 && l3.filter((l) => l === 'Día de viaje').length === 2, '1 ponle nombre', 'sin fechas, los días vacíos no dicen «Día por organizar» / «Día de viaje» (V42)')
   // Al tocarlo se abre DayNameSheet (el mismo del menú «Cambiar el nombre») con el nombre vacío.
   const lista = fuente('src/components/route/DayList.tsx')
   // (6y7: el botón sigue solo para los destinos que no traen títulos; el nombre propio se cambia desde «···» → «Cambiar el nombre».)
@@ -99,7 +100,7 @@ const pintaDias = (route) => {
     debe(mas.days[1].id === 'day-manual-2' && mas.days[1].stops.length === 2 && mas.days[0].id === 'day-manual-1', '2 más días', 'los días de antes cambian de sitio o pierden paradas')
     debe(mas.days.slice(2, 4).every((d) => d.stops.length === 0 && d.meals.length === 0 && d.dayType === 'manual' && !d.userAdded), '2 más días', 'los días nuevos no son vacíos y a mano')
     debe(new Set(ids(mas)).size === 5 && mas.days.every((d, i) => d.dayNumber === i + 1), '2 más días', 'ids repetidos o días mal numerados')
-    debe(mas.days.map((d) => d.title).join('|') === ['mié 10 mar', 'jue 11 mar', 'vie 12 mar', 'sáb 13 mar', 'dom 14 mar'].join('|'), '2 más días', `los nombres no siguen a las fechas: ${mas.days.map((d) => d.title)}`)
+    debe(mas.days.map((d) => d.title).join('|') === ['Miércoles 10 mar', 'Jueves 11 mar', 'Viernes 12 mar', 'Sábado 13 mar', 'Domingo 14 mar'].join('|') /* (V18) el nombre automático lleva el día de la semana entero */, '2 más días', `los nombres no siguen a las fechas: ${mas.days.map((d) => d.title)}`)
     debe(mas.days.every((d) => d.city === 'Roma') && mas.planMode === 'manual', '2 más días', 'los días nuevos no son de Roma o la ruta deja de ser a mano')
     const uno = resizeManualRoute(conParadas(rutaMano(1), { 1: 2 }), rango(3))
     debe(uno.days.length === 3 && uno.days[0].stops.length === 2 && uno.days.slice(1).every((d) => d.stops.length === 0), '2 más días', 'con un solo día, los nuevos no van detrás')
@@ -114,7 +115,7 @@ const pintaDias = (route) => {
     const vacia = resizeManualRoute(rutaMano(5), rango(3))
     debe(JSON.stringify(ids(vacia)) === JSON.stringify(['day-manual-1', 'day-manual-2', 'day-manual-5']), '2 menos días', `acortar no quita los últimos vacíos antes de la vuelta: ${ids(vacia)}`)
     debe(vacia.days.map((d) => d.dayNumber).join() === '1,2,3' && vacia.answers.days === 3 && vacia.answers.dateRange.end === sumaDias(INICIO, 2), '2 menos días', 'los días no se renumeran o las fechas no se quedan en 3 días')
-    debe(vacia.days.map((d) => d.title).join('|') === 'mié 10 mar|jue 11 mar|vie 12 mar', '2 menos días', `los nombres no siguen a las fechas: ${vacia.days.map((d) => d.title)}`)
+    debe(vacia.days.map((d) => d.title).join('|') === 'Miércoles 10 mar|Jueves 11 mar|Viernes 12 mar', '2 menos días', `los nombres no siguen a las fechas: ${vacia.days.map((d) => d.title)}`)
     // Con un día con paradas en medio: los vacíos se van antes.
     const unoConParadas = conParadas(rutaMano(5), { 4: 3 })
     const plan = planManualResize(unoConParadas, rango(3))
@@ -128,7 +129,7 @@ const pintaDias = (route) => {
     // Un día renombrado se queda con su nombre.
     const ren = { ...rutaMano(4), days: rutaMano(4).days.map((d) => (d.dayNumber === 2 ? { ...d, title: 'Compras', curatedTitle: 'Compras', nameByUser: true } : d)) }
     const r2 = resizeManualRoute(ren, rango(4, '2027-04-05'))
-    debe(r2.days[1].title === 'Compras' && r2.days[2].title === 'mié 7 abr', '2 menos días', `un nombre del viajero cambia o el automático no sigue a las fechas: ${r2.days.map((d) => d.title)}`)
+    debe(r2.days[1].title === 'Compras' && r2.days[2].title === 'Miércoles 7 abr', '2 menos días', `un nombre del viajero cambia o el automático no sigue a las fechas: ${r2.days.map((d) => d.title)}`)
   }
   // 2d. La ruta nuestra no pasa por aquí.
   {
@@ -153,7 +154,8 @@ const pintaDias = (route) => {
   const clasifica = sinComentarios.match(/classifyInBackground\(/g) ?? []
   const iniStart = sinComentarios.indexOf('const startTrip')
   const cuerpoStart = sinComentarios.slice(iniStart, sinComentarios.indexOf('\n  }\n', iniStart))
-  debe(clasifica.length === 1 && /classifyInBackground\(dest\.name\)/.test(cuerpoStart), '3 sugerencias', 'la clasificación (la necesita el paso de Transporte en los dos caminos) ya no se lanza al elegir el destino')
+  // (V41 §5.2) un segundo `classifyInBackground` (mismo destino puesto de antemano y aún sin clasificar) es a propósito
+  debe(clasifica.length === 2 && /classifyInBackground\(dest\.name\)/.test(cuerpoStart), '3 sugerencias', 'la clasificación (la necesita el paso de Transporte en los dos caminos) ya no se lanza al elegir el destino')
   debe(!/suggestExperiencesInBackground|suggestPlacesInBackground|classifyInBackground/.test(sinComentarios.slice(sinComentarios.indexOf('const startManualRoute'), sinComentarios.indexOf('const confirmExperiences'))), '3 sugerencias', '«Empezar mi ruta» lanza clasificación o sugerencias')
   const confirmar = sinComentarios.slice(sinComentarios.indexOf('const confirmDates'), sinComentarios.indexOf('const choosePlan'))
   debe(!/suggest/.test(confirmar), '3 sugerencias', 'confirmar las fechas lanza una sugerencia antes de elegir camino')

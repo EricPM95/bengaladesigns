@@ -1,6 +1,6 @@
 import { useEffect, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { Icono } from '../../ui/Icono'
+import { CruzDeHoja } from '../../ui/CruzDeHoja'
 
 /**
  * La hoja que sube desde abajo de RESERVAS (Tanda 6s): con su tirador y su cruz, igual que la hoja de la hora de las entradas. En el ordenador, centrada.
@@ -17,13 +17,11 @@ export function HojaAbajo({ titleId, onClose, children, ancha = false, capa = 90
   return createPortal(
     <div className="fixed inset-0 flex items-end justify-center md:items-center" style={{ zIndex: capa }} role="dialog" aria-modal="true" aria-labelledby={titleId}>
       <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={onClose} />
-      <div className={`trazo-notice-panel relative flex max-h-[92dvh] w-full flex-col rounded-t-[28px] bg-bg-card shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:rounded-[28px] ${ancha ? 'md:w-[560px]' : 'md:w-[440px]'}`}>
+      <div className={`trazo-notice-panel relative flex max-h-[92dvh] w-full flex-col rounded-t-[32px] bg-bg-card shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:rounded-[28px] ${ancha ? 'md:w-[560px]' : 'md:w-[440px]'}`}>
         <div className="flex shrink-0 justify-center pt-2.5" aria-hidden="true">
           <span className="h-1 w-[42px] rounded-full bg-text/20" />
         </div>
-        <button type="button" onClick={onClose} aria-label="Cerrar" className="zona-toque absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-[#F1EADC] text-text hover:bg-bg-hover">
-          <Icono nombre="cerrar" className="h-4 w-4" />
-        </button>
+        <CruzDeHoja onCerrar={onClose} estilo={{ right: 12, top: 12 }} />
         <div className={`min-h-0 flex-1 overflow-y-auto px-6 pt-4 ${pie ? "pb-3" : "pb-[max(1.25rem,env(safe-area-inset-bottom))]"}`}>{children}</div>
         {pie && <div className="shrink-0 px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2" data-pie-de-hoja>{pie}</div>}
       </div>

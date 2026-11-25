@@ -105,7 +105,7 @@ for (const [clave, route] of Object.entries(rutas)) {
       const nombre = `RESERVAS · ${clave} fechas · ${version} · ${m.clave}`
       const html = pintaHtml(ReservasPanel, { route, onClose() {} }, route, { version, hoy: m.hoy })
       const texto = aTexto(html)
-      const iOscura = html.indexOf('rounded-[28px] bg-[#1C2230]')
+      const iOscura = html.search(/rounded-\[\d+px\] bg-\[#1C2230\]/) /* (noche 24-nov) el radio de TarjetaOscura cambia con el diseño (28 → 26 px): se busca la tarjeta por su fondo, sin atarla al radio */
       const iResumen = html.indexOf('data-blk="resumen"')
       const iBloque = html.search(/data-blk="(llegada|aloj|entradas)"/)
 

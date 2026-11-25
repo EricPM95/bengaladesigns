@@ -55,9 +55,9 @@ console.log('2. Con el pase')
     // 03: el vuelo
     await poner(a, `e.setArrivalFlightTime('15:40')`)
     await esp(1500)
-    const v = await textoDe(a, '[data-llegada-dias]')
-    // (10S3) Antes: «Aterrizas a las HH:MM». Ahora: «FCO HH:MM» (o «BCN 08:30 → FCO HH:MM» con los dos lados), Alojamiento Dias 03 y 03b. Decisión de Eric (10S3, 30-oct).
-    debe(v && /FCO 15:40/.test(v) && /Fiumicino · Cómo llegar desde el aeropuerto/.test(v), '03', `tarjeta del vuelo: «Aterrizas a las 15:40» y «Fiumicino · Cómo llegar desde el aeropuerto» (${v})`)
+    // (V48) El primer día lleva el billete con QR (`[data-billete="llegada"]`, Design «Billete QR»): «LLEGADA · FIUMICINO», la hora grande («15:40») y su código («FCO»). «Cómo llegar desde el aeropuerto» sigue en la ficha de llegada, que se abre al tocar el billete.
+    const v = await textoDe(a, '[data-billete="llegada"]')
+    debe(v && /15:40/.test(v) && /FCO/.test(v) && /LLEGADA · FIUMICINO/.test(v), '03', `billete del vuelo: «15:40 FCO» y «LLEGADA · FIUMICINO» (${v})`)
     const cuerpo = await a.evaluar('document.body.innerText')
     debe(!/libre hacia/i.test(cuerpo), '03', 'DÍAS no enseña «libre hacia…»')
     await a.captura(foto('alojamiento_dias_03'))

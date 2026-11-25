@@ -203,6 +203,14 @@ const EXCEPCIONES_EMOJI = [
   // Las líneas de vuelo de «Lo de cada uno» («✈ Ida · mar 10 · 13:40 · Ciampino»): el ✈ es un signo de texto del diseño de las cuentas.
   { archivo: /lib[\\/]loSuyo\.ts$/, emoji: '✈' },
   { archivo: /reservas[\\/]LoDeCadaUno\.tsx$/, emoji: '✈' },
+  // (V35-V37) El estudio de sonidos es del ADMINISTRADOR (no lo ve ningún viajero): el ▶ de «reproducir» es un signo de texto de sus botones.
+  { archivo: /logros[\\/]AdminSonidos\.tsx$/, emoji: '▶' },
+  { archivo: /sonidos[\\/]VisorDeAnimacion\.tsx$/, emoji: '▶' },
+  // (V33-V35) El panel de administración (/admin) no lo ve ningún viajero: «Abrir el panel ↗» y el cubo de borrar son signos de texto de sus botones.
+  { archivo: /components[\\/]panel[\\/]/, emoji: '↗' },
+  // (V45) El aviso naranja de un documento («⚠ Esta tarjeta es del viernes 13 y tu vuelo es el lunes 23…») lleva el ⚠ como signo de texto del diseño; `pruebaV45` comprueba que empieza por «⚠».
+  { archivo: /reservas[\\/]TarjetaBillete\.tsx$/, emoji: '⚠' },
+  { archivo: /components[\\/]panel[\\/]Destinos\.tsx$/, emoji: '🗑' },
 ]
 function todosLosArchivos(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? todosLosArchivos(path.join(dir, e.name)) : /\.(tsx?|jsx?|css|html|json)$/.test(e.name) ? [path.join(dir, e.name)] : []))
@@ -212,6 +220,7 @@ for (const archivo of todosLosArchivos('src')) {
   comprobaciones++
   const lineas = fs.readFileSync(archivo, 'utf8').split(/\r?\n/)
   lineas.forEach((linea, i) => {
+    if (/^\s*(\{?\/\/|\{?\/\*|\*)/.test(linea)) return // (noche 24-nov) una línea de comentario no se ve en pantalla
     for (const m of linea.matchAll(/\p{Extended_Pictographic}/gu)) {
       if (SIGNOS_TEXTO.has(m[0])) continue
       if (EXCEPCIONES_EMOJI.some((ex) => ex.archivo.test(archivo) && ex.emoji === m[0])) continue

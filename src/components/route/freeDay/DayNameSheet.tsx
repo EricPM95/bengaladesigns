@@ -17,7 +17,7 @@ export function DayNameSheet({ title, initialName = '', example, confirmLabel, o
           event.preventDefault()
           onConfirm(name)
         }}
-        className="trazo-notice-panel relative w-full rounded-t-[28px] bg-bg-card px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[420px] md:rounded-[28px]"
+        className="trazo-notice-panel relative w-full rounded-t-[32px] bg-bg-card px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[420px] md:rounded-[28px]"
       >
         <CruzDeHoja onCerrar={onClose} />
         <h2 id="day-name-heading" className="font-display text-[24px] leading-[1.15] text-text">

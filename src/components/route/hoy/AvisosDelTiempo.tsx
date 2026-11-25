@@ -10,14 +10,13 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { HojaPropuesta, useContexto } from './v2/CambiarPlan'
 import { AvisoDeHoy, CruzDeAviso } from './v2/AvisosHoy'
+import { BOTON_AZUL, EnlaceDeAviso } from './piezas'
 
 /**
  * LOS AVISOS DEL TIEMPO EN DIRECTO (HOY1, apartado 6; H12, C14 y C15 de Design). Se engancha en HOY con UNA línea: `<AvisosDelTiempo route={route} day={day} dateIso={dateIso} />`.
  * Lluvia, nubes sobre un mirador del norte y viento fuerte en Lanzarote (los umbrales y los sitios, en `data/hoy/avisos_tiempo.json`); en Roma sigue el aviso de lluvia de siempre (RainAlert).
  * Nada se mueve solo: [Ver alternativa] enseña lo que entra y lo que sale, [Cambiar…] lo hace y deja el [Deshacer]; C15 «Ha parado de llover» ofrece volver al plan de antes.
  */
-const TINTA = '#1C2230'
-const DORADO_CLARO = '#F3D88F'
 const clave = (tripId: string, fecha: string, id: string) => `trazo:hoy1:tiempo:${tripId}:${fecha}:${id}`
 const yaDescartado = (k: string): boolean => {
   try {
@@ -79,9 +78,7 @@ function Cartel({ aviso, onVer, onCerrar }: { aviso: AvisoTiempo; onVer: () => v
         <span className='min-w-0 flex-1 pt-1 text-[13.5px] font-medium leading-[1.35]'>{aviso.texto}</span>
         <CruzDeAviso onClick={onCerrar} />
       </div>
-      <button type='button' data-ver-alternativa onClick={onVer} className='mb-1 ml-[48px] flex h-11 flex-none items-center self-start rounded-full px-4 text-[12px] font-bold' style={{ background: TINTA, color: DORADO_CLARO }}>
-        Ver alternativa
-      </button>
+      <EnlaceDeAviso onClick={onVer} texto='Ver alternativa' datos={{ 'data-ver-alternativa': '1' }} className='mb-1 ml-[48px]' />
     </div>
   )
 }
@@ -102,9 +99,7 @@ function CambioHecho({ day, paro, onDeshacer, onVerPlan, onCerrarParo }: { day: 
           <span className='min-w-0 flex-1 pt-1 text-[13.5px] font-medium leading-[1.35]'>{TEXTOS.ha_parado}</span>
           <CruzDeAviso onClick={onCerrarParo} />
         </div>
-        <button type='button' data-ver-plan onClick={onVerPlan} className='mb-1 ml-[48px] flex h-11 flex-none items-center self-start rounded-full px-4 text-[12px] font-bold' style={{ background: TINTA, color: DORADO_CLARO }}>
-          Ver plan
-        </button>
+        <EnlaceDeAviso onClick={onVerPlan} texto='Ver plan' datos={{ 'data-ver-plan': '1' }} className='mb-1 ml-[48px]' />
       </div>
     )
   }
@@ -113,7 +108,7 @@ function CambioHecho({ day, paro, onDeshacer, onVerPlan, onCerrarParo }: { day: 
     <div data-tiempo-cambiado={motivo ?? ''} className='flex flex-none items-center gap-3 rounded-[18px] px-3.5 py-3' style={{ background: '#EEEBE4', border: '1px solid rgba(28,34,48,.1)' }}>
       <Icono d={ICONO[motivo === 'nubes' ? 'nubes' : motivo === 'viento' ? 'viento' : 'lluvia']} />
       <span className='min-w-0 flex-1 text-[13.5px] font-medium leading-[1.35]'>{texto}</span>
-      <button type='button' data-deshacer-tiempo onClick={onDeshacer} className='flex h-11 flex-none items-center rounded-full px-3 text-[12px] font-bold' style={{ background: TINTA, color: DORADO_CLARO }}>
+      <button type='button' data-deshacer-tiempo onClick={onDeshacer} className='flex h-11 flex-none items-center rounded-2xl px-3.5 text-[13px] font-bold' style={BOTON_AZUL}>
         Deshacer
       </button>
     </div>

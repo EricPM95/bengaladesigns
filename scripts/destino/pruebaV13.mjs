@@ -145,7 +145,7 @@ console.log('2. En pantalla (demo de logros; ninguna llamada a producción)')
       }
       const secuencia = linea.map((x) => x.f).join('→')
       debe(secuencia === '0→1→2→3→4', 'momento', `la insignia pasa por 0 (lo que ya tenías), 1 (llega volando), 2 (encaja), 3 (color) y 4 (queda): ${secuencia} (${linea.map((x) => x.f + '@' + x.seg.toFixed(1) + 's').join(' ')})`)
-      debe(tSeguir !== null && tSeguir >= 1.8 && tSeguir <= 4.2, 'momento', `[Seguir] sale unos 2 segundos después de empezar (${tSeguir?.toFixed(1)} s)`)
+      debe(tSeguir !== null && tSeguir >= 1.8 && tSeguir <= 7, 'momento', `[Seguir] sale unos segundos después de empezar (V37/V38b: el sello suena y los pedazos entran uno tras otro; 4-6 s medidos con 2 Chrome a la vez) (${tSeguir?.toFixed(1)} s)`)
       debe(/^[0-9]+ DE 4$/.test(linea[0]?.cuenta ?? '') && /^[0-9]+ DE 4$/.test(linea[linea.length - 1]?.cuenta ?? '') && Number(linea[linea.length - 1]?.cuenta.split(' ')[0]) === Number(linea[0]?.cuenta.split(' ')[0]) + 1, 'momento', `el número sube al final («${linea[0]?.cuenta}» → «${linea[linea.length - 1]?.cuenta}»)`)
       const s2 = await app.evaluar(lee)
       debe(s2.partes === 1, 'momento', 'una sola insignia, con sus trozos por partes')

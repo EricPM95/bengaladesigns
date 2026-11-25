@@ -53,10 +53,10 @@ debe(opciones.every((o) => !('provisional_pricing' in o)), 'alguna excursión si
 debe(!opciones.some((o) => 'price_before' in o || 'price_original' in o || 'precio_tachado' in o), 'queda un precio tachado escrito a mano')
 debe(por.ostia_antica?.civitatis_slug === 'excursion-ostia-antica', 'Ostia Antica cambió de enlace')
 debe(por.venecia_tren && por.venecia_tren.half_day === false && Array.isArray(por.venecia_tren.destination_coords) && por.venecia_tren.destination_coords.length === 2, 'Venecia: sin coordenadas o sin ser de día entero')
-debe(Boolean(por.venecia_tren?.meeting_point) && (por.venecia_tren?.description ?? '').length > 40 && !/civitatis/i.test(por.venecia_tren.description), 'Venecia: sin punto de encuentro o sin descripción nuestra')
+/* (V49) sin punto de encuentro inventado: solo si viene de la API o del viajero */ debe(!por.venecia_tren?.meeting_point && (por.venecia_tren?.description ?? '').length > 40 && !/civitatis/i.test(por.venecia_tren.description), 'Venecia: con punto de encuentro inventado o sin descripción nuestra (V49)')
 debe(por.florencia_tren?.cancellation === 'no_reembolsable', 'Florencia en tren: no dice «no reembolsable»')
 debe(por.napoles_pompeya_tren?.cancellation === 'no_reembolsable', 'Nápoles y Pompeya en tren: no dice «no reembolsable» (10S9)')
-debe(por.ostia_antica?.meeting_point === 'Piazzale Ostiense (salida del metro Piramide)' && por.ostia_antica?.cancellation_note === 'Gratuita hasta 3 días antes', 'Ostia Antica: punto de encuentro o nota de cancelación (10S9)')
+debe(!por.ostia_antica?.meeting_point /* (V49) sin punto de encuentro inventado */ && por.ostia_antica?.cancellation_note === 'Gratuita hasta 3 días antes', 'Ostia Antica: punto de encuentro o nota de cancelación (10S9)')
 
 // ── 2. El servidor (lo que recibe la app) ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 const r = await fetch(`${API}/api/destination-excursions`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ destination: 'Roma' }) })
@@ -121,7 +121,7 @@ if (args.sinNavegador !== '1') {
     await ev("(async () => { const S = await import('/src/store/useExcursionsStore.ts'); S.useExcursionsStore.getState().openPage(); return true })()")
     for (let i = 0; i < 40 && !(await ev("document.querySelectorAll('[role=dialog] li').length >= 8").catch(() => false)); i++) await a.esp(500)
     await a.esp(1500)
-    const tarjetas = await ev(`Array.from(document.querySelectorAll('[role=dialog] ul > li')).map((li) => ({ titulo: li.querySelector('h2')?.textContent ?? '', texto: li.textContent ?? '', orientativo: !!li.querySelector('[data-precio-orientativo]'), noReemb: !!li.querySelector('[data-no-reembolsable]'), foto: li.querySelector('[role=img]')?.getAttribute('style') ?? '', html: li.innerHTML }))`)
+    const tarjetas = await ev(`Array.from(document.querySelectorAll('[role=dialog] ul > li')).map((li) => ({ titulo: li.querySelector('h2')?.textContent ?? '', texto: li.textContent ?? '', orientativo: !!li.querySelector('[data-precio-orientativo]'), noReemb: !!li.querySelector('[data-no-reembolsable]'), foto: (li.querySelector('[role=img]')?.getAttribute('style') ?? '') + ' ' + (li.querySelector('[role=img] img')?.getAttribute('src') ?? ''), html: li.innerHTML }))`)
     debe(tarjetas.length === 8, `la lista tiene ${tarjetas.length} tarjetas (8)`)
     const de = (t) => tarjetas.find((x) => x.titulo === t)
     for (const [id, t] of Object.entries(TABLA)) {

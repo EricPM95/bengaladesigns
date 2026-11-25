@@ -1,0 +1,226 @@
+{
+ "logros_coliseo_01_pedazos_nuevos": {
+  "ok": true,
+  "archivo": "logros_coliseo_01_pedazos_nuevos.jpg",
+  "serie": "coliseo",
+  "aria": "Pedazos nuevos",
+  "texto": "Saltar todo PEDAZOS NUEVOS 1/8 Los imprescindibles de Roma 0 DE 8 Las 4 joyas de Roma 0 DE 4 La Roma antigua 0 DE 6 Seguir"
+ },
+ "logros_fila_01_un_pedazo_nuevo": {
+  "ok": true,
+  "archivo": "logros_fila_01_un_pedazo_nuevo.jpg",
+  "serie": "fila",
+  "aria": "Un pedazo nuevo",
+  "texto": "Saltar todo UN PEDAZO NUEVO 4/8 Los imprescindibles de Roma 2 DE 8 Seguir"
+ },
+ "logros_fila_02_405_exp": {
+  "ok": true,
+  "archivo": "logros_fila_02_405_exp.jpg",
+  "serie": "fila",
+  "aria": "+405 EXP",
+  "texto": "Saltar todo EXPERIENCIA +405 EXP Nivel 1 800 / 1.000 Seguir"
+ },
+ "logros_petra_01_una_maravilla_nueva": {
+  "ok": true,
+  "archivo": "logros_petra_01_una_maravilla_nueva.jpg",
+  "serie": "petra",
+  "aria": "Una maravilla nueva",
+  "texto": "Saltar todo UNA MARAVILLA NUEVA DE 7 LAS 7 MARAVILLAS 2 MARAVILLA DEL MUNDO ENCONTRADO EL 11 de octubre de 2026 COLISEO MARAVILLA DEL MUNDO ENCONTRADO EL 4 de abril de 2028 GRAN MURALLA CHINA MARAVILLA DEL MUNDO ENCONTRA"
+ },
+ "logros_petra_02_petra": {
+  "ok": true,
+  "archivo": "logros_petra_02_petra.jpg",
+  "serie": "petra",
+  "aria": "Petra",
+  "texto": "Saltar todo PATRIMONIO DE LA HUMANIDAD Tu Patrimonio número 2: Petra Seguir"
+ },
+ "logros_final7_01_el_final_de_las_7_maravillas": {
+  "ok": true,
+  "archivo": "logros_final7_01_el_final_de_las_7_maravillas.jpg",
+  "serie": "final7",
+  "aria": "El final de las 7 maravillas",
+  "texto": "Saltar todo DE 7 LAS 7 MARAVILLAS 7 MARAVILLA DEL MUNDO ENCONTRADO EL 11 de octubre de 2026 COLISEO MARAVILLA DEL MUNDO ENCONTRADO EL 4 de abril de 2028 GRAN MURALLA CHINA MARAVILLA DEL MUNDO ENCONTRADO EL 9 de marzo de "
+ },
+ "logros_viajeros_01_y_ademas": {
+  "ok": true,
+  "archivo": "logros_viajeros_01_y_ademas.jpg",
+  "serie": "viajeros",
+  "aria": "Y además",
+  "texto": "Saltar todo Y ADEMÁS… LOGRO DE VIAJERO Pasión por el mundo Haz viajes a ciudades nuevas. LOGRO DE VIAJERO Viajero de ida y vuelta Completa viajes con la app. LOGRO DE VIAJERO Ojo de lince Encuentra Emblemas Ocultos. LOGR"
+ },
+ "hoy_ya_no_da_tiempo": {
+  "ok": true,
+  "archivo": "hoy_ya_no_da_tiempo.jpg",
+  "texto": "Hoy ya no da tiempo a todo Lo que tenías por la mañana ya ha pasado. ¿Qué hacemos? Ver lo que queda hoy Pasar lo que falta a otro día Dejarlo como está"
+ },
+ "hoy_ya_no_puedes_entrar": {
+  "ok": false,
+  "motivo": "el aviso de «ya no puedes entrar» no salió a las 18:20 con los Museos Vaticanos"
+ },
+ "hoy_navidad_error": {
+  "ok": false,
+  "motivo": "Cannot read properties of undefined (reading 'fechas')"
+ },
+ "hoy_lluvia_aviso": {
+  "ok": true,
+  "archivo": "hoy_lluvia_aviso.jpg",
+  "selector": "data-aviso-lluvia",
+  "texto": "JUTRI P SÁB 17 · VATICANO Y TRASTEVERE Parada 1 de 13 Hay previsión de lluvia hoy. Si llueve, aquí tienes una alternativa. Ver alternativa PRIMERA PARADA Museos Vaticanos y Capilla Sixtina HORARIO Abierto Cierra a las 20:00 A PIE 18 min Desde el centro VISITA 180 min Lo que recomendamos Sin tu ubicación no sabemos cuándo llegas Usar mi ubicación Ya he llegado Escucha su historia por el camino 3 min Cómo llegar Cambiar plan ¿Qué hago ahora? Tu día · 0 de 13 hechas MAÑANA Museos Vaticanos y Capill"
+ },
+ "hoy_guarda_tus_recuerdos": {
+  "ok": true,
+  "archivo": "hoy_guarda_tus_recuerdos.jpg",
+  "texto": "JUTRI P Tu viaje a Roma 4 días · 3 noches · 17 – 20 oct Ver el resumen de mi viaje Guarda tus recuerdos Sube tus fotos y Roma queda en tu mapa de viajes, en tu perfil. Subir mis fotos ¿A dónde vamos ahora? Nuevo viaje Hoy Ruta Días Explorar Reservas ! Pruebas",
+  "hay": true
+ },
+ "hoy_estas_lejos": {
+  "ok": true,
+  "archivo": "hoy_estas_lejos.jpg",
+  "texto": "JUTRI P SÁB 17 · VATICANO Y TRASTEVERE Parada 1 de 13 PRIMERA PARADA Museos Vaticanos y Capilla Sixtina HORARIO Abierto Cierra a las 20:00 A PIE — Estás lejos VISITA 180 min Lo que recomendamos Estás lejos de Roma. Cuando llegues, contaremos desde donde estés. Escucha su historia por el camino 3 min Cómo llegar Cambiar plan ¿Qué hago ahora? Tu día · 0 de 13 hechas MAÑANA Museos Vaticanos y Capilla Sixtina Ahora Plaza de San Pedro Basílica de San Pedro MEDIODÍA Comida · Borghiciana Pastificio Artigianale TARDE Via della Conciliazione Castillo de Sant'Angelo Puente Sant'Angelo Isla Tiberina Iglesia de Santa Maria in Trastevere San Pietro in Montorio y Tempietto de Bramante Fontana dell'Acqua P",
+  "hay": true
+ },
+ "hoy_activa_tu_ubicacion": {
+  "ok": true,
+  "archivo": "hoy_activa_tu_ubicacion.jpg",
+  "texto": ""
+ },
+ "hoy_aviso_abajo_con_deshacer": {
+  "ok": true,
+  "motivo": "no encontré [Saltar parada] en HOY a las 10:00",
+  "archivo": "hoy_aviso_abajo_con_deshacer.jpg",
+  "texto": "JUTRI P SÁB 17 · VATICANO Y TRASTEVERE Parada 1 de 12 PRIMERA PARADA Plaza de San Pedro HORARIO Abierto Sin horario A PIE 11 min Desde el centro VISITA 30 min Lo que recomendamos Sin tu ubicación no sabemos cuándo llegas Usar mi ubicación Ya he llegado Escucha su historia por el camino 3 min Cómo llegar Cambiar plan ¿Qué hago ahora? Tu día · 0 de 12 hechas MAÑANA Plaza de San Pedro Ahora Basílica de San Pedro MEDIODÍA Comida · Borghiciana Pastificio Artigianale TARDE Via della Conciliazione Cast"
+ },
+ "hoy_aviso_arriba_horario": {
+  "ok": false,
+  "motivo": "el aviso de horario no salió"
+ },
+ "pase_pregunta_medio_dia": {
+  "ok": false,
+  "motivo": "la pregunta no salió con el estado puesto a mano: la pone `?pase=pregunta` al cargar la página (una sola vez por carga); ver el hueco"
+ },
+ "pase_hoy_es_prueba": {
+  "ok": true,
+  "archivo": "pase_hoy_es_prueba.jpg",
+  "texto": "JUTRI P SÁB 17 · VATICANO Y TRASTEVERE Parada 1 de 13 Hoy es tu día de prueba: tienes el Pase Roma completo, gratis, hasta medianoche. Disfrútalo. PRIMERA PARADA Museos Vaticanos y Capilla Sixtina HORARIO Abierto Cierra a las 20:00 A PIE 18 min Desde el centro VISITA 180 min Lo que recomendamos Sin tu ubicación no sabemos cuándo llegas Usar mi ubicación Ya he llegado Escucha su historia por el camino 3 min Cómo llegar Cambiar plan ¿Qué hago ahora? Tu día · 0 de 13 hechas MAÑANA Museos Vaticanos "
+ },
+ "pase_p3_dia_de_llegada": {
+  "ok": true,
+  "archivo": "pase_p3_dia_de_llegada.jpg",
+  "texto": "JUTRI P SÁB 17 Vaticano y Trastevere Madrid → Roma TU DÍA DE PRUEBA Mañana es tu día de prueba: queremos que vivas Roma con el Pase Roma completo, gratis, un día entero. DOM 18 LUN 19 Ver el Pase Roma Hoy Ruta Días Explorar Reservas ! Pruebas"
+ },
+ "pase_dia_12_que_tal_ayer": {
+  "ok": true,
+  "archivo": "pase_dia_12_que_tal_ayer.jpg",
+  "texto": "JUTRI P DOM 18 Centro histórico y Villa Borghese TU DÍA DE PRUEBA ¿Qué tal ayer con HOY? Sigue con tu compañero el resto del viaje y completa los secretos y las colecciones de Roma. Lo que conseguiste ayer ya es tuyo. LUN 19 Ver el Pase Roma Hoy Ruta Días Explorar Reservas ! Pruebas"
+ },
+ "pase_prueba_gastada": {
+  "ok": true,
+  "archivo": "pase_prueba_gastada.jpg",
+  "texto": "JUTRI P DOM 18 Centro histórico y Villa Borghese TU DÍA DE PRUEBA ¿Qué tal el lunes con HOY? Sigue con tu compañero el resto del viaje y completa los secretos y las colecciones de Roma. Lo que conseguiste ese día ya es tuyo. LUN 19 Ver el Pase Roma Hoy Ruta Días Explorar Reservas ! Pruebas"
+ },
+ "pase_aviso_pequeno": {
+  "ok": true,
+  "motivo": "no salió con la clave «segunda_foto» (avisoDelPaseSeEnsena lo decide)",
+  "archivo": "pase_aviso_pequeno.jpg",
+  "clave": "segunda_foto",
+  "texto": "JUTRI P Roma · 17 – 20 oct Roma 4 días · 3 noches 17 oct – 20 oct Pase Roma Compartir Hoy Ruta Días Explorar Reservas ! Pruebas Desbloquéalo con el Pase Roma Ya tienes tu foto de este sitio. Con el Pase Roma, guarda fotos sin límite y haz crecer tu álbum de recuerdos. Ver el Pase Roma"
+ },
+ "logros_coliseo_02_emblema_una_maravilla_del_mundo": {
+  "ok": true,
+  "archivo": "logros_coliseo_02_emblema_una_maravilla_del_mundo.jpg",
+  "serie": "coliseo",
+  "aria": "Emblema: una maravilla del mundo",
+  "texto": "MARAVILLA DEL MUNDO ENCONTRADO EL 25 de noviembre de 2026 COLISEO ¡HAS DESCUBIERTO UN EMBLEMA OCULTO! Una maravilla del mundo El mayor anfiteatro de la Antigüedad. Casi2.000añosesperándote… Elanfiteatromásgrandejamáscons"
+ },
+ "logros_coliseo_03_emblema_una_maravilla_del_mundo": {
+  "ok": true,
+  "archivo": "logros_coliseo_03_emblema_una_maravilla_del_mundo.jpg",
+  "serie": "coliseo",
+  "aria": "Emblema: una maravilla del mundo",
+  "texto": "MARAVILLA DEL MUNDO ENCONTRADO EL 25 de noviembre de 2026 COLISEO ¡HAS DESCUBIERTO UN EMBLEMA OCULTO! Una maravilla del mundo El mayor anfiteatro de la Antigüedad. Casi2.000añosesperándote… Elanfiteatromásgrandejamáscons"
+ },
+ "logros_coliseo_04_tu_medalla_de_roma_bronce": {
+  "ok": true,
+  "archivo": "logros_coliseo_04_tu_medalla_de_roma_bronce.jpg",
+  "serie": "coliseo",
+  "aria": "Tu medalla de Roma, bronce",
+  "texto": "Saltar todo ROMA TU MEDALLA DE ROMA · BRONCE Primeros pasos en Roma Has visto tu primer imprescindible. Seguir"
+ },
+ "logros_coliseo_05_una_maravilla_nueva": {
+  "ok": true,
+  "archivo": "logros_coliseo_05_una_maravilla_nueva.jpg",
+  "serie": "coliseo",
+  "aria": "Una maravilla nueva",
+  "texto": "Saltar todo UNA MARAVILLA NUEVA DE 7 LAS 7 MARAVILLAS 1 MARAVILLA DEL MUNDO ENCONTRADO EL 11 de octubre de 2026 COLISEO MARAVILLA DEL MUNDO ENCONTRADO EL 4 de abril de 2028 GRAN MURALLA CHINA MARAVILLA DEL MUNDO ENCONTRA"
+ },
+ "logros_coliseo_06_y_ademas": {
+  "ok": true,
+  "archivo": "logros_coliseo_06_y_ademas.jpg",
+  "serie": "coliseo",
+  "aria": "Y además",
+  "texto": "Saltar todo Y ADEMÁS… PAÍS NUEVO Tu país número 1: Italia DESTINO NUEVO Tu destino número 1: Roma PATRIMONIO DE LA HUMANIDAD Tu Patrimonio número 1: Centro histórico de Roma Seguir"
+ },
+ "hoy_navidad_tarjeta_temporada": {
+  "ok": true,
+  "archivo": "hoy_navidad_tarjeta_temporada.jpg",
+  "texto": "JUTRI P SÁB 17 · VATICANO Y TRASTEVERE Parada 1 de 13 PRIMERA PARADA Museos Vaticanos y Capilla Sixtina HORARIO Abierto Cierra a las 20:00 A PIE 18 min Desde el centro VISITA 180 min Lo que recomendamos Sin tu ubicación no sabemos cuándo llegas Usar mi ubicación Ya he llegado Escucha su historia por el camino 3 min Cómo llegar Cambiar plan ¿Qué hago ahora? Tu día · 0 de 13 hechas MAÑANA Museos Vat",
+  "hoja": true
+ },
+ "hoy_navidad_avisos_de_fechas": {
+  "ok": true,
+  "archivo": "hoy_navidad_avisos_de_fechas.jpg",
+  "texto": "JUTRI P SÁB 17 · VATICANO Y TRASTEVERE Parada 1 de 13 PRIMERA PARADA Museos Vaticanos y Capilla Sixtina HORARIO Abierto Cierra a las 20:00 A PIE 18 min Desde el centro VISITA 180 min Lo que recomendamos Sin tu ubicación no sabemos cuándo llegas Usar mi ubicación Ya he llegado Escucha su historia por el camino 3 min Cómo llegar Cambiar plan ¿Qué hago ahora? Tu día · 0 de 13 hechas MAÑANA Museos Vat"
+ },
+ "hoy_lluvia_plan": {
+  "ok": true,
+  "archivo": "hoy_lluvia_plan.jpg",
+  "texto": "Plan de lluvia el Castillo de Sant'Angelo por dentro (~1 h 30) en vez de por fuera, si el viaje no lo lleva por dentro otro día. El Janículo y la Isla Tiberina salen; Santa Maria in Trastevere por dentro se queda. Isla Tiberina, Fontana dell'Acqua Paola o Mirador del Janículo salen Lo que queda al a"
+ },
+ "hoy_aviso_arriba_foto_guardada": {
+  "ok": true,
+  "archivo": "hoy_aviso_arriba_foto_guardada.jpg",
+  "texto": "Foto guardada"
+ },
+ "hoy_fin_del_viaje_resumen": {
+  "ok": true,
+  "archivo": "hoy_fin_del_viaje_resumen.jpg",
+  "texto": "TU VIAJE · 17 – 20 OCT Lo que te llevas de tu viaje 4 DÍAS 48 PARADAS 20 KM 0 FOTOS este destino aún esconde 12 secretos. Estampar mi sello Compartir mi viaje Ver mi viaje JUTRI P Tu viaje a Roma 4 días · 3 noches · 17 – 20 oct Ver el resumen de mi viaje Guarda tus recuerdos Sube tus fotos y Roma queda en tu mapa de viajes, en tu perfil. Subir mis fotos ¿A dónde vamos ahora? Nuevo viaje Hoy Ruta Días Explorar Reservas ! Pruebas",
+  "hay": true
+ },
+ "reservas_aviso_naranja_documento": {
+  "ok": true,
+  "archivo": "reservas_aviso_naranja_documento.jpg",
+  "texto": "JUTRI P Reservas Estás en Roma Sábado 17 · 1 de 3 1 de 4 listo ✓ Llegada y vuelta Alojamiento Entradas 0/6 Seguro de viaje Llegada y vuelta Listo IDA Sábado 17 octubre 08:30 11:15 Barcelona (BCN) → Roma (Fiumicino) Vuelo VY6102 2 h 45 min Asiento 12A Localizador XK29PQ ⚠ Esta tarjeta de embarque es del lunes 19 de octubre; tu vuelo es el sábado 17. ¿Es correcta? Es correcta Toca para ampliar VUELT",
+  "dudoso": true
+ },
+ "reservas_e1_dias_cambian": {
+  "ok": true,
+  "archivo": "reservas_e1_dias_cambian.jpg",
+  "texto": "Tu excursión a Pompeya, el jueves 26. Para que encaje, cambiamos estos días: Jueves 26 · Día de Villa Borghese, el Popolo y la Plaza de España Viernes 27 · Centro histórico y Villa Borghese Antes, el jueves 26 Sábado 28 · Centro histórico y Villa Borghese Antes, el viernes 27 De acuerdo"
+ },
+ "reservas_reorganizar_boton": {
+  "ok": true,
+  "archivo": "reservas_reorganizar_boton.jpg",
+  "texto": "el botón redondo de Reorganizar en la columna flotante"
+ },
+ "reservas_reorganizar_alerta": {
+  "ok": true,
+  "archivo": "reservas_reorganizar_alerta.jpg",
+  "texto": "¿Reorganizamos tu día? Adaptamos tus paradas a tu viaje y tus reservas a su hora, para que no pierdas tiempo. Reorganizar Ahora no"
+ },
+ "reservas_reorganizar_hecho": {
+  "ok": true,
+  "archivo": "reservas_reorganizar_hecho.jpg",
+  "texto": "JUTRI P 1 2 3 4 5 6 7 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 1 2 3 4 5 6 7 8 9 10 11 12 13 14 Roma · 1 – 5 dic Añade tu alojamiento Para ajustar tu ruta a tu zona MAR 1 Free Tour y Plaza de España Barcelona → Roma · Día de viaje ··· MIÉ 2 Centro histórico y Villa Borghese ··· JUE 3 Roma antigua y Centro histórico ··· VIE 4 Hoy vuelves a casa Roma → Barcelona · Día de viaje ··· + Añadir día Hoy Ruta Días Explorar Reservas ! Pruebas Hemos reorganizado tu día Deshacer"
+ },
+ "hoy_ya_no_puedes_entrar_estado_real": {
+  "ok": true,
+  "archivo": "hoy_ya_no_puedes_entrar_estado_real.jpg",
+  "texto": "JUTRI P SÁB 17 · VATICANO Y TRASTEVERE Parada 1 de 12 ¿Cómo vais? Con fuerzas Cansados Hoy ves el atardecer en el Castillo de Sant’Angelo: el sol se pone a las 18:26. Llega un cuarto de hora antes, que es cuando más bonito está. Cómo llegar PRIMERA PARADA Plaza de San Pedro HORARIO Abierto Cierra a las 23:59 A PIE 11 min Desde el centro VISITA 30 min Lo que recomendamos Sin tu ubicación no sabemos cuándo llegas Usar mi ubicación Ya he llegado Escucha su historia por el camino 3 min Cómo llegar Cambiar plan ¿Qué hago ahora? Tu día · 0 de 12 hechas MAÑANA Plaza de San Pedro Ahora Basílica de San"
+ },
+ "hoy_ya_no_puedes_entrar_variante_sin_aviso": {
+  "ok": true,
+  "archivo": "hoy_ya_no_puedes_entrar_variante_sin_aviso.jpg",
+  "texto": "JUTRI P SÁB 17 · VATICANO Y TRASTEVERE Parada 2 de 12 ¿Cómo vais? Con fuerzas Cansados Hoy ves el atardecer en el Castillo de Sant’Angelo: el sol se pone a las 18:26. Llega un cuarto de hora antes, que es cuando más bonito está. Cómo llegar SIGUIENTE PARADA Basílica de San Pedro HORARIO Abierto Cierra a las 20:00 A PIE 2 min Desde la Plaza de San Pedro VISITA 75 min Lo que recomendamos Sin tu ubicación no sabemos cuándo llegas Usar mi ubicación Ya he llegado Escucha su historia por el camino 3 min Cómo llegar Cambiar plan ¿Qué hago ahora? Tu día · 1 de 12 hechas MAÑANA Plaza de San Pedro Basíl"
+ }
+}

@@ -153,7 +153,9 @@ for (const v of viajes) {
     cuenta.dias++
     const nombre = nombreDelDia(ruta, d, grupos)
     titulosVistos.set(nombre.titulo, (titulosVistos.get(nombre.titulo) ?? 0) + 1)
-    debe(PERMITIDOS.has(nombre.titulo), '3 título fuera de la lista', `${t}, día ${d.dayNumber}: «${nombre.titulo}» no es un título de la lista`)
+    // (V44 §9) El último día en blanco, MÁS ALLÁ de los días escritos (`beyondAutoDays`, sin paradas), que además es el del viaje de vuelta (lleva su trayecto «Roma → Barcelona»), se llama «Día de viaje» como cualquier día de viaje sin paradas (antes «Día libre»).
+    const diaDeViajeEnBlanco = nombre.titulo === 'Día de viaje' && Boolean(nombre.viaje) && d.beyondAutoDays === true && (d.stops ?? []).length === 0
+    debe(PERMITIDOS.has(nombre.titulo) || diaDeViajeEnBlanco, '3 título fuera de la lista', `${t}, día ${d.dayNumber}: «${nombre.titulo}» no es un título de la lista`)
     if (nombre.titulo.includes(' y ') && !DE_ZONA.includes(nombre.titulo) && nombre.titulo !== 'Basílicas y el Aventino') cuenta.conDosNombres++
     debe(!HORA.test(nombre.titulo) && !nombre.titulo.includes('→'), '3 título con hora o flecha', `${t}, día ${d.dayNumber}: «${nombre.titulo}»`)
     if (d.stops.some((s) => s.isFreeTour)) {

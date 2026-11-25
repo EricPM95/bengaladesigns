@@ -1,3 +1,4 @@
+import { BOTON_ORO } from '../../ui/botonesOro'
 import { useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import type { DayPlan, Route } from '../../../lib/types'
@@ -153,7 +154,7 @@ export function TarjetaVueltaHoy({ route, mitad, onVerComoIr }: { route: Route; 
       <span className="pl-1" style={{ font: "400 26px/1.1 'Instrument Serif',serif", textWrap: 'balance' as never }}>
         {titulo}
       </span>
-      <a href={enlace} target="_blank" rel="noopener noreferrer" data-hoy-vuelta-como-llegar className="flex h-12 w-full items-center justify-center gap-[7px] rounded-full btn-champan text-[14px] font-semibold no-underline">
+      <a href={enlace} target="_blank" rel="noopener noreferrer" data-hoy-vuelta-como-llegar className="flex h-12 w-full items-center justify-center gap-[7px] rounded-2xl text-[14px] font-bold no-underline" style={BOTON_ORO}>
         <Icono nombre="explorar" size={16} grosor={1.8} />
         Cómo llegar
       </a>

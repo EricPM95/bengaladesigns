@@ -107,8 +107,9 @@ async function pasada(version) {
     debe(e1.papelera.length === 1 && e1.papelera[0][0] === 44 && e1.papelera[0][1] === 44, 'E1 papelera', `la papelera roja de 44 × 44 (${JSON.stringify(e1.papelera)})`)
     debe(/98,26 €|98.26 €|€ ?98/.test(e1.texto), 'E1 precio', `el precio en su fila (${e1.texto.slice(0, 140)})`)
     debe(/Piazza della Repubblica/.test(e1.texto), 'E1 punto', 'el punto de encuentro en su fila')
-    debe(e1.boton === '+Sube tu reserva' && e1.candado === (sin ? '1' : '0'), 'candado', sin ? '[+ Sube tu reserva] lleva el candado dorado sin pase' : '[+ Sube tu reserva] sin candado con pase')
-    debe(sin ? !e1.comoLlegar : e1.comoLlegar, 'como llegar', sin ? 'sin pase no sale el botón [Cómo llegar al punto de encuentro]' : 'con pase, [Cómo llegar al punto de encuentro]')
+    debe(e1.boton === 'Sube tu reserva' && e1.candado === (sin ? '1' : '0'), 'candado', sin ? '[+ Sube tu reserva] lleva el candado dorado sin pase' : '[+ Sube tu reserva] sin candado con pase')
+    // (V49, 24-nov) Fuera [Cómo llegar al punto de encuentro] de la tarjeta de la excursión: el punto no se verifica y el camino salía hacia las coordenadas del destino de la excursión. Ni sin pase ni con pase.
+    debe(!e1.comoLlegar, 'como llegar', '(V49) la tarjeta de la excursión ya no lleva [Cómo llegar al punto de encuentro]')
     debe(!/Eliminar|Quitar excursión/.test(e1.texto), 'sin eliminar', 'sin «Eliminar excursión»: la papelera lo sustituye')
     await a.captura(path.join(SALIDA, `10r_reservas_excursion_${version}_375.jpg`)).catch(() => {})
 
@@ -164,7 +165,7 @@ async function pasada(version) {
     debe((await diaDe()) === diaAntes, 'no mueve', 'guardar los datos no cambia el día de la excursión en la ruta (regla 6j)')
     if (!sin) {
       const enlace = await ev(`document.querySelector(${JSON.stringify(fila + ' [data-como-llegar-punto-encuentro]')})?.getAttribute('href') ?? null`)
-      debe(/google\.com\/maps\/dir/.test(enlace ?? '') && /Termini/.test(decodeURIComponent(enlace ?? '')), 'como llegar', `[Cómo llegar al punto de encuentro] abre Maps con el punto (${enlace})`)
+      debe(enlace === null, 'como llegar', `(V49) no hay enlace [Cómo llegar al punto de encuentro] (${enlace})`)
       await ev(`document.querySelector(${JSON.stringify(fila)})?.scrollIntoView({ block: 'center' }); true`)
       await a.captura(path.join(SALIDA, `10r_reservas_excursion_comollegar_375.jpg`)).catch(() => {})
     }

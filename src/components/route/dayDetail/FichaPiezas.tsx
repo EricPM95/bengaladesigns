@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { Icono } from '../../ui/Icono'
 import type { SinEntrada } from '../../../lib/destinationExcursions'
 import type { NearbyTransit } from '../../../lib/nearbyTransitApi'
+import { DORADO } from '../../ui/botonesOro'
 
 /**
  * Las piezas del diseño nuevo de la ficha de cada lugar (Tanda 6y4, «Ficha Lugar.dc.html»): solo aspecto. `StopDetailSheet` las monta con los datos de NUESTROS datos; cada pieza que no recibe datos NO pinta nada
@@ -33,7 +34,7 @@ export function FichaPestanas<T extends string>({ pestanas, activa, onPick }: { 
           >
             {pestana.label}
             {pestana.numero != null && pestana.numero > 0 && (
-              <span data-ficha-pestana-numero className="ml-1.5 inline-flex h-[19px] min-w-[19px] items-center justify-center rounded-full px-1 align-middle" style={{ background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#3A2A0A', font: "700 11px/1 'Geist',sans-serif" }}>
+              <span data-ficha-pestana-numero className="ml-1.5 inline-flex h-[19px] min-w-[19px] items-center justify-center rounded-full px-1 align-middle" style={{ background: DORADO, color: '#3A2A0A', font: "700 11px/1 'Geist',sans-serif" }}>
                 {pestana.numero}
               </span>
             )}

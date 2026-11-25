@@ -48,6 +48,8 @@ console.log('Tips')
     'StopDetailSheet.tsx', // ídem (y en AddStopScreen / PlaceExplorerScreen, que son portales)
     'RestaurantDetailSheet.tsx', // dentro de PlaceExplorerScreen (portal)
     'MenusDelInvitado.tsx', // el menú del invitado (fondo transparente que cierra el menú), como StopMenu
+    'VisorDeAnimacion.tsx', // (V36b) solo lo NOMBRA en un comentario («los `fixed inset-0` de un iPhone»); es el visor del estudio de sonidos del administrador
+    'PrimeraVezArranque.tsx', // (V31) la cortina «Cargando» de la primera vez: cuelga de la raíz de App (`PiezaSegura`), no de ningún panel
   ]
   const todos = ficheros('src/components').filter((f) => /fixed inset-0/.test(leer(f)) && !/createPortal/.test(leer(f)))
   const nuevos = todos.filter((f) => !SIN_PORTAL_CONOCIDAS.some((c) => f.endsWith(c)))

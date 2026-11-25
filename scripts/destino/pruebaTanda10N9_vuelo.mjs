@@ -109,8 +109,10 @@ try {
   await ponerGente('eric')
   await ev("window.__ruta.setState((s) => ({ route: { ...s.route, arrivalFlightTime: null, departureFlightTime: null, arrivalPointId: null, departurePointId: null, ultimoCambio: null } })); true")
   await irAReservas()
-  const abre = await clic('[data-blk="llegada"] [class*="cursor-pointer"]')
-  debe(abre, 'A', 'el bloque «Llegada y vuelta» del administrador se abre al tocarlo')
+  // (V50) Sin vuelos, «Llegada y vuelta» es plegable: se abre la cabecera (si no lo está) y se toca [Añadir mi vuelo], que abre la hoja «Tu vuelo» de siempre.
+  if (!(await ev("Boolean(document.querySelector('[data-anadir-mi-vuelo]'))"))) { await clic('[data-blk="llegada"] [class*="cursor-pointer"]'); await a.esp(700) }
+  const abre = await clic('[data-anadir-mi-vuelo]')
+  debe(abre, 'A', 'el bloque «Llegada y vuelta» del administrador se abre al tocarlo y [Añadir mi vuelo] abre la hoja')
   await a.esp(1000)
   let m = await medidas()
   debe(m.botones.includes('Guardar el vuelo'), '2', `la hoja del administrador trae «Guardar el vuelo» (${m.botones.join(' | ').slice(0, 140)})`)

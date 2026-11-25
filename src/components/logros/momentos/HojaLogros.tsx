@@ -20,6 +20,8 @@ import { Candado } from '../../pase/Candado'
 import { ListaDeColeccion } from '../ficha/ListaDeColeccion'
 import { SiluetaDeEmblema } from '../dibujos/SiluetaDeEmblema'
 import { BloqueDelPase, ColeccionesAntes, LoQueTePuedesLlevar } from './hoja/AntesDelViaje'
+import { CruzDeHoja } from '../../ui/CruzDeHoja'
+import { TiradorDeHoja } from '../../ui/TiradorDeHoja'
 
 const EscenaDeEmblema = lazyReintentable(() => import('./EscenaDeEmblema'))
 
@@ -97,8 +99,8 @@ export default function HojaLogros(): ReactNode {
   return (
     <div className="mo" style={{ position: 'fixed', inset: 0, zIndex: 9000, fontFamily: "'Geist',system-ui,sans-serif" }}>
       <div onClick={cerrar} style={{ position: 'absolute', inset: 0, background: 'rgba(28,34,48,.45)', animation: 'moFade .3s ease both' }} />
-      <div role="dialog" aria-modal="true" aria-label="Tus logros" data-hoja-logros={fase} style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 64, display: 'flex', flexDirection: 'column', borderRadius: '28px 28px 0 0', background: '#FFFDF8', color: '#1C2230', animation: 'moSube .45s cubic-bezier(.2,.8,.2,1) both' }}>
-        <span style={{ alignSelf: 'center', margin: '10px 0 2px', width: 42, height: 4, flex: 'none', borderRadius: 4, background: 'rgba(28,34,48,.18)' }} />
+      <div role="dialog" aria-modal="true" aria-label="Tus logros" data-hoja-logros={fase} style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 64, display: 'flex', flexDirection: 'column', borderRadius: '32px 32px 0 0', background: '#FFFDF8', color: '#1C2230', animation: 'moSube .45s cubic-bezier(.2,.8,.2,1) both' }}>
+        <TiradorDeHoja />
         {/* (V14) Lo único fijo es una barra fina con el título y la X: la medalla y el botón de reclamar se mueven con el resto al bajar (antes la cabecera quedaba quieta y tapaba la tarjeta de la medalla). */}
         <div data-barra-de-logros style={{ flex: 'none', display: 'flex', alignItems: 'center', gap: 10, minHeight: 52, padding: '0 10px 0 20px', borderBottom: '1px solid rgba(28,34,48,.06)' }}>
           <span data-titulo-de-logros style={{ flex: 1, minWidth: 0, font: "400 24px/1.05 'Instrument Serif',serif", letterSpacing: '-.01em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -110,13 +112,7 @@ export default function HojaLogros(): ReactNode {
               'Tus logros'
             )}
           </span>
-          <button type="button" aria-label="Cerrar" onClick={cerrar} style={{ width: 48, height: 48, flex: 'none', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ width: 40, height: 40, borderRadius: '50%', background: '#F1EADC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1C2230" strokeWidth="2" strokeLinecap="round" aria-hidden>
-                <path d="M6 6l12 12M18 6L6 18" />
-              </svg>
-            </span>
-          </button>
+          <CruzDeHoja enLinea onCerrar={cerrar} />
         </div>
         <div data-cuerpo-de-logros style={{ flex: 1, minHeight: 0, overflowY: 'auto', scrollbarWidth: 'none', padding: '14px 20px calc(env(safe-area-inset-bottom,0px) + 28px)', display: 'flex', flexDirection: 'column', gap: 18 }}>
           {/* (LG1, 5-nov) Los colores de «Logros Boton» de Design: la cabecera de fase en frambuesa oklch(0.5 0.17 5) (antes marrón #6F4E37). */}

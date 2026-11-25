@@ -100,10 +100,13 @@ try {
 
 console.log('G. La ruta normal no cambia')
 const server = fs.readFileSync('server/index.js', 'utf8')
-const reb = /app\.post\('\/api\/rebuild-day'[\s\S]*?\n\}\)\n/.exec(server)?.[0] ?? ''
+// (Tanda LL) /api/rebuild-day pasó a ser `app.post('/api/rebuild-day', reconstruirDia)`: se mira el cuerpo del manejador `reconstruirDia` (es quien llama /api/adaptar-dia-vuelo, no al revés).
+const reb = /const reconstruirDia = async[\s\S]*?\n\}\r?\n/.exec(server)?.[0] ?? ''
 debe(reb.length > 100 && !/adaptarDiaAlVuelo|adaptar-dia-vuelo/.test(reb), 'g1', '/api/rebuild-day no sabe nada del modo nuevo')
 const generador = ['server/engine/index.js', 'server/engine/buildDayV3.js', 'shared/routeEngine/listasTrip.js', 'shared/routeEngine/planTrip.js']
 debe(generador.every((f) => !/adaptarDiaVuelo/.test(fs.readFileSync(f, 'utf8'))), 'g2', 'el generador de rutas no importa el modo nuevo')
 
 console.log(`\n${n} comprobaciones, ${fallos} fallos`)
+// (cierre limpio: sin esto, node en Windows cae con «Assertion failed … async.c» al salir con una petición aún cerrándose)
+await new Promise((r) => setTimeout(r, 500))
 process.exit(fallos ? 1 : 0)

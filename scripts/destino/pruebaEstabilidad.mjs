@@ -162,7 +162,8 @@ console.log('3. Sondeo por sello, sesión que no se cierra y arranque sin formul
   debe(/refrescarViajeActivo\(\{ sondeo: true \}\)/.test(host) && /opciones\.sondeo/.test(directo), 'sello', 'el sondeo de cada 30 s pide el viaje con {sondeo:true}')
   debe(/selloDelViaje\(tripId\)/.test(directo) && /ahora === conocido\.sello\) return 'igual'/.test(directo), 'sello', 'si el sello no ha cambiado, no baja el viaje (devuelve «igual»)')
   debe(/from\('trips'\)\.select\('updated_at, guardado_en'\)/.test(persist), 'sello', 'el sello son dos columnas pequeñas (updated_at y guardado_en), no la ruta')
-  debe(/SELLO_CADUCA_MS = 10 \* 60 \* 1000/.test(persist), 'sello', 'cada 10 min se baja igual, por si algo cambió sin tocar updated_at')
+  // (V36, 21-nov) Antes cada 10 min; ahora cada 3 horas (el viaje entero pesa 49-79 KB y se bajaba 48 veces al día aunque nadie lo hubiera cambiado: la fuga de egress de Supabase).
+  debe(/SELLO_CADUCA_MS = 3 \* 60 \* 60 \* 1000/.test(persist), 'sello', 'cada 3 horas se baja igual, por si algo cambió sin tocar updated_at (V36)')
   debe(/recordarSello\(row\.id/.test(persist) && /recordarSello\(tripId, fila\.updated_at/.test(persist), 'sello', 'al bajar los viajes (todos o uno) se apunta su sello')
   const cuentas = leer('src/lib/cuentas.ts')
   debe(/export async function recuperarSesionDeRespaldo/.test(cuentas) && /setSession\(\{ access_token: respaldo\.access_token/.test(cuentas), 'sesion', 'hay una copia de la sesión que se recupera si la librería la pierde')

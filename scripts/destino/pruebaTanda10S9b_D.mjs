@@ -41,12 +41,12 @@ console.log('2. Ostia Antica, página del día 4, cuadra con la tabla (3 h)')
   const o = lista.find((x) => x.id === 'ostia_antica')
   debe(Boolean(o), 'Ostia está en la página del día 4')
   debe(tabla.duration_hours === 3 && o?.duracion_h === tabla.duration_hours, `duración: página ${o?.duracion_h} h, tabla ${tabla.duration_hours} h`)
-  const hh = (t) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5))
+  // (V50, 24-nov) Las excursiones ya NO llevan horas ni punto de encuentro de ejemplo: solo datos verdaderos (la salida, la vuelta y las horas de las paradas están vacías hasta que haya un dato real).
   const salida = o?.paradas?.[0]?.hora
   const vuelta = o?.paradas?.at(-1)?.hora
-  debe(salida === '08:00' && o?.vuelta === vuelta && vuelta === '11:00', `salida ${salida}, vuelta ${o?.vuelta} / última parada ${vuelta} (08:00 → 11:00)`)
-  debe(hh(vuelta) - hh(salida) === tabla.duration_hours * 60, `de la salida a la vuelta pasan ${(hh(vuelta) - hh(salida)) / 60} h = las de la tabla`)
-  debe(o?.paradas?.length === 3 && hh(o.paradas[1].hora) > hh(salida) && hh(o.paradas[1].hora) < hh(vuelta), 'la parada de Ostia cae entre la salida y la vuelta')
+  debe(!salida && !o?.vuelta && !vuelta, `sin horas inventadas: salida «${salida}», vuelta «${o?.vuelta}» / última parada «${vuelta}» (V50)`)
+  debe(o?.paradas?.length === 3 && o.paradas.every((p) => !p.hora) && o.paradas[1].nombre === 'Ostia Antica', 'las 3 paradas (Roma · Ostia Antica · Roma) siguen, sin ninguna hora')
+  debe(o?.paradas?.length === 3 && o.paradas.every((p) => !p.hora), 'la parada de Ostia cae entre la salida y la vuelta (por orden; sin horas)')
   debe(o?.punto_de_encuentro === tabla.meeting_point, 'el punto de encuentro es el de la tabla')
   debe(!/6 h|14:00/.test(JSON.stringify(o)), 'ya no queda ninguna «6 h» ni «14:00» en Ostia')
 }

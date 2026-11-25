@@ -33,7 +33,8 @@ debe(/relative scroll-mt-3 ml-2\.5 rounded-3xl/.test(lista), 'asa', 'DayList: la
 
 const excursion = leer('src/components/route/dayDetail/excursion/ExcursionDayPage.tsx')
 debe(/La tarde es para ti: añade los sitios que quieras con «Añadir lugares»\./.test(excursion), 'tarde', 'ExcursionDayPage: «Vuelves a {destino} a las {hora}. La tarde es para ti: añade los sitios que quieras con «Añadir lugares».»')
-debe(/Vuelves a \{destination\} a las \{view\.returnTime \?\? '14:00'\}/.test(excursion) && /Añadir lugares<\/span>/.test(excursion), 'tarde', 'la frase usa el destino del viaje y el botón «Añadir lugares» está justo debajo')
+// (V50, 24-nov) «Vuelves a {destino} a las {hora}.» solo sale si hay hora de vuelta de verdad (ya no se inventa las 14:00); la frase de la tarde y el botón «Añadir lugares» siguen.
+debe(excursion.includes("view.returnTime ? `Vuelves a ${destination} a las ${view.returnTime}. ` : ''") && /Añadir lugares<\/span>/.test(excursion), 'tarde', 'la frase usa el destino del viaje (solo con hora de vuelta real) y el botón «Añadir lugares» está justo debajo')
 const hallado = []
 const recorrer = (dir) => {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {

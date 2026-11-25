@@ -42,6 +42,9 @@ import type { DatosEntradaLeida } from '../../../lib/billeteLeer'
 import { useBilleteStore, entradaConCodigo, type CodigoDelBillete } from '../../../store/useBilleteStore'
 import { useBilletesDeEntradas } from '../../../hooks/useBilleteEntrada'
 import { ImagenDelCodigo } from './TarjetaBillete'
+import { CruzDeHoja } from '../../ui/CruzDeHoja'
+import { BOTON_ORO } from '../../ui/botonesOro'
+import { TiradorDeHoja } from '../../ui/TiradorDeHoja'
 
 /** (10N8, N6) El nombre de la entrada con su artículo: «el Coliseo, Foro y Palatino» (la tabla de artículos solo conoce «Coliseo»: si el nombre entero no está, se usa el artículo del primer sitio que cubre). */
 function sitioDeLaEntrada(target: { name: string; placeNames: string[] }): string {
@@ -638,13 +641,12 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   return createPortal(
     <div className="fixed inset-0 z-[90] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="add-reservation-heading">
       <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={onClose} />
-      <div className="trazo-notice-panel relative flex max-h-[92dvh] w-full flex-col rounded-t-[28px] bg-bg-card shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[440px] md:rounded-[28px]">
-        <div className="flex shrink-0 justify-center pt-2.5" aria-hidden="true">
-          <span className="h-1 w-[42px] rounded-full bg-text/20" />
+      {/* (Noche 24-25 nov, Design «Excursion Nueva» X1 / «Entradas Billete») La hoja es crema (#FBF3E2), con el tirador de siempre. */}
+      <div className="trazo-notice-panel relative flex max-h-[92dvh] w-full flex-col rounded-t-[32px] shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[440px] md:rounded-[28px]" style={{ background: '#FBF3E2' }}>
+        <div className="flex shrink-0 justify-center pt-3" aria-hidden="true">
+          <TiradorDeHoja />
         </div>
-        <button type="button" onClick={onClose} aria-label="Cerrar" className="zona-toque absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full text-text-soft hover:bg-bg-hover">
-          <Icono nombre="cerrar" className="h-5 w-5" />
-        </button>
+        <CruzDeHoja onCerrar={onClose} estilo={{ right: 12, top: 12 }} />
 
         <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4">
           {view === 'hora' ? (
@@ -652,7 +654,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
               {!soloDatos && <p className="max-w-[calc(100%-2.5rem)] text-text/50" style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>
                 {isExcursion ? (target.paso2 ? 'Añadir una excursión · 2 de 2' : 'Excursión · elige día y hora') : esLibre ? 'Reserva · elige día y hora' : isFreeTour ? 'Free Tour · elige día y hora' : 'Entrada · elige día y hora'}
               </p>}
-              <h2 id="add-reservation-heading" className={soloDatos ? "mt-1.5 font-display text-[30px] leading-none text-text" : "mt-1.5 font-display text-[24px] leading-[1.05] text-text"} data-hoja-titulo={soloDatos ? "datos-entrada" : undefined}>
+              <h2 id="add-reservation-heading" className={soloDatos ? "mt-1.5 font-display text-[30px] leading-none text-text" : "mt-1.5 font-display text-[28px] leading-[1.05] text-text"} data-hoja-titulo={soloDatos ? "datos-entrada" : undefined}>
                 {soloDatos ? "Datos de la entrada" : target.name}
               </h2>
               {/* (V49) Las de día entero: solo caben en un día completo del viaje. */}
@@ -877,7 +879,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                       </p>
                     )}
                     {enDosPasos && pasoGrupo === 1 && !comprando ? (
-                      <button type="button" disabled={!ready} data-siguiente-paso onClick={() => setPasoGrupo(2)} className="mt-7 h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98] disabled:opacity-40">
+                      <button type="button" disabled={!ready} data-siguiente-paso onClick={() => setPasoGrupo(2)} className="mt-7 h-[54px] w-full rounded-2xl text-[16px] font-bold transition-transform active:scale-[.98] disabled:opacity-40" style={{ ...BOTON_ORO, border: 'none' }}>
                         Siguiente
                       </button>
                     ) : (
@@ -891,7 +893,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                           setCompraAbierta(true)
                         } else save()
                       }}
-                      className={`${comprando ? 'mt-3' : 'mt-7'} h-[54px] w-full rounded-full btn-champan text-[15px] font-semibold transition-transform active:scale-[.98] disabled:opacity-40`}
+                      className={`${comprando ? 'mt-3' : 'mt-7'} h-[54px] w-full rounded-2xl text-[16px] font-bold transition-transform active:scale-[.98] disabled:opacity-40`}
+                      style={{ ...BOTON_ORO, border: 'none' }}
                     >
                       {comprando ? 'Ir a comprar' : soloDatos ? 'Guardar los datos' : textoDelBoton({ normal: isExcursion ? 'Guardar la excursión' : isFreeTour ? 'Guardar el Free Tour' : 'Guardar la entrada', solo: !paraQuienVisible, marcados, yoId: quienReservaId, permiso: permisos.rol, nombreAdmin: grupo.nombreAdmin })}
                     </button>
@@ -1073,7 +1076,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
 
         {view === 'form' && (
           <div className="px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4">
-            <button type="button" disabled={!ready || planPending} onClick={() => save()} className="h-12 w-full rounded-full btn-champan text-[15px] font-medium transition-transform active:scale-[.98] disabled:opacity-40">
+            <button type="button" disabled={!ready || planPending} onClick={() => save()} className="h-[54px] w-full rounded-2xl text-[16px] font-bold transition-transform active:scale-[.98] disabled:opacity-40" style={{ ...BOTON_ORO, border: 'none' }}>
               {resolvedDay ? `Guardar y ponerla en ${elDia(route, resolvedDay.dayNumber)}` : 'Guardar y ponerla en su día'}
             </button>
           </div>
@@ -1102,28 +1105,29 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
         const titulo = movExc ? `Tu ${nombreDeLaExcursion}, el ${dondeCae}.` : `Tu ${plan?.principal?.sitio ?? target.name}, el ${dondeCae}.`
         return (
           <div className="absolute inset-0 z-[5] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="move-day-heading">
-            <div className="absolute inset-0 bg-text/25" onClick={() => setConfirming(false)} />
-            <div data-aviso-dias-cambian className="trazo-notice-panel relative w-full rounded-t-[28px] bg-bg-card px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[440px] md:rounded-[28px]">
-              <h2 id="move-day-heading" className="font-display text-[24px] leading-[1.15] text-text">
+            <div className="absolute inset-0" style={{ background: 'rgba(20,16,10,.45)' }} onClick={() => setConfirming(false)} />
+            {/* (Noche 24-25 nov, Design «Entrada Cambio Dias» E1) Panel #FFFDF8 de 32 px, título de 28 px, filas de 18 px con la fecha en negrita y [De acuerdo] dorado de 54 px. */}
+            <div data-aviso-dias-cambian className="trazo-notice-panel relative flex w-full flex-col gap-4 rounded-t-[32px] px-5 pb-[max(1.9rem,env(safe-area-inset-bottom))] pt-[26px] md:w-[440px] md:rounded-[28px]" style={{ background: '#FFFDF8', boxShadow: '0 -20px 40px rgba(0,0,0,.25)' }}>
+              <h2 id="move-day-heading" className="font-display text-[28px] leading-[1.12] text-text [text-wrap:balance]">
                 {titulo} Para que encaje, cambiamos estos días:
               </h2>
-              <div className="mt-4 flex flex-col gap-2">
+              <div className="flex flex-col gap-2.5">
                 {filas.map((fila) => (
-                  <div key={fila.dayNumber} data-dia-que-cambia={fila.principal ? 'elegido' : 'otro'} className="flex items-start gap-3 rounded-[14px] px-3 py-2.5" style={fila.principal ? { background: '#F9EFD3', border: '1px solid #D9B65F' } : { background: '#F6F0E2', border: '1px solid rgba(28,34,48,.08)' }}>
-                    <span className="flex h-9 w-9 flex-none items-center justify-center rounded-[11px]" style={{ background: fila.principal ? '#F1DFA8' : '#fff', color: '#7A5A18' }}>
+                  <div key={fila.dayNumber} data-dia-que-cambia={fila.principal ? 'elegido' : 'otro'} className="flex items-start gap-3 rounded-[18px] py-3 pl-3 pr-3.5" style={fila.principal ? { background: '#FBF3E2', border: '1px solid rgba(181,138,46,.55)' } : { background: '#F7F1E4', border: '1px solid rgba(28,34,48,.08)' }}>
+                    <span className="flex h-9 w-9 flex-none items-center justify-center rounded-[12px]" style={{ background: fila.principal ? '#F3E3B2' : '#FFFDF8', color: '#7A5A18' }}>
                       <Icono nombre="dias" size={17} grosor={1.8} />
                     </span>
                     <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                      <span className="text-[14px] leading-[1.3] text-text">
-                        <b className="font-bold">{conMayuscula(fechaCorta(fila.fechaIso, fila.dayNumber))}</b> · <span className="font-semibold">{fila.nombre}</span>
+                      <span className="text-[14.5px] font-semibold leading-[1.3] text-text">
+                        <b className="font-extrabold">{conMayuscula(fechaCorta(fila.fechaIso, fila.dayNumber))}</b> · {fila.nombre}
                       </span>
-                      {!fila.principal && fila.antesNumero != null && <span className="text-[12.5px] text-text/55">Antes, el {fechaCorta(fila.antesIso, fila.antesNumero)}</span>}
+                      {!fila.principal && fila.antesNumero != null && <span className="text-[12.5px] font-medium text-text/55">Antes, el {fechaCorta(fila.antesIso, fila.antesNumero)}</span>}
                     </span>
                   </div>
                 ))}
               </div>
-              {!movExc && plan && plan.motivos.length > 0 && <p className="mt-3 text-[13px] leading-snug text-text-soft">{plan.motivos.join(' ')}</p>}
-              <button type="button" onClick={() => save('mover')} data-aviso-de-acuerdo className="mt-5 h-12 w-full rounded-full btn-champan text-[15px] font-medium transition-transform active:scale-[.98]">
+              {!movExc && plan && plan.motivos.length > 0 && <p className="text-[13px] leading-snug text-text-soft">{plan.motivos.join(' ')}</p>}
+              <button type="button" onClick={() => save('mover')} data-aviso-de-acuerdo className="h-[54px] w-full rounded-2xl text-[16px] font-bold transition-transform active:scale-[.98]" style={{ ...BOTON_ORO, border: 'none' }}>
                 De acuerdo
               </button>
             </div>

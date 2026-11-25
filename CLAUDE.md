@@ -111,3 +111,13 @@ El plan gratis de Supabase tiene 5 GB de «egress» al mes; la app llegó a 10 G
 
 ### Piezas (elemento → archivo · nombre · mundo)
 - Cuadrado de la fecha → `src/components/ui/CuadradoFecha.tsx` · `CuadradoFecha` · los dos.
+- X de cerrar una hoja → `src/components/ui/CruzDeHoja.tsx` · `CruzDeHoja` (`enLinea`, `deshabilitada`, `datos`) · los dos. (La X de una pantalla completa o de un mapa, con aro dorado, es otra y se queda.)
+- Tirador de las hojas → `src/components/ui/TiradorDeHoja.tsx` · `TiradorDeHoja` (44×4) · los dos.
+- Esquinas de las hojas de abajo → 32 px · los dos.
+- Botón dorado y claro → `src/components/ui/botonesOro.ts` · `BOTON_ORO`, `BOTON_CLARO`, `DORADO` · los dos (nunca un degradado dorado a mano).
+- Etiqueta pequeña del resto («En tu ruta», «Te lo recomendamos», «Excursión») → `src/components/ui/Etiqueta.tsx` · `Etiqueta` (tonos `oro`, `destacada`, `gris`) · resto.
+- Botón de borde «+ Añade/Sube…» → `src/components/route/reservas/BotonesDeReserva.tsx` · `BotonAnadirDocumento estilo="borde"` · resto. Papelera → `PapeleraRoja`; lápiz → `LapizDeReserva`; icono del documento → `IconoDeDocumento` (mismo archivo) · resto.
+- Botón azul oscuro → `src/components/route/hoy/piezas.tsx` · `BOTON_AZUL` · HOY. «Dejarlo como está» → `EnlaceDejarlo`; enlace del aviso de arriba → `EnlaceDeAviso`; recuadro de puntos → `RecuadroDePuntos`; etiqueta pequeña (oro/azul/verde/rojo) → `Etiqueta`; tarjeta oscura → `TarjetaOscura` (mismo archivo) · HOY.
+- Hoja de abajo de HOY → `src/components/route/hoy/v2/HojasV2.tsx` · `HojaV2` (título `Titulo` y propuesta `HojaPropuesta`, tarjeta del sitio `TarjetaDelSitio`, fila de opción `Opcion`, en `CambiarPlan.tsx`) · HOY. Caja de la parada → `ParadaHoy.tsx` · `CajaDeParada` · HOY.
+- Aviso de arriba → `src/components/ui/AvisoArriba.tsx` (en HOY, vía `AvisoDeAbajoHost`); aviso de abajo con [Deshacer] → `ui/AvisoSobreLaBarra` · los dos.
+- Las dos formas de botón dorado del resto (`BOTON_ORO` y el champán `BotonHoja` de cuenta, pase y ajustes) están por decidir (DECISIONES_NOCHE_RESTO).

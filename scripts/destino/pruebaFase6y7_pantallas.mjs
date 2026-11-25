@@ -148,7 +148,7 @@ console.log('3. La ficha')
 // ── 4. «Escuchar historia», sin «Voz del móvil» ──
 console.log('4. Escuchar historia')
 {
-  const dicen = fuentes.filter((f) => /voz\s+del\s+m[óo]vil/i.test(leer(f)))
+  const dicen = fuentes.filter((f) => /(?<![a-záéíóúñ])voz\s+del\s+m[óo]vil/i.test(leer(f)))
   debe(dicen.length === 0, '4 sin voz del móvil', `«Voz del móvil» sale en: ${dicen.join(', ')}`)
   const e = leer('src/components/route/hoy/Escuchar.tsx')
   debe(/estado === 'pausa' \? 'En pausa' : null/.test(e) && /\{estadoTexto && </.test(e), '4 estado', 'la barra no deja sin texto el estado parado')

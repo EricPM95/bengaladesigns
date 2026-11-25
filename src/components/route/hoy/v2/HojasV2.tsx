@@ -6,12 +6,14 @@ import { fetchPlaceDetail, fichaEnMemoria, type PlaceDetail } from '../../../../
 import { displayStopName, formatDuration } from '../../../../lib/format'
 import type { MasVisita } from '../../../../lib/masVisitas'
 import { Icono } from '../../../ui/Icono'
+import { CruzDeHoja } from '../../../ui/CruzDeHoja'
+import { BOTON_CLARO, BOTON_ORO } from '../../../ui/botonesOro'
 import { ListaDeDias } from '../../dayDetail/ListaDeDias'
 import { ParadaFoto } from './ParadaFoto'
 
 const OJO = { font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' as const, color: 'rgba(28,34,48,.55)' }
 
-/** La hoja de abajo de HOY v2 (diseño: esquinas de 28, tirador, fondo oscuro suave). Va en el body, por encima de la cabecera y de la barra. */
+/** LA HOJA DE ABAJO de HOY (Noche 24-25 nov; Design «Aviso Cierre», «Lugares Pendientes»: esquinas de 32, tirador de 44 × 4, fondo marfil #FBF3E2 y la sombra de arriba). UNA sola para todas las hojas de HOY. Va en el body, por encima de la cabecera y de la barra. */
 export function HojaV2({ children, onCerrar, etiqueta, ancha = false, fondo = '#FFFDF8' }: { children: ReactNode; onCerrar: () => void; etiqueta: string; ancha?: boolean; fondo?: string }) {
   useEffect(() => {
     const tecla = (e: KeyboardEvent) => e.key === 'Escape' && onCerrar()
@@ -20,9 +22,9 @@ export function HojaV2({ children, onCerrar, etiqueta, ancha = false, fondo = '#
   }, [onCerrar])
   return createPortal(
     <div className="fixed inset-0 z-[90] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-label={etiqueta}>
-      <div className="absolute inset-0" style={{ background: 'rgba(28,34,48,.4)' }} onClick={onCerrar} />
-      <div className={`relative flex max-h-[88dvh] w-full flex-col gap-3.5 overflow-y-auto rounded-t-[28px] px-[18px] pb-[max(2rem,env(safe-area-inset-bottom))] pt-3 md:rounded-[28px] ${ancha ? 'md:w-[520px]' : 'md:w-[440px]'}`} style={{ background: fondo, boxShadow: '0 -10px 30px -12px rgba(0,0,0,.4)', scrollbarWidth: 'none' }}>
-        <span className="h-1 w-[42px] flex-none self-center rounded bg-[rgba(28,34,48,.18)]" aria-hidden="true" />
+      <div className="absolute inset-0" style={{ background: 'rgba(20,16,10,.5)' }} onClick={onCerrar} />
+      <div className={`relative flex max-h-[88dvh] w-full flex-col gap-3 overflow-y-auto rounded-t-[32px] px-[18px] pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-2.5 md:rounded-[32px] ${ancha ? 'md:w-[520px]' : 'md:w-[440px]'}`} style={{ background: fondo, boxShadow: '0 -20px 40px rgba(0,0,0,.25)', scrollbarWidth: 'none' }}>
+        <span className="h-1 w-[44px] flex-none self-center rounded-sm bg-[rgba(28,34,48,.25)]" aria-hidden="true" />
         {children}
       </div>
     </div>,
@@ -30,12 +32,9 @@ export function HojaV2({ children, onCerrar, etiqueta, ancha = false, fondo = '#
   )
 }
 
-function Cruz({ onClick }: { onClick: () => void }) {
-  return (
-    <button type="button" onClick={onClick} aria-label="Cerrar" className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-[#F1EADC] text-[#1C2230]">
-      <Icono nombre="cerrar" size={15} grosor={2} />
-    </button>
-  )
+/** (Noche 24-25 nov) LA X de las hojas de HOY: la misma pieza de toda la app (`CruzDeHoja`), dentro de la cabecera, junto al título. */
+export function Cruz({ onClick }: { onClick: () => void }) {
+  return <CruzDeHoja onCerrar={onClick} enLinea />
 }
 
 /** Pantalla 7: «¿Qué hacemos con esta parada?». Con la entrada reservada, antes se avisa; sin poder moverla (reservada o sin otros días), solo [No me da tiempo]. */
@@ -55,11 +54,11 @@ export function HojaQueHacemos({ nombre, horaReservada, dias, ahora, onSaltar, o
           </div>
           {horaReservada && <p className="text-[13.5px] leading-[1.45] text-[#1C2230]/80">Tienes la entrada reservada a las {horaReservada}.</p>}
           <div className="grid gap-2" style={{ gridTemplateColumns: puedeMover ? '1fr 1.4fr' : '1fr' }}>
-            <button type="button" onClick={onSaltar} className="h-12 rounded-full border border-[rgba(28,34,48,.18)] bg-white text-[13.5px] font-semibold text-[#1C2230]">
+            <button type="button" onClick={onSaltar} className="h-12 rounded-2xl text-[13.5px] font-bold" style={BOTON_CLARO}>
               {horaReservada ? 'Saltar igual' : 'No me da tiempo'}
             </button>
             {puedeMover && (
-              <button type="button" onClick={() => setPaso('b')} className="flex h-12 items-center justify-center gap-[7px] rounded-full btn-champan text-[13.5px] font-semibold ">
+              <button type="button" onClick={() => setPaso('b')} className="flex h-12 items-center justify-center gap-[7px] rounded-2xl text-[13.5px] font-bold" style={BOTON_ORO}>
                 <Icono nombre="dias" size={15} />
                 Pasarla a otro día
               </button>
@@ -106,7 +105,7 @@ export function HojaMasParaTuDia({ visitas, anadidas, onAnadir, onCerrar }: { vi
                   ✓ Añadida
                 </span>
               ) : (
-                <button type="button" onClick={() => onAnadir(v)} className="flex h-11 flex-none items-center gap-1.5 rounded-full btn-champan pl-3 pr-3.5 text-[12.5px] font-semibold ">
+                <button type="button" onClick={() => onAnadir(v)} className="flex h-11 flex-none items-center gap-1.5 rounded-2xl pl-3 pr-3.5 text-[12.5px] font-bold" style={BOTON_ORO}>
                   <Icono nombre="anadir" size={12} grosor={2.4} />
                   Añadir
                 </button>
@@ -184,10 +183,10 @@ export function HojaPregunta({ texto, onResponder }: { texto: string; onResponde
       <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: 'oklch(0.5 0.12 65)' }}>Tu día de prueba</span>
       <span style={{ font: "400 32px/1.02 'Instrument Serif',serif" }}>{corta}</span>
       {resto && <span className="text-[15px] leading-[1.5] text-[#1C2230]/75">{resto}</span>}
-      <button type="button" onClick={() => onResponder('hoy')} className="h-[54px] rounded-full text-[15px] font-bold text-[#17120a]" style={{ background: 'linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A)', boxShadow: '0 12px 24px -12px oklch(0.75 0.13 70)' }}>
+      <button type="button" onClick={() => onResponder('hoy')} className="h-[54px] rounded-2xl text-[15px] font-bold" style={BOTON_ORO}>
         Hoy
       </button>
-      <button type="button" onClick={() => onResponder('manana')} className="h-[46px] rounded-full border border-[rgba(28,34,48,.25)] text-[13.5px] font-semibold text-[#1C2230]">
+      <button type="button" onClick={() => onResponder('manana')} className="h-[46px] rounded-2xl text-[14px] font-bold" style={BOTON_CLARO}>
         Mañana
       </button>
     </HojaV2>

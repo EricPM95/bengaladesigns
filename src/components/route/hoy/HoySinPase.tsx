@@ -1,3 +1,4 @@
+import { BOTON_ORO } from '../../ui/botonesOro'
 import type { Route } from '../../../lib/types'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { usePaseEstado } from '../../../lib/paseEstado'
@@ -114,7 +115,7 @@ export function HoySinPase({ route, startIso = null, fase = null, simulada = nul
           type="button"
           onClick={abrirPase}
           data-hoy-ver-pase
-          style={{ marginTop: 20, height: 58, borderRadius: 18, background: 'linear-gradient(135deg,#F7E8BC,#D9BC74 52%,#B58A2E)', color: '#3A2A0A', font: "700 16.5px 'Geist'", boxShadow: '0 14px 26px -12px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.6)' }}
+          style={{ ...BOTON_ORO, marginTop: 20, height: 56, borderRadius: 16, font: "700 16px 'Geist'" }}
         >
           {`Ver el Pase ${destino}`}
         </button>

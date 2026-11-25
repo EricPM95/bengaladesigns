@@ -1,3 +1,4 @@
+import { BOTON_ORO } from '../../ui/botonesOro'
 import type { Route } from '../../../lib/types'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { isoToLocalDate } from '../../../lib/dateRange'
@@ -67,7 +68,7 @@ export function HoyAntes({ route, startIso, onPonFechas }: { route: Route; start
           Ese día tendrás
         </span>
         <ListaLoQueTendras />
-        <button type="button" onClick={verPrimerDia} className="mt-1 flex h-12 w-full items-center justify-center gap-2 rounded-full btn-champan text-[14.5px] font-semibold ">
+        <button type="button" onClick={verPrimerDia} className="mt-1 flex h-[52px] w-full items-center justify-center gap-2 rounded-2xl text-[15px] font-bold" style={BOTON_ORO}>
           <Icono nombre="dias" size={17} />
           Ver mi primer día
         </button>

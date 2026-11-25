@@ -156,7 +156,7 @@ try {
   await b.esp(1200)
   const hs = await ev("({ filas: Array.from(document.querySelectorAll('[data-sorpresa]')).map((e) => e.innerText.split(String.fromCharCode(10)).join(' | ')), texto: document.querySelector('[data-hoja-sorpresas]')?.innerText ?? '', botones: document.querySelectorAll('[data-subir-foto-de-sorpresa]').length, reclamar: Boolean(document.querySelector('[data-reclamar-desde-sorpresas]')) })")
   debe(hs.filas.length === 2 && hs.botones === 2 && hs.reclamar, 'sorpresas', `la hoja lista los sitios que dan pedazo (${hs.filas.length}), con [Subir foto] cada uno y [Reclamar con tus fotos]`)
-  debe(hs.filas.some((f) => /Cueva de los Verdes/.test(f) && /Día 3/.test(f) && /imprescindibles/i.test(f)) && !/Playa Blanca/.test(hs.texto) && /Y quizá algún secreto…/.test(hs.texto), 'sorpresas', 'cada sitio con su día y lo que da; un sitio que solo esconde un emblema no sale; «Y quizá algún secreto…» al final')
+  debe(hs.filas.some((f) => /Cueva de los Verdes/.test(f) && /Día 4 · mié 11/.test(f) && /imprescindibles/i.test(f)) && !/Playa Blanca/.test(hs.texto) && /Y quizá algún secreto…/.test(hs.texto), 'sorpresas', 'cada sitio con su día y lo que da; un sitio que solo esconde un emblema no sale; «Y quizá algún secreto…» al final')
   await b.captura(`${CAPTURAS}/sorpresas.jpg`)
   await ev("import('/src/components/logros/momentos/useMomentosUI.ts').then((ui) => { ui.useMomentosUI.getState().cerrarResumenViaje(); return true })")
 

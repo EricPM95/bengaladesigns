@@ -31,9 +31,10 @@ console.log('1. El código')
   debe(!/<TimeListWheel/.test(add), 'b2', 'la rueda ya no va abierta dentro de la hoja «Añadir»')
   debe(!/set\(\{ time: nearest \}\)/.test(add) && !/set\(\{ time: first && pickupItems/.test(add), 'b3', 'la hora no se pone sola al abrir la hoja (ni la entrada ni la excursión)')
   debe(/data-dia-cuadrado=/.test(add) && /repartirEnFilas\(chipDays\)/.test(add), 'b4', 'el día sigue en sus cuadrados')
-  debe(/const ready = Boolean\(resolvedDay && validTime\)/.test(add), 'b5', '[Guardar] sigue pidiendo una hora válida elegida')
+  // (V49, 24-nov) La hora de una EXCURSIÓN es opcional (no se inventa); en el resto, [Guardar] sigue pidiendo una hora válida elegida.
+  debe(/const ready = Boolean\(resolvedDay && \(validTime \|\| isExcursion\)\)/.test(add), 'b5', '[Guardar] sigue pidiendo una hora válida elegida (salvo la excursión, V49)')
   const hora = sinComentarios(leerArchivo('src/components/ui/HojaDeHora.tsx'))
-  debe(/if \(conTick \|\| valida \|\| tocada\.current\)/.test(hora), 'b6', 'la rueda es la de siempre (✓ guarda lo que se ve; tocar fuera vacía y sin mover la deja vacía)')
+  debe(/if \(valida \|\| tocada\.current\)/.test(hora) && /cerrarSinGuardar/.test(hora), 'b6', '(V49/V50) el ✓ guarda lo elegido (o la hora que ya había); nunca inventa el ejemplo; tocar fuera cierra sin guardar')
 }
 
 console.log('2. La hoja de la entrada en la app')
@@ -90,26 +91,36 @@ try {
   h = await hoja()
   debe(h?.hojaDeHora === false && h?.campo?.vacia === '1' && h?.guardarActivo === false, 'a8', `tocar fuera de la rueda vacía sin moverla la deja vacía (${JSON.stringify(h?.campo)})`)
 
-  // El ✓ sin mover guarda lo que se ve (el ejemplo).
+  // (V49, 24-nov) El ✓ SIN mover la rueda NO guarda la hora de ejemplo (nunca se guarda lo que el viajero no escribe).
   await clic(a, '[data-campo-de-hora="anadir"]')
   await esp(800)
   await clic(a, '[data-hoja-de-hora-guardar]')
   await esp(900)
   h = await hoja()
-  debe(h?.campo?.vacia === '0' && h.campo.texto === ejemplo, 'a9', `el ✓ guarda la hora que se ve, sin moverla (${ejemplo} → ${JSON.stringify(h?.campo)})`)
-  debe(h?.campo && /rgba?\(28, 34, 48(, 1)?\)/.test(h.campo.color), 'a10', `la hora elegida sale en negro (${h?.campo?.color})`)
-  await a.captura(foto('3_hora_elegida'))
-
-  // Elegir otra hora de la rueda y tocar fuera: la guarda.
+  debe(h?.campo?.vacia === '1', 'a9', `el ✓ sin mover NO guarda la hora de ejemplo (${ejemplo} → ${JSON.stringify(h?.campo)})`)
+  // Eligiendo en la rueda, el ✓ guarda lo elegido, y sale en negro.
   await clic(a, '[data-campo-de-hora="anadir"]')
   await esp(800)
   const otra = await a.evaluar(`(() => { const o = Array.from(document.querySelectorAll('[data-hoja-de-hora] [role="option"]')).map((x) => x.textContent.trim()).filter((t) => t !== ${JSON.stringify(ejemplo)}); return o.at(-1) ?? null })()`)
   await a.evaluar(`(() => { const o = Array.from(document.querySelectorAll('[data-hoja-de-hora] [role="option"]')).find((x) => x.textContent.trim() === ${JSON.stringify(otra)}); o?.click(); return true })()`)
   await esp(500)
+  await clic(a, '[data-hoja-de-hora-guardar]')
+  await esp(900)
+  h = await hoja()
+  debe(otra && h?.campo?.texto === otra && h.campo.vacia === '0', 'a9', `eligiendo otra hora, el ✓ la guarda (${otra} → ${JSON.stringify(h?.campo)})`)
+  debe(h?.campo && /rgba?\(28, 34, 48(, 1)?\)/.test(h.campo.color), 'a10', `la hora elegida sale en negro (${h?.campo?.color})`)
+  await a.captura(foto('3_hora_elegida'))
+
+  // (V50, 24-nov) Elegir otra hora y tocar fuera: se cierra SIN guardar (sigue la anterior).
+  await clic(a, '[data-campo-de-hora="anadir"]')
+  await esp(800)
+  const otra2 = await a.evaluar(`(() => { const o = Array.from(document.querySelectorAll('[data-hoja-de-hora] [role="option"]')).map((x) => x.textContent.trim()).filter((t) => t !== ${JSON.stringify(otra)}); return o[0] ?? null })()`)
+  await a.evaluar(`(() => { const o = Array.from(document.querySelectorAll('[data-hoja-de-hora] [role="option"]')).find((x) => x.textContent.trim() === ${JSON.stringify(otra2)}); o?.click(); return true })()`)
+  await esp(500)
   await clic(a, '[data-hoja-de-hora-fondo]')
   await esp(800)
   h = await hoja()
-  debe(otra && h?.campo?.texto === otra && h.campo.vacia === '0', 'a11', `elegir otra hora y tocar fuera la guarda (${otra} → ${h?.campo?.texto})`)
+  debe(otra2 && h?.campo?.texto === otra && h.campo.vacia === '0', 'a11', `elegir otra hora y tocar fuera NO la guarda (V50) (${otra2} → ${h?.campo?.texto}, sigue ${otra})`)
 } catch (e) {
   debe(false, 'error', `la prueba se cortó: ${String(e?.message ?? e).slice(0, 200)}`)
 } finally {

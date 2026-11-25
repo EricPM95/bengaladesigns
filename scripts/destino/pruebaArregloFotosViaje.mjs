@@ -55,7 +55,8 @@ try {
   let malV = 0
   for (const f of tabla.fotos.filter((x) => x.origen === 'Eric')) {
     const r = (await (await pedir('/api/fotos-viaje', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: [{ name: f.lugares[0], city: 'Lanzarote' }] }) })).json()).resultados[0]
-    const esperado = crypto.createHash('sha1').update(fs.readFileSync(`public/fotos/lanzarote/${f.archivo}`)).digest('hex').slice(0, 8)
+    // (V16b) las fotos `solo_tarjetas` (800 px o menos) se sirven con su versión pequeña: la versión `?v=` es el contenido de ESA.
+    const esperado = crypto.createHash('sha1').update(fs.readFileSync(`public/fotos/lanzarote/${f.solo_tarjetas ? f.archivo.replace('.jpg', '_p.jpg') : f.archivo}`)).digest('hex').slice(0, 8)
     if (r?.photo_source !== 'propia' || !r.photo_url.endsWith(`?v=${esperado}`)) malV++
     vistas.add(esperado)
   }

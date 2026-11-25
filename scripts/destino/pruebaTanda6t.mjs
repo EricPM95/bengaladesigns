@@ -182,7 +182,9 @@ for (const mode of MODOS) {
           debe(t.includes(kind === 'llegada' ? 'LLEGADA' : 'VUELTA'), '1 pinta', `${et}: no sale la ventana`)
           debe(!/\bFuente\b/.test(t), '1 fuentes', `${et}: sale «Fuente»`)
           debe(!/primera parada/i.test(t), '1 fuentes', `${et}: sale «Tu primera parada»`)
-          debe(!HORAS_DE_LA_APP.test(t), '2 horas de la app', `${et}: sale una hora de la app («${t.match(HORAS_DE_LA_APP)?.[0]}»)`)
+          // (Tanda LL, 4-nov) La tarjeta de llegada SIN pase SÍ puede decir, solo para informar, «Con tu vuelo estarás libre hacia las 17:30» (horaUtil.js › fraseLibreHacia): es la única hora calculada que se permite; se quita antes de mirar.
+          const sinFraseLibre = t.replace(/Con tu vuelo estarás libre hacia las \d{1,2}:\d{2}/g, '')
+          debe(!HORAS_DE_LA_APP.test(sinFraseLibre), '2 horas de la app', `${et}: sale una hora de la app («${sinFraseLibre.match(HORAS_DE_LA_APP)?.[0]}»)`)
           debe(!LLAVES.test(t), '6 textos', `${et}: sale «${t.match(LLAVES)?.[0]}»`)
           debe(!PROVEEDORES.test(t), '8 proveedor', `${et}: sale un proveedor («${t.match(PROVEEDORES)?.[0]}»)`)
           // Traslados: solo en aeropuerto y puerto, y solo si el punto a la vista tiene enlace en los datos.

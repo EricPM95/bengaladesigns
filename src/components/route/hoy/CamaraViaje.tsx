@@ -1,3 +1,4 @@
+import { CruzDeHoja } from '../../ui/CruzDeHoja'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { DayPlan, Route } from '../../../lib/types'
@@ -56,9 +57,7 @@ function HojaCamara({ modo, conAcceso, destino, rango, onCerrar, onAbrir, onVerP
         <span className="self-center" style={{ width: 44, height: 4, borderRadius: 2, background: 'rgba(28,34,48,.25)' }} />
         <div className="flex items-center justify-between">
           <span style={{ font: `400 30px/1 ${SERIF}` }}>Tu cámara de viaje</span>
-          <button type="button" onClick={onCerrar} aria-label="Cerrar" className="zona-toque flex h-9 w-9 items-center justify-center rounded-full" style={{ background: 'rgba(28,34,48,.08)' }}>
-            <Trazo d="M6 6l12 12M18 6L6 18" tam={17} color={TINTA} grosor={2} />
-          </button>
+          <CruzDeHoja onCerrar={onCerrar} enLinea />
         </div>
         <div className="flex items-start gap-3.5">
           <span className="flex h-[52px] w-[52px] flex-none items-center justify-center" style={{ borderRadius: 16, background: '#F3E3B2', color: '#6E5018' }}>
@@ -168,10 +167,13 @@ function PantallaAlgo({ onDescubrir }: { onDescubrir: () => void }) {
 /** K3 y K4: el aviso de abajo (sobre el menú, como todos los avisos de abajo de la app). */
 function AvisoDeFoto({ resultado, archivo, onFin }: { resultado: Extract<Resultado, { tipo: 'recuerdo' | 'sin_conexion' }>; archivo: Blob | null; onFin: () => void }) {
   // (HOY2b 7) Con [Guardar en mi galería] a la vista, el aviso dura más (8 s): da tiempo a tocarlo.
+  // (Noche final) `onFin` por una ref: si el padre lo pasa nuevo en cada pintado (HOY se repinta cada poco), el temporizador no se reinicia y el aviso se va de verdad a los 8 s.
+  const finRef = useRef(onFin)
+  finRef.current = onFin
   useEffect(() => {
-    const t = window.setTimeout(onFin, archivo ? 8000 : 5000)
+    const t = window.setTimeout(() => finRef.current(), archivo ? 8000 : 5000)
     return () => window.clearTimeout(t)
-  }, [onFin, archivo])
+  }, [archivo])
   const sinRed = resultado.tipo === 'sin_conexion'
   return createPortal(
     <AvisoSobreLaBarra z={86} datos={{ 'data-camara-viaje': sinRed ? 'sin-conexion' : 'recuerdo' }} className="!gap-3" estilo={{ animation: 'vistoToast .35s ease both', boxShadow: '0 0 0 1px rgba(243,216,143,.35)' }}>

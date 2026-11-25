@@ -118,7 +118,7 @@ console.log('Créditos')
   ok(CREDITOS.every((c) => c.enlaces.every((e) => /^https:\/\//.test(e.url))), '4c algún enlace no es https')
   const perfil = leer('src/components/layout/PerfilSheet.tsx')
   ok(/Créditos/.test(perfil) && /<Creditos onVolver/.test(perfil) && perfil.search(/>\s*Créditos\s*<\/button>/) > perfil.indexOf('Mis viajes'), '4d el enlace «Créditos» no está al final del Perfil')
-  const fuera = fs.readdirSync('src', { recursive: true }).map(String).filter((f) => /\.tsx$/.test(f) && !/(Creditos|PerfilSheet)\.tsx$/.test(f) && /Créditos|<Creditos/.test(leer(path.join('src', f))))
+  const fuera = fs.readdirSync('src', { recursive: true }).map(String).filter((f) => /\.tsx$/.test(f) && !/(Creditos|PerfilSheet)\.tsx$/.test(f) && /Créditos|<Creditos/.test(leer(path.join('src', f)).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')))
   ok(fuera.length === 0, `4e «Créditos» sale en otras pantallas: ${fuera.join(', ')}`)
   ok(/‹/.test(leer('src/components/perfil/Creditos.tsx')) && /Volver/.test(leer('src/components/perfil/Creditos.tsx')), '4f la página no tiene [‹ Volver]')
 }

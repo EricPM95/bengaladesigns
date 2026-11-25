@@ -104,7 +104,7 @@ async function pasada(version) {
     debe(e1.cabeceraTexto === `Entradas y Free Tour ${e1.pildora}`, 'E1 cabecera', `la cabecera sin línea de texto bajo el título (${e1.cabeceraTexto})`)
     debe(e1.lapices.length === 1 && e1.lapices.every(([w, h]) => w === 44 && h === 44), 'E1 lapices', `un solo lápiz (10S9, 1-nov: antes dos → ahora uno sin documento → decisión de Eric) de 44 × 44 (${JSON.stringify(e1.lapices)})`)
     debe(e1.papelera.length === 1 && e1.papelera[0][0] === 44 && e1.papelera[0][1] === 44, 'E1 papelera', `la papelera de 44 × 44 (${JSON.stringify(e1.papelera)})`)
-    debe(e1.boton === '+Sube tu entrada', 'E1 boton', `[+ Sube tu entrada] (V45: de borde) (${e1.boton})`)
+    debe(e1.boton === 'Sube tu entrada', 'E1 boton', `[+ Sube tu entrada] (V45: de borde) (${e1.boton})`)
     debe(/\d{2}:\d{2}$/.test((e1.hora ?? '').trim()) && /09:15/.test(e1.hora ?? ''), 'E1 hora', 'la hora en el cuadro azul noche')
     debe(!/Desde el PDF/.test(e1.texto) && !/personas/.test(e1.texto), 'E1 texto', 'sin «Desde el PDF…» ni «personas»')
     debe(/50 €|50,00 €|€ ?50/.test(e1.texto), 'E1 precio', `el precio en su fila (${e1.texto.slice(0, 120)})`)
@@ -151,7 +151,7 @@ async function pasada(version) {
     /* — Free Tour: mismo estilo — */
     if (base.freeTour) {
       const ft = await ev(`(() => { const f = document.querySelector('[data-entrada-fila="Free Tour"]') ?? document.querySelector('[data-entrada-fila]:has([data-tarjeta-crema="free-tour"])'); return f ? { crema: Boolean(f.querySelector('[data-tarjeta-crema]')), chip: f.querySelector('[data-entrada-chip]')?.textContent, hora: f.querySelector('[data-caja-hora]')?.textContent.trim(), boton: f.querySelector('[data-anadir-doc]')?.textContent.trim(), lapices: f.querySelectorAll('[data-lapiz]').length, papelera: f.querySelectorAll('[data-papelera]').length, precio: /€/.test(f.innerText) } : null })()`)
-      debe(ft && ft.crema && /Free Tour|Ya no está en tu ruta|En tu ruta/.test(ft.chip ?? '') && ft.lapices === 1 && ft.papelera === 1 && ft.boton === '+Sube tu entrada' && !ft.precio, 'Free Tour', `el Free Tour con el mismo estilo que una entrada, sin precio (${JSON.stringify(ft)})`)
+      debe(ft && ft.crema && /Free Tour|Ya no está en tu ruta|En tu ruta/.test(ft.chip ?? '') && ft.lapices === 1 && ft.papelera === 1 && ft.boton === 'Sube tu entrada' && !ft.precio, 'Free Tour', `el Free Tour con el mismo estilo que una entrada, sin precio (${JSON.stringify(ft)})`)
       await ev(`document.querySelector('[data-tarjeta-crema="free-tour"]')?.scrollIntoView({ block: 'center' }); true`)
       await a.esp(400)
       await a.captura(path.join(SALIDA, `10s8_d_freetour_${version}_375.jpg`)).catch(() => {})
@@ -174,7 +174,7 @@ async function pasada(version) {
     debe(a1.estado === 'Listo', 'A1 listo', `«Listo» en cuanto el hotel está puesto, sin reserva (${a1.estado})`)
     debe(a1.cabecera === 'Alojamiento Listo', 'A1 cabecera', `cabecera sin línea de texto bajo el título (${a1.cabecera})`)
     debe(a1.lapices.length === 1 && a1.lapices.every(([w, h]) => w === 44 && h === 44) && a1.papelera.length === 1 && a1.papelera[0][0] === 44, 'A1 botones', `un solo lápiz (10S9, 1-nov: antes dos → ahora uno sin documento → decisión de Eric) y la papelera de 44 × 44 (${JSON.stringify([a1.lapices, a1.papelera])})`)
-    debe(a1.boton === '+Añade tu reserva' && a1.candado === (sin ? '1' : '0'), 'candado', sin ? '[Añadir tu reserva] lleva el candado sin pase' : '[Añadir tu reserva] NO lleva candado con pase')
+    debe(a1.boton === 'Añade tu reserva' && a1.candado === (sin ? '1' : '0'), 'candado', sin ? '[Añadir tu reserva] lleva el candado sin pase' : '[Añadir tu reserva] NO lleva candado con pase')
     debe(/Hotel Palatino/.test(a1.texto) && /NOCHES|noches/i.test(a1.noches ?? '') && /→/.test(a1.fechas ?? ''), 'A1 contenido', `nombre, fechas con flecha y noches en su cuadro (${a1.fechas} · ${a1.noches})`)
     debe(!/Eliminar alojamiento|Cambiar los datos|Desde el PDF/.test(a1.texto), 'A1 limpio', 'sin «Eliminar alojamiento» ni «Desde el PDF…»')
     debe(a1.comoLlegar === !sin, 'A1 como llegar', sin ? 'sin pase no hay [Cómo llegar]' : 'con pase, [Cómo llegar a tu alojamiento]')

@@ -124,7 +124,8 @@ debe(/initialTab="tickets"/.test(codigoFicha) && /StopDetailSheet/.test(codigoFi
   const prati = pinta({ ...route5, accommodationZone: 'prati' }, 'completa')
   const tp = aTexto(bloqueDe(prati.html, 'aloj'))
   // 10S4 (antes → ahora → decisión de Eric, 30-oct): antes con zona salía abierto con «Tu zona · Prati» y [Cambiar]; ahora, listo, sale PLEGADO (título y «Listo») y «Tu zona · Prati» con [Cambiar] están dentro, al abrirlo (en el código; abierto en el navegador: pruebaTanda10S4_G).
-  debe(/Listo/.test(tp) && !/Falta/.test(tp) && !/Buscar alojamiento/.test(tp) && !/Prati/.test(tp), '2 zona', `(10S4) con zona: plegado, solo «Listo» (${plano(tp)})`)
+  // (V45 §3, 24-nov) «Listo» es solo con el hotel y las fechas: con SOLO la zona, el bloque sigue plegado y dice «Falta» (la zona ya no lo enciende).
+  debe(/Falta/.test(tp) && !/Listo/.test(tp) && !/Buscar alojamiento/.test(tp) && !/Prati/.test(tp), '2 zona', `(V45) con solo la zona: plegado, «Falta» (${plano(tp)})`)
   const codAloj = fs.readFileSync('src/components/route/reservas/AlojamientoReservas.tsx', 'utf8')
   debe(/Tu zona/.test(codAloj + fs.readFileSync('src/components/route/alojamiento/HojaTuAlojamiento.tsx', 'utf8')) && /data-tu-zona/.test(codAloj) && /elegida\.nombre/.test(codAloj) && /abrirTuAlojamiento/.test(codAloj), '2 zona', '(al día, 19-nov: «Tu zona» vive ahora en la hoja «Tu alojamiento», que el bloque abre) con zona: «Tu zona · Prati» y [Cambiar] en el código')
   const nose = pinta({ ...route5, accommodationZone: 'nose' }, 'completa')

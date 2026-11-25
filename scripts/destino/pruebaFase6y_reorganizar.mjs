@@ -277,7 +277,8 @@ for (const caso of casosAlmacen) {
   debe(JSON.stringify(propio.sitios) === JSON.stringify(esperado), 'D_dia_propio', `«Crear mi propio día» ordena distinto que «Reorganizar»: ${propio.sitios.join(' > ')} / ${esperado.join(' > ')}`)
   const parte = propio.dia.partes.unica
   debe([...parte.manana, ...parte.tarde].map((s) => s.lugar).join('|') === esperado.join('|'), 'D_dia_propio', 'el día propio no lleva las paradas en ese orden')
-  debe(parte.manana.length > 0 && parte.tarde.length > 0 && parte.comida && parte.cena, 'D_dia_propio', 'el día propio no lleva mañana, comida, tarde y cena')
+  // (V38, 22-nov) «Crear mi propio día» va SIN comida ni cena (quedaban feas y el viajero no las ha pedido; las añade él desde EXPLORAR): mañana y tarde sí.
+  debe(parte.manana.length > 0 && parte.tarde.length > 0 && !parte.comida && !parte.cena, 'D_dia_propio', 'el día propio lleva mañana y tarde, sin comida ni cena (V38)')
 }
 // (Tanda 10S: se espera a que el servidor de la prueba haya salido ANTES de process.exit; salir con un hijo cerrándose da el cierre raro 0xC0000409 de Windows.)
 const servidorFuera = new Promise((r) => servidor.once('exit', r))

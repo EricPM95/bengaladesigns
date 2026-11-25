@@ -11,15 +11,14 @@ import { Icono } from '../../../ui/Icono'
 import { AvisoDeHoy, CruzDeAviso, useAvisoCerrado } from './AvisosHoy'
 import { AvisoPlanActualizado, HojaPropuesta, Titulo, useContexto } from './CambiarPlan'
 import { HojaV2 } from './HojasV2'
+import { EnlaceDeAviso } from '../piezas'
 
 /**
  * HOY2 (agente C, apartado 5): «Tu entrada… corre peligro» (29 y 29b) y «¿Qué hacemos con…?» (28).
  *  · `AvisoDePeligro`: aviso de arriba (prioridad 1, el más urgente), con su X y [Ver solución] → «Una solución» (propuesta con el formato común). El que se cierra no vuelve ese día, salvo que otra entrada corra peligro.
  *  · `PreguntaParadaNoMarcada`: si estuviste en una parada y te alejas sin marcarla, pregunta UNA vez: [Ya lo visité] / [Lo dejo pendiente] / [Ahora no].
  */
-const TINTA = '#1C2230'
 const MARFIL = '#FBF3E2'
-const DORADO_CLARO = '#F3D88F'
 
 /* ------------------------------------------------------------------ */
 /* 29 y 29b: la entrada en peligro                                      */
@@ -58,9 +57,7 @@ export function AvisoDePeligro({ route, day, dateIso, ubicacion, enCoche, ahoraM
               <span data-hoy-peligro-texto className="min-w-0 flex-1 pt-1 text-[13.5px] font-medium leading-[1.35]">{textoDelPeligro(peligro, esTurno)}</span>
               <CruzDeAviso onClick={cerrar} />
             </div>
-            <button type="button" onClick={ver} data-peligro-ver-solucion className="mb-1 ml-[42px] flex h-11 flex-none items-center self-start rounded-full px-4 text-[12px] font-bold" style={{ background: TINTA, color: DORADO_CLARO }}>
-              Ver solución
-            </button>
+            <EnlaceDeAviso onClick={ver} texto="Ver solución" color="#8A2A1F" datos={{ 'data-peligro-ver-solucion': '1' }} className="mb-1 ml-[42px]" />
           </div>
         </AvisoDeHoy>
       )}

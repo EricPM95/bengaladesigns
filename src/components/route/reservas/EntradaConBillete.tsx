@@ -7,6 +7,7 @@ import { INK } from './BloqueReservas'
 import type { Persona } from '../../../store/useViajeCompartido'
 import { BotonAnadirDocumento, IconoDeDocumento, LapizDeReserva, PapeleraRoja } from './BotonesDeReserva'
 import { CajaDia, CajaHora, FilaIcono, ParaQuienDesign, SeccionDatos, TarjetaCrema, Trazo } from './PiezasDesignReservas'
+import { Etiqueta } from '../../ui/Etiqueta'
 
 /**
  * (10S7 §3 y §4) LA ENTRADA CON SU BILLETE (`Piezas/Entradas Billete` E1 a E3 y el botón del código de `Entradas Lista` L2). Lo mismo que el billete del vuelo (10S5), para las entradas y el Free Tour:
@@ -122,9 +123,7 @@ export function TarjetaEntradaDesign({
     <TarjetaCrema datos={datos}>
       <div className="flex items-start gap-2.5">
         <span className="flex min-w-0 flex-1 flex-col gap-1.5">
-          <span className="inline-flex h-[22px] items-center self-start whitespace-nowrap rounded-full px-[9px]" data-entrada-chip style={{ background: '#F3E3B2', color: '#6E5018', font: "600 10.5px 'Geist'" }}>
-            {chip}
-          </span>
+          <Etiqueta datos={{ 'data-entrada-chip': '1' }}>{chip}</Etiqueta>
           <span data-entrada-nombre className="[overflow-wrap:anywhere]" style={{ font: "400 28px/1.05 'Instrument Serif',serif" }}>
             {nombre}
           </span>

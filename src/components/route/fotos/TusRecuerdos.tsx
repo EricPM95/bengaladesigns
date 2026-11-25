@@ -7,6 +7,7 @@ import { useFotosViaje } from '../../../lib/useFotosViaje'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { HojaOpciones, ICONOS_OPCION, OpcionTarjeta } from '../../ui/HojaOpciones'
 import { FotoEnGrande } from './FotoEnGrande'
+import { DORADO } from '../../ui/botonesOro'
 
 /**
  * «TUS RECUERDOS» EN LA FICHA DE UN SITIO (Tanda 10N6 §1f; `Piezas/Recuerdos Ficha`, propuesta A, con los textos de Eric del 27-oct).
@@ -17,7 +18,7 @@ import { FotoEnGrande } from './FotoEnGrande'
  * Sale siempre (también antes del viaje). Sustituye a la cámara que iba encima de la foto (`BotonFotoParada` ya no se monta en la ficha).
  */
 
-const ORO = 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)'
+const ORO = DORADO
 const ICONO_FOTOS = 'M8 8h12v12H8zM4 16V4h12M11 17l3-3.5 2.5 2.5 1.5-2 2 2.5'
 
 /** «1 foto» / «3 fotos». */

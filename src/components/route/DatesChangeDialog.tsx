@@ -84,7 +84,7 @@ export function useDatesChange(route: Route | null) {
     ? createPortal(
         <div className="fixed inset-0 z-[80] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="dates-change-heading">
           <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={() => setPending(null)} />
-          <div className="trazo-notice-panel relative w-full rounded-t-[28px] bg-bg-card px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[420px] md:rounded-[28px]">
+          <div className="trazo-notice-panel relative w-full rounded-t-[32px] bg-bg-card px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[420px] md:rounded-[28px]">
             <CruzDeHoja onCerrar={() => setPending(null)} />
             <p className="font-mono text-[10.5px] font-medium uppercase tracking-[.16em] text-accent">Tus fechas</p>
             <h2 id="dates-change-heading" className="mt-2 font-display text-[24px] leading-[1.15] text-text">

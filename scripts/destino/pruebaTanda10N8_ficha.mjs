@@ -32,8 +32,10 @@ console.log('1. El código')
   debe(/CandadoRedondo/.test(e) && !/linear-gradient\(135deg,#1C2230,#252F55/.test(e), '6', 'Elegir: el candado dorado sobre azul (CandadoRedondo) en la esquina y fuera el azul oscuro')
   const x = sinComentarios(leer('src/components/route/ExplorePanel.tsx'))
   debe(/grayscale\(1\)/.test(x) && !/AZUL_PASE/.test(x), '6', 'Baños y Fuentes: tarjeta en gris con candado, sin azul')
-  for (const f of ['perfil/EliminarViajeHost.tsx', 'route/freeDay/UndoToast.tsx', 'logros/visto/Hojas.tsx', 'propuesta/BotonesDeViaje.tsx'])
+  for (const f of ['perfil/EliminarViajeHost.tsx', 'route/freeDay/UndoToast.tsx', 'logros/visto/Hojas.tsx'])
     debe(/AvisoSobreLaBarra/.test(leer('src/components/' + f)), '8b-h', `${f}: el aviso de abajo usa AvisoSobreLaBarra`)
+  // (V45, 24-nov) Los avisos que SOLO informan (los de [Enlazar / Enviar la propuesta]: «Enlace copiado»…) van ARRIBA (`AvisoArriba`, 5 s); los de abajo son los que llevan [Deshacer].
+  debe(/AvisoArriba/.test(leer('src/components/propuesta/BotonesDeViaje.tsx')), '8b-h', 'propuesta/BotonesDeViaje.tsx: sus avisos solo informan y van arriba (AvisoArriba, V45)')
   const sd = leer('src/components/route/dayDetail/StopDetailSheet.tsx')
   debe((sd.match(/border-\[1\.5px\] border-accent/g) ?? []).length >= 2, '8b-e', 'ficha: volver y fecha con el borde marrón')
 }

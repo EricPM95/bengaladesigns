@@ -25,8 +25,8 @@ export default async function ({ debe, leer, archivos, sinComentarios }) {
   debe(T.faseDelViaje(v('2026-10-29', '2026-11-01', '2026-11-02')) === 'despues' && T.faseDelViaje(null) === 'antes', 'fase', 'después del viaje; sin viaje, antes')
   debe(T.etiquetaDeFase('antes', v('2026-10-29', '2026-11-01', '2026-10-20'), 'Roma') === 'Antes del viaje · 29 oct – 1 nov', 'etiqueta', 'rango entre dos meses')
   debe(T.etiquetaDeFase('despues', v('2026-10-13', '2026-10-16', '2026-10-20'), 'Roma') === 'Viaje terminado · 13 – 16 oct', 'etiqueta', 'rango en el mismo mes')
-  debe(T.etiquetaDeFase('durante', v('2026-10-29', '2026-11-01', '2026-10-29'), 'Roma') === 'Jue 29 · día 1', 'etiqueta', 'día 1')
-  debe(T.etiquetaDeFase('durante', v('2026-10-29', '2026-11-01', '2026-11-01'), 'Roma') === 'Dom 1 · último día en Roma', 'etiqueta', 'último día')
+  debe(T.etiquetaDeFase('durante', v('2026-10-29', '2026-11-01', '2026-10-29'), 'Roma') === 'En curso · Jue 29 · día 1', 'etiqueta', 'día 1 (V19: la etiqueta empieza por «En curso»)')
+  debe(T.etiquetaDeFase('durante', v('2026-10-29', '2026-11-01', '2026-11-01'), 'Roma') === 'En curso · Dom 1 · último día en Roma', 'etiqueta', 'último día (V19: «En curso»)')
   debe(T.textoDelSiguiente({ fase: 'durante', grado: null, siguiente: { grado: 'bronce', faltan: 1 } }) === 'Empieza en bronce', 'siguiente', 'sin grado')
   debe(T.textoDelSiguiente({ fase: 'durante', grado: 'bronce', siguiente: { grado: 'plata', faltan: 2 } }) === 'Te faltan 2 para la plata', 'siguiente', 'plural')
   debe(T.textoDelSiguiente({ fase: 'durante', grado: 'bronce', siguiente: { grado: 'plata', faltan: 1 } }) === 'Te falta 1 para la plata', 'siguiente', 'singular')
@@ -72,13 +72,17 @@ export default async function ({ debe, leer, archivos, sinComentarios }) {
   // --- La hoja ---
   const hoja = sinComentarios(leer('src/components/logros/momentos/HojaLogros.tsx'))
   debe(!/<Emblema\b[^>]*silueta/.test(hoja) && /encontrados_lista/.test(hoja), 'emblemas', 'la hoja solo dibuja emblemas de la lista de encontrados')
-  debe(/\?<\/span>/.test(hoja) || /\?\s*<\/span>/.test(hoja), 'emblemas', 'los que faltan son solo «?»')
+  // (V25/V34) los que faltan se dibujan con `SiluetaDeEmblema` (una silueta oscura con «?»), no con un «?» escrito en la hoja.
+  debe(/<SiluetaDeEmblema /.test(hoja) && />\?<\/span>/.test(leer('src/components/logros/dibujos/SiluetaDeEmblema.tsx')), 'emblemas', 'los que faltan son solo «?»')
   debe(!/madrugador|nocturno/i.test(hoja.replace(/ID_EMBLEMAS[^\n]*\n/, '')), 'horas', 'ni Madrugador ni Nocturno con hora en la hoja')
-  debe(/minHeight: 44/.test(hoja) && /width: 48, height: 48/.test(hoja), 'toque', 'los botones de la hoja miden 44 px o más')
+  // (Noche final) La X de la hoja es la pieza `CruzDeHoja` (V12: círculo de 40 en una zona de toque de 48): la medida de 48 está en la pieza.
+  debe(/minHeight: 44/.test(hoja) && (/width: 48, height: 48/.test(hoja) || (/<CruzDeHoja /.test(hoja) && /width: 48, height: 48/.test(leer('src/components/ui/CruzDeHoja.tsx')))), 'toque', 'los botones de la hoja miden 44 px o más')
   debe(/data-grado|moPop/.test(hoja + leer('src/components/logros/momentos/BotonFlotanteLogros.tsx')), 'hoja', 'sale con su animación')
   const boton = sinComentarios(leer('src/components/logros/momentos/BotonFlotanteLogros.tsx'))
-  debe(/modo === 'today' \? 120 : 88/.test(boton), 'boton', 'en HOY el botón sube')
-  debe(/strokeDasharray=\{grado \? undefined : '4 3'\}/.test(boton), 'boton', 'antes del viaje el aro va a rayas')
+  // (V42) la altura del botón la da la columna de flotantes (`useFlotantes`: `alto`, y 88 px si aún no hay), no un 120 / 88 escrito en el botón.
+  debe(/bottom: alto !== null/.test(boton) && /useFlotantes()/.test(boton), 'boton', 'en HOY el botón sube (su altura sale de la columna de flotantes)')
+  // (V18, Design B1) el botón es un trofeo de trazo fino como la cámara: ya NO hay aro de avance, ni a rayas ni lleno.
+  debe(/export function BotonVisual/.test(boton) && !/strokeDasharray/.test(boton), 'boton', 'el botón es un trofeo sin aro de avance (V18)')
   debe(/logrosActivos\(\)\) return null/.test(boton), 'boton', 'con los logros apagados no se monta')
   debe(/logrosActivos\(\) \? 'pb-28'/.test(leer('src/components/route/DayList.tsx')), 'dias', 'la lista de días deja hueco al final solo con los logros encendidos')
   const css = leer('src/components/logros/momentos/momentos.css')

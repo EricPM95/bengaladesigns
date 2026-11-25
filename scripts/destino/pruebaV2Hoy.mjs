@@ -28,7 +28,8 @@ const parada = leer('src/components/route/hoy/v2/ParadaHoy.tsx')
   const pSin = sinComentarios(parada)
   debe(/'SIGUIENTE PARADA'/.test(pSin) && /'PRIMERA PARADA'/.test(pSin) && !/POR LLEGAR/.test(pSin) && !/'SIGUIENTE'/.test(pSin), 'etiquetas', 'la tarjeta de camino dice «SIGUIENTE PARADA» y «PRIMERA PARADA»; fuera «POR LLEGAR» y «SIGUIENTE»')
   debe(/YA ESTÁS AQUÍ/.test(pSin) && !/Ya estás aquí\. ¿Empezamos\?/.test(pSin), 'etiquetas', 'sale «YA ESTÁS AQUÍ» y fuera «Ya estás aquí. ¿Empezamos?»')
-  debe(/Visita de unos/.test(pSin) && /Cierra en \{cierraEn\} min/.test(pSin) && /cierraEn < 45/.test(pSin), 'etiquetas', '«Visita de unos 50 min» y «Cierra en 25 min» solo si cierra en menos de 45 min')
+  // (V47) «Visita de unos 50 min» es ahora la caja VISITA (50 min · «Lo que recomendamos»); «Cierra en N min» sigue solo si cierra en menos de 45 min.
+  debe(/etiqueta="VISITA"/.test(pSin) && /Cierra en \{cierraEn\} min/.test(pSin) && /cierraEn < 45/.test(pSin), 'etiquetas', '«VISITA 50 min» y «Cierra en 25 min» y «Cierra en 25 min» solo si cierra en menos de 45 min')
   // V43 §8 (antes → ahora): el reproductor «Escucha su historia por el camino» (3 min debajo) y, sin ubicación, el recuadro «Sin tu ubicación no sabemos cuándo llegas» con [Ya he llegado].
   debe(/Escucha su historia por el camino/.test(pSin) && /\{historia\.minutos\} min/.test(pSin) && /Sin tu ubicación no sabemos cuándo llegas/.test(pSin) && /Ya he llegado/.test(pSin), 'etiquetas', '«Escucha su historia por el camino · 3 min» y «Sin tu ubicación no sabemos cuándo llegas · Ya he llegado»')
   for (const et of ['Qué vas a ver', 'Escuchar historia', 'Tu entrada', 'Haz tu foto']) debe(new RegExp(`etiqueta="${et}"|'${et}'`).test(pSin), 'iconos', `el icono «${et}» lleva su aria-label`)
@@ -195,12 +196,15 @@ for (const [destino, hoy, coche] of [['roma', '2026-10-17', false], ['lanzarote'
     await app.esp(1500)
     const aqui = await pantalla(app)
     debe(/YA ESTÁS AQUÍ/.test(aqui) && !/Ya estás aquí\. ¿Empezamos/.test(aqui), 'etiquetas', `${etq}: «YA ESTÁS AQUÍ» sin «¿Empezamos?»`)
-    debe(/Visita de unos \d+ min/.test(aqui), 'etiquetas', `${etq}: «Visita de unos N min»`)
+    // (V47) «Visita de unos N min» es la caja VISITA: «VISITA · N min · Lo que recomendamos».
+    debe(/VISITA\s+\d+ min/.test(aqui), 'etiquetas', `${etq}: la caja «VISITA N min»`)
     debe(/He terminado/.test(aqui) && /Necesito más tiempo/.test(aqui) && /Saltar parada/.test(aqui), 'etiquetas', `${etq}: [He terminado], [Necesito más tiempo] y «Saltar parada»`)
     debe(!/Dónde has aparcado/.test(aqui) && !/Cambiar plan/.test(aqui), 'aparcar', `${etq}: sin [Dónde has aparcado] ni [Cambiar plan] en «Ya estás aquí»`)
-    debe(!/\d{1,2}:\d{2}–\d{1,2}:\d{2}/.test(aqui) && !/En coche · \d|A pie · \d/.test(aqui), 'etiquetas', `${etq}: «Ya estás aquí» sin horario ni trayecto`)
+    // (V47) Al llegar van las mismas tres cajas: HORARIO (según la hora real), A PIE / EN COCHE con «Aquí · Ya has llegado» (ya sin trayecto: ni minutos ni «Desde …») y VISITA.
+    debe(/HORARIO/.test(aqui) && /(A PIE|EN COCHE)\s+Aquí\s+Ya has llegado/.test(aqui) && !/En coche · \d|A pie · \d/.test(aqui) && !/\d+ min\s+Desde/.test(aqui), 'etiquetas', `${etq}: «Ya estás aquí» con las tres cajas y «Aquí · Ya has llegado», sin trayecto`)
     const iconos = await app.evaluar("Array.from(document.querySelectorAll('[data-hoy-icono]')).map((b) => b.getAttribute('aria-label') + '|' + (b.textContent || '').trim())")
-    debe(iconos.some((x) => /^Qué vas a ver\|$/.test(x)) && iconos.some((x) => /^Haz tu foto\|$/.test(x)), 'iconos', `${etq}: los iconos van sin texto y con su aria-label (${iconos.join(' · ')})`)
+    // (V47) Los tres botones llevan su nombre debajo del icono («Qué ver», «Escuchar historia», «Hacer foto») y su aria-label de siempre.
+    debe(iconos.some((x) => /^Qué vas a ver\|Qué ver$/.test(x)) && iconos.some((x) => /^Haz tu foto\|Hacer foto$/.test(x)), 'iconos', `${etq}: los botones llevan su nombre y su aria-label (${iconos.join(' · ')})`)
     await app.captura(`${CAPTURAS}/${destino}_aqui.jpg`)
     // «Saltar parada»: sin hoja ni pregunta; la parada pasa a «Lugares pendientes» y sale UN aviso abajo, sin [Deshacer].
     await app.evaluar("document.querySelector('[data-hoy-saltar-parada]')?.click()")
@@ -277,13 +281,18 @@ console.log('4. V2b')
   const fotosCod = sinComentarios(leer('src/components/route/fotos/TusFotosDeHoy.tsx'))
   debe(/if \(deHoy\.length === 0\) return null/.test(fotosCod) && !/BotonFoto/.test(fotosCod), 'fotos de hoy', '«Tus fotos de hoy» solo sale con fotos de hoy y sin botón [+ Foto] (la cámara flotante ya está)')
   const hor = sinComentarios(leer('src/components/route/hoy/v2/HorarioHoy.tsx'))
-  debe(/#FFF1D6/.test(hor) && /#E5B565/.test(hor) && !/accent-red/.test(hor.slice(hor.indexOf('AvisoDeHorarioEnDirecto'))), 'aviso', 'el aviso «A este ritmo…» es la tarjeta pequeña en ámbar de Design (no la roja grande)')
+  // (Noche 24-25 nov, Design «Aviso Cierre» A1) El ámbar es el del dibujo: fondo #FBF1D8 y filo rgba(200,140,40,.6).
+  debe(/#FBF1D8/.test(hor) && /rgba\(200,140,40/.test(hor) && !/accent-red/.test(hor.slice(hor.indexOf('AvisoDeHorarioEnDirecto'))), 'aviso', 'el aviso «A este ritmo…» es la tarjeta pequeña en ámbar de Design (no la roja grande)')
   debe(/diaVivo/.test(sinComentarios(duranteV2)) && /<AvisoDeHorarioEnDirecto[^>]*day=\{diaVivo\}/.test(sinComentarios(duranteV2)), 'aviso', 'el aviso de horario mira el día SIN lo cerrado/saltado (diaVivo)')
   // Servidor: los datos reales de Roma y de Lanzarote (la misma lógica que contesta el servidor).
   const { cargarDatos, cargarCatalogo } = await import('../../server/logros/datos.js')
   const { sitiosCerca, retosDelDia, elegirRetos } = await import('../../server/logros/cerca.js')
   const { sitioDeParada } = await import('../../server/logros/servicio.js')
-  const { textoDePedazosDe } = { textoDePedazosDe: (n) => (n.length === 0 ? null : `Aquí ${n.length === 1 ? 'ganas 1 pedazo' : `ganas ${n.length} pedazos`}: ${n.length === 1 ? `«${n[0]}»` : `${n.slice(0, -1).map((x) => `«${x}»`).join(', ')} y «${n[n.length - 1]}»`}`) }
+  // (V47) «AQUÍ GANAS 2 PEDAZOS» (la etiqueta, en mayúsculas) y debajo el nombre de la colección («El país más pequeño del mundo y 1 más»): se mira sin mirar mayúsculas.
+  const { textoDePedazosDe, contienePedazos } = {
+    textoDePedazosDe: (n) => (n.length === 0 ? null : `Aquí ${n.length === 1 ? 'ganas 1 pedazo' : `ganas ${n.length} pedazos`}: ${n.length <= 1 ? n[0] : `${n[0]} y ${n.length - 1} más`}`),
+    contienePedazos: (pantalla, n) => { const p = pantalla.toLowerCase(); return p.includes(`aquí ${n.length === 1 ? 'ganas 1 pedazo' : `ganas ${n.length} pedazos`}`) && p.includes((n.length <= 1 ? n[0] : `${n[0]} y ${n.length - 1} más`).toLowerCase()) },
+  }
   const datos = cargarDatos()
   const catalogos = Object.fromEntries(Object.keys(datos.destinos).map((c) => [c, cargarCatalogo(c)]))
   const pantallaV2b = (app) => app.evaluar("document.querySelector('[data-hoy]')?.innerText ?? ''")
@@ -320,7 +329,7 @@ console.log('4. V2b')
       const aqui = await pantallaV2b(app)
       const actual = (/YA ESTÁS AQUÍ\s*\n([^\n]+)/.exec(aqui)?.[1] ?? primera).trim()
       const esperados = colDe(actual)
-      if (esperados.length > 0) debe(aqui.includes(textoDePedazosDe(esperados)), 'pedazos', `${etq}: «${actual}» dice «${textoDePedazosDe(esperados)}»`)
+      if (esperados.length > 0) debe(contienePedazos(aqui, esperados), 'pedazos', `${etq}: «${actual}» dice «${textoDePedazosDe(esperados)}»`)
       else debe(!/Aquí ganas/.test(aqui), 'pedazos', `${etq}: «${actual}» no está en ninguna colección: sin línea de pedazos`)
       debe(!/emblema/i.test(await app.evaluar("document.querySelector('[data-hoy-pedazos]')?.innerText ?? ''")), 'pedazos', `${etq}: la línea de pedazos nunca nombra emblemas ocultos`)
       if (destino === 'roma') await app.captura(`${CAPTURAS}/roma_aqui_pedazos.jpg`)
@@ -336,7 +345,7 @@ console.log('4. V2b')
         await app.evaluar("(() => { const e = document.querySelector('[data-hoy]'); if (e) e.scrollTop = 0; document.querySelector('[data-hoy-ya-he-llegado]')?.click(); return true })()")
         await app.esp(2200)
         const plaza = await pantallaV2b(app)
-        debe(/Plaza de San Pedro/.test(plaza) && plaza.includes(textoDePedazosDe(colPlaza)), 'pedazos', `Roma: en la Plaza de San Pedro sale «${textoDePedazosDe(colPlaza)}»`)
+        debe(/Plaza de San Pedro/.test(plaza) && contienePedazos(plaza, colPlaza), 'pedazos', `Roma: en la Plaza de San Pedro sale «${textoDePedazosDe(colPlaza)}»`)
         await app.captura(`${CAPTURAS}/roma_plaza_san_pedro.jpg`)
       }
       // El día se acaba: todo hecho menos lo último, que se salta.
@@ -352,7 +361,7 @@ console.log('4. V2b')
       await app.evaluar("(() => { const e = document.querySelector('[data-hoy]'); if (e) e.scrollTop = e.scrollHeight; return true })()")
       await app.esp(700)
       const pend = await app.evaluar(`(() => { const li = document.querySelector('[data-hoy-pendiente]'); if (!li) return null; const r = (s) => { const e = li.querySelector(s); if (!e) return null; const b = e.getBoundingClientRect(); return { x: Math.round(b.x), y: Math.round(b.y), w: Math.round(b.width), h: Math.round(b.height) } }; const foto = li.querySelector('[data-hoy-pendiente-foto] > span > span'); return { foto: r('[data-hoy-pendiente-foto]'), opacidad: foto ? getComputedStyle(foto).opacity : null, pastilla: r('[data-hoy-pendiente-pastilla]'), pasar: r('[data-hoy-pendiente-pasar]'), mas: r('[data-hoy-pendiente-mas]'), quitar: r('[data-hoy-pendiente-quitar]'), iconos: li.querySelectorAll('[data-hoy-pendiente-botones] svg').length, pasarFondo: getComputedStyle(li.querySelector('[data-hoy-pendiente-pasar]') ?? li).backgroundImage.slice(0, 20) } })()`)
-      debe(pend && pend.foto && pend.foto.w >= 56 && pend.opacidad === '1', 'pendientes', `${etq}: cada sitio de «Lugares pendientes» lleva su FOTO a todo color (${pend?.foto?.w}px, opacidad ${pend?.opacidad})`)
+      debe(pend && pend.foto && pend.foto.w >= 38 && pend.opacidad === '1', 'pendientes', `${etq}: (Design L2: 38 px) cada sitio de «Lugares pendientes» lleva su FOTO a todo color (${pend?.foto?.w}px, opacidad ${pend?.opacidad})`)
       debe(pend && pend.pastilla && /Saltada|cerrado|No dio/.test(await app.evaluar("document.querySelector('[data-hoy-pendiente-pastilla]')?.innerText ?? ''")), 'pendientes', `${etq}: la pastilla con el motivo («Saltada hoy»)`)
       // V43 §7 (antes → ahora): fila compacta con [Otro día] y «···» en la misma línea.
       debe(pend && pend.pasar && pend.mas && Math.abs(pend.pasar.y - pend.mas.y) <= 6, 'pendientes', `${etq}: [Otro día] y «···» en la misma fila (${JSON.stringify([pend?.pasar, pend?.mas].map((b) => b && `${b.x},${b.y} ${b.w}x${b.h}`))})`)

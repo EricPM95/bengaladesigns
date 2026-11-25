@@ -161,7 +161,9 @@ try {
   await a.captura(foto('04_hoja_desplegable_abierto'))
   await cerrarHojas()
   // Vuelo con pase: sin la línea.
-  await clic('[data-blk="llegada"] [data-llegada-vacia]')
+  // (V50) Sin vuelos, «Llegada y vuelta» es plegable: se abre la cabecera (si no lo está) y se toca [Añadir mi vuelo], que abre la hoja «Tu vuelo» de siempre.
+  if (!(await ev("Boolean(document.querySelector('[data-anadir-mi-vuelo]'))"))) { await clic('[data-blk="llegada"] [data-llegada-vacia]'); await a.esp(700) }
+  await clic('[data-anadir-mi-vuelo]')
   await a.esp(1200)
   m = await medidas()
   debe(!m.lineaPase && !/adaptamos tu primer y tu último día/.test(m.texto), 'A3', 'hoja del vuelo con pase: sin la línea del pase')
@@ -217,7 +219,9 @@ try {
   debe(inicial === 'E', 'A4', `«Tú» con la inicial «E» (${inicial})`)
   await a.captura(foto('06_tarjeta_sin_pase'))
   // Vuelo sin pase: línea gris.
-  await clic('[data-blk="llegada"] [data-llegada-vacia]')
+  // (V50) Sin vuelos, «Llegada y vuelta» es plegable: se abre la cabecera (si no lo está) y se toca [Añadir mi vuelo], que abre la hoja «Tu vuelo» de siempre.
+  if (!(await ev("Boolean(document.querySelector('[data-anadir-mi-vuelo]'))"))) { await clic('[data-blk="llegada"] [data-llegada-vacia]'); await a.esp(700) }
+  await clic('[data-anadir-mi-vuelo]')
   await a.esp(1200)
   m = await medidas()
   debe(m.lineaPase && /Con el Pase Roma, adaptamos tu primer y tu último día a tus vuelos\./.test(m.texto), 'A5', 'hoja del vuelo sin pase: la línea gris con el candado')

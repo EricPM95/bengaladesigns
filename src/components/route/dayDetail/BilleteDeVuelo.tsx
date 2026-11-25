@@ -10,10 +10,10 @@ import { IconoDeDocumento } from '../reservas/BotonesDeReserva'
 
 const AZUL = '#1F2A5C'
 
-function Lado({ hora, codigo, alinear }: { hora: string | null; codigo: string | null; alinear: 'left' | 'right' }) {
+function Lado({ hora, codigo, alinear, lado }: { hora: string | null; codigo: string | null; alinear: 'left' | 'right'; lado: 'roma' | 'fuera' }) {
   return (
-    <span className="flex min-w-0 max-w-[112px] flex-col gap-px" style={{ alignItems: alinear === 'left' ? 'flex-start' : 'flex-end' }}>
-      <span className="font-display text-[30px] leading-none text-text">{hora ?? ' '}</span>
+    <span data-billete-lado={lado} className="flex min-w-0 max-w-[112px] flex-col gap-px" style={{ alignItems: alinear === 'left' ? 'flex-start' : 'flex-end' }}>
+      <span className="font-display text-[36px] leading-none text-text">{hora ?? ' '}</span>
       <span className="max-w-full truncate font-mono text-[10px] font-semibold tracking-[.1em]" style={{ color: AZUL }} title={codigo ?? undefined}>
         {codigo ?? ' '}
       </span>
@@ -60,8 +60,8 @@ export function BilleteDeVuelo({ billete, onOpen }: { billete: DatosBillete; onO
   const hay = Boolean(guardado?.codigo && (guardado.codigo.dibujo || guardado.codigo.imagen))
   const dia = route ? (llegada ? route.answers.dateRange?.start : route.answers.dateRange?.end) ?? null : null
   const palabra = billete.mode === 'avion' ? 'tarjeta de embarque' : 'billete'
-  const roma: ReactNode = <Lado hora={billete.horaRoma} codigo={billete.codigoRoma} alinear={llegada ? 'right' : 'left'} />
-  const otro: ReactNode = hayOtro ? <Lado hora={billete.horaOtra} codigo={billete.codigoOtro} alinear={llegada ? 'left' : 'right'} /> : null
+  const roma: ReactNode = <Lado lado="roma" hora={billete.horaRoma} codigo={billete.codigoRoma} alinear={llegada ? 'right' : 'left'} />
+  const otro: ReactNode = hayOtro ? <Lado lado="fuera" hora={billete.horaOtra} codigo={billete.codigoOtro} alinear={llegada ? 'left' : 'right'} /> : null
   const columnas = hayOtro ? 'auto minmax(24px,1fr) auto' : llegada ? 'minmax(24px,1fr) auto' : 'auto minmax(24px,1fr)'
   const handleKey = (event: KeyboardEvent) => {
     if (event.key === 'Enter' || event.key === ' ') {

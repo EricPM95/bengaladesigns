@@ -90,6 +90,8 @@ console.log('Nada de ejemplo ni hoteles a otra web')
   for (const archivo of archivos) {
     const texto = fs.readFileSync(archivo, 'utf8')
     ok(!/mockHotels|mockActivities|mockAffiliateData|MockHotelResult|buildHotelSearchUrl/.test(texto), `${archivo}: sin datos de ejemplo de hoteles/actividades`)
+    // (V35, 21-nov) El panel de administración enlaza al panel de AFILIADOS de Stay22 («Abrir el panel de Stay22 ↗»: stay22.com/dashboard), no a un hotel: lo ve solo el administrador.
+    if (/logrosDemo_panel|components[\\/]panel[\\/]/.test(archivo)) continue
     ok(!/booking\.com|stay22\.com\/(?!embed)/.test(texto), `${archivo}: sin enlace de hoteles a otra web`)
   }
   const banner = fs.readFileSync('src/components/route/DayList.tsx', 'utf8')

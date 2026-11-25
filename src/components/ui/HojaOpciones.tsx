@@ -1,6 +1,8 @@
 import { useEffect, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { useArrastreParaCerrar } from './Hoja'
+import { CruzDeHoja } from './CruzDeHoja'
+import { TiradorDeHoja } from './TiradorDeHoja'
 
 /**
  * LA HOJA DE OPCIONES, IGUAL EN TODA LA APP (Tanda 10N4 §3, `Piezas/Hojas Opciones` de Design, 01 a 04).
@@ -116,18 +118,14 @@ export function HojaOpciones({
       >
         {/* El tirador: se agarra y se baja para cerrar (la zona de agarre es más alta que la rayita). */}
         <span data-hoja-tirador="1" {...arrastre.props} style={{ alignSelf: 'stretch', height: 24, margin: '-8px 40px -8px', flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', touchAction: 'none', cursor: 'grab' }}>
-          <span aria-hidden="true" style={{ display: 'block', width: 44, height: 4, borderRadius: 2, background: 'rgba(28,34,48,.25)' }} />
+          <TiradorDeHoja />
         </span>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10, paddingTop: 6 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
             {etiqueta && <span data-hoja-opciones-etiqueta style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.18em', color: '#6F4E37', textTransform: 'uppercase' }}>{etiqueta}</span>}
             <span data-hoja-opciones-titulo style={{ font: "400 32px/1.05 'Instrument Serif',serif", textWrap: 'pretty', overflowWrap: 'anywhere' }}>{titulo}</span>
           </div>
-          <button className="zona-toque" type="button" onClick={onCerrar} aria-label="Cerrar" data-hoja-cerrar style={{ width: 40, height: 40, flex: 'none', borderRadius: '50%', border: 'none', background: '#EEEAE0', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1C2230" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
-              <path d="M6 6l12 12M18 6L6 18" />
-            </svg>
-          </button>
+          <CruzDeHoja enLinea onCerrar={onCerrar} datos={{ 'data-hoja-cerrar': '1' }} />
         </div>
         {cabecera}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>{children}</div>

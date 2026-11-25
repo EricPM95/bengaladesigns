@@ -1,6 +1,6 @@
 import { useEffect, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { Icono } from './Icono'
+import { CruzDeHoja } from './CruzDeHoja'
 
 /**
  * La hoja desde abajo de los selectores de fecha y de hora (Tanda 6k, punto 8): la misma para toda la app. Se cierra con el fondo, con Escape
@@ -20,13 +20,11 @@ export function PickerSheet({ title, children, onClose, onDone, doneLabel = 'Lis
   return createPortal(
     <div className="fixed inset-0 z-[120] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-label={title}>
       <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={onClose} />
-      <div className="trazo-notice-panel relative flex max-h-[92dvh] w-full flex-col rounded-t-[28px] bg-bg-card shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[400px] md:rounded-[28px]">
+      <div className="trazo-notice-panel relative flex max-h-[92dvh] w-full flex-col rounded-t-[32px] bg-bg-card shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[400px] md:rounded-[28px]">
         <div className="flex shrink-0 justify-center pt-2.5" aria-hidden="true">
           <span className="h-1 w-[42px] rounded-full bg-text/20" />
         </div>
-        <button type="button" onClick={onClose} aria-label="Cerrar" className="zona-toque absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full text-text-soft hover:bg-bg-hover">
-          <Icono nombre="cerrar" className="h-5 w-5" />
-        </button>
+        <CruzDeHoja onCerrar={onClose} estilo={{ right: 12, top: 12 }} />
         <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-2 pt-4">
           <h2 className="max-w-[calc(100%-2.5rem)] font-display text-[24px] leading-[1.15] text-text">{title}</h2>
           <div className="mt-4">{children}</div>

@@ -34,11 +34,12 @@ import { Icono } from '../../../ui/Icono'
 import { ListaDeDias } from '../../dayDetail/ListaDeDias'
 import { useDatosDeImportancia } from '../masVisitas'
 import { useCercaDeAqui } from '../useCercaDeAqui'
-import { HojaV2 } from './HojasV2'
+import { Cruz, HojaV2 } from './HojasV2'
 import { ParadaFotoDeParada } from './ParadaFoto'
 import { HojaComerAhora } from './ComerAhora'
 import { LineaUbicacion } from './LineaUbicacion'
 import { BOTON_ORO, BOTON_CLARO } from '../../../ui/botonesOro'
+import { Etiqueta, EnlaceDejarlo } from '../piezas'
 
 /**
  * HOY2 (agente B, pantallas 22 a 27b y 30 del recorrido): [Cambiar plan] SUSTITUYE a [No me da tiempo]. Un botón en la tarjeta de la parada y, al tocarlo, la hoja de 5 opciones:
@@ -55,7 +56,7 @@ const Pic = ({ d, size = 26, color = '#6E5018', grosor = 1.7 }: { d: string; siz
     <path d={d} />
   </svg>
 )
-const D_RELOJ = 'M12 7v5l3 2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z'
+export const D_RELOJ = 'M12 7v5l3 2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z'
 const D_COMER = 'M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 2-3 5-3 8h3v10'
 const D_SALTAR = 'M5 4l10 8-10 8zM19 5v14'
 const D_DIAS = 'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4'
@@ -93,14 +94,6 @@ export function useContexto(route: Route, enCoche: boolean): Contexto {
   }, [route, reservations, datos, enCoche, horarios])
 }
 
-function Cruz({ onClick }: { onClick: () => void }) {
-  return (
-    <button type="button" onClick={onClick} aria-label="Cerrar" className="flex h-11 w-11 flex-none items-center justify-center rounded-full" style={{ background: 'rgba(28,34,48,.08)' }}>
-      <Icono nombre="cerrar" size={17} grosor={2} />
-    </button>
-  )
-}
-
 export function Titulo({ texto, onCerrar }: { texto: string; onCerrar: () => void }) {
   return (
     <div className="flex items-center justify-between">
@@ -110,9 +103,10 @@ export function Titulo({ texto, onCerrar }: { texto: string; onCerrar: () => voi
   )
 }
 
-function Opcion({ dato, d, titulo, sub, onClick }: { dato: string; d: string; titulo: string; sub: string; onClick: () => void }) {
+/** (Noche 24-25 nov) LA FILA DE OPCIÓN de las hojas de HOY (Cambiar plan, «Más tiempo aquí»…): el icono en su cuadrado de oro, el título, la línea de debajo y la flecha. */
+export function Opcion({ dato, d, titulo, sub, onClick, datos }: { dato: string; d: string; titulo: string; sub: string; onClick: () => void; datos?: Record<string, string> }) {
   return (
-    <button type="button" onClick={onClick} data-cambiar-opcion={dato} className="flex items-center gap-3.5 rounded-[22px] py-3 pl-3 pr-3.5 text-left" style={{ background: '#FFFDF8', border: '1px solid rgba(28,34,48,.12)' }}>
+    <button type="button" onClick={onClick} data-cambiar-opcion={dato} {...datos} className="flex items-center gap-3.5 rounded-[22px] py-3 pl-3 pr-3.5 text-left" style={{ background: '#FFFDF8', border: '1px solid rgba(28,34,48,.12)' }}>
       <span className="flex h-[52px] w-[52px] flex-none items-center justify-center rounded-2xl" style={{ background: '#F3E3B2' }}>
         <Pic d={d} />
       </span>
@@ -125,12 +119,13 @@ function Opcion({ dato, d, titulo, sub, onClick }: { dato: string; d: string; ti
   )
 }
 
+/** (Noche 24-25 nov; Design «Hoy Recorrido» 23a) Cada línea del resumen lleva su icono blanco en un círculo de 24 px: dorado si cambia algo, verde si sigue igual. */
 const ICONOS_RESUMEN: Record<NonNullable<Propuesta['resumen']>[number]['icono'], { d: string; color: string }> = {
-  mover: { d: D_CAMBIO, color: '#8A6418' },
-  quitar: { d: 'M5 12h14', color: '#8A6418' },
+  mover: { d: D_CAMBIO, color: '#B58A2E' },
+  quitar: { d: 'M5 12h14', color: '#B58A2E' },
   ok: { d: 'M5 12.5l4.5 4.5L19 7', color: '#2B7F45' },
-  reloj: { d: D_RELOJ, color: '#8A6418' },
-  mas: { d: D_MAS, color: '#8A6418' },
+  reloj: { d: D_RELOJ, color: '#B58A2E' },
+  mas: { d: D_MAS, color: '#B58A2E' },
 }
 
 /** Lo que dice el botón dorado si la propuesta no trae el suyo: SIEMPRE lo que hace, nunca «Aplicar» (V43 §1). */
@@ -143,14 +138,14 @@ function ResumenDeCambios({ p }: { p: Propuesta }) {
     { icono: 'ok' as const, texto: `Sigue igual: ${p.mantiene.titulo}`, sub: p.mantiene.detalle },
   ]
   return (
-    <div data-propuesta-resumen className="flex flex-col gap-2.5 rounded-[18px] p-3.5" style={{ background: 'rgba(181,138,46,.1)' }}>
+    <div data-propuesta-resumen className="flex flex-col gap-2.5 rounded-2xl p-3.5" style={{ background: 'rgba(28,34,48,.05)' }}>
       {lineas.map((l, i) => (
         <div key={i} data-resumen-linea={l.icono} className="flex items-start gap-2.5">
-          <span className="mt-[1px] flex h-[22px] w-[22px] flex-none items-center justify-center">
-            <Pic d={ICONOS_RESUMEN[l.icono].d} size={18} color={ICONOS_RESUMEN[l.icono].color} grosor={2} />
+          <span className="flex h-6 w-6 flex-none items-center justify-center rounded-full" style={{ background: ICONOS_RESUMEN[l.icono].color }}>
+            <Pic d={ICONOS_RESUMEN[l.icono].d} size={13} color="#fff" grosor={2.6} />
           </span>
           <span className="flex flex-col gap-px">
-            <span className="text-[14px] font-medium leading-[1.35]">{l.texto}</span>
+            <span className="text-[14px] font-semibold leading-[1.3]">{l.texto}</span>
             {l.sub && l.sub !== 'Sin cambios.' && <span className="text-[12.5px] leading-[1.35] text-[#1C2230]/60">{l.sub}</span>}
           </span>
         </div>
@@ -166,19 +161,19 @@ function ResumenDeCambios({ p }: { p: Propuesta }) {
 export function TarjetaDelSitio({ t }: { t: NonNullable<Propuesta['tarjetaDia']> }) {
   return (
     <>
-      <div data-tarjeta-del-sitio className="flex items-center gap-3 rounded-[18px] bg-[#FFFDF8] p-2.5" style={{ border: '1px solid rgba(28,34,48,.1)' }}>
-        <span className="h-[52px] w-[52px] flex-none overflow-hidden rounded-[12px]" style={{ background: 'linear-gradient(150deg,#C9A57A,#8A6A4C)' }}>
+      <div data-tarjeta-del-sitio className="flex items-center gap-3 rounded-[20px] bg-[#FFFDF8] p-3" style={{ border: '1px solid rgba(181,138,46,.45)', boxShadow: '0 10px 18px -14px rgba(60,40,10,.4)' }}>
+        <span className="h-[52px] w-[52px] flex-none overflow-hidden rounded-[14px]" style={{ background: 'linear-gradient(150deg,#C9A57A,#8A6A4C)' }}>
           {t.fotoUrl && <img src={t.fotoUrl} alt="" className="h-full w-full object-cover" />}
         </span>
         <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <span className="line-clamp-2" style={{ font: "400 19px/1.15 'Instrument Serif',serif" }}>{t.nombre}</span>
-          <span className="text-[12.5px] leading-[1.25] text-[#1C2230]/55">{t.cuando}</span>
+          <span className="line-clamp-2" style={{ font: "400 20px/1.1 'Instrument Serif',serif" }}>{t.nombre}</span>
+          <span className="text-[12.5px] font-medium leading-[1.25] text-[#1C2230]/60">{t.cuando}</span>
         </span>
         <CuadradoFecha semana={t.semanaCorta} numero={t.numero} datos={{ 'data-tarjeta-fecha': '1' }} />
       </div>
-      <div data-franja-sigue-igual className="flex items-center gap-2.5 rounded-[14px] px-3 py-2.5 text-[13.5px] font-semibold" style={{ background: '#E4F0E2', color: '#25583A' }}>
-        <span className="flex h-[22px] w-[22px] flex-none items-center justify-center rounded-full text-white" style={{ background: '#2E7D4F' }} aria-hidden="true">
-          <Icono nombre="hecho" size={12} grosor={2.8} />
+      <div data-franja-sigue-igual className="flex items-center gap-2.5 rounded-2xl px-3.5 py-2.5 text-[13.5px] font-semibold leading-[1.3]" style={{ background: '#E6F1E7', color: '#1F5A33' }}>
+        <span className="flex h-[22px] w-[22px] flex-none items-center justify-center rounded-full text-white" style={{ background: '#2B7F45' }} aria-hidden="true">
+          <Icono nombre="hecho" size={12} grosor={3} />
         </span>
         Sigue igual: el resto de tu {t.diaDeHoy}
       </div>
@@ -207,16 +202,16 @@ export function HojaPropuesta({ titulo, propuestas, indice, onOtra, onAplicar, o
             {p.tarjetaDia ? <TarjetaDelSitio t={p.tarjetaDia} /> : <ResumenDeCambios p={p} />}
             {children}
             {extra}
-            <button type="button" onClick={() => onAplicar(p)} data-propuesta-aplicar className="flex min-h-[50px] items-center justify-center rounded-2xl px-3 text-center text-[15px] font-bold" style={BOTON_ORO}>
+            <button type="button" onClick={() => onAplicar(p)} data-propuesta-aplicar className="flex min-h-[52px] items-center justify-center rounded-2xl px-3 text-center text-[15px] font-bold" style={BOTON_ORO}>
               {p.pregunta && !p.boton ? 'Sí, dejarlo' : (p.boton ?? etiquetaAplicar ?? BOTON_POR_TIPO[p.tipo])}
             </button>
             {onElegirOtroDia ? (
-              <button type="button" onClick={onElegirOtroDia} data-propuesta-elegir-dia className="flex h-11 items-center justify-center rounded-2xl text-[14px] font-bold" style={BOTON_CLARO}>
+              <button type="button" onClick={onElegirOtroDia} data-propuesta-elegir-dia className="flex h-12 items-center justify-center rounded-2xl text-[14.5px] font-bold" style={BOTON_CLARO}>
                 Elegir otro día
               </button>
             ) : (
               propuestas.length > 1 && (
-                <button type="button" onClick={onOtra} data-propuesta-otra className="flex min-h-[46px] items-center justify-center rounded-2xl px-3 text-center text-[14px] font-bold" style={BOTON_CLARO}>
+                <button type="button" onClick={onOtra} data-propuesta-otra className="flex min-h-12 items-center justify-center rounded-2xl px-3 text-center text-[14.5px] font-bold" style={BOTON_CLARO}>
                   {p.etiquetaOtra ?? 'Ver otra opción'}
                 </button>
               )
@@ -225,9 +220,7 @@ export function HojaPropuesta({ titulo, propuestas, indice, onOtra, onAplicar, o
         ) : (
           <span data-propuesta-vacia className="text-[14.5px] font-medium leading-[1.4]">{vacio ?? 'No hay nada que ajustar: tu día sigue igual.'}</span>
         )}
-        <button type="button" onClick={onCerrar} data-propuesta-dejar className="flex h-9 items-center justify-center text-[13px] font-semibold text-[#1C2230]/60">
-          Dejarlo como está
-        </button>
+        <EnlaceDejarlo onClick={onCerrar} datos={{ 'data-propuesta-dejar': '1' }} />
       </div>
     </HojaV2>
   )
@@ -379,7 +372,7 @@ export function BotonCambiarPlan(p: PropsCambiarPlan) {
 
   return (
     <>
-      <button type="button" onClick={() => setPaso('menu')} data-hoy-cambiar-plan className="flex h-12 items-center justify-center gap-1.5 rounded-2xl px-2.5 text-[13.5px] font-bold" style={BOTON_MARFIL}>
+      <button type="button" onClick={() => setPaso('menu')} data-hoy-cambiar-plan className="flex h-[52px] flex-1 items-center justify-center gap-[7px] whitespace-nowrap rounded-2xl px-2.5 text-[14px] font-bold" style={BOTON_MARFIL}>
         <Pic d={D_CAMBIO} size={17} color="currentColor" grosor={2} />
         Cambiar plan
       </button>
@@ -444,7 +437,7 @@ export function BotonCambiarPlan(p: PropsCambiarPlan) {
             <Titulo texto="Añadir un sitio cercano" onCerrar={cerrar} />
             <LineaUbicacion route={route} referencia={siguiente} enCoche={p.enCoche} enLaRuta={Boolean(p.ubicacion)} onUbicacion={setUbiLocal} />
             {candidatos.length > 0 && (
-              <div data-anadir-mapa className="h-[170px] flex-none overflow-hidden rounded-[22px]" style={{ border: '1px solid rgba(28,34,48,.12)' }}>
+              <div data-anadir-mapa className="h-[104px] flex-none overflow-hidden rounded-[18px]">
                 <StopsMapView
                   markers={candidatos.filter((c) => hasRealCoordinates(c.coordinates)).map((c, i): StopsMapMarker => ({ id: c.nombre, name: c.nombre, coordinates: c.coordinates, number: i + 1, bg: activoAnadir === c.nombre ? '#B58A2E' : '#1C2230', text: '#fff' }))}
                   activeStopId={activoAnadir}
@@ -467,13 +460,13 @@ export function BotonCambiarPlan(p: PropsCambiarPlan) {
               </div>
             )}
             {candidatos.map((c, i) => (
-              <div key={c.nombre} data-anadir-candidato={c.nombre} data-anadir-logro={c.logro ? '1' : undefined} data-anadir-escalon={c.escalon} onClick={() => setActivoAnadir(c.nombre)} className="flex min-h-[64px] items-center gap-2.5 rounded-[18px] p-2" style={{ background: '#FFFDF8', border: activoAnadir === c.nombre ? '1.5px solid #B58A2E' : '1px solid rgba(28,34,48,.12)' }}>
+              <div key={c.nombre} data-anadir-candidato={c.nombre} data-anadir-logro={c.logro ? '1' : undefined} data-anadir-escalon={c.escalon} onClick={() => setActivoAnadir(c.nombre)} className="flex min-h-[64px] items-center gap-2 rounded-[18px] py-2 pl-[9px] pr-2" style={{ background: '#FFFDF8', border: activoAnadir === c.nombre ? '1px solid rgba(181,138,46,.55)' : '1px solid rgba(28,34,48,.12)' }}>
                 <span data-anadir-numero className="flex h-6 w-6 flex-none items-center justify-center rounded-full text-[12px] font-bold" style={{ background: activoAnadir === c.nombre ? '#B58A2E' : '#1C2230', color: '#fff' }}>{i + 1}</span>
                 {/* (V43 §5) La foto, como en el resto de HOY: se pide al servidor por el nombre (el catálogo no la trae). */}
-                <ParadaFotoDeParada parada={stopDeCandidato(c)} ciudad={day.city} dateIso={dateIso} vista size={48} marca={false} carga="eager" />
+                <ParadaFotoDeParada parada={stopDeCandidato(c)} ciudad={day.city} dateIso={dateIso} vista size={42} marca={false} carga="eager" />
                 <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                  <span className="truncate" style={{ font: "400 19px/1.1 'Instrument Serif',serif" }}>{displayStopName(c.nombre)}</span>
-                  <span className="text-[12px] text-[#1C2230]/60">
+                  <span className="truncate" style={{ font: "700 14px/1.15 'Geist'" }}>{displayStopName(c.nombre)}</span>
+                  <span className="text-[12px]" style={{ color: 'rgba(28,34,48,.62)' }}>
                     {p.enCoche ? `a ${Math.max(1, Math.round((c.metros * 1.35) / ((40 * 1000) / 60)))} min en coche` : `a ${Math.max(1, Math.round(c.metros / 80))} min a pie`}
                     {c.porFuera ? ' · por fuera' : ''}
                   </span>
@@ -484,18 +477,14 @@ export function BotonCambiarPlan(p: PropsCambiarPlan) {
                   )}
                   <span className="flex flex-wrap gap-1">
                     {c.logro && (
-                      <span data-anadir-recompensa className="rounded-full px-2 py-px text-[10.5px] font-bold" style={{ background: 'rgba(181,138,46,.2)', color: '#6E5018' }}>
-                        Contiene recompensa
-                      </span>
+                      <Etiqueta tono="oro" datos={{ 'data-anadir-recompensa': '1' }}>Contiene recompensa</Etiqueta>
                     )}
                     {c.deOtroDia && (
-                      <span data-anadir-otro-dia className="rounded-full px-2 py-px text-[10.5px] font-bold" style={{ background: 'rgba(46,95,138,.14)', color: '#2E5F8A' }}>
-                        Lo tienes el {c.deOtroDia.etiqueta}
-                      </span>
+                      <Etiqueta tono="azul" datos={{ 'data-anadir-otro-dia': '1' }}>Lo tienes el {c.deOtroDia.etiqueta}</Etiqueta>
                     )}
                   </span>
                 </span>
-                <button type="button" onClick={(e) => { e.stopPropagation(); elegirSitio(c) }} data-anadir-elegir className="flex h-11 flex-none items-center rounded-2xl px-3.5 text-[13.5px] font-bold" style={BOTON_ORO}>
+                <button type="button" onClick={(e) => { e.stopPropagation(); elegirSitio(c) }} data-anadir-elegir className="zona-toque flex h-[34px] flex-none items-center rounded-xl px-3 text-[12.5px] font-bold" style={BOTON_ORO}>
                   Elegir
                 </button>
               </div>

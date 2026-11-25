@@ -2,6 +2,7 @@ import { useEffect, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { Chapa } from '../../dibujos'
 import { NOMBRE_DE_GRUPO, type TituloDeViajero } from './api'
+import { TiradorDeHoja } from '../../../ui/TiradorDeHoja'
 
 /**
  * «Elige tu título» (P1b de Design): la hoja que sube desde abajo al tocar el título del Perfil, con los logros de viajero que ya tiene ganados (el escalón más alto de cada uno).
@@ -16,9 +17,9 @@ export function ElegirTitulo({ titulos, elegido, onElegir, onCerrar }: { titulos
   return createPortal(
     <>
       <div onClick={onCerrar} aria-hidden="true" style={{ position: 'fixed', inset: 0, zIndex: 75, background: 'rgba(28,34,48,.45)', animation: 'pfEntra .3s ease both' }} />
-      <div role="dialog" aria-modal="true" aria-label="Elige tu título" data-elegir-titulo style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 76, maxHeight: '78vh', borderRadius: '28px 28px 0 0', background: '#FFFDF8', color: '#1C2230', padding: '12px 18px calc(env(safe-area-inset-bottom,0px) + 32px)', display: 'flex', flexDirection: 'column', gap: 10, fontFamily: "'Geist',system-ui,sans-serif" }}>
+      <div role="dialog" aria-modal="true" aria-label="Elige tu título" data-elegir-titulo style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 76, maxHeight: '78vh', borderRadius: '32px 32px 0 0', background: '#FFFDF8', color: '#1C2230', padding: '12px 18px calc(env(safe-area-inset-bottom,0px) + 32px)', display: 'flex', flexDirection: 'column', gap: 10, fontFamily: "'Geist',system-ui,sans-serif" }}>
         <button type="button" onClick={onCerrar} aria-label="Cerrar" style={{ alignSelf: 'center', width: 64, height: 44, border: 'none', background: 'transparent', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginBottom: -14 }}>
-          <span style={{ width: 42, height: 4, borderRadius: 4, background: 'rgba(28,34,48,.18)' }} />
+          <TiradorDeHoja />
         </button>
         <span style={{ marginTop: 6, font: "400 26px/1 'Instrument Serif',serif" }}>Elige tu título</span>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, overflowY: 'auto', scrollbarWidth: 'none' }}>

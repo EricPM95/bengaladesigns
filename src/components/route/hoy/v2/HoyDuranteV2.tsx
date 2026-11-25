@@ -1,3 +1,4 @@
+import { BOTON_ORO } from '../../../ui/botonesOro'
 import { useEffect, useMemo, useState } from 'react'
 import { logrosActivos } from '../../../../lib/logros'
 import type { Coordinates, DayPlan, Route, Stop } from '../../../../lib/types'
@@ -304,7 +305,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
     ? fraseDeAtardecer({
         day,
         pendientes: vigentes.filter((s) => !s.checkedInAt),
-        desde: ubicacion ?? (anterior && hasRealCoordinates(anterior.coordinates) ? anterior.coordinates : null) ?? (siguiente && hasRealCoordinates(siguiente.coordinates) ? siguiente.coordinates : null) ?? zonaCoordsAtardecer,
+        desde: (zonaUbi !== 'fuera' && zonaUbi !== 'sin' ? ubicacionReal : null) ?? (anterior && hasRealCoordinates(anterior.coordinates) ? anterior.coordinates : null) ?? (siguiente && hasRealCoordinates(siguiente.coordinates) ? siguiente.coordinates : null) ?? zonaCoordsAtardecer,
         ahoraMin: new Date().getHours() * 60 + new Date().getMinutes(),
         delDestino: solDelDestino,
         enCoche,
@@ -646,7 +647,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {ofrecerFoto && !logrosActivos() && (
         <div className="flex flex-none items-center gap-2 rounded-2xl bg-white px-3.5 py-2.5" style={{ border: '1px solid rgba(28,34,48,.08)' }}>
           <span className="min-w-0 flex-1 truncate text-[13px] text-text/70">Visto: {displayStopName(ofrecerFoto.name)}</span>
-          <BotonFoto dayId={day.id} dayNumber={day.dayNumber} stopName={ofrecerFoto.name} etiqueta="Añadir foto" onSubida={() => setOfrecerFoto(null)} className="flex h-11 flex-none items-center gap-1.5 rounded-full btn-champan px-3.5 text-[13px] font-semibold ">
+          <BotonFoto dayId={day.id} dayNumber={day.dayNumber} stopName={ofrecerFoto.name} etiqueta="Añadir foto" onSubida={() => setOfrecerFoto(null)} className="flex h-11 flex-none items-center gap-1.5 rounded-2xl px-3.5 text-[13px] font-bold" style={BOTON_ORO}>
             <Icono nombre="camara" size={16} />
             Añadir foto
           </BotonFoto>

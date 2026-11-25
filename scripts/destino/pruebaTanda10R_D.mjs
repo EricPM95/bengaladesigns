@@ -142,7 +142,7 @@ if (process.env.APP_URL) {
       if (modo === 'con') debe(h.dia, '4b', 'con pase: HOY enseña la excursión del día')
       if (modo === 'con') {
         debe(h.tu && /Tu excursión/.test(h.texto) && /Toca para ampliar/.test(h.texto) && h.img, '4c', `con pase, HOY enseña «Tu excursión» con el código pequeño (${JSON.stringify(h)})`)
-        debe(h.punto && h.textoPunto === 'Cómo llegar al punto de encuentro' && /destination=Piazza\+della\+Repubblica/.test(h.href ?? ''), '4d', `con pase, [Cómo llegar al punto de encuentro] abre el mapa con ese punto (${h.href})`)
+        debe(!h.punto, '4d', `(V49) HOY ya no enseña [Cómo llegar al punto de encuentro]: el punto no se verifica (${h.href})`)
         await ev(`document.querySelector('[data-hoy-tu-excursion]')?.scrollIntoView({ block: 'center' }); true`)
         await a.esp(400)
         await a.captura(path.join(SALIDA, '10r_hoy_tu_excursion_1.jpg')).catch(() => {})
@@ -156,7 +156,7 @@ if (process.env.APP_URL) {
         await R(`BS.useBilleteStore.getState().quitarExcursion(SY.useSyncStore.getState().activeTripId, ${JSON.stringify(base.id)}); return true`)
         await a.esp(700)
         const sin = await hoy()
-        debe(!sin.tu && sin.punto, '4f', `sin billete no sale «Tu excursión» pero sí el punto de encuentro (${JSON.stringify(sin)})`)
+        debe(!sin.tu && !sin.punto, '4f', `(V49) sin billete no sale «Tu excursión» ni el botón del punto de encuentro (${JSON.stringify(sin)})`)
         // Privado: el billete de otra persona no se ve.
         await poner({ formato: 'qr', texto: 'X', dibujo: svg, imagen: null })
         await R(`const s = BS.useBilleteStore.getState(); BS.useBilleteStore.setState({ datos: { ...s.datos, excursiones: { ...s.datos.excursiones, [${JSON.stringify(base.id)}]: { ...s.datos.excursiones[${JSON.stringify(base.id)}], dueno: 'otra-persona' } } } }); return true`)

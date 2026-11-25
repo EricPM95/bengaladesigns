@@ -442,10 +442,11 @@ console.log('9. La tarjeta «Hoy vuelves a casa»')
   poner(rutaB)
   const src = leer('src/components/route/dayDetail/DayDetailPanel.tsx')
   // antes: la tarjeta de llegada se cerraba justo tras onOpen → ahora lleva además onVer (el [Ver] lleva a RESERVAS › Llegada y vuelta); decisión de Eric (10S10, 1-nov).
-  debe(/<TarjetaLlegadaDias billete=\{billeteLlegada\} point=\{arrivalChosen\} origen=\{origin\} destino=\{destinoNombre\} onOpen=\{\(\) => setArrivalSheet\('llegada'\)\}/.test(src), '11 el billete de la llegada abre la ficha de llegada', '')
+  // (V48, 24-nov) el primer día lleva el billete con QR (`BilleteDeVuelo`) en lugar de la tarjeta vieja con [Ver]; tocarlo abre la ficha de llegada.
+  debe(/<BilleteDeVuelo billete=\{billeteLlegada\} onOpen=\{\(\) => setArrivalSheet\('llegada'\)\} \/>/.test(src), '11 el billete de la llegada abre la ficha de llegada', '')
   debe(/<BilleteDeVuelo billete=\{billeteVuelta\} onOpen=\{\(\) => abrirFichaDeVuelta\(\)\} \/>/.test(src) && /setArrivalSheet\('vuelta'\)/.test(src), '11 el billete de la vuelta abre la ficha de vuelta', '')
   const d1 = aTexto(panelDe(rutaB.days[0], { isFirstDayOfTrip: true }))
-  debe(/LLEGADA/.test(d1) && /FCO 13:00/.test(d1) && /Fiumicino/.test(d1), '11 el día de llegada lleva el billete', '')
+  debe(/LLEGADA/.test(d1) && /13:00\s+FCO/.test(d1) && /FIUMICINO/i.test(d1), '11 el día de llegada lleva el billete', '')
   const rutaSin = viaje({})
   poner(rutaSin)
   const d1sin = aTexto(html(DayDetailPanel, { day: rutaSin.days[0], travel: null, isLastDay: false, origin: 'Barcelona', stay: null, allDays: rutaSin.days.filter((d) => !d.isReturnLeg).map((d) => ({ id: d.id, dayNumber: d.dayNumber, city: d.city })), isFirstDayOfTrip: true, showCamperBlock: false, showRentalCarBlock: false }))

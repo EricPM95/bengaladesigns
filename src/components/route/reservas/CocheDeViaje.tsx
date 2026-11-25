@@ -12,6 +12,7 @@ import { BotonAnadirReservaCoche, HojaReservaCoche } from './ReservaDelCoche'
 import { CabeceraBloque, ICONOS } from './BloqueReservas'
 import { BloqueClaro } from './PiezasDesignReservas'
 import type { DatosReservaCocheLeida } from '../../../lib/billeteLeer'
+import { DORADO } from '../../ui/botonesOro'
 
 /**
  * (LZ2b1, Eric 4-nov; Design `Coche Lanza` 06a y 06b, copiado tal cual: medidas, colores y textos) El bloque «Coche» de RESERVAS en los destinos de coche (Lanzarote): ya no se pregunta «¿Vas a moverte en coche?» en el formulario;
@@ -200,7 +201,7 @@ export function CocheDeViaje({ abierto = false }: { abierto?: boolean }) {
             style={{
               height: 50,
               borderRadius: 15,
-              background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)',
+              background: DORADO,
               color: '#4A3510',
               display: 'flex',
               alignItems: 'center',

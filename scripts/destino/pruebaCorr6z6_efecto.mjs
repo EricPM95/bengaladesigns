@@ -29,7 +29,7 @@ const ok = (cond, texto) => {
 
 const carpeta = fs.mkdtempSync(path.join(os.tmpdir(), 'prueba-6z6-efecto-'))
 const salida = path.join(carpeta, 'precioVuela.cjs')
-await build({ entryPoints: ['src/lib/precioVuela.ts'], outfile: salida, bundle: true, platform: 'node', format: 'cjs', logLevel: 'silent', define: { 'import.meta.env.DEV': 'false' } })
+await build({ entryPoints: ['src/lib/precioVuela.ts'], outfile: salida, bundle: true, platform: 'node', format: 'cjs', logLevel: 'silent', define: { 'import.meta.env.DEV': 'false', 'import.meta.env.VITE_MAPBOX_TOKEN': '""' } })
 const V = require(salida)
 
 const eur = (amount) => ({ amount, currency: 'EUR' })
@@ -120,7 +120,8 @@ console.log('Todos los sitios que guardan precios')
   // El precio de los billetes de llegada y vuelta solo cuenta con la versión de pago, igual que el presupuesto
   const s = V.crearSeguidor()
   s.procesar(entrada({ pago: false }), false)
-  ok(s.procesar(entrada({ pago: false, route: ruta('r1', { arrivalPrecio: eur(180) }) }), false).length === 0, 'sin pago, la llegada no está en el presupuesto: nada')
+  // (10S4, 30-oct) El precio de los billetes de llegada y vuelta suma SIEMPRE, con pase y sin él (igual que el presupuesto): sin pago, la llegada también sale.
+  { const sin = s.procesar(entrada({ pago: false, route: ruta('r1', { arrivalPrecio: eur(180) }) }), false); ok(sin.length === 1 && sin[0].clave === 'llegada' && sin[0].importe.amount === 180, 'sin pago, la llegada también está en el presupuesto (10S4)') }
   // Free Tour: no suma nunca
   const f = V.crearSeguidor()
   f.procesar(entrada(), false)

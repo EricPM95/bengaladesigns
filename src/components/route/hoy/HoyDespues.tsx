@@ -1,3 +1,4 @@
+import { BOTON_ORO } from '../../ui/botonesOro'
 import { useState } from 'react'
 import type { Route } from '../../../lib/types'
 import { addDaysToIso, formatHeaderDateRangeShortEs, formatWeekdayAbbrEs } from '../../../lib/dateRange'
@@ -48,7 +49,7 @@ export function HoyDespues({ route, startIso }: { route: Route; startIso: string
         <span className="min-w-0 flex-1" style={{ font: "400 22px/1.05 'Instrument Serif',serif", textWrap: 'balance' as never }}>
           ¿A dónde vamos <em style={{ color: '#E9C77A' }}>ahora</em>?
         </span>
-        <button type="button" onClick={() => setNuevoViaje(true)} className="flex h-11 flex-none items-center gap-1.5 rounded-full btn-champan pl-3 pr-4 text-[13.5px] font-semibold ">
+        <button type="button" onClick={() => setNuevoViaje(true)} className="flex h-11 flex-none items-center gap-1.5 rounded-2xl pl-3 pr-4 text-[13.5px] font-bold" style={BOTON_ORO}>
           <Icono nombre="anadir" size={15} grosor={2.2} />
           Nuevo viaje
         </button>

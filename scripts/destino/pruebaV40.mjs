@@ -189,7 +189,9 @@ for (const id of ids) {
 console.log(`  ${ids.length} animaciones, ${totalSonidos} sonidos programados comparados`)
 const { antes, despues } = r.lanzarote
 if (JSON.stringify(antes) !== JSON.stringify(despues)) console.log('  antes:', JSON.stringify(antes), 'despues:', JSON.stringify(despues))
-debe(JSON.stringify(antes) === JSON.stringify(despues) && !despues.some((x) => x.k.includes('propio:')), 'lanzarote', `Lanzarote suena como antes (${despues.length} sonidos de Code, ninguno de Eric)`)
+// (Noche final) Los instantes salen de sumas de decimales (3,6000000000000005 frente a 3,5999999999999996): se comparan a la millonésima.
+const red = (l) => JSON.stringify(l.map((x) => ({ ...x, p: Math.round(x.p * 1e6) / 1e6, v: Math.round(x.v * 1e6) / 1e6 })))
+debe(red(antes) === red(despues) && !despues.some((x) => x.k.includes('propio:')), 'lanzarote', `Lanzarote suena como antes (${despues.length} sonidos de Code, ninguno de Eric)`)
 
 console.log(`\nPrueba V40: ${comprobaciones} comprobaciones · ${fallos.length} fallos`)
 process.exit(fallos.length ? 1 : 0)

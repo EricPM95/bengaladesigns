@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { guardarBalda, TITULO_DE_BALDA, useGanados, useHojasDeLogros, type Ganados } from './api'
 import { DibujoDeItem } from './dibujo'
+import { TiradorDeHoja } from '../../../ui/TiradorDeHoja'
 
 /**
  * ELEGIR HUECO EN LA VITRINA (V3): «Llevar a mi vitrina» → «Medallas de ciudad · elige un hueco» → [Colocar aquí]. Si el hueco está lleno, avisa de qué pieza vuelve a Todos mis logros.
@@ -35,8 +36,8 @@ export function ElegirHueco({ g, clave, inicial, cerrar }: { g: Ganados; clave: 
   return (
     <>
       <button type="button" aria-label="Cerrar" onClick={cerrar} style={{ position: 'absolute', inset: 0, zIndex: 60, border: 'none', padding: 0, background: 'rgba(28,34,48,.45)', animation: 'vtFade .3s ease both', cursor: 'default' }} />
-      <div role="dialog" aria-modal="true" aria-label="Elige un hueco" data-elegir-hueco style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 61, borderRadius: '28px 28px 0 0', background: '#FFFDF8', color: '#1C2230', padding: '12px 18px calc(env(safe-area-inset-bottom,0px) + 30px)', display: 'flex', flexDirection: 'column', gap: 14, animation: 'vtSheet .45s cubic-bezier(.2,.8,.2,1) both' }}>
-        <span aria-hidden style={{ alignSelf: 'center', width: 42, height: 4, borderRadius: 4, background: 'rgba(28,34,48,.18)' }} />
+      <div role="dialog" aria-modal="true" aria-label="Elige un hueco" data-elegir-hueco style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 61, borderRadius: '32px 32px 0 0', background: '#FFFDF8', color: '#1C2230', padding: '12px 18px calc(env(safe-area-inset-bottom,0px) + 30px)', display: 'flex', flexDirection: 'column', gap: 14, animation: 'vtSheet .45s cubic-bezier(.2,.8,.2,1) both' }}>
+        <TiradorDeHoja />
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <DibujoDeItem item={item} tam={56} />
           <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>

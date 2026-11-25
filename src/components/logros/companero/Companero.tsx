@@ -85,7 +85,7 @@ function HojaDeUnSitio({ p, tripId }: { p: PendienteDeCompanero; tripId: string 
   const subir = () => (sinPase ? abrirAvisoPase('reclamar') : document.querySelector<HTMLInputElement>('[data-companero="entrada"]')?.click())
   return (
     <Capa onCerrar={cerrar} etiqueta="Yo también estaba" z={90}>
-      <div data-companero="sitio" className="relative flex flex-col gap-3 overflow-hidden rounded-t-[28px] bg-[#FFFDF8] pb-[28px]" style={{ color: TINTA }}>
+      <div data-companero="sitio" className="relative flex flex-col gap-3 overflow-hidden rounded-t-[32px] bg-[#FFFDF8] pb-[28px]" style={{ color: TINTA }}>
         <Cruz onCerrar={cerrar} oscura />
         <div data-companero="foto" className="relative w-full" style={{ height: 230 }}>
           <FotoDelSitio p={p} grande style={{ width: '100%', height: '100%' }} />
@@ -116,7 +116,7 @@ function HojaDeVarios({ pendientes, tripId }: { pendientes: PendienteDeCompanero
   const gana = (sitios: string[] | 'todos') => (sinPase ? abrirAvisoPase('reclamar') : void yoTambienEstaba(tripId, sitios))
   return (
     <Capa onCerrar={cerrar} etiqueta="Lo que conseguisteis juntos" z={90}>
-      <div data-companero="lista" className="relative flex max-h-[88vh] flex-col gap-3 overflow-y-auto rounded-t-[28px] bg-[#FFFDF8] px-[18px] pb-[26px] pt-5" style={{ color: TINTA }}>
+      <div data-companero="lista" className="relative flex max-h-[88vh] flex-col gap-3 overflow-y-auto rounded-t-[32px] bg-[#FFFDF8] px-[18px] pb-[26px] pt-5" style={{ color: TINTA }}>
         <Cruz onCerrar={cerrar} />
         <span className="pr-10" style={{ font: `400 28px/1.05 ${SERIF}` }}>Lo que conseguisteis juntos</span>
         <span style={{ font: "400 13.5px/1.4 'Geist'", color: 'rgba(28,34,48,.65)' }}>{quienEs(pendientes)} los consiguió y tú aún no. Si estabais juntos, gánalos tú también.</span>
