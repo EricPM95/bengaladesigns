@@ -6,7 +6,8 @@
     "calendario": 3600,
     "traslados": 14400,
     "resolver": 14400,
-    "cerca": 14400
+    "cerca": 14400,
+    "busqueda": 3600
   },
   "peticiones_por_segundo": 8,
   "plazas": {

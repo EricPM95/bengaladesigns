@@ -133,6 +133,30 @@ export function crearServicioCivitatis(opciones = {}) {
     return { ok: true, datos: (Array.isArray(r.datos) ? r.datos : []).map((a) => fichaCorta(a, opcionesDePrecio)).filter(Boolean), viejo: r.viejo === true }
   }
 
+  /**
+   * (V60) El buscador de Civitatis: `POST /search` con el texto en `searchText` (3 letras como mínimo) y `lang`, `currency` y `destinationId` en el CUERPO (no en la dirección).
+   * Palabras cortas («Pompeya», «Amalfi»), no frases. Un 400 con el mensaje «Not Found» es una búsqueda sin resultados: lista vacía (no error).
+   * Solo da id, título y enlace: la nota y las opiniones se piden a la ficha de la actividad (`actividad(id)`), no al listado.
+   * CADA CUÁNTO: solo cuando alguien lo pide (hoy solo el script de comprobación; nada en bucle); la misma búsqueda se guarda 1 h en la caché.
+   * CUÁNTO BAJA: unos 5-20 resultados, ~2-8 KB por búsqueda.
+   */
+  async function buscar(texto, destinoId = null) {
+    if (!activa) return apagada
+    const t = String(texto ?? '').trim()
+    if (t.length < 3) return { ok: false, motivo: 'texto_corto' }
+    const cuerpo = { searchText: t, lang, currency: moneda, ...(destinoId != null && Number.isFinite(Number(destinoId)) ? { destinationId: Number(destinoId) } : {}) }
+    const clave = `busca:${t.toLowerCase()}:${cuerpo.destinationId ?? ''}:${lang}:${moneda}`
+    const r = await cache.obtener(clave, ttl('busqueda'), async () => {
+      const x = await cliente.pedir('/search', { metodo: 'POST', cuerpo })
+      if (!x.ok && x.estado === 400 && /not\s*found/i.test(String(x.mensaje ?? ''))) return { ok: true, datos: [] }
+      return x
+    })
+    if (!r.ok) return r
+    const lista = Array.isArray(r.datos) ? r.datos : Array.isArray(r.datos?.activities) ? r.datos.activities : Array.isArray(r.datos?.results) ? r.datos.results : Array.isArray(r.datos?.data) ? r.datos.data : []
+    const datos = lista.map((a) => ({ id: a?.id != null ? Number(a.id) : null, titulo: String(a?.title ?? a?.name ?? ''), url: enlaceDeActividad(a?.url) ?? null, destino: a?.destinationName ?? a?.destination?.name ?? null })).filter((a) => a.id != null)
+    return { ok: true, datos, viejo: r.viejo === true }
+  }
+
   /** El enlace de traslados de un destino (por su número). */
   async function traslados(destinoId) {
     if (!activa) return apagada
@@ -201,5 +225,5 @@ export function crearServicioCivitatis(opciones = {}) {
     return { opciones: opciones2, enriquecidas }
   }
 
-  return { activa, permitida, actividad, calendario, horasLibres, horasEnRango, freeTourHoras, cercaDe, traslados, resolver, enriquecerEntradas, enriquecerExcursiones, cliente, cache, ajustes, horasLibresDelDia }
+  return { activa, permitida, actividad, calendario, horasLibres, horasEnRango, freeTourHoras, cercaDe, buscar, traslados, resolver, enriquecerEntradas, enriquecerExcursiones, cliente, cache, ajustes, horasLibresDelDia }
 }

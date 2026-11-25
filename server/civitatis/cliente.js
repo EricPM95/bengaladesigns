@@ -146,7 +146,11 @@ export function crearClienteCivitatis(opciones = {}) {
       }
       if (respuesta.status === 204) return { ok: true, estado: 204, datos: null, cabeceras: respuesta.headers }
       if (respuesta.status === 404) return { ok: false, motivo: 'no_encontrado', estado: 404 }
-      if (!respuesta.ok) return { ok: false, motivo: respuesta.status === 406 ? 'bloqueado' : 'no_disponible', estado: respuesta.status }
+      if (!respuesta.ok) {
+        // (V60) Se guarda un trocito del texto del error (nunca la petición): Civitatis contesta un 400 «Not Found» cuando una búsqueda no encuentra nada.
+        const mensaje = String(await respuesta.text().catch(() => '')).slice(0, 300)
+        return { ok: false, motivo: respuesta.status === 406 ? 'bloqueado' : 'no_disponible', estado: respuesta.status, mensaje }
+      }
       const datos = await respuesta.json().catch(() => undefined)
       if (datos === undefined) return { ok: false, motivo: 'respuesta_rara', estado: respuesta.status }
       return { ok: true, estado: respuesta.status, datos, cabeceras: respuesta.headers }

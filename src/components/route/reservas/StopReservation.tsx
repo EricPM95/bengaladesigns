@@ -2,6 +2,9 @@ import { useState } from 'react'
 import { dateOfDay } from '../../../lib/bookings'
 import { recomendarHora, useHorasEnRango } from '../../../lib/civitatis'
 import { useMonedaViajero } from '../../../lib/moneda'
+import { tripModes, useArrivalInfo } from '../../../lib/arrivalReturn'
+import { esDiaDeExcursion, esDiaDeLlegada } from '../../../lib/tituloDelDia'
+import { horaUtilDeBillete } from '../../../../shared/arrival/horaUtil.js'
 import type { Reservation } from '../../../lib/bookings'
 import { enlaceDeCompraDeEntrada, textoDelBotonDeEntrada } from '../../../lib/entradaEnlace'
 import type { SinEntrada } from '../../../lib/destinationExcursions'
@@ -58,7 +61,17 @@ export function StopEntradasTab({ stop, sinEntrada = null }: { stop: { id: strin
   const fechaDeLaParada = route && found ? dateOfDay(route, found.day) : null
   const lugarDeLaHora = stop.isFreeTour ? 'Free Tour' : stop.name
   const horasDelViaje = useHorasEnRango(lugarDeLaHora, fechasDelViaje[0] ?? null, fechasDelViaje[fechasDelViaje.length - 1] ?? null, route?.destination ?? '', data && !data.reservation && fechaDeLaParada ? apertura : null)
-  const recomendada = recomendarHora(horasDelViaje, fechaDeLaParada, found?.stop.time ?? null, fechasDelViaje)
+  // (V60) La hora recomendada nunca es anterior a cuando puede estar allí: el día de llegada, desde la hora útil del vuelo (la misma cuenta que HOY y la hoja de llegada); los demás, desde la hora a la que la ruta le lleva.
+  // Se calcula aquí, al pintar, con lo que hay en la ruta: cambiar el vuelo o el orden del día la recalcula sola, sin pasar por Reorganizar. La alternativa sale solo de los días de ciudad (ni la vuelta ni la excursión).
+  const infoLlegada = useArrivalInfo(route?.destination ?? '', found?.day.city, route?.origin)
+  const diaDeLlegada = route ? route.days.find((day) => esDiaDeLlegada(route, day)) ?? null : null
+  const fechaDeLlegada = route && diaDeLlegada ? dateOfDay(route, diaDeLlegada) : null
+  const utilDeLlegada = route && route.arrivalFlightTime && tripModes(route).arrival === 'avion' ? (horaUtilDeBillete({ info: infoLlegada, medio: 'avion', puntoId: route.arrivalPointId ?? null, zona: route.accommodationZone ?? null, hora: route.arrivalFlightTime }) as { min: number } | null) : null
+  const diasQueAdmiten = route && route.answers.dateRange ? route.days.filter((day) => !day.isReturnLeg && !esDiaDeExcursion(day)).map((day) => dateOfDay(route, day)).filter((iso): iso is string => Boolean(iso)) : []
+  const paradasDelDia = found ? found.day.stops.filter((s) => !s.isArrival && !s.isBreak && !s.isFreeTime && !s.passThrough) : []
+  const posicion = found ? paradasDelDia.findIndex((s) => s.id === found.stop.id) : -1
+  const anterior = posicion > 0 ? paradasDelDia[posicion - 1] : null
+  const recomendada = recomendarHora(horasDelViaje, fechaDeLaParada, found?.stop.time ?? null, diasQueAdmiten.length > 0 ? diasQueAdmiten : fechasDelViaje, { fechaLlegada: fechaDeLlegada, horaUtilMin: utilDeLlegada?.min ?? null, aterrizaHHMM: route?.arrivalFlightTime ?? null, despuesDe: anterior ? displayStopName(anterior.name) : null })
   if (sinEntrada) return <FichaSinEntrada bloque={sinEntrada} />
   if (!route || !data) return null
   const { reservation, delGrupo, cubiertaPorElDueno, compartido, nombreAdmin, laTienen, quienLaTiene } = data

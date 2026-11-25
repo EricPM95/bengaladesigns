@@ -197,22 +197,9 @@ const aMinutos = (hhmm: string): number | null => {
   return m ? Number(m[1]) * 60 + Number(m[2]) : null
 }
 
-/** Pura: de las horas libres, la más cercana a la hora a la que la ruta lleva la parada; con dos igual de cerca, la más temprana. Sin horas o sin hora de ruta válida, null. */
-export function horaMasCercana(horas: HoraLibre[], horaRuta: string | null): HoraLibre | null {
-  const objetivo = horaRuta ? aMinutos(horaRuta) : null
-  if (objetivo == null) return null
-  let mejor: HoraLibre | null = null
-  let distancia = Infinity
-  for (const h of [...horas].sort((a, b) => a.hora.localeCompare(b.hora))) {
-    const minutos = aMinutos(h.hora)
-    if (minutos == null) continue
-    const d = Math.abs(minutos - objetivo)
-    if (d < distancia) {
-      mejor = h
-      distancia = d
-    }
-  }
-  return mejor
+/** Pura (V60): de las horas libres, la PRIMERA que cabe a partir de desdeMin (minutos desde las 0:00). Nunca la más cercana si es anterior: una hora antes de que pueda estar allí no vale. Sin ninguna, null. */
+export function primeraHoraDesde(horas: HoraLibre[], desdeMin: number): HoraLibre | null {
+  return [...horas].sort((a, b) => a.hora.localeCompare(b.hora)).find((h) => (aMinutos(h.hora) ?? -1) >= desdeMin) ?? null
 }
 
 const DIA_LARGO = new Intl.DateTimeFormat('es-ES', { weekday: 'long', timeZone: 'UTC' })
@@ -222,28 +209,94 @@ export function diaLargoEs(fechaIso: string): string {
   return `${DIA_LARGO.format(fecha)} ${Number(fechaIso.slice(8, 10))}`
 }
 
-export type HoraRecomendada = { tipo: 'hora'; hora: string; aviso: string | null; texto: string } | { tipo: 'sin_plazas'; alternativa: string | null; texto: string }
+export type FranjaDeAviso = { tono: 'ambar' | 'rojo'; texto: string }
+export type HoraRecomendada =
+  | {
+      tipo: 'hora'
+      hora: string
+      aviso: string | null
+      texto: string
+      /** El día de la hora (fecha ISO) y cómo se dice («Viernes 27 · 17:00»). */
+      dia: string
+      cuando: string
+      /** El porqué, debajo de la caja verde. */
+      porque: string
+      /** La franja de aparte de encima (ese día no llegas / no quedan plazas); null si el día de la parada vale. */
+      franja: FranjaDeAviso | null
+      /** Con otro día: la frase gris «Cuando añadas la reserva, lo pasamos al sábado en tu ruta.». */
+      pasaAlDia: string | null
+    }
+  | { tipo: 'sin_plazas'; alternativa: string | null; texto: string; franja: FranjaDeAviso }
+
+/** Lo que la recomendación necesita saber del viaje (V60): el día de llegada y desde cuándo puede estar allí el viajero. */
+export interface ContextoDeHora {
+  /** El día de llegada (fecha ISO) y la hora útil de su vuelo en minutos (`horaUtilMin`: aterriza + salir + trayecto + instalarse); null sin vuelo con hora. */
+  fechaLlegada?: string | null
+  horaUtilMin?: number | null
+  /** «17:20»: la hora a la que aterriza (para decirlo en el aviso). */
+  aterrizaHHMM?: string | null
+  /** El sitio anterior de su día (para «Encaja después del Panteón»). */
+  despuesDe?: string | null
+}
+
+const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1)
 
 /**
- * Pura: lo que dice la etiqueta verde encima de «Reservar». `diasDelViaje`: las fechas de su viaje (la alternativa sale SOLO de ahí; la más cercana al día de la parada, la más temprana si empatan).
- * Nada (null) sin fecha, sin datos, sin hora de ruta o si la actividad no tiene horas fijas.
+ * Pura (V60): lo que dice la caja verde «TE RECOMENDAMOS» encima de «Reservar». NUNCA una hora antes de que pueda estar allí: el día de llegada, desde la hora útil del vuelo; los demás días, desde la hora
+ * a la que la ruta le lleva (`horaRuta`). Es la PRIMERA hora libre que cabe DESPUÉS, no la más cercana. Si ese día no cabe ninguna (o no quedan plazas), la del día más cercano del viaje con hueco
+ * (`diasDelViaje`: solo ahí; el más cercano al día de la parada, el más temprano si empatan), con la franja ámbar (no llegas) o roja (sin plazas) encima. Nada (null) sin fecha, sin datos o si no hay actividad con horas fijas.
+ * Se calcula al pintar: cambiar el vuelo o el orden del día la recalcula sin pasar por Reorganizar.
  */
-export function recomendarHora(datos: HorasEnRango | null, fechaParada: string | null, horaRuta: string | null, diasDelViaje: string[]): HoraRecomendada | null {
+export function recomendarHora(datos: HorasEnRango | null, fechaParada: string | null, horaRuta: string | null, diasDelViaje: string[], contexto: ContextoDeHora = {}): HoraRecomendada | null {
   if (!datos || !datos.conHorasFijas || !fechaParada) return null
   const dia = datos.dias[fechaParada]
   if (!dia) return null
-  if (dia.horas.length > 0) {
-    const elegida = horaMasCercana(dia.horas, horaRuta)
-    if (!elegida) return null
-    const texto = `Te recomendamos reservar a las ${elegida.hora}${elegida.aviso ? ` · ${elegida.aviso}` : ''}`
-    return { tipo: 'hora', hora: elegida.hora, aviso: elegida.aviso, texto }
+  const rutaMin = horaRuta ? aMinutos(horaRuta) : null
+  const util = contexto.horaUtilMin ?? null
+  const esLlegada = (f: string) => f === contexto.fechaLlegada && util != null
+  // Desde cuándo puede estar allí ese día (null = no se sabe: sin hora de ruta y sin vuelo, no se recomienda).
+  const desdeEseDia = esLlegada(fechaParada) ? util : rutaMin
+  if (desdeEseDia == null) return null
+  const aterriza = contexto.aterrizaHHMM ?? null
+  const cuando = (f: string, h: string) => `${cap(diaLargoEs(f))} · ${h}`
+
+  const buena = dia.sinPlazas ? null : primeraHoraDesde(dia.horas, desdeEseDia)
+  if (buena) {
+    const porque = esLlegada(fechaParada) && aterriza ? `Aterrizas a las ${aterriza}: a esta hora llegas con calma.` : contexto.despuesDe ? `Encaja después de ${contexto.despuesDe}.` : 'Encaja con tu ruta de ese día.'
+    return { tipo: 'hora', hora: buena.hora, aviso: buena.aviso, texto: `Te recomendamos reservar a las ${buena.hora}${buena.aviso ? ` · ${buena.aviso}` : ''}`, dia: fechaParada, cuando: cuando(fechaParada, buena.hora), porque: `${porque}${buena.aviso ? ` ${buena.aviso}.` : ''}`, franja: null, pasaAlDia: null }
   }
+  // Ese día no vale: sin plazas (dato de Civitatis, o ninguna hora libre) o no llega a ninguna.
+  const sinPlazas = dia.sinPlazas || dia.horas.length === 0
+  const franja: FranjaDeAviso = sinPlazas
+    ? { tono: 'rojo', texto: `El ${diaLargoEs(fechaParada)} no quedan plazas` }
+    : { tono: 'ambar', texto: esLlegada(fechaParada) && aterriza ? `El ${diaLargoEs(fechaParada)} no llegas: aterrizas a las ${aterriza}` : `El ${diaLargoEs(fechaParada)} no llegas a ninguna hora libre` }
   const base = new Date(`${fechaParada}T12:00:00Z`).getTime()
-  const candidatos = diasDelViaje
-    .filter((f) => f !== fechaParada && (datos.dias[f]?.horas.length ?? 0) > 0)
-    .sort((a, b) => Math.abs(new Date(`${a}T12:00:00Z`).getTime() - base) - Math.abs(new Date(`${b}T12:00:00Z`).getTime() - base) || a.localeCompare(b))
-  const alternativa = candidatos[0] ?? null
-  return { tipo: 'sin_plazas', alternativa, texto: alternativa ? `Ese día no quedan plazas. El ${diaLargoEs(alternativa)} sí hay` : 'Ese día no quedan plazas' }
+  const otros = diasDelViaje
+    .filter((f) => f !== fechaParada)
+    .map((f) => {
+      const d = datos.dias[f]
+      if (!d || d.sinPlazas || d.horas.length === 0) return null
+      // Otro día: desde la hora de la ruta si cabe; si no, la primera del día (el de llegada, siempre después de su hora útil).
+      const minimo = esLlegada(f) ? (util as number) : 0
+      const h = primeraHoraDesde(d.horas, Math.max(minimo, rutaMin ?? 0)) ?? primeraHoraDesde(d.horas, minimo)
+      return h ? { f, h } : null
+    })
+    .filter((x): x is { f: string; h: HoraLibre } => x !== null)
+    .sort((a, b) => Math.abs(new Date(`${a.f}T12:00:00Z`).getTime() - base) - Math.abs(new Date(`${b.f}T12:00:00Z`).getTime() - base) || a.f.localeCompare(b.f))
+  const otro = otros[0] ?? null
+  if (!otro) return { tipo: 'sin_plazas', alternativa: null, texto: franja.texto, franja }
+  const semana = diaLargoEs(otro.f).split(' ')[0]
+  return {
+    tipo: 'hora',
+    hora: otro.h.hora,
+    aviso: otro.h.aviso,
+    texto: `${franja.texto}. Te recomendamos el ${diaLargoEs(otro.f)} a las ${otro.h.hora}`,
+    dia: otro.f,
+    cuando: cuando(otro.f, otro.h.hora),
+    porque: `${sinPlazas ? 'El día más cercano con plazas.' : 'El primer día que te encaja.'}${otro.h.aviso ? ` ${otro.h.aviso}.` : ''}`,
+    franja,
+    pasaAlDia: `Cuando añadas la reserva, lo pasamos al ${semana} en tu ruta.`,
+  }
 }
 
 /** Las horas libres de cada día del viaje para una entrada (siempre frescas: las plazas tienen que estar al día). `clave` null, o el interruptor apagado, no pide nada. */

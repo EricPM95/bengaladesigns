@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { enlaceAlPuntoDeEncuentro } from '../../../lib/civitatis'
+import { enlaceAlPuntoDeEncuentro, type FranjaDeAviso, type HoraRecomendada } from '../../../lib/civitatis'
 import { limpiarImportes, precioConNumero } from '../../../lib/importesTexto'
 import { precioTiendaEnVista } from '../../../lib/moneda'
 import type { StopEntrada } from '../../../lib/types'
@@ -36,7 +36,54 @@ export function precioDeLaEntrada(entrada: StopEntrada): string | null {
 
 const MONO = "600 10px 'Geist Mono',monospace"
 
-export function EntradaDeLaFicha({ entrada, reservarTexto, recomendada, onReservar }: { entrada: StopEntrada; reservarTexto: string; recomendada: { tipo: string; texto: string } | null; /** null = sin botón (no hay página de ese sitio en ninguna tienda): nunca un botón que lleve a otra página. */ onReservar: (() => void) | null }) {
+const TONOS_DE_FRANJA: Record<FranjaDeAviso['tono'], { bg: string; bd: string; fg: string }> = {
+  ambar: { bg: '#FFF1D6', bd: '#D9A23C', fg: '#6A4208' },
+  rojo: { bg: '#FBE7E2', bd: '#D9806F', fg: '#8A3322' },
+}
+
+/**
+ * (V60, Design `Entrada Free Tour` F1-F3) LA HORA QUE TE RECOMENDAMOS: la caja verde «TE RECOMENDAMOS» con el día y la hora en grande y debajo el porqué; si el día de la parada no vale (no llegas / no quedan plazas), encima
+ * una franja aparte (ámbar o roja) con el problema y, debajo de la caja, en gris, que al añadir la reserva la parada pasa a ese día. La caja verde es siempre la misma. Sin otro día que valga, solo la franja.
+ */
+export function HoraQueTeRecomendamos({ recomendada }: { recomendada: HoraRecomendada }) {
+  const franja = recomendada.franja
+  const tono = franja ? TONOS_DE_FRANJA[franja.tono] : null
+  return (
+    <div data-hora-recomendada={recomendada.tipo} data-franja={franja?.tono ?? ''} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {franja && tono && (
+        <div data-franja-hora style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '9px 12px', borderRadius: 14, background: tono.bg, border: `1px solid ${tono.bd}`, font: "700 13px/1.3 'Geist'", color: tono.fg }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }} aria-hidden="true">
+            <path d="M12 9v4M12 17h.01M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
+          </svg>
+          {franja.texto}
+        </div>
+      )}
+      {recomendada.tipo === 'hora' && (
+        <>
+          <div data-caja-recomendada style={{ display: 'flex', alignItems: 'flex-start', gap: 14, padding: '15px 16px', borderRadius: 20, background: 'linear-gradient(135deg,#DDF0E0,#EAF5EA)', border: '1.5px solid #5FAE79', boxShadow: '0 10px 18px -14px rgba(43,127,69,.7)' }}>
+            <span style={{ width: 48, height: 48, borderRadius: '50%', flex: 'none', background: '#2B7F45', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 0 4px rgba(43,127,69,.15)' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3.2 2" />
+              </svg>
+            </span>
+            <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <span style={{ font: "700 9.5px 'Geist Mono',monospace", letterSpacing: '.14em', color: '#1F6236' }}>TE RECOMENDAMOS</span>
+              <span data-hora-cuando style={{ font: "400 30px/1.05 'Instrument Serif',serif", color: '#14502B' }}>{recomendada.cuando}</span>
+              <span data-hora-porque style={{ font: "500 13px/1.35 'Geist'", color: '#2B6B42' }}>{recomendada.porque}</span>
+            </span>
+          </div>
+          {recomendada.pasaAlDia && (
+            <span data-hora-pasa-al-dia style={{ marginTop: -4, padding: '0 4px', font: "400 12.5px/1.4 'Geist'", color: 'rgba(28,34,48,.55)' }}>
+              {recomendada.pasaAlDia}
+            </span>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
+
+export function EntradaDeLaFicha({ entrada, reservarTexto, recomendada, onReservar }: { entrada: StopEntrada; reservarTexto: string; recomendada: HoraRecomendada | null; /** null = sin botón (no hay página de ese sitio en ninguna tienda): nunca un botón que lleve a otra página. */ onReservar: (() => void) | null }) {
   const [abierta, setAbierta] = useState(false)
   const [cargada, setCargada] = useState(false)
   const c = entrada.civitatis
@@ -157,13 +204,7 @@ export function EntradaDeLaFicha({ entrada, reservarTexto, recomendada, onReserv
             ) : (
               entrada.incluye && <p style={{ margin: 0, font: "400 13px/1.5 'Geist'", color: 'rgba(28,34,48,.72)' }}>{limpiarImportes(entrada.incluye)}</p>
             )}
-            {recomendada && (
-              // La hora recomendada es un consejo: no parece un botón (sin relleno de botón ni sombra).
-              <div data-hora-recomendada={recomendada.tipo} className={`rounded-xl px-3 py-2 text-[12.5px] leading-[1.4] ${recomendada.tipo === 'hora' ? 'text-accent-green' : 'text-text-soft'}`} style={{ background: recomendada.tipo === 'hora' ? 'rgba(30,110,70,.07)' : 'rgba(28,34,48,.04)' }}>
-                {recomendada.tipo === 'hora' && <p className="m-0 mb-0.5 text-[10.5px] font-semibold uppercase tracking-[.12em] opacity-80">La hora que te recomendamos</p>}
-                <p className="m-0 font-medium">{recomendada.texto}</p>
-              </div>
-            )}
+            {recomendada && <HoraQueTeRecomendamos recomendada={recomendada} />}
             {onReservar && (
               <button type="button" onClick={onReservar} data-ver-horas-y-reservar style={{ height: 54, borderRadius: 16, border: 'none', ...BOTON_ORO, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9, font: "700 15.5px 'Geist'", cursor: 'pointer', whiteSpace: 'nowrap' }}>
                 {reservarTexto}
