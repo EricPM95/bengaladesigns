@@ -4,7 +4,7 @@
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-TERMINADO V52 a V58: las 7 tandas subidas a main (ultimo commit 9349e49e), produccion OK. CHECKLIST_V52_V58 y REPASO_V52_V58 subidos. API reiniciada, Vite y esbuild cerrados, 0 Chrome
+Terminado V52 a V58: 7 tandas en main, ultimo commit 9349e49e, produccion OK, CHECKLIST y REPASO subidos, API reiniciada, 0 Chrome
 
 ## Qué falta
 Nada
