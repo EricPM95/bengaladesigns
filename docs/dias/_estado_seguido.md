@@ -1,13 +1,13 @@
 # Estado de la tanda seguido
 
-**Última actualización: 25/11/26, 16:12**
+**Última actualización: 25/11/26, 16:43**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-V52 a V57 subidas a main. Empezando V58
+V52 a V58 subidas a main. Falta CHECKLIST_V52_V58 y REPASO_V52_V58
 
 ## Qué falta
-V58, CHECKLIST_V52_V58 y REPASO_V52_V58
+CHECKLIST, REPASO, reiniciar api-server
 
 ## Procesos abiertos ahora mismo
 - node: 3
