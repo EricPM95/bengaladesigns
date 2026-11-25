@@ -40,13 +40,13 @@ interface StopAccordionProps {
   avisoHorario?: string | null
   /** (10S10, apartado 3) La hora de la parada (inicio, puesta de sol, si va detrás de la cena): decide si sale la etiqueta pequeña de la hora que el nombre ya no lleva. */
   horaDeParada?: HoraDeParada
+  /** (V63 §11) El sitio no tiene horario y no cierra (plaza, mirador, barrio, pueblo): la tarjeta dice «Abierto siempre». */
+  abiertoSiempre?: boolean
 }
 
 /** El motivo corto de "Por fuera", en la línea de la tarjeta. */
 const OUTSIDE_SHORT: Record<string, string> = {
   cerrado: CERRADO_ESTE_DIA,
-  ya_cerrado: 'A esta hora ya ha cerrado',
-  no_abre: 'A esta hora no abre',
   no_cabe: 'para llegar a todo',
 }
 
@@ -57,7 +57,7 @@ const OUTSIDE_SHORT: Record<string, string> = {
  * (StopDetailSheet). Sin texto descriptivo (decisión del usuario, 2026-09-28): hora, nombre, foto, horario,
  * duración, por dentro / por fuera con su motivo corto, avisos en rojo y etiquetas. El "Por qué aquí" va en la ficha.
  */
-export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, startTime, addedByUser = false, freeDayWarning, numberColors, tripWarning, horario, avisoHorario, horaDeParada }: StopAccordionProps) {
+export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, startTime, addedByUser = false, freeDayWarning, numberColors, tripWarning, horario, avisoHorario, horaDeParada, abiertoSiempre }: StopAccordionProps) {
   const freeDay = freeDayWarning !== undefined
   // La etiqueta de barrio («Trastevere», en lila; Tanda 6y4): la de la zona del lugar en los datos del destino.
   const barrio = useEtiquetaBarrio(useRouteStore((state) => state.route?.destination), stop.name)
@@ -98,20 +98,26 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
   // etiquetas. «Reserva…» va en la ficha (Entradas) y «Por dentro / Por fuera» también (Resumen). En la tarjeta solo se
   // queda lo rojo, cuando hay un problema («Hoy cierra», «Cerrado a esa hora»…).
   const meta: CardMeta[] = []
-  if (tripWarning) meta.push({ text: tripWarning, warn: true })
+  // (V63 §11) De los avisos calculados, solo «Cerrado este día» (un dato): «Cerrado a esa hora» y parecidos ya no salen en DÍAS.
+  const soloElDato = (texto?: string | null) => (texto === CERRADO_ESTE_DIA ? texto : null)
+  if (soloElDato(tripWarning)) meta.push({ text: CERRADO_ESTE_DIA, warn: true })
   // El horario de ese día, en pequeño (Tanda 6z5): «Abre 9:00 – 19:15 · Última entrada 18:15»; cerrado, «Cerrado hoy» en rojo. Plazas, fuentes y
   // calles (sin horario en los datos) no llevan nada. Por fuera solo se dice si está cerrado. (Un paseo libre no tiene horario: es la calle.)
   // La parada que se queda en su día cerrada (no hay otro día en el viaje; Tanda 7, punto 15) lleva una sola marca, «Cerrado este día», en lugar del «Cerrado hoy» / «Hoy cierra» rojo.
   const cerradoEsteDia = Boolean(stop.closedThisDay)
   // (Tanda 11, punto 4: el mirador que sustituye al Tempietto cerrado no está «cerrado»: es un mirador abierto; sin aviso en rojo.)
-  if (horario && !cerradoEsteDia && !stop.isNightExperience && !stop.isFreeWalk && stop.outsideKind !== 'al_lado' && (stop.visitMode !== 'fuera' || (horario.cerrado && !['cerrado', 'ya_cerrado', 'no_abre'].includes(stop.outsideKind ?? '')))) meta.push({ icon: 'clock', text: horarioDeLaTarjeta(horario) ?? horario.texto, warn: horario.cerrado })
+  // (V63 §11, Eric 25-nov) Primero el tiempo de visita y, a su lado, el horario de ese día («⏳ 15 min · 🕘 9:00–19:00»; con dos tramos, «7:45–13:30 · 16:30–20:00»); lo que no tiene horario (plazas, miradores, barrios, pueblos), «Abierto siempre»; sin dato, nada.
+  // «A esta hora ya ha cerrado», «A esta hora no abre» y «Cerrado a esa hora» ya NO salen en DÍAS (no se recalculaban y liaban): «Cerrado este día» se queda (es un dato).
   if (cerradoEsteDia) meta.push({ text: 'Cerrado este día', warn: true })
   else if (stop.durationMinutes > 0) meta.push({ icon: 'hour', text: formatDuration(stop.durationMinutes) })
+  const muestraHorario = !cerradoEsteDia && !stop.isNightExperience && !stop.isFreeWalk && stop.outsideKind !== 'al_lado' && (stop.visitMode !== 'fuera' || (Boolean(horario?.cerrado) && !['cerrado', 'ya_cerrado', 'no_abre'].includes(stop.outsideKind ?? '')))
+  if (horario && muestraHorario) meta.push({ icon: 'clock', text: horarioDeLaTarjeta(horario, ' · ') ?? horario.texto, warn: horario.cerrado })
+  else if (!horario && abiertoSiempre && muestraHorario) meta.push({ icon: 'clock', text: 'Abierto siempre' })
   // Por fuera porque cierra: el motivo, en rojo (si cierra ese día ya lo dice «Cerrado hoy», una sola vez). (Por falta de tiempo no es un problema: va en la ficha.)
   if (stop.visitMode === 'fuera' && !cerradoEsteDia) {
-    const closed = stop.outsideKind === 'cerrado' || stop.outsideKind === 'ya_cerrado' || stop.outsideKind === 'no_abre'
+    const closed = stop.outsideKind === 'cerrado'
     // (Tanda 11, punto 4: UN solo aviso que dice por qué —«Hoy está cerrado: lo ves por fuera», «A esta hora ya ha cerrado»…—; la línea del horario no repite el cierre.)
-    const short = (stop.outsideKind === 'no_abre' || stop.outsideKind === 'cerrado') && stop.outsideReason ? stop.outsideReason : (OUTSIDE_SHORT[stop.outsideKind ?? ''] ?? null)
+    const short = stop.outsideKind === 'cerrado' && stop.outsideReason ? stop.outsideReason : (OUTSIDE_SHORT[stop.outsideKind ?? ''] ?? null)
     if (closed && short) meta.push({ text: short, warn: true })
   }
   // (V38B) Por fuera porque el viaje ya lo lleva por dentro otro día: la tarjeta lo dice claro («Por fuera · ya lo ves por dentro el día 2»), sin rojo (no es un problema).
@@ -119,9 +125,9 @@ export function StopAccordion({ number, stop, onOpen, onOpenEntradas, menu, star
   // Viaje sin fechas: los días que a esta hora está cerrado; de temporada: puede que aún no haya abierto.
   if (freeDay) {
     // («Cerrado este día» ya lo dice la línea del horario o la propia parada: una sola vez.)
-    if (freeDayWarning && !cerradoEsteDia && !(horario?.cerrado && freeDayWarning === CERRADO_ESTE_DIA)) meta.push({ text: freeDayWarning, warn: true })
+    if (soloElDato(freeDayWarning) && !cerradoEsteDia && !horario?.cerrado && !meta.some((item) => item.text === CERRADO_ESTE_DIA)) meta.push({ text: CERRADO_ESTE_DIA, warn: true })
   } else {
-    if (stop.hoursWarning && !(stop.hoursWarning === CERRADO_ESTE_DIA && meta.some((item) => item.text === CERRADO_ESTE_DIA))) meta.push({ text: stop.hoursWarning, warn: true })
+    if (soloElDato(stop.hoursWarning) && !meta.some((item) => item.text === CERRADO_ESTE_DIA)) meta.push({ text: CERRADO_ESTE_DIA, warn: true })
     if (stop.seasonNotice) meta.push({ text: stop.seasonNotice, warn: true })
   }
   // «Añadida por ti», fuera de la tarjeta (PROMPT_UI_REPASO_2, 5).

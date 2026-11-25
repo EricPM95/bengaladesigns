@@ -410,3 +410,12 @@ html[data-solo-ver] [data-hueco-solo-anadir], [data-dia-pasado] [data-hueco-solo
   overflow-y: hidden;
   overscroll-behavior-x: contain;
 }
+
+/* (V63 §1 y §3) Mientras hay un aviso de abajo a la vista, las hojas empiezan justo encima de él (`--aviso-alto` lo pone `AvisoSobreLaBarra`); y la línea dorada de tiempo de cada aviso se acorta de derecha a izquierda. */
+html[data-aviso-abajo] [role='dialog'][aria-modal='true'] {
+  bottom: var(--aviso-alto, 0px) !important;
+}
+@keyframes avisoLinea {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}

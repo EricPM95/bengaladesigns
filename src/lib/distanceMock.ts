@@ -19,6 +19,11 @@ function seededRandom(seed: string) {
   }
 }
 
+/** (V63 §9) UNA sola cuenta del coche cuando el motor no trae el trayecto: 40 km/h de media con la curva de la carretera (1,35 sobre la línea recta). La usan HOY, el atardecer y «Si te sobra tiempo». */
+export const KM_POR_HORA_COCHE_APP = 40
+export const RODEO_COCHE_APP = 1.35
+export const minutosEnCocheDeMetros = (metros: number): number => Math.max(1, Math.round((metros * RODEO_COCHE_APP) / ((KM_POR_HORA_COCHE_APP * 1000) / 60)))
+
 export function haversineMeters(a: Coordinates, b: Coordinates): number {
   const R = 6371000
   const toRad = (deg: number) => (deg * Math.PI) / 180

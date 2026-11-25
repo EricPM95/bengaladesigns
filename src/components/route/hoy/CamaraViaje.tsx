@@ -177,7 +177,7 @@ function AvisoDeFoto({ resultado, archivo, onFin }: { resultado: Extract<Resulta
   }, [archivo])
   const sinRed = resultado.tipo === 'sin_conexion'
   return createPortal(
-    <AvisoSobreLaBarra z={86} datos={{ 'data-camara-viaje': sinRed ? 'sin-conexion' : 'recuerdo' }} className="!gap-3" estilo={{ animation: 'vistoToast .35s ease both', boxShadow: '0 0 0 1px rgba(243,216,143,.35)' }}>
+    <AvisoSobreLaBarra z={86} linea={{ total: archivo ? 8000 : 5000 }} datos={{ 'data-camara-viaje': sinRed ? 'sin-conexion' : 'recuerdo' }} className="!gap-3" estilo={{ animation: 'vistoToast .35s ease both', boxShadow: '0 0 0 1px rgba(243,216,143,.35)' }}>
       <span className="flex-none overflow-hidden" style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(150deg,oklch(0.72 0.07 30),oklch(0.46 0.06 55))' }}>
         {resultado.url && <img src={resultado.url} alt="" className="h-full w-full object-cover" />}
       </span>

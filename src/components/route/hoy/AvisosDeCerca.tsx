@@ -38,6 +38,8 @@ export function esDeManana(): boolean {
   return (typeof falsa === 'number' ? falsa : new Date().getHours()) < 12
 }
 
+const sinAcentos = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
+
 type Mostrando = { nivel: 'brilla' | 'mas_cerca'; sitio: string } | null
 
 export function AvisosDeCerca({ route, day, dateIso }: { route: Route; day: DayPlan; dateIso: string }) {
@@ -47,6 +49,12 @@ export function AvisosDeCerca({ route, day, dateIso }: { route: Route; day: DayP
   const activo = pagoActivo() && sugerencias
   const sitiosHoy = numberedStopsOf(day).map((s) => s.name)
   const datos = useCercaDeAqui({ tripId, sitiosHoy, activo, enCoche: esDestinoDeCoche(route.destination) })
+  // (V63 §4) El emblema oculto de una parada SALTADA no sale: si el viajero salta el Foro y está ya en la siguiente, a dos pasos, el juego no le habla del Foro. Se compara por el nombre del sitio con las paradas saltadas de hoy.
+  const saltadas = day.stops.filter((s) => s.saltada).map((s) => sinAcentos(s.name))
+  const esDeSaltada = (nombre: string | undefined | null) => {
+    const n = sinAcentos(nombre ?? '')
+    return n.length >= 4 && saltadas.some((x) => x === n || x.includes(n) || n.includes(x))
+  }
   const [mostrando, setMostrando] = useState<Mostrando>(null)
   const [llegada, setLlegada] = useState<SitioCerca | null>(null)
   const [cerradas, setCerradas] = useState<Set<string>>(new Set())
@@ -60,6 +68,11 @@ export function AvisosDeCerca({ route, day, dateIso }: { route: Route; day: DayP
       return
     }
     const { juego, juego_sitio: sitio } = datos
+    if (esDeSaltada(datos.cerca.find((x) => x.sitio === sitio)?.nombre ?? sitio)) {
+      actual.current = null
+      setMostrando(null)
+      return
+    }
     if (juego === 'llegada') {
       actual.current = null
       setMostrando(null)
@@ -82,7 +95,7 @@ export function AvisosDeCerca({ route, day, dateIso }: { route: Route; day: DayP
     anotarQueSalio(tripId, dateIso, sitio, juego)
     actual.current = { nivel: juego, sitio }
     setMostrando(actual.current)
-  }, [datos?.juego, datos?.juego_sitio, tripId, dateIso, datos?.cerca])
+  }, [datos?.juego, datos?.juego_sitio, tripId, dateIso, datos?.cerca, saltadas.join('|')]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // (HOY2b, E) Lo que sabe el compañero se comparte con el reto del día y con [¿Qué hago ahora?] (debajo de la tarjeta principal); aquí ya no sale el reto.
   const sitioOfrecido = datos ? (datos.cerca?.find((s) => s.sitio === (datos.fuera_de_ruta ?? datos.junto_a))?.nombre ?? null) : null

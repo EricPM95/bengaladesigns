@@ -1,6 +1,6 @@
 import { dayOfReservation } from './bookings'
 import type { Reservation } from './bookings'
-import { hasRealCoordinates, haversineMeters } from './distanceMock'
+import { hasRealCoordinates, haversineMeters, minutosEnCocheDeMetros, KM_POR_HORA_COCHE_APP, RODEO_COCHE_APP } from './distanceMock'
 import { displayStopName } from './format'
 import { numberedStopsOf } from './stopKind'
 import { parseTimeToMinutes } from './time'
@@ -21,8 +21,8 @@ import { useRouteStore } from '../store/useRouteStore'
 
 export const METROS_POR_MINUTO_A_PIE = 80
 /** Coche: 40 km/h de media por la isla, con la curva de la carretera (1,35 sobre la línea recta). Solo cuando el motor no trae el trayecto de la parada. */
-export const KM_POR_HORA_COCHE = 40
-export const RODEO_COCHE = 1.35
+export const KM_POR_HORA_COCHE = KM_POR_HORA_COCHE_APP
+export const RODEO_COCHE = RODEO_COCHE_APP
 /** «Ya estás aquí»: dentro de este radio del sitio (m). El radio propio de cada sitio vive en los datos de los logros (servidor); aquí, uno de calle para la tarjeta. */
 export const RADIO_YA_ESTAS_AQUI_M = 150
 /** «Sal ahora…» sale desde estos minutos antes de la hora a la que hay que salir. */
@@ -65,6 +65,9 @@ export interface TrayectoDeParada {
   totalMin: number
   /** true cuando los minutos son los del motor (coche) o los de la ubicación real. */
   desdeUbicacion: boolean
+  /** (V63 §9) De dónde cuenta de verdad esta cifra: 'ubicacion' (tú), 'parada' (la parada anterior: `origenNombre`), 'casa' (el alojamiento o la zona) o 'motor' (el motor la calculó desde `origenNombre`, un punto que no es la parada anterior). */
+  origen: 'ubicacion' | 'parada' | 'casa' | 'motor'
+  origenNombre: string | null
 }
 
 export function trayectoHasta(p: { siguiente: Stop; ubicacion: Coordinates | null; anterior?: Stop | null; enCoche: boolean; /** La zona del alojamiento (para la primera parada del día, que no tiene parada de antes). */ casa?: Coordinates | null; /** El trayecto de salir de casa a la primera parada que trae el motor de coche (`day.coche.ida`). */ ida?: { minutos: number; km: number; aparcar_min?: number } | null }): TrayectoDeParada | null {
@@ -75,18 +78,23 @@ export function trayectoHasta(p: { siguiente: Stop; ubicacion: Coordinates | nul
   const desde = ubicacion ?? deAnterior ?? deCasa
   const nombreDesde = ubicacion ? null : deAnterior && anterior ? `Desde ${displayStopName(anterior.name)}` : deCasa ? 'Desde tu alojamiento' : null
   if (enCoche) {
-    const t = siguiente.trayectoCoche ?? (p.ida && !anterior ? { minutos: p.ida.minutos, km: p.ida.km, aparcar_min: p.ida.aparcar_min } : null)
+    // (V63 §9) La cifra del motor vale solo si su punto de salida es la parada anterior de HOY (a menos de 3 km: el aparcamiento no es la puerta). Si el viajero saltó una parada o cambió el orden, se cuenta de nuevo desde la anterior con la cuenta común.
+    const delMotor = siguiente.trayectoCoche ?? null
+    const motorDesde = delMotor?.desde && Number.isFinite(delMotor.desde.lat) ? { lat: delMotor.desde.lat, lng: delMotor.desde.lng } : null
+    const motorVale = Boolean(delMotor) && (!deAnterior || !motorDesde || haversineMeters(motorDesde, deAnterior) <= 3000)
+    const t = (motorVale ? delMotor : null) ?? (p.ida && !anterior ? { minutos: p.ida.minutos, km: p.ida.km, aparcar_min: p.ida.aparcar_min } : null)
     if (t && Number.isFinite(t.minutos) && !ubicacion) {
+      const origenMotor: Pick<TrayectoDeParada, 'origen' | 'origenNombre'> = deAnterior && anterior ? { origen: 'parada', origenNombre: displayStopName(anterior.name) } : delMotor === t && delMotor?.desde?.nombre && p.casa && motorDesde && haversineMeters(motorDesde, p.casa) > 3000 ? { origen: 'motor', origenNombre: delMotor.desde.nombre.replace(/^aparcamientos+(de la|del|de los|de las|de)s+/i, '').trim() } : { origen: 'casa', origenNombre: null }
       const aparcar = t.aparcar_min ?? 0
       const km = Number.isFinite(t.km) ? Math.round(t.km) : null
-      return { modo: 'coche', min: t.minutos, km, aparcar, titulo: `En coche · ${t.minutos} min`, detalle: [km != null ? `${km} km` : null].filter(Boolean).join(' · ') || nombreDesde, totalMin: t.minutos + aparcar, desdeUbicacion: false }
+      return { modo: 'coche', min: t.minutos, km, aparcar, titulo: `En coche · ${t.minutos} min`, detalle: [km != null ? `${km} km` : null].filter(Boolean).join(' · ') || nombreDesde, totalMin: t.minutos + aparcar, desdeUbicacion: false, ...origenMotor }
     }
     if (reales && desde) {
       const m = haversineMeters(desde, siguiente.coordinates) * RODEO_COCHE
-      const min = Math.max(1, Math.round(m / ((KM_POR_HORA_COCHE * 1000) / 60)))
+      const min = minutosEnCocheDeMetros(haversineMeters(desde, siguiente.coordinates))
       const km = Math.max(1, Math.round(m / 1000))
       const aparcar = siguiente.trayectoCoche?.aparcar_min ?? p.ida?.aparcar_min ?? 0
-      return { modo: 'coche', min, km, aparcar, titulo: `En coche · ${min} min`, detalle: [`${km} km`].filter(Boolean).join(' · '), totalMin: min + aparcar, desdeUbicacion: Boolean(ubicacion) }
+      return { modo: 'coche', min, km, aparcar, titulo: `En coche · ${min} min`, detalle: [`${km} km`].filter(Boolean).join(' · '), totalMin: min + aparcar, desdeUbicacion: Boolean(ubicacion), origen: ubicacion ? 'ubicacion' : deAnterior && anterior ? 'parada' : 'casa', origenNombre: !ubicacion && deAnterior && anterior ? displayStopName(anterior.name) : null }
     }
     return null
   }
@@ -94,7 +102,7 @@ export function trayectoHasta(p: { siguiente: Stop; ubicacion: Coordinates | nul
     const min = Math.max(1, Math.round(haversineMeters(desde, siguiente.coordinates) / METROS_POR_MINUTO_A_PIE))
     const delMotor = !ubicacion && anterior?.walkingTimeToNextMinutes && anterior.walkingTimeToNextMinutes > 0 ? anterior.walkingTimeToNextMinutes : null
     const m = delMotor ?? min
-    return { modo: 'pie', min: m, km: null, aparcar: 0, titulo: `A pie · ${m} min`, detalle: nombreDesde, totalMin: m, desdeUbicacion: Boolean(ubicacion) }
+    return { modo: 'pie', min: m, km: null, aparcar: 0, titulo: `A pie · ${m} min`, detalle: nombreDesde, totalMin: m, desdeUbicacion: Boolean(ubicacion), origen: ubicacion ? 'ubicacion' : deAnterior && anterior ? 'parada' : 'casa', origenNombre: !ubicacion && deAnterior && anterior ? displayStopName(anterior.name) : null }
   }
   return null
 }
@@ -364,12 +372,12 @@ export function salidaDeCasa(p: { day: DayPlan; primera: Stop; zona: Coordinates
     if (!hora || !t) return null
     const aparcar = t.aparcar_min ?? 0
     const km = Number.isFinite(t.km) ? Math.round(t.km) : null
-    return { hora: horaCorta(hora), trayecto: { modo: 'coche', min: t.minutos, km, aparcar, titulo: `En coche · ${t.minutos} min`, detalle: [km != null ? `${km} km` : null].filter(Boolean).join(' · ') || null, totalMin: t.minutos + aparcar, desdeUbicacion: false } }
+    return { hora: horaCorta(hora), trayecto: { modo: 'coche', min: t.minutos, km, aparcar, titulo: `En coche · ${t.minutos} min`, detalle: [km != null ? `${km} km` : null].filter(Boolean).join(' · ') || null, totalMin: t.minutos + aparcar, desdeUbicacion: false, origen: 'casa', origenNombre: null } }
   }
   const inicio = minutosDe(primera.time)
   if (inicio == null || !zona || !hasRealCoordinates(zona) || !hasRealCoordinates(primera.coordinates)) return null
   const min = Math.max(1, Math.round(haversineMeters(zona, primera.coordinates) / METROS_POR_MINUTO_A_PIE))
-  return { hora: aHora(inicio - min, false), trayecto: { modo: 'pie', min, km: null, aparcar: 0, titulo: `A pie · ${min} min`, detalle: null, totalMin: min, desdeUbicacion: false } }
+  return { hora: aHora(inicio - min, false), trayecto: { modo: 'pie', min, km: null, aparcar: 0, titulo: `A pie · ${min} min`, detalle: null, totalMin: min, desdeUbicacion: false, origen: 'casa', origenNombre: null } }
 }
 
 /* ------------------------------------------------------------------ */

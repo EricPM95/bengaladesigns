@@ -15,6 +15,14 @@ const n = (s: Stop | { nombre: string }): string => displayStopName('name' in s 
 const cap = (t: string): string => t.charAt(0).toUpperCase() + t.slice(1)
 const con = (nombres: string[]) => nombres.map((x) => displayStopName(x))
 
+/** (V63 §8) El texto del plan de lluvia de los datos viene a media frase («el Foro, más corto; por la tarde…»): se le pone su principio y se cierra con punto. Si ya empieza como frase (mayúscula), se deja. */
+export function fraseDelPlanDeLluvia(texto: string | undefined | null): string {
+  const t = (texto ?? '').replace(/\*\*/g, '').replace(/^\s*🌧\s*/u, '').replace(/^Si llueve:?\s*/i, '').trim()
+  if (!t) return 'Va a llover. Te proponemos un plan a cubierto.'
+  const cierre = /[.!?]$/.test(t) ? t : `${t}.`
+  return /^[a-záéíóúñü]/.test(cierre) ? `Si llueve, este es el plan: ${cierre}` : cierre
+}
+
 const opParadas = (antes: DayPlan, despues: DayPlan): Op => ({
   t: 'paradas',
   dia: antes.id,
@@ -92,7 +100,7 @@ export function proponerSiLlueveRoma(p: { day: DayPlan; ctx: Contexto }): Propue
     {
       id: 'tiempo-si-llueve',
       tipo: 'lluvia',
-      intro: plan.text || 'Va a llover. Te proponemos un plan a cubierto.',
+      intro: fraseDelPlanDeLluvia(plan.text),
       cambia: { titulo: partes.join('; ') || 'Tu día se ajusta a la lluvia', detalle: entran.length ? 'Es una visita a cubierto.' : 'Lo que queda al aire libre se acorta.' },
       mantiene: { titulo: mantiene.titulo, detalle: 'Las reservas no se tocan.' },
       ops: [opParadas(day, despues)],

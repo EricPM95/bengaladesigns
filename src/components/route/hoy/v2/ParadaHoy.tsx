@@ -46,7 +46,7 @@ import { HojaActivaUbicacion } from './HojaActivaUbicacion'
 import { origenDelAlojamiento } from '../../../../lib/tuAlojamiento'
 import { useAlojamientoDelViaje } from '../../alojamiento/useAlojamientoDelViaje'
 import { zonaCorta } from '../../dayDetail/AccommodationBlock'
-import { desdeDonde, type ZonaUbicacion } from '../../../../lib/ubicacionHoy'
+import { conArticulo, desdeDonde, type ZonaUbicacion } from '../../../../lib/ubicacionHoy'
 import { estadoDelHorario, type TonoDeCaja } from '../../../../lib/horarioDeLaCaja'
 import { InsigniaPartes } from '../../../logros/dibujos/InsigniaPartes'
 import { Etiqueta, RecuadroDePuntos } from '../piezas'
@@ -520,7 +520,8 @@ export function TarjetaParada(p: PropsParada) {
   const zona: ZonaUbicacion = p.zonaUbicacion ?? (ubicacion ? 'ruta' : 'sin')
   const origenDelPlan = anterior && !anterior.isBreak ? displayStopName(anterior.name) : null
   const minutosCaja = zona === 'fuera' || !trayecto ? '—' : `${trayecto.min} min`
-  const subCaja = zona === 'fuera' ? 'Estás lejos' : zona === 'ruta' ? 'Desde ti' : desdeDonde(origenDelPlan, origenAloj.tipo !== 'alojamiento', origenAloj.tipo === 'zona' ? origenAloj.zonaNombre : null)
+  // (V63 §9) La tarjeta dice SIEMPRE desde dónde cuenta de verdad la cifra («13 min · Desde la Casa-Museo»): `trayecto.origenNombre` es la parada anterior (o el punto del que el motor la contó).
+  const subCaja = zona === 'fuera' ? 'Estás lejos' : zona === 'ruta' ? 'Desde ti' : trayecto?.origenNombre ? `Desde ${conArticulo(trayecto.origenNombre)}` : desdeDonde(origenDelPlan, origenAloj.tipo !== 'alojamiento', origenAloj.tipo === 'zona' ? origenAloj.zonaNombre : null)
   return (
     <>
       <div data-hoy-siguiente data-hoy-estado={p.cerrada ? 'cerrada' : 'llegar'} data-tarjeta="clara" className="flex-none overflow-hidden rounded-[28px]" style={TARJETA_PARADA}>

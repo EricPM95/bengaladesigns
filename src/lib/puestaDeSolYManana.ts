@@ -1,9 +1,11 @@
 import { dayOfReservation } from './bookings'
 import sitiosDeAtardecer from '../data/sitiosDeAtardecer.json'
 import type { Reservation } from './bookings'
-import { haversineMeters } from './distanceMock'
+import { haversineMeters, minutosEnCocheDeMetros } from './distanceMock'
 import { displayStopName } from './format'
 import { numberedStopsOf } from './stopKind'
+import { hayNubesEnHora } from './avisosDelTiempo'
+import { rainsInHours, type HourlyRain } from './rainForecast'
 import { parseTimeToMinutes } from './time'
 import { sunsetMinutesOn } from '../../shared/routeEngine/sunset.js'
 import type { Coordinates, DayPlan, Route, Stop } from './types'
@@ -50,7 +52,6 @@ export const ATARDECER_DESPUES_MIN = 15
 /** A pie hasta esta duración; más lejos, en coche (solo si va en coche). */
 const MAX_A_PIE_MIN = 30
 const MAX_EN_COCHE_MIN = 45
-const KM_H_COCHE = 40
 
 type SitioAtardecer = { id: string; nombre: string; corto: string; alias: string[]; lat: number; lng: number }
 const listaDe = (destino: string | undefined): { mar: boolean; sitios: SitioAtardecer[] } | null => (sitiosDeAtardecer as Record<string, { mar: boolean; sitios: SitioAtardecer[] }>)[(destino ?? '').trim().toLowerCase()] ?? null
@@ -103,11 +104,15 @@ export interface FraseDeAtardecer {
  * La tarjeta del atardecer de HOY, o null (fuera de la ventana de 2 horas, sin hora del sol o sin paradas por hacer).
  * `pendientes`: las paradas de hoy que faltan. `desde`: dónde está el viajero (su ubicación, o la parada anterior / la siguiente / casa).
  */
-export function fraseDeAtardecer(p: { day: DayPlan; pendientes: Stop[]; desde?: Coordinates | null; ahoraMin?: number; delDestino?: AtardecerDeDestino | null; enCoche?: boolean }): FraseDeAtardecer | null {
+export function fraseDeAtardecer(p: { day: DayPlan; pendientes: Stop[]; desde?: Coordinates | null; ahoraMin?: number; delDestino?: AtardecerDeDestino | null; enCoche?: boolean; tiempo?: HourlyRain | null; quitadosPorElPlan?: string[] }): FraseDeAtardecer | null {
   const hora = horaDelSol(p.day) ?? p.delDestino?.hora ?? null
   if (!hora) return null
   const [hs, ms] = hora.split(':').map(Number)
   const sol = hs * 60 + ms
+  // (V63 §7) Con lluvia o cielo cubierto previstos a la hora del sol (la hora anterior y la de la puesta), no se invita a verlo.
+  if (p.tiempo && (rainsInHours(p.tiempo, [hs - 1, hs]) || [hs - 1, hs].some((h) => hayNubesEnHora(p.tiempo as HourlyRain, h)))) return null
+  // (V63 §7) Un sitio que el plan de lluvia ha quitado del día nunca se propone.
+  const quitado = (nombre: string, alias: string[] = []) => (p.quitadosPorElPlan ?? []).some((q) => { const n = sinTildes(q); return [nombre, ...alias].some((a) => { const b = sinTildes(a); return n.length > 3 && b.length > 3 && (n.includes(b) || b.includes(n)) }) })
   if (p.ahoraMin !== undefined && (p.ahoraMin < sol - ATARDECER_ANTES_MIN || p.ahoraMin > sol + ATARDECER_DESPUES_MIN)) return null
   const mar = Boolean(p.delDestino?.mar)
   const extra = mar ? 'Aquí el sol cae al mar.' : null
@@ -121,9 +126,10 @@ export function fraseDeAtardecer(p: { day: DayPlan; pendientes: Stop[]; desde?: 
   if (!p.delDestino || !p.desde) return sinSitios
   const cerca: SitioCercaDelSol[] = []
   for (const x of p.delDestino.sitios) {
+    if (quitado(x.nombre, x.alias)) continue
     const m = haversineMeters(p.desde, { lat: x.lat, lng: x.lng })
     const aPie = Math.max(1, Math.round(m / METROS_POR_MINUTO))
-    const coche = Math.max(2, Math.round(((m * 1.3) / 1000 / KM_H_COCHE) * 60))
+    const coche = Math.max(2, minutosEnCocheDeMetros(m))
     if (aPie <= MAX_A_PIE_MIN) cerca.push({ nombre: x.nombre, coordinates: { lat: x.lat, lng: x.lng }, minutos: aPie, modo: 'a_pie' })
     else if (p.enCoche && coche <= MAX_EN_COCHE_MIN) cerca.push({ nombre: x.nombre, coordinates: { lat: x.lat, lng: x.lng }, minutos: coche, modo: 'coche' })
   }

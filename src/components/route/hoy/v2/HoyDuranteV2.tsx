@@ -1,6 +1,7 @@
 import { lugarCon } from '../../../../lib/articulos'
 import { BOTON_ORO } from '../../../ui/botonesOro'
 import { useEffect, useMemo, useState } from 'react'
+import { usePrevisionDeHoy } from '../../../../hooks/usePrevisionDeHoy'
 import { logrosActivos } from '../../../../lib/logros'
 import type { Coordinates, DayPlan, Route, Stop } from '../../../../lib/types'
 import { useRouteStore } from '../../../../store/useRouteStore'
@@ -279,7 +280,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   // (HOY2, C) A la hora de comer, la tarjeta de arriba es «Tu restaurante está a N minutos» (Completa 4) hasta que se da por comido.
   const { meal: comidaDeAhora, marcarHecha: comidaHecha } = useComidaDeAhora(route, day, siguiente, ahoraMinHoy)
   // (HOY1) La parada de antes es la última que no se ha saltado: de una saltada no se sale.
-  const anterior = siguiente ? paradas.slice(0, paradas.indexOf(siguiente)).reverse().find((s) => !s.saltada) : undefined
+  const anterior = siguiente ? paradas.slice(0, paradas.indexOf(siguiente)).reverse().find((s) => !s.saltada && !s.isBreak) : undefined
   // (V56, 2) Los sitios del atardecer se cuentan desde la ubicación real si hay GPS; si no, desde la ÚLTIMA parada hecha (con todo hecho, `anterior` ya no existe: antes se caía al alojamiento y salían menos sitios).
   const ultimaHecha = [...paradas].reverse().find((s) => s.checkedInAt && !s.saltada && hasRealCoordinates(s.coordinates))
   const entradasDeHoy = reservations.filter((r) => dayOfReservation(route, r)?.id === day.id && r.kind === 'entrada' && !r.fueraDeRuta)
@@ -298,6 +299,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   // Espera a que acabe lo que haya en pantalla (las sorpresas de la última parada). Al cerrarla, de cualquier forma, sale el resumen del día.
   const cuentaApp = useCuenta()
   const [, repintarCierre] = useState(0)
+  const previsionDeHoy = usePrevisionDeHoy(day.stops.find((s) => hasRealCoordinates(s.coordinates))?.coordinates, dateIso, true)
   const ocupadoConMomentos = useMomentosUI((s) => s.ronda !== null || s.fila.mostrando !== null || s.compartir !== null)
   const sorpresasPendientes = useLogrosStore((s) => s.momentos.length > 0)
   const ayerCerrable = conPaseOPrueba0 && !esVuelta ? diaDeAyer(route, dateIso) : null
@@ -335,6 +337,9 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
         ahoraMin: new Date().getHours() * 60 + new Date().getMinutes(),
         delDestino: solDelDestino,
         enCoche,
+        tiempo: previsionDeHoy,
+        // (V63 §7) Con el plan de lluvia usado, lo que el plan quitó del día no se propone.
+        quitadosPorElPlan: day.rainBackup ? day.rainBackup.stops.filter((o) => !day.stops.some((x) => x.id === o.id)).map((o) => o.name) : [],
       })
     : null
   // (V46) Sin alojamiento en el viaje, los minutos de la primera parada se cuentan desde el centro de lo que hay hoy (el centro de su zona).
@@ -525,6 +530,13 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       <TarjetaInstalarAvisos dateIso={dateIso} inicioDelViaje={route.answers.dateRange?.start} conPase={!sinPase || fila?.tipo === 'hoy_es_prueba'} />
       {entradasDeHoy
         .filter((entrada) => !cerrados.includes(`entrada:${entrada.id}`))
+        // (V63 §6) «Tu entrada a el Coliseo · 09:15 ✓» se va SOLO a la hora de la entrada + el tiempo de visita recomendado de ese sitio (el de su parada); sin parada, 60 min. Sin hora de entrada, se queda.
+        .filter((entrada) => {
+          const empieza = minutosDe(entrada.time ?? null)
+          if (empieza == null) return true
+          const parada = day.stops.find((st) => st.reservedId === entrada.id || entrada.placeNames.includes(st.name))
+          return ahoraMinHoy < empieza + (parada?.durationMinutes || 60)
+        })
         .map((entrada) => (
           <AvisoDeHoy key={entrada.id} id={`entrada:${entrada.id}`} prio={6}>
             <div className="flex min-h-14 flex-none items-center gap-3 rounded-[18px] py-[9px] pl-3 pr-2.5" style={{ background: 'oklch(0.96 0.035 150)', border: '1px solid oklch(0.55 0.11 150 / .3)' }} data-hoy-entrada-aviso>

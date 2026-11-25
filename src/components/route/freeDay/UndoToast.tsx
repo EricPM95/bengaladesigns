@@ -17,6 +17,7 @@ export function UndoToast() {
   // Tanda 10N: quien solo recomienda no cambia SU ruta, cambia su propuesta, y el aviso lo dice.
   const enPropuesta = usePropuestaStore((state) => state.activa)
 
+  const plazoTotal = toast?.previous ? TOAST_MS : CONFIRM_MS
   useEffect(() => {
     if (!toast) return
     // (V58 §4) El plazo cuenta desde que SALE el aviso (`toast.id` es la hora en que se creó), no desde que se monta este componente: antes, cada cambio de pestaña lo volvía a montar y el aviso empezaba otros
@@ -29,7 +30,7 @@ export function UndoToast() {
 
   if (!toast) return null
   return createPortal(
-    <AvisoSobreLaBarra z={95}>
+    <AvisoSobreLaBarra z={95} linea={{ total: plazoTotal, transcurrido: toast.id > 1e12 ? Date.now() - toast.id : 0, clave: toast.id }}>
       <>
         {/* (10S7, R3) «Hemos reorganizado tu día»: el círculo dorado con el ✓ de Design. */}
         {toast.message.startsWith('Hemos reorganizado') && (

@@ -89,7 +89,9 @@ import { FreeTimeBlock } from './FreeTimeBlock'
 import { useAddFlowStore, withUndo } from '../../../store/useAddFlowStore'
 import { estimatedWalkMinutes, hasOwnTime } from '../../../lib/freeDays'
 import { freeDayStopWarning, placeHoursOnDate } from '../../../lib/placeHoursOnDate'
-import { useHorarioDeParadas } from '../../../lib/horarioDeParada'
+import { useAbiertoSiempre, useHorarioDeParadas } from '../../../lib/horarioDeParada'
+import { avisoDeCierreAlAnadir, cierraEseDia } from '../../../lib/cierreAlAnadir'
+import { AvisoDeCierreAlAnadir } from '../addStop/AvisoDeCierreAlAnadir'
 import { ocasoDelDia } from '../../../lib/avisoDeHorario'
 import { Icono } from '../../ui/Icono'
 
@@ -560,6 +562,7 @@ export function DayDetailPanel({
   const dateIso = tripStartIso ? addDaysToIso(tripStartIso, day.dayNumber - 1) : null
   // El horario de cada parada ese día (Tanda 6z5): «Abre 9:00 – 19:15 · Última entrada 18:15» o «Cerrado hoy».
   const horarioDe = useHorarioDeParadas(day.city, dateIso)
+  const esAbiertoSiempre = useAbiertoSiempre(day.city)
   // (HOY2b 8b) El mes del viaje: lo usan las horas de las paradas; el aviso gris de horario ya no sale en DÍAS.
   const mesDelViaje = route?.answers.month ?? null
   // Paradas REALES del día (con coordenadas) para el mapa de StopDetailSheet — mismo orden que
@@ -644,7 +647,10 @@ export function DayDetailPanel({
   const addStopAfter = insertAt !== null && insertAt < realStops.length ? (realStops[insertAt]?.name ?? null) : null
   const addStopSubtitle = addStopBefore && addStopAfter ? `Entre ${addStopBefore} y ${addStopAfter}` : addStopBefore ? `Después de ${addStopBefore}` : addStopAfter ? `Antes de ${addStopAfter}` : day.city
 
+  // (V63 §12) Se añade un sitio a un día en que cierra: se añade igual y sale el aviso de arriba (no obliga a nada).
+  const [avisoDeCierre, setAvisoDeCierre] = useState<string | null>(null)
   const addPickedStop = (picked: Stop, { keepOpen = false } = {}) => {
+    if (route && cierraEseDia(route, day.dayNumber, { hoursData: picked.hoursData ?? curatedPool.find((c) => c.name === picked.name)?.hours_data ?? null, scheduleText: picked.scheduleText, hours: picked.hours })) setAvisoDeCierre(avisoDeCierreAlAnadir(route, day.dayNumber, picked.name))
     if (day.stops.length === 0) seedDayStops(day.id, realStops)
     // (10S10, 1) Dónde se veían la comida y la cena, para que cada una siga detrás de SU parada, y si entra justo antes de una de ellas.
     const opcionesDeInsercion = { comidas: { lunch: hasLunch ? lunchInsertionIndex : null, dinner: hasDinner ? dinnerInsertionIndex : null }, antesDe: insertAntesDe }
@@ -1181,6 +1187,7 @@ export function DayDetailPanel({
               startTime={freeDay ? (realStop && hasOwnTime(realStop) ? realStop.time : undefined) : day.untimed ? undefined : minutesToTime(startMinutes)}
               freeDayWarning={freeDay && realStop ? freeDayStopWarning(realStop, dateIso) : undefined}
               horario={horarioDeLaParada}
+              abiertoSiempre={!horarioDeLaParada && esAbiertoSiempre(stop)}
               horaDeParada={horaDeLaParada}
               tripWarning={(movedDay && realStop && stop.visitMode !== 'fuera' ? freeDayStopWarning({ ...realStop, time: minutesToTime(startMinutes) }, dateIso) : null)}
               addedByUser={Boolean(realStop?.addedByUser)}
@@ -1709,6 +1716,7 @@ export function DayDetailPanel({
             />
           )}
 
+          {avisoDeCierre && <AvisoDeCierreAlAnadir texto={avisoDeCierre} onIrse={() => setAvisoDeCierre(null)} />}
           {route && freeTourOpen && <FreeTourSheet route={route} onClose={() => { setFreeTourOpen(false); closeAddStop() }} />}
 
           {route && curatedPoolResolved && curatedPool.length === 0 && (

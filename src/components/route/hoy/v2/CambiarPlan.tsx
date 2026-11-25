@@ -12,7 +12,7 @@ import { fijasDelDia, horaFijaDe, horaCorta } from '../../../../lib/hoyParada'
 import { datosDeHorarioEnMemoria, horarioDeParada, normalizaNombre, useDatosDeHorario } from '../../../../lib/horarioDeParada'
 import { direccionDelAlojamiento, enlaceComoLlegarAlojamiento, puntoDelAlojamiento } from '../../../../lib/direccionAlojamiento'
 import { StopsMapView, type StopsMapMarker } from '../../../map/StopsMapView'
-import { hasRealCoordinates } from '../../../../lib/distanceMock'
+import { hasRealCoordinates, minutosEnCocheDeMetros } from '../../../../lib/distanceMock'
 import {
   candidatosParaAnadir,
   conMeal,
@@ -504,7 +504,7 @@ export function BotonCambiarPlan(p: PropsCambiarPlan) {
                 <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                   <span className="truncate" style={{ font: "700 14px/1.15 'Geist'" }}>{displayStopName(c.nombre)}</span>
                   <span className="text-[12px]" style={{ color: 'rgba(28,34,48,.62)' }}>
-                    {p.enCoche ? `a ${Math.max(1, Math.round((c.metros * 1.35) / ((40 * 1000) / 60)))} min en coche` : `a ${Math.max(1, Math.round(c.metros / 80))} min a pie`}
+                    {p.enCoche ? `a ${minutosEnCocheDeMetros(c.metros)} min en coche` : `a ${Math.max(1, Math.round(c.metros / 80))} min a pie`}
                     {c.porFuera ? ' · por fuera' : ''}
                   </span>
                   {c.estado && (

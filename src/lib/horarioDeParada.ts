@@ -147,6 +147,8 @@ export function horarioDeParada(lugar: LugarConHorario, fechaIso: string | null,
 type DatosPorNombre = Map<string, Record<string, unknown>>
 
 const porDestino = new Map<string, DatosPorNombre>()
+/** (V63 §11) Los nombres de TODOS los sitios del catálogo del destino (con o sin horario): un sitio conocido sin horario es de los que no cierran (plaza, mirador, barrio, pueblo). */
+const nombresPorDestino = new Map<string, Set<string>>()
 
 /** Los datos de horario de cada lugar del destino, por nombre; vacío si todavía no se han pedido o el destino no es curado. */
 export function datosDeHorarioEnMemoria(destino: string): DatosPorNombre {
@@ -158,6 +160,7 @@ export async function cargaDatosDeHorario(destino: string): Promise<DatosPorNomb
   const clave = destino.trim().toLowerCase()
   const catalogo = await fetchDestinationPlaces(destino)
   const mapa: DatosPorNombre = new Map()
+  nombresPorDestino.set(clave, new Set(catalogo.places.map((lugar) => normaliza(lugar.name))))
   for (const lugar of catalogo.places) if (lugar.hours_data && Object.keys(lugar.hours_data).length > 0) mapa.set(normaliza(lugar.name), lugar.hours_data)
   if (mapa.size > 0) porDestino.set(clave, mapa)
   return mapa
@@ -201,6 +204,25 @@ export function useHorarioDeParadas(destino: string, fechaIso: string | null): (
 export function useAbierto24h(destino: string | undefined): (nombre: string) => boolean {
   const datos = useDatosDeHorario(destino)
   return (nombre) => datos.get(normaliza(nombre))?.abierto_24h === true
+}
+
+/**
+ * (V63 §11) «Abierto siempre»: el sitio está en los datos del destino y NO tiene horario (plazas, miradores, barrios, pueblos: regla V56), o su horario es de 00:00 a 24:00. Un sitio que no está en los datos (añadido a mano) no dice nada: no sabemos su horario.
+ * Sin consultas nuevas: el catálogo ya está en memoria (`cargaDatosDeHorario`).
+ */
+export function useAbiertoSiempre(destino: string | undefined): (parada: { name: string; fullName?: string; passThrough?: boolean }) => boolean {
+  useDatosDeHorario(destino)
+  return (parada) => {
+    if (!destino || parada.passThrough) return false
+    const conocidos = nombresPorDestino.get(destino.trim().toLowerCase())
+    if (!conocidos) return false
+    const sitio = conocidos.has(normaliza(parada.name)) || Boolean(parada.fullName && conocidos.has(normaliza(parada.fullName)))
+    if (!sitio) return false
+    const datos = datosDeHorarioEnMemoria(destino)
+    const d = datos.get(normaliza(parada.name)) ?? (parada.fullName ? datos.get(normaliza(parada.fullName)) : undefined)
+    // Con datos de horario que sí enseñan algo (un tramo, o «cerrado ese día») no es «siempre»; este helper solo se pregunta cuando `horarioDeParada` ha dado null.
+    return !d || !tieneHorario(d) || d.abierto_24h === true || (variantesDeHorario(d).size > 0 && [...variantesDeHorario(d)].every((v) => v.split(',').every((f) => /^00:00s*-s*24:00$/.test(f.trim()))))
+  }
 }
 
 /**

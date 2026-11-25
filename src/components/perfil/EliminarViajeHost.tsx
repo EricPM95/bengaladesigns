@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { guardarTodasMisFotos, useEliminarViaje, type DatosDeLaHoja } from '../../lib/eliminarViaje'
+import { guardarTodasMisFotos, SEGUNDOS_PARA_DESHACER, useEliminarViaje, type DatosDeLaHoja } from '../../lib/eliminarViaje'
 import { textoDeFotos } from '../../lib/viajesPerfil'
 import { Hoja, BotonHoja } from '../ui/Hoja'
 import { AvisoSobreLaBarra } from '../ui/AvisoSobreLaBarra'
@@ -107,7 +107,7 @@ function AvisoViajeEliminado() {
   }, [aviso, cerrarAviso])
   if (!aviso) return null
   return createPortal(
-    <AvisoSobreLaBarra z={96} datos={{ 'data-aviso-viaje-eliminado': '' }}>
+    <AvisoSobreLaBarra z={96} datos={{ 'data-aviso-viaje-eliminado': '' }} linea={{ total: aviso.deshacer ? SEGUNDOS_PARA_DESHACER * 1000 : 6000, clave: aviso.texto }}>
       <>
         <p className="min-w-0 flex-1 text-[14px] font-medium">{aviso.texto}</p>
         {aviso.deshacer && (

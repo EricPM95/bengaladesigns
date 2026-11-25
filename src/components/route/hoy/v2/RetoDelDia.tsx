@@ -153,7 +153,7 @@ export function AlbumDeColeccion({ reto, ciudad, onCerrar }: { reto: RetoDeHoy; 
         <div className="flex flex-col items-center gap-1.5 pb-1 pt-2 text-center">
           <Insignia coleccion={reto.coleccion} ganados={reto.sitios.filter((s) => s.ganado).map((s) => s.sitio)} completa={false} tam={130} />
           <span data-album-nombre style={{ font: "400 28px/1.05 'Instrument Serif',serif" }}>{reto.nombre}</span>
-          <span style={{ font: "600 11px 'Geist Mono',monospace", color: 'oklch(0.48 0.17 5)' }}>
+          <span style={{ font: "600 11px 'Geist Mono',monospace", color: ORO_TEXTO }}>
             {tengo} DE {reto.total}
           </span>
         </div>

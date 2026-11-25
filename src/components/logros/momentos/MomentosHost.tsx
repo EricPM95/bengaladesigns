@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from 'react'
+import { Suspense, useEffect, useRef } from 'react'
 import { lazyReintentable } from '../../../lib/cargaSegura'
 import { logrosActivos } from '../../../lib/logros'
 import { useLogrosStore } from '../../../store/useLogrosStore'
@@ -11,6 +11,7 @@ import type { PantallaDeMomentos } from './fila'
 import { abrirElResumenDeUnDia, claveDelResumen, diaCompleto, diaPendienteDeResumen } from './resumenDelDia'
 import { CLAVE_DEL_CIERRE, sinVerDelDia } from '../../../lib/cierreDelDia'
 import { yaDicho } from '../../../lib/avisosUnaVez'
+import { useEliminarViaje } from '../../../lib/eliminarViaje'
 import { useMomentosUI } from './useMomentosUI'
 
 /**
@@ -58,6 +59,8 @@ function Encendido() {
   const hojaLogros = useMomentosUI((s) => s.hojaLogros)
   const primerDia = useMomentosUI((s) => s.primerDia)
   const ui = useMomentosUI
+  // (V63 §5) Al cambiar de viaje (por ejemplo, al eliminar el que estaba abierto y pasar al siguiente) no se comprueba «el resumen que quedó sin enseñar»: eso es solo al abrir la app.
+  const viajePrevio = useRef<string | null>(null)
 
   // Solo en desarrollo: las pruebas de los momentos (window.__momentos).
   useEffect(() => {
@@ -103,7 +106,9 @@ function Encendido() {
     }
     const hoyDe = (route: NonNullable<ReturnType<typeof useRouteStore.getState>['route']>) => getTodayTripContext(route, useRouteStore.getState().dev_simulated_today_iso ?? undefined)
     // Al abrir la app (con el viaje ya cargado): ¿quedó el resumen de anoche o de ayer sin enseñar?
-    let comprobadoAlAbrir = false
+    const cambioDeViaje = viajePrevio.current !== null && viajePrevio.current !== tripId
+    viajePrevio.current = tripId
+    let comprobadoAlAbrir = cambioDeViaje
     const alAbrir = () => {
       const route = useRouteStore.getState().route
       if (comprobadoAlAbrir || !route || !route.answers.dateRange?.start) return
@@ -120,6 +125,8 @@ function Encendido() {
       alAbrir()
       const hoy = estado.route ? hoyDe(estado.route) : null
       if (!hoy || !estado.route || !diaCompleto(estado.route, hoy.dateIso)) return
+      // (V63 §5) Solo cuenta que el día se COMPLETE dentro del mismo viaje: si lo que cambia es el viaje (eliminar uno, abrir otro), nunca sale el resumen; ni mientras se elimina un viaje.
+      if (!previo.route || previo.route.id !== estado.route.id || useEliminarViaje.getState().pendiente) return
       if (previo.route && diaCompleto(previo.route, hoy.dateIso)) return
       if (!yaSalio(hoy.dateIso)) abrir(hoy.dateIso)
     })

@@ -27,7 +27,7 @@ export function AvisoDeAbajoHost() {
   if (actual.accion) {
     const accion = actual.accion
     return createPortal(
-      <AvisoSobreLaBarra z={95} datos={{ 'data-aviso-de-abajo': actual.id }}>
+      <AvisoSobreLaBarra z={95} datos={{ 'data-aviso-de-abajo': actual.id }} linea={{ total: actual.ms ?? 12000, clave: actual.id }}>
         {/pendientes/i.test(actual.texto) && <IconoPendientes size={22} color="#F3D88F" grosor={1.7} fondo="#1C2230" />}
         <span className="flex-1 text-[13.5px] font-medium leading-[1.35]">{actual.texto}</span>
         <button

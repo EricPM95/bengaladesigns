@@ -253,7 +253,13 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar, primeraVez
   }
   const hayFotos = fotosDeEseDia.length > 0
   const secretos = estado ? lineaDeSecretos(ciudad, estado.secretos.total, estado.secretos.encontrados) : null
-  if (esperando || sinNada) return null
+  // (V63 §5) Nunca el resumen de un viaje eliminado ni de un día sin paradas: sin viaje, o con un día que no existe o no tiene paradas, no se enseña nada (y se cierra solo, sin dejar una pantalla vacía).
+  const diaDelResumen = route && de ? route.days.find((d) => fechaDelDia(route, d) === de.iso) : null
+  const sinViajeOSinParadas = !dentroDelEstudio() && (!route || (de != null && (!diaDelResumen || diaDelResumen.stops.filter((s) => !s.isArrival && !s.isBreak).length === 0)))
+  useEffect(() => {
+    if (sinViajeOSinParadas) alCerrar()
+  }, [sinViajeOSinParadas]) // eslint-disable-line react-hooks/exhaustive-deps
+  if (esperando || sinNada || sinViajeOSinParadas) return null
   const SERIF = "'Instrument Serif',serif"
   return (
     <div className="mo" role="dialog" aria-modal="true" aria-label="Resumen del día" data-resumen-del-dia={manana ? 'manana' : 'noche'} style={{ position: 'fixed', inset: 0, zIndex: 9000, color: '#1C2230', fontFamily: "'Geist',system-ui,sans-serif" }}>

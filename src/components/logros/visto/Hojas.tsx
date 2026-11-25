@@ -204,7 +204,7 @@ export function HojaDelVisto({ hoja, acciones }: { hoja: Hoja; acciones: Accione
 /** V1: «Has visto la Fontana de Trevi · Deshacer» (V52: sin género), 5 segundos con su barra. */
 export function AvisoDeVisto({ nombre, ms, onDeshacer }: { nombre: string; ms: number; onDeshacer: () => void }) {
   return createPortal(
-    <AvisoSobreLaBarra z={85} datos={{ 'data-visto': 'aviso' }} className="relative overflow-hidden !px-0" estilo={{ background: TINTA, animation: 'vistoToast .35s ease both' }}>
+    <AvisoSobreLaBarra z={85} datos={{ 'data-visto': 'aviso' }} linea={{ total: ms, clave: nombre }} className="relative overflow-hidden !px-0" estilo={{ background: TINTA, animation: 'vistoToast .35s ease both' }}>
       <div className="flex w-full items-center gap-2.5 py-1 pl-4 pr-1.5">
         <span className="flex h-[22px] w-[22px] flex-none items-center justify-center rounded-full" style={{ background: 'oklch(0.55 0.11 150)' }}>
           <Trazo d={TRAZO.check} tam={12} grosor={3} />
@@ -214,7 +214,6 @@ export function AvisoDeVisto({ nombre, ms, onDeshacer }: { nombre: string; ms: n
           Deshacer
         </button>
       </div>
-      <span className="absolute inset-x-0 bottom-0 block h-[3px]" style={{ background: 'oklch(0.8 0.14 70)', transformOrigin: '0 50%', animation: `vistoBar ${ms}ms linear both` }} />
     </AvisoSobreLaBarra>,
     document.body,
   )

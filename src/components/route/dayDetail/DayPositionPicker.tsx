@@ -10,6 +10,7 @@ import { Modal } from '../../ui/Modal'
 import { HojaDia, filasDeDias } from '../../ui/HojaDia'
 import { delDia, diaCorto } from '../../../lib/nombreDeDia'
 import { tituloSimpleDelDia } from '../../../lib/tituloDelDia'
+import { cierraEseDia } from '../../../lib/cierreAlAnadir'
 
 interface DayPositionPickerProps {
   route: Route
@@ -77,7 +78,8 @@ export function DayPositionPicker({ route, stop, onClose, onInserted }: DayPosit
             const hoy = hoyParaDias(route, todayIso())
             return hoy && f && f < hoy ? 'Ese día ya ha pasado.' : null
           },
-          (day) => (deCamino?.dayId === day.id ? 'Te pilla de camino' : null),
+          // (V63 §12) El día en que el sitio cierra se avisa, sin impedir elegirlo.
+          (day) => [stop && cierraEseDia(route, day.dayNumber, stop) ? 'Cerrado ese día' : null, deCamino?.dayId === day.id ? 'Te pilla de camino' : null].filter(Boolean).join(' · ') || null,
         )}
         elegido={elegido}
         onElegir={setElegido}
