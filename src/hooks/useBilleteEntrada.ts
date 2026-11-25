@@ -2,6 +2,8 @@ import { useEffect } from 'react'
 import { useBilleteStore, type BilleteDeEntrada } from '../store/useBilleteStore'
 import { useSyncStore } from '../store/useSyncStore'
 import { useViajeCompartido } from '../store/useViajeCompartido'
+import { sincronizarDocumentosDeEntrada, useDocumentosDeEntrada } from '../store/useDocumentosDeEntrada'
+import { documentoParaMi } from '../lib/entradasPorPersona'
 
 const ultimaSync = new Map<string, number>()
 
@@ -23,10 +25,18 @@ export function useBilletesDeEntradas(): { de: (refId: string) => BilleteDeEntra
       void useBilleteStore.getState().sincronizar(tripId)
     }
   }, [tripId])
+  // (V65) El documento que OTRA persona de la entrada subió para mí (o el de todos): si no tengo billete propio, sale este. Del móvil, sin red.
+  const compartidos = useDocumentosDeEntrada((s) => s.docs)
+  useEffect(() => {
+    useDocumentosDeEntrada.getState().cargar(tripId)
+    sincronizarDocumentosDeEntrada(tripId)
+  }, [tripId])
   const entradas = cargado === tripId ? (datos.entradas ?? {}) : {}
   const de = (refId: string): BilleteDeEntrada | null => {
     const b = entradas[refId] ?? null
-    return b && (!b.dueno || !yoId || b.dueno === yoId) ? b : null
+    if (b && (!b.dueno || !yoId || b.dueno === yoId)) return b
+    const c = documentoParaMi(compartidos.filter((d) => d.tipo === 'entrada' && d.refId === refId), yoId)
+    return c ? { personas: c.personas, localizador: c.localizador, codigo: c.codigo, dueno: yoId, actualizado: c.actualizado } : null
   }
   return { de, tripId, yoId }
 }

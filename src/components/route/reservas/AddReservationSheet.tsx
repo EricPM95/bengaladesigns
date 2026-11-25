@@ -40,6 +40,7 @@ import { llevarALaParada } from '../../../lib/cambiarParada'
 import { FREE_TOUR_REF } from '../../../lib/freeTourManual'
 import type { DatosEntradaLeida } from '../../../lib/billeteLeer'
 import { useBilleteStore, entradaConCodigo, type CodigoDelBillete } from '../../../store/useBilleteStore'
+import { useDocumentosDeEntrada } from '../../../store/useDocumentosDeEntrada'
 import { useBilletesDeEntradas } from '../../../hooks/useBilleteEntrada'
 import { ImagenDelCodigo } from './TarjetaBillete'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
@@ -603,9 +604,13 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     if (target.kind !== 'entrada' || isExcursion) return
     const n = Number.parseInt(personas, 10)
     const datosBillete = { personas: Number.isFinite(n) && n > 0 ? n : null, localizador: localizadorDeEntrada.trim() || null, codigo: codigoDeEntrada }
+    // (V65) Quién la ve: si «¿Para quién es?» cambió, los documentos ya subidos de esta entrada pasan a verla las personas nuevas (y dejan de verla las que se quitaron).
+    if (paraQuienVisible && marcados.length > 0) useDocumentosDeEntrada.getState().cambiarPara(billetes.tripId, 'entrada', target.refId, marcados)
     if (datosBillete.personas || datosBillete.localizador || datosBillete.codigo) {
       if (!billeteTocado && billeteDeAntes) return
       useBilleteStore.getState().ponerEntrada(billetes.tripId, target.refId, { ...datosBillete, dueno: billeteDeAntes?.dueno ?? billetes.yoId })
+      // (V65) Entrada de más de una persona: mi documento lo ven también las demás (el de cada una, con su nombre, lo sube cada una o se reparte desde «Las entradas de cada uno»).
+      if (paraQuienVisible && marcados.length > 1 && billetes.yoId && datosBillete.codigo) useDocumentosDeEntrada.getState().poner(billetes.tripId, { tipo: 'entrada', refId: target.refId, clave: billetes.yoId, subidoPor: billetes.yoId, para: marcados, nombre: null, localizador: datosBillete.localizador, personas: datosBillete.personas, codigo: datosBillete.codigo })
     } else if (billeteDeAntes) useBilleteStore.getState().quitarEntrada(billetes.tripId, target.refId)
   }
   /** Lo leído de la entrada rellena el día, la hora, las personas y el localizador (se puede cambiar todo a mano) y guarda el código. */

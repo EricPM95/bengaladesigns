@@ -112,6 +112,14 @@ const comprobar0093 = fs.readFileSync('docs/dias/COMPROBAR_0093.sql', 'utf8')
   const defHoy = (await db.query("select pg_get_functiondef('public.empezar_de_cero(uuid)'::regprocedure) as def")).rows[0].def
   debe(defHoy.includes('viajero_primera_vez') && defHoy.includes('uso_diario'), 'migracion', 'la 0093 NO toca empezar_de_cero: sigue siendo la de la 0091 (con viajero_primera_vez y uso_diario)')
 }
+// V65: la 0095 (documentos_de_entrada) es la función vigente de empezar_de_cero. COMPROBAR_0095 da UNA fila con todo true tras aplicarla (pegada dos veces).
+{
+  debe(!noAplicadas.some((x) => /^0095/.test(x)), 'migracion', `la migración 0095 se aplica (${noAplicadas.filter((x) => /^0095/.test(x)).join(' | ')})`)
+  await db.exec(fs.readFileSync('supabase/migrations/0095_documentos_de_entrada.sql', 'utf8'))
+  await db.exec(fs.readFileSync('supabase/migrations/0095_documentos_de_entrada.sql', 'utf8')) // idempotente: pegada dos veces
+  const f95 = (await db.query(fs.readFileSync('docs/dias/COMPROBAR_0095.sql', 'utf8'))).rows
+  debe(f95.length === 1 && f95[0].todo === true, 'migracion', 'COMPROBAR_0095.sql da UNA fila con todo = true tras la 0095 (pegada dos veces)')
+}
 debe((await db.query(comprobar0086)).rows[0]?.migracion_0086?.aplicada === true && (await db.query(comprobar0086)).rows[0]?.migracion_0086?.faltan === 0, 'migracion', 'y «true» y 0 que faltan tras la 0086 (pegada dos veces)')
 debe((await db.query(comprobar0085)).rows[0]?.migracion_0085?.aplicada === true && (await db.query(comprobar0085)).rows[0]?.migracion_0085?.faltan === 0, 'migracion', 'COMPROBAR_0085.sql dice «true» y 0 que faltan con la 0085 aplicada')
 debe((await db.query(comprobar0074)).rows[0]?.migracion_0074 === 'Aplicada', 'migracion', 'COMPROBAR_0074.sql sigue diciendo «Aplicada» con la 0086 vigente')
@@ -145,7 +153,7 @@ const S = (sql, params = []) => servidor(() => q(sql, params))
 const INVENTARIO = [
   ['stop_visits', 'user_id'], ['trip_photo_meta', 'user_id'], ['trip_photos', 'user_id'], ['logro_hechos', 'user_id'], ['achievements', 'user_id'], ['logro_avisos', 'user_id'], ['logro_perfil', 'user_id'],
   ['push_suscripciones', 'user_id'], /* hoy_prueba: 0072, se queda */ ['logro_referidos', 'invitador_id'], ['avisos', 'user_id'], ['avisos_viaje_enviados', 'user_id'] /* 0074 (HOY3): los avisos del viaje ya mandados */, ['avisos_de_viajeros', 'user_id'] /* 0085/0086 (V20): lo que la persona mandó desde «Cuéntanos» con avísame */, ['viajero_primera_vez', 'user_id'] /* 0089 (V31): las preguntas de la primera vez */, ['uso_diario', 'user_id'] /* 0091 (V35B): un día activo por cuenta, aparato e instalada */, ['avisos_destino', 'user_id'], ['place_likes', 'user_id'],
-  ['trip_recommendations', 'author_id'], ['trip_invitations', 'creada_por'], ['trip_members', 'user_id'], ['pass_members', 'user_id'], ['passes', 'comprador_id'], ['admin_sin_pase', 'user_id'] /* 0040 */, ['trip_gastos', 'autor_id'] /* 0037/0040 */, ['trip_pagos', 'marcado_por'] /* 0040 */, ['trip_ex_miembros', 'user_id'] /* 0040 */, ['lo_suyo_del_viaje', 'user_id'] /* 0049, añadida en la 0071 */, ['reservas_invitado', 'user_id'] /* 0038, 0071 */, ['reservas_privadas_admin', 'user_id'] /* 0062/0064, 0071 */, /* historia_de_prueba: 0072, se queda */ ['billetes_personales', 'user_id'] /* 0070 (10S5): el billete de cada persona; se añadió a empezar_de_cero en la 0071 */, ['trips', 'traveler_id'], ['fotos_por_borrar', 'user_id'],
+  ['trip_recommendations', 'author_id'], ['trip_invitations', 'creada_por'], ['trip_members', 'user_id'], ['pass_members', 'user_id'], ['passes', 'comprador_id'], ['admin_sin_pase', 'user_id'] /* 0040 */, ['trip_gastos', 'autor_id'] /* 0037/0040 */, ['trip_pagos', 'marcado_por'] /* 0040 */, ['trip_ex_miembros', 'user_id'] /* 0040 */, ['lo_suyo_del_viaje', 'user_id'] /* 0049, añadida en la 0071 */, ['reservas_invitado', 'user_id'] /* 0038, 0071 */, ['documentos_de_entrada', 'subido_por'] /* 0095 (V65): el QR de cada persona de una entrada, por quien lo subió */, ['documentos_de_entrada', 'persona_id'] /* 0095: y por la persona a quien pertenece */, ['reservas_privadas_admin', 'user_id'] /* 0062/0064, 0071 */, /* historia_de_prueba: 0072, se queda */ ['billetes_personales', 'user_id'] /* 0070 (10S5): el billete de cada persona; se añadió a empezar_de_cero en la 0071 */, ['trips', 'traveler_id'], ['fotos_por_borrar', 'user_id'],
 ]
 /** Lo que se queda (de la cuenta). */
 // 10S7: hoy_prueba e historia_de_prueba pasan aquí (0072): las pruebas gastadas se quedan SIEMPRE («una por cuenta, para siempre»).
@@ -191,6 +199,7 @@ async function sembrar(uid, etiqueta, { invitado = null, amiga = null } = {}) {
   await S('insert into public.trip_ex_miembros (trip_id, user_id) values ($1, $2)', [viaje, uid])
   await S('insert into public.lo_suyo_del_viaje (trip_id, user_id) values ($1, $2)', [viaje, uid])
   await S('insert into public.reservas_invitado (trip_id, user_id) values ($1, $2)', [viaje, uid])
+  await S("insert into public.documentos_de_entrada (trip_id, tipo, ref_id, clave, persona_id, subido_por, para) values ($1, 'entrada', 'Coliseo', $2::text, $2::uuid, $2::uuid, array[$2::uuid])", [viaje, uid]) // 0095 (V65)
   await S('insert into public.reservas_privadas_admin (trip_id, user_id) values ($1, $2)', [viaje, uid])
   await S("insert into public.historia_de_prueba (user_id, destino, sitio, nombre) values ($1, 'roma', 'coliseo', 'Coliseo') on conflict (user_id, destino) do nothing", [uid])
   await S("insert into public.lecturas_de_documentos (user_id, dia, n) values ($1, current_date, 7) on conflict (user_id, dia) do nothing", [uid])
@@ -533,7 +542,11 @@ console.log('3. El código')
   const sql86 = sql86completa.slice(sql86completa.indexOf('create or replace function public.empezar_de_cero'))
   // V31: la vigente es ahora la de la 0089 (parte de la 0086 y solo añade viajero_primera_vez); se mira solo el trozo de la función (el resto son la tabla y sus políticas).
   // V35B: la vigente es ahora la de la 0091 (parte de la 0089 y solo añade uso_diario).
-  const sql89completa = sin(fs.readFileSync('supabase/migrations/0091_panel_datos.sql', 'utf8'))
+  const sql91completa = sin(fs.readFileSync('supabase/migrations/0091_panel_datos.sql', 'utf8'))
+  const sql91 = sql91completa.slice(sql91completa.indexOf('create or replace function public.empezar_de_cero'))
+  // V65: la vigente es ahora la de la 0095 (parte de la 0091 y solo añade documentos_de_entrada, por subido_por y por persona_id).
+  const sql95completa = sin(fs.readFileSync('supabase/migrations/0095_documentos_de_entrada.sql', 'utf8'))
+  const sql89completa = sql95completa
   const sql = sql89completa.slice(sql89completa.indexOf('create or replace function public.empezar_de_cero'))
   const sql71 = sin(fs.readFileSync('supabase/migrations/0071_empezar_de_cero_billetes.sql', 'utf8'))
   const sql32 = sin(fs.readFileSync('supabase/migrations/0032_empezar_de_cero.sql', 'utf8'))
@@ -577,7 +590,10 @@ console.log('3. El código')
   // V35B: la 0091 parte de la ÚLTIMA versión (la de la 0089) y su ÚNICA diferencia es una línea más: uso_diario.user_id. Los pagos (pagos_registro) NO entran: contabilidad, se guarda años.
   const sql89f = sin(fs.readFileSync('supabase/migrations/0089_viajero_primera_vez.sql', 'utf8'))
   const tablas89 = [...sql89f.slice(sql89f.indexOf('create or replace function public.empezar_de_cero')).matchAll(/\('([a-z_]+)', '([a-z_]+)'\)/g)].map((m) => `${m[1]}.${m[2]}`).sort()
-  debe(tablas89.every((x) => tablasSql.includes(x)) && JSON.stringify(tablasSql.filter((x) => !tablas89.includes(x))) === JSON.stringify(['uso_diario.user_id']) && !tablasSql.some((x) => /^pagos_registro\./.test(x)), 'inventario', `la 0091 conserva todo lo de la 0089 y solo añade uso_diario (añade: ${tablasSql.filter((x) => !tablas89.includes(x)).join(', ')}; pierde: ${tablas89.filter((x) => !tablasSql.includes(x)).join(', ') || 'nada'}; los pagos no entran)`)
+  const tablas91 = [...sql91.matchAll(/\('([a-z_]+)', '([a-z_]+)'\)/g)].map((m) => `${m[1]}.${m[2]}`).sort()
+  // V65: la 0095 parte de la ÚLTIMA versión (la de la 0091) y su ÚNICA diferencia son dos líneas más: documentos_de_entrada (por subido_por y por persona_id).
+  debe(tablas91.every((x) => tablasSql.includes(x)) && JSON.stringify(tablasSql.filter((x) => !tablas91.includes(x)).sort()) === JSON.stringify(['documentos_de_entrada.persona_id', 'documentos_de_entrada.subido_por']), 'inventario', `la 0095 conserva todo lo de la 0091 y solo añade documentos_de_entrada (añade: ${tablasSql.filter((x) => !tablas91.includes(x)).join(', ') || 'nada'})`)
+  debe(tablas89.every((x) => tablas91.includes(x)) && JSON.stringify(tablas91.filter((x) => !tablas89.includes(x))) === JSON.stringify(['uso_diario.user_id']) && !tablas91.some((x) => /^pagos_registro\./.test(x)), 'inventario', `la 0091 conserva todo lo de la 0089 y solo añade uso_diario (añade: ${tablas91.filter((x) => !tablas89.includes(x)).join(', ')}; pierde: ${tablas89.filter((x) => !tablas91.includes(x)).join(', ') || 'nada'}; los pagos no entran)`)
   // V31: la 0089 parte de la ÚLTIMA versión (la de la 0086) y su ÚNICA diferencia es una línea más: viajero_primera_vez.
   debe(tablas86.every((x) => tablas89.includes(x)) && JSON.stringify(tablas89.filter((x) => !tablas86.includes(x))) === JSON.stringify(['viajero_primera_vez.user_id']), 'inventario', `la 0089 conserva todo lo de la 0086 y solo añade viajero_primera_vez (añade: ${tablas89.filter((x) => !tablas86.includes(x)).join(', ') || 'nada'}; pierde: ${tablas86.filter((x) => !tablas89.includes(x)).join(', ') || 'nada'})`)
   debe(!/hoy_prueba|historia_de_prueba/.test(sql), 'pruebas', 'el código de la 0072 (sin comentarios) no nombra hoy_prueba ni historia_de_prueba: no se borran nunca')

@@ -2,11 +2,14 @@ import { useRef, useState, type ReactNode } from 'react'
 import { leerEntrada, type DatosEntradaLeida } from '../../../lib/billeteLeer'
 import type { BilleteDeEntrada } from '../../../store/useBilleteStore'
 import { entradaConCodigo } from '../../../store/useBilleteStore'
-import { CodigoPantallaCompleta, ImagenDelCodigo } from './TarjetaBillete'
-import { INK } from './BloqueReservas'
+import { CodigoPantallaCompleta } from './TarjetaBillete'
 import type { Persona } from '../../../store/useViajeCompartido'
 import { AvisoDeDocumentoDeReserva, BotonAnadirDocumento, IconoDeDocumento, LapizDeReserva, PapeleraRoja } from './BotonesDeReserva'
-import { CajaDia, CajaHora, FilaIcono, ParaQuienDesign, SeccionDatos, TarjetaCrema, Trazo } from './PiezasDesignReservas'
+import { CajaDia, CajaHora, TarjetaCrema, Trazo } from './PiezasDesignReservas'
+import { useDocumentosDeLaEntrada } from '../../../hooks/useDocumentosDeLaEntrada'
+import { conCodigo as docConCodigo } from '../../../lib/entradasPorPersona'
+import type { Reservation } from '../../../lib/bookings'
+import { BloqueDelCodigo, DatosDeLaEntrada, accesoDeLaEntrada, nombresDeLasPersonas, type DocumentoDelBloque } from './DatosDeLaEntrada'
 import { Etiqueta } from '../../ui/Etiqueta'
 import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { estadoDelPaseParaDocumentos } from '../../../lib/pago'
@@ -36,7 +39,7 @@ export function BotonCodigoDeEntrada({ onClick }: { onClick: () => void }) {
  * E1: [Añadir tu entrada]. Abre el selector de archivos, lee la entrada y devuelve los datos (`onLeida`). Si no se puede leer nada, lo dice y deja añadirla a mano.
  * (10S8 §2) SIN pase lleva el candado dorado y, al tocarlo, abre el aviso pequeño del pase en vez del selector; con pase, nunca candado. Sin la línea «Desde el PDF, una foto o una captura.» (Design no la lleva).
  */
-export function BotonAnadirEntrada({ onLeida, año, datos = 'entrada-anadir', onAMano, borde = false }: { onLeida: (datos: DatosEntradaLeida) => void; año?: number; datos?: string; /** (V45 §1) El botón de borde «+ Sube tu entrada» de la tarjeta guardada. */ borde?: boolean; /** (10S9b §1) «o escribe los datos a mano» (solo con pase): abre «Datos de la entrada» vacía. */ onAMano?: () => void }) {
+export function BotonAnadirEntrada({ onLeida, año, datos = 'entrada-anadir', onAMano, borde = false, alPulsar }: { onLeida: (datos: DatosEntradaLeida) => void; /** (V65) Una entrada de más de una persona: en vez de la hoja pequeña y el selector, abre «Las entradas de cada uno». */ alPulsar?: () => void; año?: number; datos?: string; /** (V45 §1) El botón de borde «+ Sube tu entrada» de la tarjeta guardada. */ borde?: boolean; /** (10S9b §1) «o escribe los datos a mano» (solo con pase): abre «Datos de la entrada» vacía. */ onAMano?: () => void }) {
   const ref = useRef<HTMLInputElement>(null)
   const [leyendo, setLeyendo] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -60,7 +63,7 @@ export function BotonAnadirEntrada({ onLeida, año, datos = 'entrada-anadir', on
   return (
     <div className="flex flex-col gap-2.5">
       <input ref={ref} type="file" accept="application/pdf,image/*" className="hidden" data-entrada-archivo={datos} onChange={(e) => void alElegir(e.target.files?.[0])} />
-      <BotonAnadirDocumento estilo={borde ? 'borde' : 'dorado'} texto={leyendo ? 'Leyendo tu entrada…' : borde ? 'Sube tu entrada' : 'Añadir tu entrada'} clave="documento_entrada" datos={datos} icono={<Trazo d="entrada" size={18} color="#4A3510" grosor={1.9} />} onAnadir={() => !leyendo && ref.current?.click()} aMano={onAMano} />
+      <BotonAnadirDocumento estilo={borde ? 'borde' : 'dorado'} texto={leyendo ? 'Leyendo tu entrada…' : borde ? 'Sube tu entrada' : 'Añadir tu entrada'} clave="documento_entrada" datos={datos} icono={<Trazo d="entrada" size={18} color="#4A3510" grosor={1.9} />} onAnadir={() => !leyendo && (alPulsar ? alPulsar() : ref.current?.click())} aMano={alPulsar ? undefined : onAMano} />
       {error && (
         <span role="status" data-entrada-error className="text-center text-[12.5px] leading-snug text-accent-red">
           {error}
@@ -98,6 +101,12 @@ export function TarjetaEntradaDesign({
   extra,
   datos,
   claveDeAviso,
+  onSubirVarias,
+  compro,
+  documentos,
+  paraTodos,
+  reserva,
+  compradorId,
 }: {
   chip: string
   nombre: string
@@ -119,8 +128,24 @@ export function TarjetaEntradaDesign({
   datos?: string
   /** (V52 §5b) El id de la reserva: la línea naranja «Esta entrada es del… Revisa que sea la buena» + [Es correcta] sale dentro de la tarjeta. */
   claveDeAviso?: string
+  /** (V65) Entrada de más de una persona: [+ Sube tu entrada] abre «Las entradas de cada uno» (`HojaEntradasDeCadaUno`) en vez de subir un solo archivo. */
+  onSubirVarias?: () => void
+  /** (V65 §1) En el móvil de quien NO la compró: el nombre de quien la compró («Tú y Eric · La compró Eric»). */
+  compro?: string | null
+  /** (V65 §2) Los códigos del bloque oscuro (uno por persona, el tuyo primero). Sin esto, el del billete guardado. */
+  documentos?: DocumentoDelBloque[]
+  /** (V65 §2) Un solo código para todos: «ENTRADA PARA 4». */
+  paraTodos?: number | null
+  /** (V65 §2) La reserva: de ella salen los documentos de cada persona (el hook de la V65). Sin ella, solo el billete guardado. */
+  reserva?: Pick<Reservation, 'refId' | 'paraQuien'>
+  compradorId?: string | null
 }) {
-  const [ampliado, setAmpliado] = useState(false)
+  const uso = useDocumentosDeLaEntrada(reserva ?? null, 'entrada', compradorId)
+  const conDoc = uso.lista.filter((x) => docConCodigo(x.doc))
+  // «Un QR por persona»: el mío primero y los demás deslizando; «un solo QR para todos»: uno, «ENTRADA PARA N».
+  const deLaLista: DocumentoDelBloque[] | undefined = uso.modo === 'unico' || conDoc.length === 0 ? undefined : uso.modo === 'comun' ? [{ clave: 'comun', codigo: conDoc[0].doc!.codigo!, tuya: true }] : conDoc.map((x) => ({ clave: x.personaId, codigo: x.doc!.codigo!, nombre: x.nombre, tuya: x.esMio }))
+  const paraTodosEf = paraTodos ?? (uso.modo === 'comun' ? uso.lista.length : null)
+  const [ampliado, setAmpliado] = useState<DocumentoDelBloque | null>(null)
   // (V64 §2) [Cambiar] de la línea naranja: subir otra vez (el mismo selector de archivos de siempre) o escribir los datos.
   const otroArchivo = useRef<HTMLInputElement>(null)
   const subirOtra = async (archivo: File | undefined) => {
@@ -138,9 +163,12 @@ export function TarjetaEntradaDesign({
     if (estadoDelPaseParaDocumentos() === 'sin') abrirAvisoPase('documento_entrada', {})
     else otroArchivo.current?.click()
   }
-  const conCodigo = entradaConCodigo(billete)
+  const docs: DocumentoDelBloque[] = documentos ?? deLaLista ?? (entradaConCodigo(billete) ? [{ clave: 'mio', codigo: billete.codigo, tuya: true }] : [])
+  const conCodigo = docs.length > 0
   const localizador = billete?.localizador ? billete.localizador.toUpperCase() : null
-  const hayFilas = gente.length > 0 || Boolean(precio) || Boolean(localizador)
+  // (V65 §1) «PERSONAS»: cuántas y quiénes (solo en un viaje en grupo); sin grupo, las que dice el documento.
+  const personas = gente.length >= 2 ? gente.length : (billete?.personas ?? null)
+  const hayFilas = personas !== null || Boolean(precio) || Boolean(localizador) || accesoDeLaEntrada(nombre, hora) !== null
   return (
     <TarjetaCrema datos={datos}>
       <div className="flex items-start gap-2.5">
@@ -158,7 +186,7 @@ export function TarjetaEntradaDesign({
         {/* (V45 §1) El icono del documento junto al lápiz: el QR gris con «+» si falta, dorado si está (al tocarlo, en grande). */}
         {!soloVer && onLapizArriba && (
           <span className="flex flex-none items-center">
-            <IconoDeDocumento hay={conCodigo} onAbrir={() => setAmpliado(true)} datos="entrada" />
+            <IconoDeDocumento hay={conCodigo} onAbrir={() => setAmpliado(docs[0] ?? null)} datos="entrada" />
             <LapizDeReserva onClick={onLapizArriba} etiqueta="Cambiar el sitio, el día y la hora" datos="entrada-arriba" />
           </span>
         )}
@@ -167,48 +195,29 @@ export function TarjetaEntradaDesign({
         <CajaDia rotulo={diaRotulo} grande={diaGrande} />
         <CajaHora hora={hora} />
       </div>
-      <SeccionDatos datos="entrada" onLapiz={!soloVer && (conCodigo || localizador) ? onLapizDatos : undefined} etiquetaLapiz="Cambiar los datos de la entrada" sinLineaAbajo={!hayFilas && !conCodigo}>
-        {gente.length > 0 && <ParaQuienDesign gente={gente} />}
-        {precio && (
-          <FilaIcono icono="euro" datos="precio">
-            {precio}
-          </FilaIcono>
-        )}
-        {localizador && (
-          <span data-entrada-fila="localizador">
-            <FilaIcono icono="entrada" datos="localizador">
-              Localizador {localizador}
-            </FilaIcono>
+      <div className="relative" data-seccion-datos="entrada">
+        <DatosDeLaEntrada datos="entrada" precio={precio} localizador={localizador} personas={personas} quienes={gente.length >= 2 ? nombresDeLasPersonas(gente, !soloVer) : null} compro={compro ?? null} acceso={accesoDeLaEntrada(nombre, hora)} />
+        {!soloVer && (conCodigo || localizador) && onLapizDatos && (
+          <span className="absolute -right-[7px] -top-[17px]">
+            <LapizDeReserva onClick={onLapizDatos} etiqueta="Cambiar los datos de la entrada" datos="entrada-datos" />
           </span>
         )}
         {!hayFilas && <span className="text-[13px] text-text/55">Para quién es y cuánto ha costado.</span>}
-      </SeccionDatos>
+      </div>
       <div data-entrada-billete={billete && (billete.localizador || conCodigo) ? 'con-billete' : 'sin-billete'} className="flex flex-col gap-3">
         <input ref={otroArchivo} type="file" accept="application/pdf,image/*" className="hidden" data-entrada-archivo="cambiar" onChange={(e) => void subirOtra(e.target.files?.[0])} />
         <AvisoDeDocumentoDeReserva clave={claveDeAviso} documento="documento_entrada" onSubir={pedirOtra} onEscribir={onLapizDatos} />
-        {conCodigo && billete && (
-          <button type="button" onClick={() => setAmpliado(true)} data-entrada-codigo-pequeno className="flex w-full items-center gap-3.5 text-left">
-            <span className="rounded-xl bg-white p-1.5" style={{ border: '1px solid rgba(28,34,48,.14)' }}>
-              <ImagenDelCodigo codigo={billete.codigo} tam={72} />
-            </span>
-            <span className="flex flex-col gap-1.5">
-              <span style={{ font: "600 14px 'Geist'", color: INK }}>Toca para ampliar</span>
-              <span className="flex h-[34px] w-[34px] items-center justify-center rounded-full" style={{ background: '#F3E3B2' }}>
-                <Trazo d="ampliar" size={16} grosor={1.9} />
-              </span>
-            </span>
-          </button>
-        )}
-        {!conCodigo && !soloVer && onLeida && <BotonAnadirEntrada borde onLeida={onLeida} año={año} datos="entrada-sin-codigo" onAMano={onLapizDatos} />}
+        {conCodigo && <BloqueDelCodigo datos="entrada" documentos={docs} paraTodos={paraTodosEf} onAmpliar={(d) => setAmpliado(d)} faltan={uso.modo === 'porPersona' ? uso.lista.filter((x) => !docConCodigo(x.doc)).map((x) => ({ clave: x.personaId, nombre: x.nombre })) : []} onSubir={onSubirVarias} />}
+        {!conCodigo && ((!soloVer && onLeida) || onSubirVarias) && <BotonAnadirEntrada borde onLeida={onLeida} año={año} datos="entrada-sin-codigo" onAMano={onLapizDatos} alPulsar={onSubirVarias} />}
         {extra}
         {!soloVer && onQuitar && (
           <>
-            {conCodigo && <div style={{ borderTop: '1px dotted rgba(28,34,48,.28)' }} />}
+            
             <PapeleraRoja onClick={onQuitar} etiqueta="Quitar la entrada" datos="entrada" />
           </>
         )}
       </div>
-      {ampliado && conCodigo && billete && <CodigoDeEntradaPantallaCompleta billete={billete} titulo={nombre} cuando={cuando} onClose={() => setAmpliado(false)} />}
+      {ampliado && <CodigoPantallaCompleta codigo={ampliado.codigo} titulo={nombre} cuando={cuando} pie={ampliado.tuya === false && ampliado.nombre ? `Entrada de ${ampliado.nombre}` : billete?.localizador ? `Localizador ${billete.localizador.toUpperCase()}` : ''} onClose={() => setAmpliado(null)} />}
     </TarjetaCrema>
   )
 }

@@ -17,6 +17,9 @@ import { ROTULO } from './TarjetasEntradas'
 import { Icono } from '../../ui/Icono'
 import { VolverExcursionARuta } from './VolverExcursionARuta'
 import { TarjetaExcursionDesign, HojaDatosDeLaExcursion, type DatosDeLaExcursion } from './ExcursionConBillete'
+import { HojaEntradasDeCadaUno } from './HojaEntradasDeCadaUno'
+import { useDocumentosDeEntrada } from '../../../store/useDocumentosDeEntrada'
+import { esParaVarios } from '../../../lib/entradasPorPersona'
 import { useBilletesDeExcursiones } from '../../../hooks/useBilleteExcursion'
 import { useBilleteStore } from '../../../store/useBilleteStore'
 import { useRouteStore } from '../../../store/useRouteStore'
@@ -83,6 +86,8 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
   // (10R §4) El billete de cada excursión (privado de esta persona) y la hoja «Datos de la excursión».
   const billetes = useBilletesDeExcursiones()
   const [datosDe, setDatosDe] = useState<{ reserva: Reservation; leida: DatosExcursionLeida | null } | null>(null)
+  // (V65 §2) «Las entradas de cada uno» de una excursión de más de una persona (va exactamente igual que las entradas).
+  const [cadaUno, setCadaUno] = useState<Reservation | null>(null)
   // (10S10 §4 y §5) Un bloque como «Entradas y Free Tour»: cerrado al entrar, siempre; el viajero lo abre y lo cierra.
   const [desplegadoUsuario, setDesplegadoUsuario] = useState<boolean | null>(null)
   useEffect(() => setDesplegadoUsuario(null), [abierto])
@@ -128,6 +133,8 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
   const guardarDatos = (reserva: Reservation, d: DatosDeLaExcursion) => {
     const antes = billetes.de(reserva.refId)
     if (d.personas || d.localizador || d.codigo) useBilleteStore.getState().ponerExcursion(billetes.tripId, reserva.refId, { personas: d.personas, localizador: d.localizador, codigo: d.codigo, dueno: antes?.dueno ?? billetes.yoId })
+    // (V65) Excursión de más de una persona: mi documento lo ven también las demás, igual que en las entradas.
+    if (d.codigo && billetes.yoId && (reserva.paraQuien?.length ?? 0) > 1) useDocumentosDeEntrada.getState().poner(billetes.tripId, { tipo: 'excursion', refId: reserva.refId, clave: billetes.yoId, subidoPor: billetes.yoId, para: reserva.paraQuien!, nombre: null, localizador: d.localizador, personas: d.personas, codigo: d.codigo })
     else if (antes) useBilleteStore.getState().quitarExcursion(billetes.tripId, reserva.refId)
     const nueva: Reservation = { ...reserva, time: d.hora ?? reserva.time, meetingPoint: d.puntoEncuentro }
     if (nueva.time === reserva.time && nueva.meetingPoint === (reserva.meetingPoint ?? null)) return
@@ -208,6 +215,8 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
                 onLeida={(leida) => setDatosDe({ reserva: corregirConElDocumento(reserva, { fecha: leida.fecha, hora: leida.hora }, 'reserva', excursionDe(reserva)), leida })}
                 onQuitar={quitar}
                 claveDeAviso={reserva.id}
+                onSubirVarias={esParaVarios(reserva) ? () => setCadaUno(reserva) : undefined}
+                reserva={reserva}
                 extra={reserva.noMueve ? <VolverExcursionARuta route={route} reserva={reserva} excursion={excursion} /> : undefined}
               />
             </div>
@@ -247,6 +256,7 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
           }}
         />
       )}
+      {cadaUno && <HojaEntradasDeCadaUno reserva={cadaUno} tipo="excursion" año={route.answers.dateRange ? Number(route.answers.dateRange.start.slice(0, 4)) : undefined} onClose={() => setCadaUno(null)} />}
       {datosDe && (
         <HojaDatosDeLaExcursion
           billete={billetes.de(datosDe.reserva.refId)}

@@ -348,7 +348,7 @@ interface RespuestaServidor<T> {
   aviso: string | null
 }
 
-async function leerEnServidor<T = LecturaServidor>(archivo: File, paginas: HTMLCanvasElement[], opciones: OpcionesLeerBillete, tipo?: 'entrada' | 'alojamiento' | 'excursion' | 'coche'): Promise<RespuestaServidor<T>> {
+async function leerEnServidor<T = LecturaServidor>(archivo: File, paginas: HTMLCanvasElement[], opciones: OpcionesLeerBillete, tipo?: 'entrada' | 'alojamiento' | 'excursion' | 'coche' | 'entradas_varias'): Promise<RespuestaServidor<T>> {
   // (10S8) Antes de nada, sin gastar una llamada: el tamaño. La sesión se manda siempre que haya; si no hay (o no vale), el servidor contesta 401 con su texto y sin llamar a Claude.
   if (archivo.size > MAX_ARCHIVO_LECTURA_BYTES) return { datos: null, aviso: AVISO_ARCHIVO_GRANDE }
   // (La sesión se pide al cargar el cliente de Supabase solo ahora, no al importar este archivo: así las pruebas del lector en Node, sin Vite, siguen funcionando.)
@@ -713,4 +713,83 @@ export async function leerReservaCoche(archivo: File, opciones: OpcionesLeerBill
   } catch {
     return vacio
   }
+}
+
+// ── (V65) Un documento con VARIAS entradas: un código por persona, con su nombre ─────────────────────────────────────────────────────────────
+
+/** Un código leído de un documento con varias entradas, con el nombre que traía junto a él si el servidor lo vio. */
+export interface CodigoConNombre {
+  nombre: string | null
+  localizador: string | null
+  codigo: CodigoBillete
+  /** «entrada.pdf · página 2», para decir qué no se supo colocar. */
+  origen: string
+}
+
+interface LecturaServidorVarias {
+  entradas: Array<{ nombre: string | null; localizador: string | null; codigo_caja: { pagina: number; x0: number; y0: number; x1: number; y1: number } }>
+}
+
+/**
+ * PDF (de varias páginas), foto o captura con una o VARIAS entradas → un código por entrada, con su nombre. Primero, gratis y en el móvil: se buscan TODOS los códigos de todas las páginas (sin repetir el mismo).
+ * Después, UNA llamada al servidor por archivo (con pase y con límite, como todas las lecturas) que dice el nombre que hay junto a cada código; el nombre se casa con el código más cercano de la misma página.
+ * Sin pase, sin sesión o con el límite pasado, salen los códigos sin nombre y el `aviso` del servidor (la app los deja en «Falta» o, si es uno solo, lo pone para todos). Nunca lanza.
+ */
+export async function leerEntradasVarias(archivo: File, opciones: OpcionesLeerBillete = {}): Promise<{ codigos: CodigoConNombre[]; aviso: string | null }> {
+  const salida: CodigoConNombre[] = []
+  let aviso: string | null = null
+  try {
+    let paginas: HTMLCanvasElement[] = []
+    try {
+      paginas = await paginasDe(archivo)
+    } catch {
+      paginas = []
+    }
+    const hallazgos = await buscarCodigos(paginas).catch(() => [] as Hallazgo[])
+    const unicos: Hallazgo[] = []
+    for (const h of hallazgos) if (!unicos.some((u) => u.texto === h.texto)) unicos.push(h)
+    const r = await leerEnServidor<LecturaServidorVarias>(archivo, paginas, opciones, 'entradas_varias').catch(() => ({ datos: null, aviso: null }) as RespuestaServidor<LecturaServidorVarias>)
+    aviso = r.aviso
+    const nombres = Array.isArray(r.datos?.entradas) ? r.datos!.entradas : []
+    const centro = (c: { x0: number; y0: number; x1: number; y1: number }) => ({ x: (c.x0 + c.x1) / 2, y: (c.y0 + c.y1) / 2 })
+    const usados = new Set<number>()
+    const cercano = (pagina: number, caja: { x0: number; y0: number; x1: number; y1: number }): number => {
+      const a = centro(caja)
+      let mejor = -1
+      let dMejor = 0.35
+      nombres.forEach((n, i) => {
+        if (usados.has(i) || n.codigo_caja.pagina !== pagina) return
+        const b = centro(n.codigo_caja)
+        const d = Math.hypot(a.x - b.x, a.y - b.y)
+        if (d < dMejor) {
+          dMejor = d
+          mejor = i
+        }
+      })
+      return mejor
+    }
+    const origen = (pagina: number) => (paginas.length > 1 ? `${archivo.name} · página ${pagina}` : archivo.name)
+    for (const h of unicos.slice(0, 20)) {
+      const i = cercano(h.pagina, h.caja)
+      if (i >= 0) usados.add(i)
+      salida.push({
+        nombre: i >= 0 ? nombres[i].nombre : null,
+        localizador: i >= 0 ? nombres[i].localizador : null,
+        codigo: { formato: h.formato, texto: h.texto, dibujo: await aSvgDataUrl(h.texto, h.formato), imagen: null },
+        origen: origen(h.pagina),
+      })
+    }
+    // Lo que el servidor vio y el móvil no pudo leer (un código borroso): se guarda el recorte, sin texto.
+    if (unicos.length === 0) {
+      for (const [i, n] of nombres.entries()) {
+        const c = paginas[n.codigo_caja.pagina - 1]
+        const recorte = c ? recortar(c, n.codigo_caja) : null
+        if (recorte && salida.length < 20) salida.push({ nombre: n.nombre, localizador: n.localizador, codigo: { formato: 'otro', texto: null, dibujo: null, imagen: recorte }, origen: origen(n.codigo_caja.pagina) })
+        void i
+      }
+    }
+  } catch {
+    /* nunca lanza */
+  }
+  return { codigos: salida, aviso }
 }

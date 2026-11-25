@@ -19,13 +19,13 @@ const TEXTOS: Record<ClaveDocumento, { titulo: string; subir: string; escribir: 
 
 const CAPTION = { margin: 0, padding: '0 6px', textAlign: 'center', font: "400 12.5px/1.4 'Geist'", color: 'rgba(28,34,48,.55)' } as const
 
-export function HojaAnadirDocumento({ clave, onSubir, onEscribir, onClose }: { clave: ClaveDocumento; /** Abre el selector de archivos (la hoja se cierra antes). */ onSubir: () => void; onEscribir: () => void; onClose: () => void }) {
+export function HojaAnadirDocumento({ clave, titulo, onSubir, onEscribir, onClose }: { clave: ClaveDocumento; /** (V65) Otro título (p. ej. «La entrada de Alicia», al subir el documento de otra persona). */ titulo?: string; /** Abre el selector de archivos (la hoja se cierra antes). */ onSubir: () => void; onEscribir: () => void; onClose: () => void }) {
   const t = TEXTOS[clave]
   return (
     <HojaAbajo titleId="hoja-anadir-documento" onClose={onClose} capa={118}>
       <div data-hoja-anadir-documento={clave} className="flex flex-col gap-3">
         <h2 id="hoja-anadir-documento" className="max-w-[calc(100%-3rem)] font-display text-[28px] leading-[1.05] text-text">
-          {t.titulo}
+          {titulo ?? t.titulo}
         </h2>
         <button
           type="button"

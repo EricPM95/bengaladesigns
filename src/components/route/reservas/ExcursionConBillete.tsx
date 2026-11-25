@@ -6,11 +6,14 @@ import { estadoDelPaseParaDocumentos, usePagoActivo } from '../../../lib/pago'
 import { abrirAvisoPase } from '../../../lib/avisoPase'
 import type { Persona } from '../../../store/useViajeCompartido'
 import { Candado } from '../../pase/Candado'
-import { CodigoPantallaCompleta, ImagenDelCodigo } from './TarjetaBillete'
-import { INK } from './BloqueReservas'
+import { CodigoPantallaCompleta } from './TarjetaBillete'
 import { HojaAbajo } from './HojaAbajo'
 import { AvisoDeDocumentoDeReserva, BotonAnadirDocumento, IconoDeDocumento, LapizDeReserva, PapeleraRoja } from './BotonesDeReserva'
-import { CajaDia, CajaHora, FilaIcono, ParaQuienDesign, SeccionDatos, TarjetaCrema, Trazo } from './PiezasDesignReservas'
+import { CajaDeDato, CajaDia, CajaHora, TarjetaCrema, Trazo } from './PiezasDesignReservas'
+import { useDocumentosDeLaEntrada } from '../../../hooks/useDocumentosDeLaEntrada'
+import { conCodigo as docConCodigo } from '../../../lib/entradasPorPersona'
+import type { Reservation } from '../../../lib/bookings'
+import { BloqueDelCodigo, DatosDeLaEntrada, accesoDeLaEntrada, nombresDeLasPersonas, type DocumentoDelBloque } from './DatosDeLaEntrada'
 
 /**
  * (10R §4) LA EXCURSIÓN RESERVADA, COMO UNA ENTRADA (`Piezas/Entradas Billete` E1 a E5): la tarjeta crema con «Excursión» pequeño, el nombre grande y su lápiz (excursión, día y hora), el día y la hora en sus cajas,
@@ -44,7 +47,7 @@ export function BotonComoLlegarPuntoDeEncuentro({ punto, ciudad, className = '' 
 }
 
 /** [Añadir tu excursión]: abre el selector, lee el billete (`read-ticket`, tipo excursión) y devuelve lo leído. Sin pase, candado y aviso pequeño (clave `documento_excursion`). */
-export function BotonAnadirExcursion({ onLeida, año, datos = 'excursion-anadir', onAMano, borde = false }: { onLeida: (datos: DatosExcursionLeida) => void; año?: number; datos?: string; /** (V45 §1) El botón de borde «+ Sube tu reserva» de la tarjeta guardada. */ borde?: boolean; /** (10S9b §1) «o escribe los datos a mano» (solo con pase): abre «Datos de la excursión» vacía. */ onAMano?: () => void }) {
+export function BotonAnadirExcursion({ onLeida, año, datos = 'excursion-anadir', onAMano, borde = false, alPulsar }: { onLeida: (datos: DatosExcursionLeida) => void; /** (V65) Una excursión de más de una persona: abre «Las entradas de cada uno» (igual que las entradas). */ alPulsar?: () => void; año?: number; datos?: string; /** (V45 §1) El botón de borde «+ Sube tu reserva» de la tarjeta guardada. */ borde?: boolean; /** (10S9b §1) «o escribe los datos a mano» (solo con pase): abre «Datos de la excursión» vacía. */ onAMano?: () => void }) {
   const ref = useRef<HTMLInputElement>(null)
   const [leyendo, setLeyendo] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -67,7 +70,7 @@ export function BotonAnadirExcursion({ onLeida, año, datos = 'excursion-anadir'
   return (
     <div className="flex flex-col gap-2.5">
       <input ref={ref} type="file" accept="application/pdf,image/*" className="hidden" data-excursion-archivo={datos} onChange={(e) => void alElegir(e.target.files?.[0])} />
-      <BotonAnadirDocumento estilo={borde ? 'borde' : 'dorado'} texto={leyendo ? 'Leyendo tu excursión…' : borde ? 'Sube tu reserva' : 'Añadir tu excursión'} clave="documento_excursion" datos={datos} icono={<Trazo d="entrada" size={18} color="#4A3510" grosor={1.9} />} onAnadir={() => !leyendo && ref.current?.click()} aMano={onAMano} />
+      <BotonAnadirDocumento estilo={borde ? 'borde' : 'dorado'} texto={leyendo ? 'Leyendo tu excursión…' : borde ? 'Sube tu reserva' : 'Añadir tu excursión'} clave="documento_excursion" datos={datos} icono={<Trazo d="entrada" size={18} color="#4A3510" grosor={1.9} />} onAnadir={() => !leyendo && (alPulsar ? alPulsar() : ref.current?.click())} aMano={alPulsar ? undefined : onAMano} />
       {error && (
         <span role="status" data-excursion-error className="text-center text-[12.5px] leading-snug text-accent-red">
           {error}
@@ -97,6 +100,12 @@ export function TarjetaExcursionDesign({
   año,
   extra,
   claveDeAviso,
+  onSubirVarias,
+  compro,
+  documentos,
+  paraTodos,
+  reserva,
+  compradorId,
 }: {
   chip: string
   nombre: string
@@ -118,8 +127,23 @@ export function TarjetaExcursionDesign({
   extra?: ReactNode
   /** (V52 §5b) El id de la reserva: la línea naranja «Esta reserva es del… Revisa que sea la buena» + [Es correcta]. */
   claveDeAviso?: string
+  /** (V65) Excursión de más de una persona: [+ Sube tu reserva] abre «Las entradas de cada uno» (`HojaEntradasDeCadaUno`, tipo excursión). */
+  onSubirVarias?: () => void
+  /** (V65 §1) En el móvil de quien NO la compró: quién la compró. */
+  compro?: string | null
+  /** (V65 §2) Los códigos del bloque oscuro (uno por persona, el tuyo primero). Sin esto, el del billete guardado. */
+  documentos?: DocumentoDelBloque[]
+  paraTodos?: number | null
+  /** (V65 §2) La reserva: de ella salen los documentos de cada persona (el hook de la V65). Sin ella, solo el billete guardado. */
+  reserva?: Pick<Reservation, 'refId' | 'paraQuien'>
+  compradorId?: string | null
 }) {
-  const [ampliado, setAmpliado] = useState(false)
+  const uso = useDocumentosDeLaEntrada(reserva ?? null, 'excursion', compradorId)
+  const conDoc = uso.lista.filter((x) => docConCodigo(x.doc))
+  // «Un QR por persona»: el mío primero y los demás deslizando; «un solo QR para todos»: uno, «ENTRADA PARA N».
+  const deLaLista: DocumentoDelBloque[] | undefined = uso.modo === 'unico' || conDoc.length === 0 ? undefined : uso.modo === 'comun' ? [{ clave: 'comun', codigo: conDoc[0].doc!.codigo!, tuya: true }] : conDoc.map((x) => ({ clave: x.personaId, codigo: x.doc!.codigo!, nombre: x.nombre, tuya: x.esMio }))
+  const paraTodosEf = paraTodos ?? (uso.modo === 'comun' ? uso.lista.length : null)
+  const [ampliado, setAmpliado] = useState<DocumentoDelBloque | null>(null)
   // (V64 §2) [Cambiar] de la línea naranja: subir otra vez (el mismo selector de archivos de siempre) o escribir los datos.
   const otroArchivo = useRef<HTMLInputElement>(null)
   const subirOtra = async (archivo: File | undefined) => {
@@ -137,11 +161,13 @@ export function TarjetaExcursionDesign({
     if (estadoDelPaseParaDocumentos() === 'sin') abrirAvisoPase('documento_excursion', {})
     else otroArchivo.current?.click()
   }
-  const conCodigo = excursionConCodigo(billete)
+  const docs: DocumentoDelBloque[] = documentos ?? deLaLista ?? (excursionConCodigo(billete) ? [{ clave: 'mio', codigo: billete.codigo, tuya: true }] : [])
+  const conCodigo = docs.length > 0
   const localizador = billete?.localizador ? billete.localizador.toUpperCase() : null
   // (10S9b §1) Lo escrito a mano cuenta como datos: el localizador o las personas (igual que si vinieran del documento) abren el bloque con su lápiz.
   const personasEscritas = billete?.personas ?? null
-  const hayFilas = gente.length > 0 || Boolean(precio) || Boolean(localizador) || Boolean(puntoEncuentro) || Boolean(personasEscritas)
+  const personas = gente.length >= 2 ? gente.length : personasEscritas
+  const hayFilas = personas !== null || Boolean(precio) || Boolean(localizador) || Boolean(puntoEncuentro) || accesoDeLaEntrada(nombre, hora) !== null
   return (
     <TarjetaCrema datos="excursion">
       <div className="flex items-start gap-2.5">
@@ -160,7 +186,7 @@ export function TarjetaExcursionDesign({
         </span>
         {onLapizArriba && (
           <span className="flex flex-none items-center">
-            <IconoDeDocumento hay={conCodigo} tipo="reserva" onAbrir={() => setAmpliado(true)} datos="excursion" />
+            <IconoDeDocumento hay={conCodigo} tipo="reserva" onAbrir={() => setAmpliado(docs[0] ?? null)} datos="excursion" />
             <LapizDeReserva onClick={onLapizArriba} etiqueta="Cambiar la excursión, el día y la hora" datos="excursion-arriba" />
           </span>
         )}
@@ -169,63 +195,38 @@ export function TarjetaExcursionDesign({
         <CajaDia rotulo={diaRotulo} grande={diaGrande} />
         <CajaHora hora={hora} />
       </div>
-      <SeccionDatos datos="excursion" onLapiz={conCodigo || localizador || personasEscritas ? onLapizDatos : undefined} etiquetaLapiz="Cambiar los datos de la excursión" sinLineaAbajo={!hayFilas && !conCodigo}>
-        {gente.length > 0 && <ParaQuienDesign gente={gente} />}
-        {precio && (
-          <FilaIcono icono="euro" datos="precio">
-            {precio}
-          </FilaIcono>
-        )}
-        {localizador && (
-          <span data-excursion-fila="localizador">
-            <FilaIcono icono="entrada" datos="localizador">
-              Localizador {localizador}
-            </FilaIcono>
-          </span>
-        )}
-        {personasEscritas && (
-          <span data-excursion-fila="personas">
-            <FilaIcono icono="entrada" datos="personas">
-              {personasEscritas} {personasEscritas === 1 ? 'persona' : 'personas'}
-            </FilaIcono>
-          </span>
-        )}
+      <div className="relative flex flex-col gap-2" data-seccion-datos="excursion">
+        <DatosDeLaEntrada rotulo="DATOS DE LA EXCURSIÓN" datos="excursion" precio={precio} localizador={localizador} personas={personas} quienes={gente.length >= 2 ? nombresDeLasPersonas(gente, !compro) : null} compro={compro ?? null} acceso={accesoDeLaEntrada(nombre, hora)} />
+        {/* (V49) El punto de encuentro solo sale si es verdad (lo escribió el viajero o viene del documento). */}
         {puntoEncuentro && (
           <span data-excursion-fila="punto-encuentro">
-            <FilaIcono icono="direccion" datos="punto-encuentro">
+            <CajaDeDato rotulo="PUNTO DE ENCUENTRO" icono={{ d: 'M12 21s-6-5.5-6-10a6 6 0 0 1 12 0c0 4.5-6 10-6 10zM12 8.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z' }} datos="punto-encuentro">
               {puntoEncuentro}
-            </FilaIcono>
+            </CajaDeDato>
+          </span>
+        )}
+        {(conCodigo || localizador || personasEscritas) && onLapizDatos && (
+          <span className="absolute -right-[7px] -top-[17px]">
+            <LapizDeReserva onClick={onLapizDatos} etiqueta="Cambiar los datos de la excursión" datos="excursion-datos" />
           </span>
         )}
         {!hayFilas && <span className="text-[13px] text-text/55">Para quién es, cuánto ha costado y dónde es el punto de encuentro.</span>}
-      </SeccionDatos>
+      </div>
       <div data-excursion-billete={billete && (billete.localizador || conCodigo) ? 'con-billete' : 'sin-billete'} className="flex flex-col gap-3">
         <input ref={otroArchivo} type="file" accept="application/pdf,image/*" className="hidden" data-excursion-archivo="cambiar" onChange={(e) => void subirOtra(e.target.files?.[0])} />
         <AvisoDeDocumentoDeReserva clave={claveDeAviso} documento="documento_excursion" onSubir={pedirOtra} onEscribir={onLapizDatos} />
-        {conCodigo && billete && (
-          <button type="button" onClick={() => setAmpliado(true)} data-excursion-codigo-pequeno className="flex w-full items-center gap-3.5 text-left">
-            <span className="rounded-xl bg-white p-1.5" style={{ border: '1px solid rgba(28,34,48,.14)' }}>
-              <ImagenDelCodigo codigo={billete.codigo} tam={72} />
-            </span>
-            <span className="flex flex-col gap-1.5">
-              <span style={{ font: "600 14px 'Geist'", color: INK }}>Toca para ampliar</span>
-              <span className="flex h-[34px] w-[34px] items-center justify-center rounded-full" style={{ background: '#F3E3B2' }}>
-                <Trazo d="ampliar" size={16} grosor={1.9} />
-              </span>
-            </span>
-          </button>
-        )}
-        {!conCodigo && <BotonAnadirExcursion borde onLeida={onLeida} año={año} datos="excursion-sin-codigo" onAMano={onLapizDatos} />}
+        {conCodigo && <BloqueDelCodigo datos="excursion" documentos={docs} paraTodos={paraTodosEf} onAmpliar={(d) => setAmpliado(d)} faltan={uso.modo === 'porPersona' ? uso.lista.filter((x) => !docConCodigo(x.doc)).map((x) => ({ clave: x.personaId, nombre: x.nombre })) : []} onSubir={onSubirVarias} />}
+        {!conCodigo && <BotonAnadirExcursion borde onLeida={onLeida} año={año} datos="excursion-sin-codigo" onAMano={onLapizDatos} alPulsar={onSubirVarias} />}
         <BotonComoLlegarPuntoDeEncuentro punto={puntoEncuentro} ciudad={ciudad} />
         {extra}
         {onQuitar && (
           <>
-            {conCodigo && <div style={{ borderTop: '1px dotted rgba(28,34,48,.28)' }} />}
+            
             <PapeleraRoja onClick={onQuitar} etiqueta="Quitar la excursión" datos="excursion" />
           </>
         )}
       </div>
-      {ampliado && conCodigo && billete && <CodigoDeExcursionPantallaCompleta billete={billete} titulo={nombre} cuando={cuando} onClose={() => setAmpliado(false)} />}
+      {ampliado && <CodigoPantallaCompleta codigo={ampliado.codigo} titulo={nombre} cuando={cuando} pie={ampliado.tuya === false && ampliado.nombre ? `Entrada de ${ampliado.nombre}` : billete?.localizador ? `Localizador ${billete.localizador.toUpperCase()}` : ''} onClose={() => setAmpliado(null)} />}
     </TarjetaCrema>
   )
 }

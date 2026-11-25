@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { leerImporte, type Importe } from '../../../lib/dinero'
 import type { Route, Stop } from '../../../lib/types'
 import type { DestinationExcursions } from '../../../lib/destinationExcursions'
-import { buildEntradasBloque, type BloqueEntrada } from '../../../lib/bookings'
+import { buildEntradasBloque, type BloqueEntrada, type Reservation } from '../../../lib/bookings'
 import { elDia, fechaCorta, diaTitulo } from '../../../lib/nombreDeDia'
 import { aplicarAvisoFueraDeDia, reservasFueraDeSuDia, type ReservaFueraDeDia } from '../../../lib/reservaFueraDeDia'
 import { TarjetaPorReservar, ROTULO } from './TarjetasEntradas'
@@ -14,6 +14,8 @@ import { corregirConElDocumento } from '../../../lib/corregirConElDocumento'
 import { FueraDeRutaFila } from './FueraDeRutaFila'
 import { FichaEntrada } from './FichaEntrada'
 import { TarjetaEntradaDesign, CodigoDeEntradaPantallaCompleta } from './EntradaConBillete'
+import { HojaEntradasDeCadaUno } from './HojaEntradasDeCadaUno'
+import { esParaVarios } from '../../../lib/entradasPorPersona'
 import { useBilletesDeEntradas } from '../../../hooks/useBilleteEntrada'
 import { useBilleteStore, type BilleteDeEntrada } from '../../../store/useBilleteStore'
 import { OtraReservaBuscador } from './OtraReservaBuscador'
@@ -105,6 +107,8 @@ export function EntradasYFreeTour({ route, info, abierto }: { route: Route; info
   const [buscando, setBuscando] = useState(false)
   const [target, setTarget] = useState<ReservationTarget | null>(null)
   const [ficha, setFicha] = useState<BloqueEntrada | null>(null)
+  // (V65 §2) «Las entradas de cada uno»: la hoja de una entrada de más de una persona.
+  const [cadaUno, setCadaUno] = useState<Reservation | null>(null)
   // (10S7 §3 y §4) El billete de cada entrada (privado de esta persona) y el código a pantalla completa.
   const billetes = useBilletesDeEntradas()
   const [codigoAbierto, setCodigoAbierto] = useState<{ titulo: string; cuando: string; billete: BilleteDeEntrada & { codigo: NonNullable<BilleteDeEntrada['codigo']> } } | null>(null)
@@ -164,8 +168,9 @@ export function EntradasYFreeTour({ route, info, abierto }: { route: Route; info
     const reserva = item.reservation!
     const mia = esMia(reserva.id)
     const fueraDeLaRuta = mia && !item.inRoute && !reserva.fueraDeRuta && !esReservaLibre(reserva)
-    const nota = !mia ? `${compradorDe(reserva.id)} la ha reservado para ti` : undefined
-    const billete = mia ? billetes.de(reserva.refId) : null
+    // (V65 §1) Quién la compró va en la caja PERSONAS («Tú y Eric · La compró Eric»), ya no en una nota aparte.
+    const compro = !mia ? compradorDe(reserva.id) : null
+    const billete = billetes.de(reserva.refId)
     const cuando = cuandoDeLaReserva(route, reserva)
     const gente = grupo.gente.length >= 2 ? idsIncluidos(reserva, grupo.gente).map((id) => grupo.gente.find((p) => p.id === id)).filter((p): p is NonNullable<typeof p> => Boolean(p)) : []
     const precio = item.isFreeTour ? null : leerImporte(reserva.precio)
@@ -188,7 +193,9 @@ export function EntradasYFreeTour({ route, info, abierto }: { route: Route; info
           precio={precio ? precioEnVista(precio) : null}
           billete={billete}
           cuando={cuando}
-          nota={nota}
+          compro={compro}
+          reserva={reserva}
+          compradorId={mia ? null : (grupo.deOtros.find((x) => x.reserva.id === reserva.id)?.compradorId ?? null)}
           soloVer={!mia}
           año={route.answers.dateRange ? Number(route.answers.dateRange.start.slice(0, 4)) : undefined}
           onLapizArriba={() => setTarget({ ...targetOf(item), existing: reserva })}
@@ -196,6 +203,7 @@ export function EntradasYFreeTour({ route, info, abierto }: { route: Route; info
           onLeida={(lectura) => setTarget({ ...targetOf(item), existing: corregirConElDocumento(reserva, { fecha: lectura.fecha, hora: lectura.hora }, 'entrada'), lectura })}
           onQuitar={quitar}
           claveDeAviso={reserva.id}
+          onSubirVarias={esParaVarios(reserva) ? () => setCadaUno(reserva) : undefined}
         />
         {reserva.fueraDeRuta && <FueraDeRutaFila reservaId={reserva.id} esFreeTour={item.isFreeTour} />}
         {avisoDe(reserva.id) && <AvisoFueraDeDiaTarjeta aviso={avisoDe(reserva.id)!} />}
@@ -282,6 +290,7 @@ export function EntradasYFreeTour({ route, info, abierto }: { route: Route; info
           </>
         )}
       </BloqueClaro>
+      {cadaUno && <HojaEntradasDeCadaUno reserva={cadaUno} tipo="entrada" año={route.answers.dateRange ? Number(route.answers.dateRange.start.slice(0, 4)) : undefined} onClose={() => setCadaUno(null)} />}
       {target && <AddReservationSheet route={route} target={target} onClose={() => setTarget(null)} />}
       {buscando && (
         <OtraReservaBuscador
