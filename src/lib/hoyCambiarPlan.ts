@@ -284,7 +284,7 @@ export interface Propuesta {
   /** (V43 §1) Las líneas del bloque de resumen (icono + texto): solo las que vienen al caso. Sin ellas, salen de «cambia» y «mantiene». */
   resumen?: { icono: 'mover' | 'quitar' | 'ok' | 'reloj' | 'mas'; texto: string; /** Una frase pequeña debajo (lo que antes era el «detalle»). */ sub?: string }[]
   /** (V50; Design «Aviso Cierre» A2/A4) «Pasar a otro día»: la tarjeta del sitio (foto pequeña, nombre, cuándo en gris y la fecha en su cuadrado oscuro) y el día de hoy para la franja verde «Sigue igual: el resto de tu martes». */
-  tarjetaDia?: { nombre: string; fotoUrl: string; cuando: string; semanaCorta: string; numero: string; destino: string; diaDeHoy: string }
+  tarjetaDia?: { nombre: string; fotoUrl: string; cuando: string; semanaCorta: string; numero: string; destino: string; diaDeHoy: string; /** (V53 §6) El sitio va a «Lugares pendientes», no a un día: a la derecha, el cuadrado del pin con reloj en vez de la fecha. */ aPendientes?: boolean }
   /** (V43 §2) Entradas o reservas de hoy cuya hora YA pasó: no se protegen (las ve la hoja para decirlo). */
   entradasPasadas?: { nombre: string; hora: string; freeTour?: boolean }[]
   /** Para la prueba y la nota interna (nunca se enseñan): lo que se quita (con su clase), lo que se corre y a dónde va cada cosa. */

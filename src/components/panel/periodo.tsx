@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { create } from 'zustand'
+import { BOTON_ORO } from '../ui/botonesOro'
 
 /**
  * (V35A, Design P1/P5/P5b/M5b) EL SELECTOR DE PERIODO, EL MISMO arriba en cada pantalla con fechas (Inicio, Ventas, Destinos pedidos, Usuarios): Últimos 7 días · Este mes · Últimos 30 días · Últimos 6 meses · Este año · Todo ·
@@ -90,7 +91,7 @@ function Calendario({ inicial, alAplicar, movil }: { inicial: { desde: string; h
       </div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, paddingTop: 4 }}>
         <span data-cal-texto style={{ font: "600 12.5px 'Geist'", color: 'rgba(28,34,48,.6)' }}>{textoDeRango(desde, fin) || 'Elige inicio y fin'}</span>
-        <button type="button" data-cal-aplicar disabled={!desde} onClick={() => desde && alAplicar(desde, fin || desde)} style={{ height: 38, padding: '0 20px', borderRadius: 12, border: 'none', background: 'linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440)', color: '#4A3510', font: "700 13.5px 'Geist'", opacity: desde ? 1 : 0.5, cursor: desde ? 'pointer' : 'default' }}>Aplicar</button>
+        <button type="button" data-cal-aplicar disabled={!desde} onClick={() => desde && alAplicar(desde, fin || desde)} style={{ height: 38, padding: '0 20px', borderRadius: 12, border: 'none', ...BOTON_ORO, font: "700 13.5px 'Geist'", opacity: desde ? 1 : 0.5, cursor: desde ? 'pointer' : 'default' }}>Aplicar</button>
       </div>
     </div>
   )

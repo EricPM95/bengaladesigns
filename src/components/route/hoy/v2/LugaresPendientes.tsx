@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { IconoPendientes } from './IconoPendientes'
 import type { DayPlan, Route } from '../../../../lib/types'
 import { displayStopName } from '../../../../lib/format'
 import { esDestinoDeCoche } from '../../../../lib/experienceCategoryBank'
@@ -100,6 +101,7 @@ export function LugaresPendientes({ route, day, dateIso, pendientes }: { route: 
   return (
     <div data-hoy-pendientes={pendientes.length} data-hoy-pendientes-estado={abierta ? 'abierta' : 'cerrada'} className="flex flex-none flex-col rounded-[22px]" style={{ background: '#FFFDF8', border: '1px solid rgba(181,138,46,.4)' }}>
       <button type="button" onClick={() => setAbierta((v) => !v)} aria-expanded={abierta} data-hoy-pendientes-cabecera className="flex min-h-12 items-center gap-2.5 px-4 py-3.5 text-left">
+        <IconoPendientes />
         <span style={{ font: "600 11.5px 'Geist Mono',monospace", letterSpacing: '.14em', color: '#6F4E37', textTransform: 'uppercase' }}>Lugares pendientes</span>
         <span className="flex h-[26px] min-w-[26px] items-center justify-center rounded-full px-1.5 text-[12.5px] font-bold" style={{ background: TINTA, color: '#fff' }}>{pendientes.length}</span>
         <span className="flex-1" />

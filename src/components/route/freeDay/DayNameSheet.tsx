@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { FREE_DAY_NAME_MAX } from '../../../lib/freeDays'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
+import { FONDO_DE_HOJA } from '../../ui/fondoDeHoja'
 
 /**
  * La ventana del nombre del día (decisión del usuario, 2026-09-28): solo el título, el campo y el botón. Vacío, el día se
@@ -11,7 +12,7 @@ export function DayNameSheet({ title, initialName = '', example, confirmLabel, o
   const [name, setName] = useState(initialName)
   return createPortal(
     <div className="fixed inset-0 z-[90] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="day-name-heading">
-      <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={onClose} />
+      <div className="trazo-notice-backdrop absolute inset-0" style={{ background: FONDO_DE_HOJA }} onClick={onClose} />
       <form
         onSubmit={(event) => {
           event.preventDefault()

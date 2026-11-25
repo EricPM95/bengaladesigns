@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react'
 import './momentos.css'
+import { BOTON_ORO } from '../../ui/botonesOro'
 
 /** Lo común de las pantallas oscuras de los momentos: fondo, estrellas, rayos, [Saltar todo], textos y el botón [Seguir]. Todo sale de «Logros · Momentos». */
 export const ORO = '#F3D59A'
@@ -78,7 +79,7 @@ export function PantallaOscura({ fondo = FONDO_CALIDO, etiqueta, onSeguir, onSal
             e.stopPropagation()
             onSeguir()
           }}
-          style={{ position: 'absolute', left: 26, right: 26, bottom: 'calc(env(safe-area-inset-bottom,0px) + 40px)', height: 54, border: 'none', borderRadius: 999, background: 'linear-gradient(110deg,#D9BE85,#F3E3B8 50%,#D9BE85)', color: '#2A1D10', font: "700 15px 'Geist'", cursor: 'pointer', opacity: 0, animation: `moUp .7s ${ctaEn} ease both`, zIndex: 5 }}
+          style={{ position: 'absolute', left: 26, right: 26, bottom: 'calc(env(safe-area-inset-bottom,0px) + 40px)', height: 54, border: 'none', borderRadius: 999, ...BOTON_ORO, font: "700 15px 'Geist'", cursor: 'pointer', opacity: 0, animation: `moUp .7s ${ctaEn} ease both`, zIndex: 5 }}
         >
           {cta}
         </button>

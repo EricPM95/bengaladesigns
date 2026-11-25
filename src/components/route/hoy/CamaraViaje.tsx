@@ -18,6 +18,7 @@ import { AvisoSobreLaBarra } from '../../ui/AvisoSobreLaBarra'
 import { BotonGuardarEnGaleria } from '../fotos/BotonGuardarEnGaleria'
 import { ESTILO_FLOTANTE, SOBRE_LOS_LOGROS, useFlotantes } from '../../flotantes/flotantes'
 import { DORADO } from '../../ui/botonesOro'
+import { FONDO_DE_HOJA } from '../../ui/fondoDeHoja'
 
 /**
  * LA CÁMARA DE VIAJE EN HOY (Tanda HOY1, K1 a K4; Design «Hoy Estados», apartado 04). El botón redondo de la cabecera de HOY se ve SIEMPRE (antes, durante y después del viaje, con y sin pase);
@@ -52,7 +53,7 @@ function HojaCamara({ modo, conAcceso, destino, rango, onCerrar, onAbrir, onVerP
   const BOTON = { height: 54, borderRadius: 16, font: "700 16px 'Geist'", background: DEGRADADO_ORO, color: '#4A3510', border: 'none', cursor: 'pointer' } as const
   return createPortal(
     <div data-camara-viaje="hoja" data-modo={modo} data-con-pase={conAcceso ? '1' : '0'} role="dialog" aria-label="Tu cámara de viaje" className="fixed inset-0 z-[80] flex flex-col justify-end">
-      <button type="button" aria-label="Cerrar" onClick={onCerrar} className="absolute inset-0 cursor-default border-0 p-0" style={{ background: 'rgba(20,16,10,.5)', animation: 'vistoFade .3s ease both' }} />
+      <button type="button" aria-label="Cerrar" onClick={onCerrar} className="absolute inset-0 cursor-default border-0 p-0" style={{ background: FONDO_DE_HOJA, animation: 'vistoFade .3s ease both' }} />
       <div className="relative mx-auto flex w-full max-w-[520px] flex-col gap-3.5 px-[18px] pb-[26px] pt-2.5" style={{ borderRadius: '32px 32px 0 0', background: '#FBF3E2', boxShadow: '0 -20px 40px rgba(0,0,0,.25)', animation: 'vistoSheet .5s cubic-bezier(.2,.8,.2,1) both', color: TINTA }}>
         <span className="self-center" style={{ width: 44, height: 4, borderRadius: 2, background: 'rgba(28,34,48,.25)' }} />
         <div className="flex items-center justify-between">
@@ -109,7 +110,7 @@ function ElegirCamaraOGaleria({ onCamara, onGaleria, onCerrar }: { onCamara: () 
   const BOTON = { height: 54, borderRadius: 16, font: "700 16px 'Geist'", border: 'none', cursor: 'pointer' } as const
   return createPortal(
     <div data-camara-viaje="elegir" role="dialog" aria-label="Tu cámara de viaje" className="fixed inset-0 z-[80] flex flex-col justify-end">
-      <button type="button" aria-label="Cerrar" onClick={onCerrar} className="absolute inset-0 cursor-default border-0 p-0" style={{ background: 'rgba(20,16,10,.5)', animation: 'vistoFade .3s ease both' }} />
+      <button type="button" aria-label="Cerrar" onClick={onCerrar} className="absolute inset-0 cursor-default border-0 p-0" style={{ background: FONDO_DE_HOJA, animation: 'vistoFade .3s ease both' }} />
       <div className="relative mx-auto flex w-full max-w-[520px] flex-col gap-3 px-[18px] pb-[26px] pt-2.5" style={{ borderRadius: '32px 32px 0 0', background: '#FBF3E2', boxShadow: '0 -20px 40px rgba(0,0,0,.25)', animation: 'vistoSheet .5s cubic-bezier(.2,.8,.2,1) both', color: TINTA }}>
         <span className="self-center" style={{ width: 44, height: 4, borderRadius: 2, background: 'rgba(28,34,48,.25)' }} />
         <span style={{ font: `400 28px/1 ${SERIF}` }}>Tu cámara de viaje</span>

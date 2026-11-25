@@ -1,3 +1,4 @@
+import { FONDO_DE_HOJA } from '../../ui/fondoDeHoja'
 import { precioEnVista, useMonedaViajero } from '../../../lib/moneda'
 import { esDestinoDeCoche } from '../../../lib/experienceCategoryBank'
 import type { Route } from '../../../lib/types'
@@ -56,7 +57,7 @@ function HojaYaLoTengo({ tarjeta, onClose }: { tarjeta: Tarjeta | null; onClose:
   }
   return createPortal(
     <div data-hoja-ya-lo-tengo className="fixed inset-0 z-[95]" role="dialog" aria-modal="true" aria-label={tarjeta.yaLoTengo.texto}>
-      <div onClick={onClose} className="absolute inset-0 bg-text/40" />
+      <div onClick={onClose} className="absolute inset-0" style={{ background: FONDO_DE_HOJA }} />
       <div className="absolute inset-x-0 bottom-0 flex flex-col gap-3.5 rounded-t-[30px] bg-[#FFFDF8] px-[18px] pb-[calc(env(safe-area-inset-bottom,0px)+20px)] pt-2.5">
         <span className="h-[5px] w-[42px] self-center rounded bg-text/20" />
         <span className="text-[26px] leading-[1.05]" style={{ fontFamily: "'Instrument Serif',serif" }}>{tarjeta.yaLoTengo.texto}</span>

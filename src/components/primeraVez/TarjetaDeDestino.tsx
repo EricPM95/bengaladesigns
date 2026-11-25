@@ -7,6 +7,8 @@ import { usePerfilUi } from '../../store/usePerfilUi'
 import { NumerosDelDestino, useLoQueTePuedesLlevar } from './LoQueTePuedesLlevar'
 import { nDeTotal, useBola } from '../../lib/bolaDelMundo'
 import { useLogrosPantallas } from '../logros/pantallas/useLogrosPantallas'
+import { FONDO_DE_HOJA } from '../ui/fondoDeHoja'
+import { BOTON_ORO } from '../ui/botonesOro'
 
 /**
  * (V31, Design «Primera Vez» P2 y P3) LA TARJETA DE UN DESTINO del mapa, desde abajo. Listo: foto, nombre, «Lo que te puedes llevar» con sus números REALES, [Ver destino] y [Crear viaje]. «Próximamente» (en gris):
@@ -14,7 +16,6 @@ import { useLogrosPantallas } from '../logros/pantallas/useLogrosPantallas'
  * (ORIGEN y DESTINO) con ese destino ya elegido y el origen vacío.
  */
 const SERIE = "'Instrument Serif',serif"
-const ORO = 'linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440)'
 const AVISADOS = 'trazo:primera_vez:avisados'
 
 const leerAvisados = (): string[] => {
@@ -72,7 +73,7 @@ export function TarjetaDeDestino(): ReactNode {
   }
   return createPortal(
     <div data-tarjeta-destino={destino.clave} data-listo={destino.listo ? '1' : '0'} className="fixed inset-0 z-[96]" role="dialog" aria-modal="true" aria-label={destino.nombre}>
-      <div onClick={() => abrirTarjeta(null)} className="absolute inset-0" style={{ background: 'rgba(28,34,48,.4)' }} />
+      <div onClick={() => abrirTarjeta(null)} className="absolute inset-0" style={{ background: FONDO_DE_HOJA }} />
       <div className="absolute inset-x-0 bottom-0 mx-auto flex max-w-lg flex-col gap-3.5" style={{ borderRadius: '30px 30px 0 0', background: '#FFFDF8', padding: '10px 18px calc(env(safe-area-inset-bottom,0px) + 26px)', boxShadow: '0 -20px 40px -20px rgba(28,34,48,.5)' }}>
         <span style={{ alignSelf: 'center', width: 42, height: 5, borderRadius: 5, background: 'rgba(28,34,48,.18)' }} />
         <div style={{ position: 'relative', height: 150, borderRadius: 22, overflow: 'hidden', background: destino.portada ? `center / cover no-repeat url(${destino.portada}), #D9C7A8` : 'linear-gradient(160deg,#E7B98A,#B9764A 55%,#5E3A2A)', filter: destino.listo ? 'none' : 'grayscale(1) brightness(1.1)', opacity: destino.listo ? 1 : 0.75 }}>
@@ -110,11 +111,11 @@ export function TarjetaDeDestino(): ReactNode {
                 </button>
               )}
               {miViaje ? (
-                <button type="button" data-abrir-mi-viaje onClick={abrirMiViaje} className="zona-toque" style={{ flex: 1, height: 54, borderRadius: 16, border: 'none', background: ORO, boxShadow: '0 12px 22px -14px rgba(110,80,24,.75),inset 0 1px 0 rgba(255,255,255,.6)', color: '#4A3510', font: "700 15px 'Geist'" }}>
+                <button type="button" data-abrir-mi-viaje onClick={abrirMiViaje} className="zona-toque" style={{ flex: 1, height: 54, borderRadius: 16, border: 'none', ...BOTON_ORO, font: "700 15px 'Geist'" }}>
                   Abrir mi viaje
                 </button>
               ) : (
-                <button type="button" data-crear-viaje-destino onClick={crear} className="zona-toque" style={{ flex: 1, height: 54, borderRadius: 16, border: 'none', background: ORO, boxShadow: '0 12px 22px -14px rgba(110,80,24,.75),inset 0 1px 0 rgba(255,255,255,.6)', color: '#4A3510', font: "700 15px 'Geist'" }}>
+                <button type="button" data-crear-viaje-destino onClick={crear} className="zona-toque" style={{ flex: 1, height: 54, borderRadius: 16, border: 'none', ...BOTON_ORO, font: "700 15px 'Geist'" }}>
                   {llevas ? 'Crear otro viaje' : 'Crear viaje'}
                 </button>
               )}

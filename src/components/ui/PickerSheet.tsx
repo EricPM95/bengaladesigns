@@ -1,6 +1,7 @@
 import { useEffect, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { CruzDeHoja } from './CruzDeHoja'
+import { FONDO_DE_HOJA } from './fondoDeHoja'
 
 /**
  * La hoja desde abajo de los selectores de fecha y de hora (Tanda 6k, punto 8): la misma para toda la app. Se cierra con el fondo, con Escape
@@ -19,7 +20,7 @@ export function PickerSheet({ title, children, onClose, onDone, doneLabel = 'Lis
   }, [onClose])
   return createPortal(
     <div className="fixed inset-0 z-[120] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-label={title}>
-      <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={onClose} />
+      <div className="trazo-notice-backdrop absolute inset-0" style={{ background: FONDO_DE_HOJA }} onClick={onClose} />
       <div className="trazo-notice-panel relative flex max-h-[92dvh] w-full flex-col rounded-t-[32px] bg-bg-card shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[400px] md:rounded-[28px]">
         <div className="flex shrink-0 justify-center pt-2.5" aria-hidden="true">
           <span className="h-1 w-[42px] rounded-full bg-text/20" />

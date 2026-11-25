@@ -352,12 +352,13 @@ html[data-solo-ver] [data-hueco-solo-anadir], [data-dia-pasado] [data-hueco-solo
 /* TANDA 10E · EL BOTÓN PRINCIPAL, CHAMPÁN («Marca JUTRIP 02»: Continuar, Comprar, Cómo llegar): degradado del marfil #FBF3E2 al champán #EBD9AE, la letra en el oro profundo #6F4E37, su brillo de arriba
    y su sombra. Es el estilo de TODOS los botones principales de la app (en React, con inline style, vive igual en `botonChampan()` de src/lib/marcaBoton.ts). Con `.btn-champan` no hace falta `text-white`. */
 .btn-champan {
-  background-image: linear-gradient(180deg, #FBF3E2 0%, #EBD9AE 100%);
-  color: #6F4E37;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 8px 14px -8px rgba(111, 78, 55, 0.45);
+  /* V53 §1: el champán ya no existe: `.btn-champan` ES el dorado de Design (`BOTON_ORO`, src/components/ui/botonesOro.ts), el mismo para toda la app. */
+  background-image: linear-gradient(135deg, #F3E2B0, #D2B67A 55%, #B58A2E);
+  color: #4A3510;
+  box-shadow: 0 10px 20px -14px rgba(110, 80, 24, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 .btn-champan:active:not(:disabled) {
-  background-image: linear-gradient(180deg, #F3E6C6 0%, #E0CB98 100%);
+  filter: brightness(.96);
 }
 /* Sobre un panel oscuro (tinta): el borde y la letra en oro pálido, como «Cómo llegar» en 03 · HOY. */
 .btn-champan-oscuro {

@@ -8,7 +8,7 @@ import { aceptarRecomendacion, rechazarRecomendacion } from '../../lib/recomenda
 import type { Route } from '../../lib/types'
 import { nombreDe, useViajeCompartido } from '../../store/useViajeCompartido'
 import { useRouteStore } from '../../store/useRouteStore'
-import { BotonHoja, Hoja } from '../ui/Hoja'
+import { BotonHoja, DosBotonesHoja, Hoja } from '../ui/Hoja'
 import { CambioParada } from './CambioParada'
 
 const ROJO = 'rgb(var(--accent-red))'
@@ -190,12 +190,14 @@ export function HojaRecomendacion({ rec, route, onCerrar, alResponder, diasInici
           {mensaje}
         </p>
       )}
-      <BotonHoja tipo="principal" disabled={ocupado || (pideDia && !diaElegido)} onClick={() => void aceptar()} datos="aceptar">
-        Aceptar
-      </BotonHoja>
-      <BotonHoja tipo="secundario" disabled={ocupado} onClick={() => void rechazar()} datos="no-gracias">
-        No, gracias
-      </BotonHoja>
+      <DosBotonesHoja>
+        <BotonHoja tipo="principal" disabled={ocupado || (pideDia && !diaElegido)} onClick={() => void aceptar()} datos="aceptar">
+          Aceptar
+        </BotonHoja>
+        <BotonHoja tipo="secundario" disabled={ocupado} onClick={() => void rechazar()} datos="no-gracias">
+          No, gracias
+        </BotonHoja>
+      </DosBotonesHoja>
     </Hoja>
   )
 }

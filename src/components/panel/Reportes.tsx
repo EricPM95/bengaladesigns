@@ -3,6 +3,7 @@ import { TIPOS, metaDe, type TipoAviso } from '../../lib/cuentanos/tipos'
 import { hace, mandar, pedir } from './api'
 import { SERIE } from './estilo'
 import { irAFicha } from './navegar'
+import { BOTON_ORO } from '../ui/botonesOro'
 
 /**
  * (V35A, Design P2/P2b/P2c/M2/M2b/M2c) REPORTES: la lista con desplegables de Tipo y Estado (y Destino), cada reporte con su icono, lo que dice, de dónde y QUIÉN lo mandó, y su estado de verdad (Nuevo · Visto · Hecho · Descartado).
@@ -176,7 +177,7 @@ function FichaDeReporte({ id, movil, alCambiar, alVolver }: { id: string; movil:
             <input type="checkbox" data-marcar-hecho disabled={!puede} checked={hecho} onChange={(e) => setHecho(e.target.checked)} style={{ width: 20, height: 20, accentColor: '#1C2230' }} />
             y marcar como hecho
           </label>
-          <button type="button" data-responder disabled={!puede || haciendo || texto.trim().length < 2} onClick={() => void enviar()} style={{ height: 38, padding: '0 20px', borderRadius: 12, border: 'none', background: 'linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440)', color: '#4A3510', font: "700 13.5px 'Geist'", opacity: !puede || texto.trim().length < 2 ? 0.55 : 1, cursor: 'pointer' }}>Enviar</button>
+          <button type="button" data-responder disabled={!puede || haciendo || texto.trim().length < 2} onClick={() => void enviar()} style={{ height: 38, padding: '0 20px', borderRadius: 12, border: 'none', ...BOTON_ORO, font: "700 13.5px 'Geist'", opacity: !puede || texto.trim().length < 2 ? 0.55 : 1, cursor: 'pointer' }}>Enviar</button>
         </div>
         {!puede && <span style={{ font: "500 12px 'Geist'", color: 'rgba(28,34,48,.6)' }}>No hay cuenta ni respuesta que enviar.</span>}
         {resultado && <span data-resultado-responder role="status" style={{ font: "400 13px/1.35 'Geist'", color: 'rgba(28,34,48,.7)' }}>{resultado}</span>}

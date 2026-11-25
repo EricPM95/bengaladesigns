@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import type { ResumenDeExp } from './api'
 import { miles, movimientoReducido } from './util'
 import './perfil.css'
+import { BOTON_ORO } from '../../../ui/botonesOro'
 
 /**
  * LA EXP Y LA SUBIDA DE NIVEL, JUNTAS EN UNA PANTALLA (Tanda V6, regla de Eric; sustituye al cartel «+EXP» y a la pantalla suelta de subir de nivel cuando hay sorpresas delante).
@@ -58,7 +59,7 @@ export function ExpYNivel({ ganada, antes, despues, onSeguir, onSaltarTodo }: { 
           )
         )}
       </div>
-      <button type="button" data-exp-seguir onClick={onSeguir} className="mt-6 flex h-[52px] w-full max-w-[340px] items-center justify-center rounded-full border-0" style={{ background: 'linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A)', color: '#2A1D10', font: "700 15px 'Geist'", opacity: fase >= 3 ? 1 : 0, pointerEvents: fase >= 3 ? 'auto' : 'none', transition: 'opacity .4s ease' }}>
+      <button type="button" data-exp-seguir onClick={onSeguir} className="mt-6 flex h-[52px] w-full max-w-[340px] items-center justify-center rounded-full border-0" style={{ ...BOTON_ORO, font: "700 15px 'Geist'", opacity: fase >= 3 ? 1 : 0, pointerEvents: fase >= 3 ? 'auto' : 'none', transition: 'opacity .4s ease' }}>
         Seguir
       </button>
     </div>,

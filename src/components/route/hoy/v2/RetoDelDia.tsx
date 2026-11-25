@@ -11,6 +11,7 @@ import { Insignia } from '../../../logros/dibujos'
 import { fechaCorta } from '../../../logros/pantallas/destino/formato'
 import type { RetoDeHoy, SitioDeReto } from '../useCercaDeAqui'
 import { useFotoDeParada } from './useFotoDeParada'
+import { FONDO_DE_HOJA } from '../../../ui/fondoDeHoja'
 
 /**
  * (HOY2b, E, apartado 4; Eric, 5-nov) EL RETO DEL DÍA (5), MEJORADO, y el ÁLBUM DE CROMOS de cada colección (Mi Vitrina › ColeccionPorDentro, pantalla A), con la FOTO de cada sitio en lugar del icono.
@@ -118,7 +119,7 @@ export function RetoDelDia({ route }: { route: Route }) {
 function ListaDeColecciones({ retos, onElegir, onCerrar }: { retos: RetoDeHoy[]; onElegir: (coleccion: string) => void; onCerrar: () => void }) {
   return createPortal(
     <div data-reto-lista role="dialog" aria-modal="true" aria-label="Más colecciones de hoy" className="fixed inset-0 z-[90] flex items-end justify-center">
-      <div className="absolute inset-0" style={{ background: 'rgba(20,16,10,.5)' }} onClick={onCerrar} />
+      <div className="absolute inset-0" style={{ background: FONDO_DE_HOJA }} onClick={onCerrar} />
       <div className="relative flex max-h-[80dvh] w-full max-w-[520px] flex-col gap-2.5 overflow-y-auto rounded-t-[32px] px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-3" style={{ background: '#FBF3E2', boxShadow: '0 -20px 40px rgba(0,0,0,.25)', scrollbarWidth: 'none' }}>
         <span className="h-1 w-[44px] flex-none self-center rounded-sm bg-[rgba(28,34,48,.25)]" aria-hidden="true" />
         <CruzDeHoja onCerrar={onCerrar} />
@@ -145,7 +146,7 @@ export function AlbumDeColeccion({ reto, ciudad, onCerrar }: { reto: RetoDeHoy; 
   const tengo = reto.total - reto.faltan
   return createPortal(
     <div data-album-de-coleccion={reto.coleccion} role="dialog" aria-modal="true" aria-label={reto.nombre} className="fixed inset-0 z-[90] flex items-end justify-center">
-      <div className="absolute inset-0" style={{ background: 'rgba(20,16,10,.5)' }} onClick={onCerrar} />
+      <div className="absolute inset-0" style={{ background: FONDO_DE_HOJA }} onClick={onCerrar} />
       <div className="relative flex max-h-[92dvh] w-full max-w-[520px] flex-col gap-3.5 overflow-y-auto rounded-t-[32px] px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-3" style={{ background: '#F5EFE4', boxShadow: '0 -20px 40px rgba(0,0,0,.25)', scrollbarWidth: 'none' }}>
         <span className="h-1 w-[44px] flex-none self-center rounded-sm bg-[rgba(28,34,48,.25)]" aria-hidden="true" />
         <CruzDeHoja onCerrar={onCerrar} />

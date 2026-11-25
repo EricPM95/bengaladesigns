@@ -3,6 +3,7 @@ import { enlaceAlPuntoDeEncuentro } from '../../../lib/civitatis'
 import { limpiarImportes, precioConNumero } from '../../../lib/importesTexto'
 import { precioTiendaEnVista } from '../../../lib/moneda'
 import type { StopEntrada } from '../../../lib/types'
+import { BOTON_ORO } from '../../ui/botonesOro'
 
 /**
  * (V40D, Design `Entradas Ficha Pestana`; antes V23) CADA OPCIÓN DE LA PESTAÑA «ENTRADAS», como en Design. Cerrada: la foto a la izquierda (esquinas redondas), el título en letra de titular, la ★ dorada con la nota y «· N opiniones»,
@@ -164,7 +165,7 @@ export function EntradaDeLaFicha({ entrada, reservarTexto, recomendada, onReserv
               </div>
             )}
             {onReservar && (
-              <button type="button" onClick={onReservar} data-ver-horas-y-reservar style={{ height: 54, borderRadius: 16, border: 'none', background: 'linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440)', boxShadow: '0 12px 22px -14px rgba(110,80,24,.75),inset 0 1px 0 rgba(255,255,255,.6)', color: '#4A3510', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9, font: "700 15.5px 'Geist'", cursor: 'pointer', whiteSpace: 'nowrap' }}>
+              <button type="button" onClick={onReservar} data-ver-horas-y-reservar style={{ height: 54, borderRadius: 16, border: 'none', ...BOTON_ORO, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9, font: "700 15.5px 'Geist'", cursor: 'pointer', whiteSpace: 'nowrap' }}>
                 {reservarTexto}
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M7 17L17 7M9 7h8v8" />

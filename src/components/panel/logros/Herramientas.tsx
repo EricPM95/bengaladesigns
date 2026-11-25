@@ -6,6 +6,7 @@ import { misPases, type PaseMio } from '../../../lib/pagoPase'
 import { ROSA, ROSA_FONDO, tarjetaBlanca, titulo14, TINTA, ORO } from './comun'
 import { ParaCode } from './ParaCode'
 import { CuentasQueNoCuentan } from './CuentasQueNoCuentan'
+import { BOTON_ORO } from '../../ui/botonesOro'
 
 /**
  * (V35A, Design P7c / M7c) HERRAMIENTAS: «Dar Probador», «Mis pruebas» y, plegado al final, «Para Code».
@@ -62,7 +63,7 @@ function Probador({ movil }: { movil: boolean }): ReactNode {
       <span style={{ font: "400 12.5px 'Geist'", color: 'rgba(28,34,48,.6)' }}>El correo de la cuenta que va a probar la app.</span>
       <div style={{ display: 'flex', gap: 10, flexDirection: movil ? 'column' : 'row' }}>
         <input type="email" aria-label="Correo de la cuenta" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="correo@example.com" style={{ flex: 1, minHeight: 48, borderRadius: 14, background: '#FFFFFF', border: '1.5px solid rgba(28,34,48,.16)', padding: '0 16px', font: "400 14px 'Geist'", minWidth: 0 }} />
-        <button type="button" data-probador-dar disabled={ocupado || !email.trim()} onClick={() => void dar()} style={{ minHeight: 48, padding: '0 22px', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440)', color: '#4A3510', font: "700 14px 'Geist'", cursor: 'pointer', opacity: ocupado || !email.trim() ? 0.6 : 1 }}>Dar insignia Probador</button>
+        <button type="button" data-probador-dar disabled={ocupado || !email.trim()} onClick={() => void dar()} style={{ minHeight: 48, padding: '0 22px', borderRadius: 14, border: 'none', ...BOTON_ORO, font: "700 14px 'Geist'", cursor: 'pointer', opacity: ocupado || !email.trim() ? 0.6 : 1 }}>Dar insignia Probador</button>
       </div>
       {resultado && <p role="status" style={{ margin: 0, font: "500 13.5px 'Geist'" }}>{resultado}</p>}
     </section>

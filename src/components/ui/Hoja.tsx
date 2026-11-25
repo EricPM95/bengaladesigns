@@ -1,7 +1,8 @@
-import { botonChampan } from '../../lib/marcaBoton'
+import { BOTON_CLARO, BOTON_ORO } from './botonesOro'
 import { useEffect, useRef, useState, type PointerEvent as EventoPuntero, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { CruzDeHoja } from './CruzDeHoja'
+import { FONDO_DE_HOJA } from './fondoDeHoja'
 
 /**
  * La hoja que sube desde abajo (el diseño de las cuentas: «Pase Cuenta»): fondo que oscurece, asa, equis de 44 px y el contenido. Se cierra con la equis, tocando fuera o con Esc.
@@ -42,7 +43,7 @@ export function Hoja({
 
   return createPortal(
     <div data-hoja={datos ?? ''} style={{ position: 'fixed', inset: 0, zIndex: z }} role="dialog" aria-modal="true" aria-label={typeof titulo === 'string' ? titulo : etiqueta}>
-      <div className="hoja-fondo" onClick={sinCerrar ? undefined : onCerrar} style={{ position: 'absolute', inset: 0, background: 'rgba(28,34,48,.45)' }} />
+      <div className="hoja-fondo" onClick={sinCerrar ? undefined : onCerrar} style={{ position: 'absolute', inset: 0, background: FONDO_DE_HOJA }} />
       <div
         className="hoja-panel"
         style={{
@@ -119,25 +120,30 @@ export function useArrastreParaCerrar(onCerrar?: () => void) {
   return { dy, arrastrando, props }
 }
 
-/** Los botones de las hojas del diseño: principal y oscuro (los dos, en champán desde la Tanda 10E) y secundario (borde). */
+/**
+ * Los botones de las hojas (V53 §1 y §3): UN solo dorado, `BOTON_ORO` (principal, oscuro y dorado son el mismo), y el blanco con borde, `BOTON_CLARO` (secundario). Los dos del mismo tamaño (52 px, esquinas de 16).
+ */
 export function BotonHoja({ children, tipo = 'principal', onClick, disabled, datos, enviar = false }: { children: ReactNode; tipo?: 'principal' | 'oscuro' | 'secundario' | 'dorado'; onClick?: () => void; disabled?: boolean; datos?: string; enviar?: boolean }) {
-  const estilos = {
-    /* (V39C) El botón dorado del diseño «Pase y cuenta» (el 'g' de la pantalla de entrar). */
-    dorado: { height: 54, background: 'linear-gradient(135deg,#F6E6C4,#D8B98E 55%,#A67C52)', color: '#3E2A14', border: 'none', font: "700 15px 'Geist'" },
-    principal: { height: 54, ...botonChampan(), border: 'none', font: "700 15px 'Geist'" },
-    oscuro: { height: 54, ...botonChampan(), border: 'none', font: "600 15px 'Geist'" },
-    secundario: { height: 46, background: 'transparent', color: 'inherit', border: '1px solid rgba(128,128,128,.3)', font: "600 13.5px 'Geist'" },
-  }[tipo]
+  const estilos = tipo === 'secundario' ? { ...BOTON_CLARO, font: "700 15px 'Geist'" } : { ...BOTON_ORO, border: 'none', font: "700 15px 'Geist'" }
   return (
     <button
       type={enviar ? 'submit' : 'button'}
       onClick={onClick}
       disabled={disabled}
       data-boton-hoja={datos ?? tipo}
-      style={{ ...estilos, flex: 'none', borderRadius: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.5 : 1, width: '100%' }}
+      style={{ ...estilos, minHeight: 52, padding: '0 12px', textAlign: 'center', lineHeight: 1.2, flex: 'none', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.5 : 1, width: '100%' }}
     >
       {children}
     </button>
+  )
+}
+
+/** (V53 §3) Dos opciones: los dos botones del mismo tamaño, LADO A LADO (el dorado y el blanco con borde). Con tres o más: dorado, blanco con borde debajo y la salida como `EnlaceHoja` (texto pequeño). */
+export function DosBotonesHoja({ children }: { children: ReactNode }) {
+  return (
+    <div data-dos-botones style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+      {children}
+    </div>
   )
 }
 

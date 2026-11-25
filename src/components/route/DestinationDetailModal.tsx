@@ -12,6 +12,7 @@ import { fetchPlacePhoto } from '../../lib/placePhoto'
 import { addDaysToIso } from '../../lib/dateRange'
 import { LoQueTePuedesLlevar, useLoQueTePuedesLlevar } from '../primeraVez/LoQueTePuedesLlevar'
 import { desdeTexto, enlaceDeHotel, notaTexto, opinionesTexto, paginaEnMemoria, pedirPaginaDeDestino, type ActividadDeDestino, type HotelDeDestino, type PaginaDeDestino } from '../../lib/paginaDestino'
+import { BOTON_ORO } from '../ui/botonesOro'
 
 interface DestinationDetailModalProps {
   city: string | null
@@ -255,7 +256,7 @@ export function DestinationDetailModal({ city, days, nightsLabel, isCamper, onCl
                 <Icono nombre="cerrar" size={17} />
               </button>
               <div data-crear-mi-viaje-barra className="pointer-events-none fixed inset-x-0 bottom-0 z-[85] flex justify-center" style={{ padding: '34px 22px calc(env(safe-area-inset-bottom,0px) + 22px)', background: 'linear-gradient(180deg,rgba(246,239,224,0),#F6EFE0 55%)' }}>
-                <button type="button" data-crear-mi-viaje onClick={sinViaje.alCrear} className="pointer-events-auto zona-toque flex h-[58px] w-full max-w-lg items-center justify-center gap-2.5 rounded-[18px] text-[16.5px] font-bold" style={{ background: 'linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440)', boxShadow: '0 12px 22px -14px rgba(110,80,24,.75),inset 0 1px 0 rgba(255,255,255,.6)', color: '#4A3510' }}>
+                <button type="button" data-crear-mi-viaje onClick={sinViaje.alCrear} className="pointer-events-auto zona-toque flex h-[58px] w-full max-w-lg items-center justify-center gap-2.5 rounded-[18px] text-[16.5px] font-bold" style={{ ...BOTON_ORO }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
                   Crear mi viaje a {city}
                 </button>

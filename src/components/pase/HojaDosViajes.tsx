@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { rangoEnPalabras, type ViajeDeLaPareja } from '../../lib/viajesQueSePisan'
 import { TextoConPase } from '../cuenta/TextoConPase'
-import { BotonHoja, Hoja } from '../ui/Hoja'
+import { BotonHoja, DosBotonesHoja, Hoja } from '../ui/Hoja'
 
 /**
  * DOS VIAJES AL MISMO DESTINO QUE SE PISAN (cuentas parte 3, diseño «Pase y cuenta» P8b y P9; la lógica de qué viajes se pisan es de la 8A2).
@@ -64,21 +64,25 @@ export function HojaDosViajes({
       )}
       {modo === 'p8b' ? (
         <>
-          <BotonHoja tipo="oscuro" disabled={ocupado} onClick={() => void decidir(actual, otro)} datos="es-este">
-            Es este
-          </BotonHoja>
-          <BotonHoja tipo="secundario" disabled={ocupado} onClick={() => void decidir(otro, actual)} datos="cambiar-al-otro">
-            Cambiar al del {cortoOtro}
-          </BotonHoja>
+          <DosBotonesHoja>
+            <BotonHoja tipo="oscuro" disabled={ocupado} onClick={() => void decidir(actual, otro)} datos="es-este">
+              Es este
+            </BotonHoja>
+            <BotonHoja tipo="secundario" disabled={ocupado} onClick={() => void decidir(otro, actual)} datos="cambiar-al-otro">
+              Cambiar al del {cortoOtro}
+            </BotonHoja>
+          </DosBotonesHoja>
         </>
       ) : (
         <>
-          <BotonHoja tipo="oscuro" disabled={ocupado} onClick={() => void decidir(actual, otro)} datos="viaje-a">
-            Del {rActual}
-          </BotonHoja>
-          <BotonHoja tipo="secundario" disabled={ocupado} onClick={() => void decidir(otro, actual)} datos="viaje-b">
-            Del {rOtro}
-          </BotonHoja>
+          <DosBotonesHoja>
+            <BotonHoja tipo="oscuro" disabled={ocupado} onClick={() => void decidir(actual, otro)} datos="viaje-a">
+              Del {rActual}
+            </BotonHoja>
+            <BotonHoja tipo="secundario" disabled={ocupado} onClick={() => void decidir(otro, actual)} datos="viaje-b">
+              Del {rOtro}
+            </BotonHoja>
+          </DosBotonesHoja>
         </>
       )}
     </Hoja>

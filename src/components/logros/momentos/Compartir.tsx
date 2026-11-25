@@ -4,6 +4,7 @@ import { pedirEstado } from './api'
 import { datosDelPie, imagenDeLogro, imagenDeViaje } from './imagen'
 import './momentos.css'
 import { useMomentosUI } from './useMomentosUI'
+import { BOTON_ORO } from '../../ui/botonesOro'
 
 /**
  * COMPARTIR (Tanda 8B, C1 «Compartir un logro» y C2 «Compartir el viaje»). La imagen se genera aquí, en el navegador (`imagen.ts`); [Guardar imagen] la descarga y
@@ -73,7 +74,7 @@ export default function Compartir(): ReactNode {
       </div>
       <div style={{ width: '100%', display: 'flex', gap: 10, padding: '0 20px calc(env(safe-area-inset-bottom,0px) + 24px)' }}>
         <button type="button" disabled={!url} onClick={guardar} style={{ ...boton, border: '1px solid rgba(255,253,248,.3)', background: 'transparent', color: '#FFFDF8', opacity: url ? 1 : 0.5 }}>Guardar imagen</button>
-        <button type="button" disabled={!url} onClick={() => void compartir()} style={{ ...boton, border: 'none', background: 'linear-gradient(110deg,#D9BE85,#F3E3B8 50%,#D9BE85)', color: '#2A1D10', opacity: url ? 1 : 0.5 }}>Compartir</button>
+        <button type="button" disabled={!url} onClick={() => void compartir()} style={{ ...boton, border: 'none', ...BOTON_ORO, opacity: url ? 1 : 0.5 }}>Compartir</button>
       </div>
     </div>
   )

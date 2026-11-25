@@ -11,6 +11,8 @@ import { deSitio, enSitio } from '../../../lib/articulos'
 import type { DestinoDeFoto, Hoja } from './vistoStore'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
 import { TiradorDeHoja } from '../../ui/TiradorDeHoja'
+import { FONDO_DE_HOJA } from '../../ui/fondoDeHoja'
+import { BOTON_ORO } from '../../ui/botonesOro'
 
 /**
  * LAS PANTALLAS DEL VISTO Y LAS FOTOS (Tanda 8b), dibujadas como en «Visto Fotos» y «Ayudas» (docs/diseno/proyecto/Piezas/). Solo pintan: lo que hacen lo decide `VistoFlujo.tsx`.
@@ -41,7 +43,7 @@ export function EstilosDelVisto() {
 export function Capa({ children, onCerrar, etiqueta, z = 80 }: { children: ReactNode; onCerrar: () => void; etiqueta: string; z?: number }) {
   return createPortal(
     <div data-visto="capa" role="dialog" aria-label={etiqueta} className="fixed inset-0 flex flex-col justify-end" style={{ zIndex: z }}>
-      <button type="button" aria-label="Cerrar" onClick={onCerrar} className="absolute inset-0 cursor-default border-0 p-0" style={{ background: 'rgba(28,34,48,.42)', animation: 'vistoFade .3s ease both' }} />
+      <button type="button" aria-label="Cerrar" onClick={onCerrar} className="absolute inset-0 cursor-default border-0 p-0" style={{ background: FONDO_DE_HOJA, animation: 'vistoFade .3s ease both' }} />
       <div className="relative mx-auto flex w-full max-w-[520px] flex-col gap-2.5" style={{ animation: 'vistoSheet .5s cubic-bezier(.2,.8,.2,1) both' }}>
         {children}
       </div>
@@ -68,7 +70,7 @@ function Boton({ icono, texto, onClick, estilo, disabled }: { icono: string; tex
 // (Tanda 10) El botón de la cámara, en oro (lo pidió Eric).
 const BTN_CAM: CSSProperties = { ...botonChampan(), border: 'none' }
 const BTN_GAL: CSSProperties = { background: '#FFFFFF', color: TINTA, border: '1px solid rgba(28,34,48,.16)' }
-export const BTN_CAM_ORO: CSSProperties = { background: 'linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A)', color: '#2A1D10', border: 'none' }
+export const BTN_CAM_ORO: CSSProperties = { ...BOTON_ORO, border: 'none' }
 const BTN_GAL_OSCURO: CSSProperties = { background: 'transparent', color: '#FFFDF8', border: '1px solid rgba(255,253,248,.3)' }
 
 /** El pedazo ganado (V2): la tarjeta oscura de arriba con la INSIGNIA de su colección y el pedazo de este sitio encendido (el dibujo de verdad de «Logros · Modelos»). */
@@ -237,7 +239,7 @@ export function NotaCorta({ texto, onFin }: { texto: string; onFin: () => void }
 /** A1: nuestra pantalla antes de las ventanas del móvil. */
 export function HojaDePermisos({ onContinuar }: { onContinuar: () => void }) {
   return createPortal(
-    <div data-visto="permisos" role="dialog" aria-label="Permisos" className="fixed inset-0 z-[88] flex flex-col justify-end px-3.5 pb-7" style={{ background: 'rgba(28,34,48,.45)', animation: 'vistoFade .3s ease both' }}>
+    <div data-visto="permisos" role="dialog" aria-label="Permisos" className="fixed inset-0 z-[88] flex flex-col justify-end px-3.5 pb-7" style={{ background: FONDO_DE_HOJA, animation: 'vistoFade .3s ease both' }}>
       <div className="mx-auto flex w-full max-w-[480px] flex-col gap-3.5 rounded-[26px] bg-[#FFFDF8] px-5 pb-[18px] pt-[22px]" style={{ animation: 'vistoSheet .5s cubic-bezier(.2,.8,.2,1) both' }}>
         <div className="flex gap-2.5">
           {[TRAZO.cam, TRAZO.loc].map((d) => (

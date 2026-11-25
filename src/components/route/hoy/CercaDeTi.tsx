@@ -1,3 +1,4 @@
+import { FONDO_DE_HOJA } from '../../ui/fondoDeHoja'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
@@ -52,7 +53,7 @@ function ListaCercaCoche({ tipo, origen, destino, onClose }: { tipo: 'gasolinera
   }, [tipo, destino, origen?.lat, origen?.lng])
   const titulo = tipo === 'gasolineras' ? 'Gasolineras cerca de ti' : 'Aparcamientos cerca de ti'
   return createPortal(
-    <div className="fixed inset-0 z-[120] flex flex-col justify-end bg-black/40" data-cerca-coche={tipo} onClick={onClose}>
+    <div className="fixed inset-0 z-[120] flex flex-col justify-end " style={{ background: FONDO_DE_HOJA }} data-cerca-coche={tipo} onClick={onClose}>
       <div className="flex max-h-[80%] flex-col gap-2 rounded-t-[32px] bg-[#FBF3E2] px-[18px] pb-7 pt-4" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center gap-2">
           <span className="flex-1 font-display text-[24px] leading-none">{titulo}</span>

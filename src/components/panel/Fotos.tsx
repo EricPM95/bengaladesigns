@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { mandar, pedir } from './api'
 import { SERIE } from './estilo'
+import { BOTON_ORO } from '../ui/botonesOro'
 
 /**
  * (V35A, Design P3/M6) FOTOS DE VIAJEROS: las que han mandado desde «Comparte tu foto» y están por aprobar. Cada una: la foto, «Foto: nombre» encima, el sitio en serif y [Usar en la app] / [Descartar]. [Usar en la app] copia la
@@ -46,7 +47,7 @@ function Tarjeta({ f, alCambiar }: { f: Foto; alCambiar: () => void }): ReactNod
           <input value={sitio} onChange={(e) => setSitio(e.target.value)} aria-label="Sitio de la foto" placeholder="¿De qué sitio es?" style={{ minHeight: 40, borderRadius: 10, border: '1px solid rgba(28,34,48,.2)', padding: '0 10px', font: "400 14px 'Geist'" }} />
         )}
         <div style={{ display: 'flex', gap: 8 }}>
-          <button type="button" data-usar-foto disabled={haciendo || sinSitio} onClick={() => void usar()} style={{ flex: 1, minHeight: 40, borderRadius: 12, border: 'none', background: 'linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440)', color: '#4A3510', font: "700 13.5px 'Geist'", opacity: haciendo || sinSitio ? 0.5 : 1, cursor: 'pointer' }}>Usar en la app</button>
+          <button type="button" data-usar-foto disabled={haciendo || sinSitio} onClick={() => void usar()} style={{ flex: 1, minHeight: 40, borderRadius: 12, border: 'none', ...BOTON_ORO, font: "700 13.5px 'Geist'", opacity: haciendo || sinSitio ? 0.5 : 1, cursor: 'pointer' }}>Usar en la app</button>
           <button type="button" data-descartar-foto disabled={haciendo} onClick={() => void descartar()} style={{ minHeight: 40, padding: '0 16px', borderRadius: 12, border: 'none', background: '#F1E8DB', color: '#1C2230', font: "700 13.5px 'Geist'", cursor: 'pointer' }}>Descartar</button>
         </div>
       </div>

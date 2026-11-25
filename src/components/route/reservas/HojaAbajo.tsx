@@ -1,6 +1,7 @@
 import { useEffect, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
+import { FONDO_DE_HOJA } from '../../ui/fondoDeHoja'
 
 /**
  * La hoja que sube desde abajo de RESERVAS (Tanda 6s): con su tirador y su cruz, igual que la hoja de la hora de las entradas. En el ordenador, centrada.
@@ -16,7 +17,7 @@ export function HojaAbajo({ titleId, onClose, children, ancha = false, capa = 90
   }, [onClose])
   return createPortal(
     <div className="fixed inset-0 flex items-end justify-center md:items-center" style={{ zIndex: capa }} role="dialog" aria-modal="true" aria-labelledby={titleId}>
-      <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={onClose} />
+      <div className="trazo-notice-backdrop absolute inset-0" style={{ background: FONDO_DE_HOJA }} onClick={onClose} />
       <div className={`trazo-notice-panel relative flex max-h-[92dvh] w-full flex-col rounded-t-[32px] bg-bg-card shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:rounded-[28px] ${ancha ? 'md:w-[560px]' : 'md:w-[440px]'}`}>
         <div className="flex shrink-0 justify-center pt-2.5" aria-hidden="true">
           <span className="h-1 w-[42px] rounded-full bg-text/20" />

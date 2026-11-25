@@ -7,6 +7,7 @@ import { removeReservationWithUndo } from '../../../store/useAddFlowStore'
 import { AddReservationSheet, type ReservationTarget } from './AddReservationSheet'
 import { Icono } from '../../ui/Icono'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
+import { FONDO_DE_HOJA } from '../../ui/fondoDeHoja'
 
 /** La reserva de una excursión de este viaje (null si no está reservada). */
 export function useExcursionReservation(excursionId: string | null | undefined): Reservation | null {
@@ -88,7 +89,7 @@ export function ReservedDetails({ reservation, timeLabel }: { reservation: Reser
 export function RemoveReservationDialog({ name, onCancel, onConfirm }: { name: string; onCancel: () => void; onConfirm: () => void }) {
   return createPortal(
     <div className="fixed inset-0 z-[95] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="remove-reservation-heading">
-      <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={onCancel} />
+      <div className="trazo-notice-backdrop absolute inset-0" style={{ background: FONDO_DE_HOJA }} onClick={onCancel} />
       <div className="trazo-notice-panel relative w-full rounded-t-[32px] bg-bg-card px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[420px] md:rounded-[28px]">
         <CruzDeHoja onCerrar={onCancel} />
         <h2 id="remove-reservation-heading" className="font-display text-[24px] leading-[1.15] text-text">

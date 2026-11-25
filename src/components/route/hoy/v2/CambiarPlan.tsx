@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { CuadradoPendientes, IconoPendientes } from './IconoPendientes'
 import { avisarAbajo } from '../../../../store/useAvisoDeAbajo'
 import { CuadradoFecha } from '../../../ui/CuadradoFecha'
 import type { Coordinates, DayPlan, Route, Stop } from '../../../../lib/types'
@@ -169,14 +170,14 @@ export function TarjetaDelSitio({ t }: { t: NonNullable<Propuesta['tarjetaDia']>
           <span className="line-clamp-2" style={{ font: "400 20px/1.1 'Instrument Serif',serif" }}>{t.nombre}</span>
           <span className="text-[12.5px] font-medium leading-[1.25] text-[#1C2230]/60">{t.cuando}</span>
         </span>
-        <CuadradoFecha semana={t.semanaCorta} numero={t.numero} datos={{ 'data-tarjeta-fecha': '1' }} />
+        {t.aPendientes ? <CuadradoPendientes /> : <CuadradoFecha semana={t.semanaCorta} numero={t.numero} datos={{ 'data-tarjeta-fecha': '1' }} />}
       </div>
-      <div data-franja-sigue-igual className="flex items-center gap-2.5 rounded-2xl px-3.5 py-2.5 text-[13.5px] font-semibold leading-[1.3]" style={{ background: '#E6F1E7', color: '#1F5A33' }}>
+      {!t.aPendientes && <div data-franja-sigue-igual className="flex items-center gap-2.5 rounded-2xl px-3.5 py-2.5 text-[13.5px] font-semibold leading-[1.3]" style={{ background: '#E6F1E7', color: '#1F5A33' }}>
         <span className="flex h-[22px] w-[22px] flex-none items-center justify-center rounded-full text-white" style={{ background: '#2B7F45' }} aria-hidden="true">
           <Icono nombre="hecho" size={12} grosor={3} />
         </span>
         Sigue igual: el resto de tu {t.diaDeHoy}
-      </div>
+      </div>}
     </>
   )
 }
@@ -202,25 +203,44 @@ export function HojaPropuesta({ titulo, propuestas, indice, onOtra, onAplicar, o
             {p.tarjetaDia ? <TarjetaDelSitio t={p.tarjetaDia} /> : <ResumenDeCambios p={p} />}
             {children}
             {extra}
-            <button type="button" onClick={() => onAplicar(p)} data-propuesta-aplicar className="flex min-h-[52px] items-center justify-center rounded-2xl px-3 text-center text-[15px] font-bold" style={BOTON_ORO}>
-              {p.pregunta && !p.boton ? 'Sí, dejarlo' : (p.boton ?? etiquetaAplicar ?? BOTON_POR_TIPO[p.tipo])}
-            </button>
-            {onElegirOtroDia ? (
-              <button type="button" onClick={onElegirOtroDia} data-propuesta-elegir-dia className="flex h-12 items-center justify-center rounded-2xl text-[14.5px] font-bold" style={BOTON_CLARO}>
-                Elegir otro día
-              </button>
-            ) : (
-              propuestas.length > 1 && (
-                <button type="button" onClick={onOtra} data-propuesta-otra className="flex min-h-12 items-center justify-center rounded-2xl px-3 text-center text-[14.5px] font-bold" style={BOTON_CLARO}>
-                  {p.etiquetaOtra ?? 'Ver otra opción'}
+            {(() => {
+              /* V53 §3: con DOS opciones (el dorado y «Dejarlo como está») van lado a lado, del mismo tamaño; con tres o más, el dorado, el blanco con borde debajo y la salida como texto pequeño. */
+              const oro = (
+                <button type="button" onClick={() => onAplicar(p)} data-propuesta-aplicar className="flex min-h-[52px] items-center justify-center rounded-2xl px-3 text-center text-[15px] font-bold" style={BOTON_ORO}>
+                  {p.pregunta && !p.boton ? 'Sí, dejarlo' : (p.boton ?? etiquetaAplicar ?? BOTON_POR_TIPO[p.tipo])}
                 </button>
               )
-            )}
+              if (!onElegirOtroDia && propuestas.length <= 1) {
+                return (
+                  <div data-dos-botones className="grid grid-cols-2 gap-2.5">
+                    {oro}
+                    <button type="button" onClick={onCerrar} data-propuesta-dejar="1" className="flex min-h-[52px] items-center justify-center rounded-2xl px-3 text-center text-[15px] font-bold" style={BOTON_CLARO}>
+                      Dejarlo como está
+                    </button>
+                  </div>
+                )
+              }
+              return (
+                <>
+                  {oro}
+                  {onElegirOtroDia ? (
+                    <button type="button" onClick={onElegirOtroDia} data-propuesta-elegir-dia className="flex h-12 items-center justify-center rounded-2xl text-[14.5px] font-bold" style={BOTON_CLARO}>
+                      Elegir otro día
+                    </button>
+                  ) : (
+                    <button type="button" onClick={onOtra} data-propuesta-otra className="flex min-h-12 items-center justify-center rounded-2xl px-3 text-center text-[14.5px] font-bold" style={BOTON_CLARO}>
+                      {p.etiquetaOtra ?? 'Ver otra opción'}
+                    </button>
+                  )}
+                  <EnlaceDejarlo onClick={onCerrar} datos={{ 'data-propuesta-dejar': '1' }} />
+                </>
+              )
+            })()}
           </>
         ) : (
           <span data-propuesta-vacia className="text-[14.5px] font-medium leading-[1.4]">{vacio ?? 'No hay nada que ajustar: tu día sigue igual.'}</span>
         )}
-        <EnlaceDejarlo onClick={onCerrar} datos={{ 'data-propuesta-dejar': '1' }} />
+        {!p && <EnlaceDejarlo onClick={onCerrar} datos={{ 'data-propuesta-dejar': '1' }} />}
       </div>
     </HojaV2>
   )
@@ -379,7 +399,8 @@ export function BotonCambiarPlan(p: PropsCambiarPlan) {
           <button type="button" onClick={() => setPaso('dias')} data-hoy-pasar-otro-dia className="flex h-[52px] flex-[1.5] items-center justify-center gap-2 whitespace-nowrap rounded-2xl px-2.5 text-[15px] font-bold" style={BOTON_ORO}>
             Pasar a otro día
           </button>
-          <button type="button" onClick={irSaltar} data-hoy-guardar-pendientes className="flex h-[52px] flex-1 items-center justify-center whitespace-nowrap rounded-2xl px-2.5 text-[14px] font-bold" style={BOTON_MARFIL}>
+          <button type="button" onClick={irSaltar} data-hoy-guardar-pendientes className="flex h-[52px] flex-1 items-center justify-center whitespace-nowrap rounded-2xl px-2.5 text-[14px] font-bold" style={{ ...BOTON_MARFIL, gap: 7 }}>
+            <IconoPendientes size={18} color="#4A3510" grosor={1.9} />
             Guardar en pendientes
           </button>
         </>

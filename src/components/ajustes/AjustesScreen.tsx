@@ -1,3 +1,4 @@
+import { FONDO_DE_HOJA } from '../ui/fondoDeHoja'
 import { CORREO_SOPORTE, enlaceDeCorreo } from '../../lib/contacto'
 import { useUnirseUi } from '../../store/useUnirseUi'
 import { useEffect, useState, type ReactNode } from 'react'
@@ -278,7 +279,7 @@ export function AjustesScreen({ onVolver, emailInicial, proveedorInicial, pasesI
       {hojaMoneda && <HojaMonedaViajero etiqueta="Ajustes" onCerrar={() => setHojaMoneda(false)} z={90} />}
       {borrando && (
         <div className="fixed inset-0 z-[90]" role="alertdialog" aria-modal="true" aria-label="Borrar la cuenta" data-borrar-dialogo>
-          <div className="hoja-fondo absolute inset-0" style={{ background: 'rgba(28,34,48,.5)' }} onClick={() => setBorrando(false)} />
+          <div className="hoja-fondo absolute inset-0" style={{ background: FONDO_DE_HOJA }} onClick={() => setBorrando(false)} />
           <div className="absolute left-[22px] right-[22px] top-[250px] mx-auto flex max-w-[420px] flex-col items-center gap-2.5 rounded-[26px] bg-[#FFFDF8] px-5 pb-[18px] pt-[22px] text-center">
             <span aria-hidden="true" className="flex h-[52px] w-[52px] items-center justify-center rounded-full" style={{ background: 'oklch(0.52 0.19 25 / .12)', color: ROJO }}>
               <Icono nombre="papelera" size={24} grosor={1.8} />

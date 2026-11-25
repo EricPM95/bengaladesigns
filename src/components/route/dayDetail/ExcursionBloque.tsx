@@ -12,6 +12,8 @@ import { Icono } from '../../ui/Icono'
 import { useExcursionesCompletas } from '../../../lib/excursionesDatos'
 import { etiquetasDeExcursion } from '../../../lib/excursionEtiquetas'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
+import { FONDO_DE_HOJA } from '../../ui/fondoDeHoja'
+import { BOTON_ORO } from '../../ui/botonesOro'
 
 /**
  * (V18, Design «Excursion Bloque» E1 a E4) EL BLOQUE DE LA EXCURSIÓN en DÍAS, rehecho:
@@ -151,7 +153,7 @@ export function TarjetaDeExcursion({ excursion, dayNumber, reservada }: { excurs
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {excursion.bookUrl && (
-              <a href={excursion.bookUrl} target="_blank" rel="noopener noreferrer" data-ver-disponibilidad style={{ height: 52, borderRadius: 16, background: 'linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440)', boxShadow: '0 12px 22px -14px rgba(110,80,24,.75),inset 0 1px 0 rgba(255,255,255,.6)', color: '#4A3510', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9, font: "700 15.5px 'Geist'", textDecoration: 'none' }}>
+              <a href={excursion.bookUrl} target="_blank" rel="noopener noreferrer" data-ver-disponibilidad style={{ height: 52, borderRadius: 16, ...BOTON_ORO, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9, font: "700 15.5px 'Geist'", textDecoration: 'none' }}>
                 Ver disponibilidad
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
               </a>
@@ -187,7 +189,7 @@ export function TarjetaDeExcursion({ excursion, dayNumber, reservada }: { excurs
 export function HojaMasExcursiones({ opciones, dia, onElegir, onCerrar }: { opciones: Excursion[]; dia: string | null; onElegir: (id: string) => void; onCerrar: () => void }): ReactNode {
   return createPortal(
     <div className="fixed inset-0 z-[95]" role="dialog" aria-modal="true" aria-label="Más excursiones" data-hoja-mas-excursiones>
-      <div onClick={onCerrar} style={{ position: 'absolute', inset: 0, background: 'rgba(28,34,48,.42)' }} />
+      <div onClick={onCerrar} style={{ position: 'absolute', inset: 0, background: FONDO_DE_HOJA }} />
       <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, maxHeight: '86dvh', overflowY: 'auto', borderRadius: '32px 32px 0 0', background: '#FFFDF8', padding: '10px 16px calc(env(safe-area-inset-bottom,0px) + 22px)', display: 'flex', flexDirection: 'column', gap: 12, boxShadow: '0 -20px 40px -20px rgba(28,34,48,.5)' }}>
         <span style={{ alignSelf: 'center', width: 42, height: 5, borderRadius: 5, background: 'rgba(28,34,48,.18)' }} />
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
@@ -220,7 +222,7 @@ export function HojaMasExcursiones({ opciones, dia, onElegir, onCerrar }: { opci
                 {meta && <span style={{ font: "500 12px 'Geist'", color: 'rgba(28,34,48,.62)' }}>{meta}</span>}
                 <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 2 }}>
                   <span style={{ font: "400 20px 'Instrument Serif',serif" }}>{p ? p : ''}</span>
-                  <button type="button" data-elegir-esta onClick={() => onElegir(m.id)} style={{ minHeight: 44, padding: '0 14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440)', color: '#4A3510', font: "700 13px 'Geist'" }}>
+                  <button type="button" data-elegir-esta onClick={() => onElegir(m.id)} style={{ minHeight: 44, padding: '0 14px', borderRadius: 12, border: 'none', cursor: 'pointer', ...BOTON_ORO, font: "700 13px 'Geist'" }}>
                     Elegir esta
                   </button>
                 </span>

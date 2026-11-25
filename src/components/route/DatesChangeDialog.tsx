@@ -7,6 +7,7 @@ import { isManualRoute } from '../../lib/manualPlan'
 import { manualShrinkNotice, type ManualShrinkNotice } from '../../lib/manualDuration'
 import { useDestinationExcursions } from '../../lib/destinationExcursions'
 import { CruzDeHoja } from '../ui/CruzDeHoja'
+import { FONDO_DE_HOJA } from '../ui/fondoDeHoja'
 
 /**
  * Fechas puestas desde el botón del mapa (PROMPT_PENDIENTE G). En los destinos curados (horas del motor), la ruta se
@@ -83,7 +84,7 @@ export function useDatesChange(route: Route | null) {
   const dialog = pending
     ? createPortal(
         <div className="fixed inset-0 z-[80] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="dates-change-heading">
-          <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={() => setPending(null)} />
+          <div className="trazo-notice-backdrop absolute inset-0" style={{ background: FONDO_DE_HOJA }} onClick={() => setPending(null)} />
           <div className="trazo-notice-panel relative w-full rounded-t-[32px] bg-bg-card px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[420px] md:rounded-[28px]">
             <CruzDeHoja onCerrar={() => setPending(null)} />
             <p className="font-mono text-[10.5px] font-medium uppercase tracking-[.16em] text-accent">Tus fechas</p>

@@ -11,6 +11,7 @@ import type { BloqueEntrada } from '../../../lib/bookings'
 import type { ReservationTarget } from './AddReservationSheet'
 import { abrirProponerSitio } from '../../../store/useProponerSitioStore'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
+import { FONDO_DE_HOJA } from '../../ui/fondoDeHoja'
 
 /**
  * (Tanda 10S4, apartado 4) [Añadir otra reserva]: una casilla donde se escribe lo que sea. Mientras se escribe, si lo escrito se parece a un sitio nuestro con entrada, sale debajo como sugerencia (foto pequeña y nombre);
@@ -61,7 +62,7 @@ export function OtraReservaBuscador({ route, sitiosConEntrada, enRuta, onElegir,
 
   return createPortal(
     <div className="fixed inset-0 z-[90] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="otra-reserva-titulo" data-otra-reserva>
-      <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={onClose} />
+      <div className="trazo-notice-backdrop absolute inset-0" style={{ background: FONDO_DE_HOJA }} onClick={onClose} />
       <div className="trazo-notice-panel relative flex max-h-[92dvh] w-full flex-col rounded-t-[32px] bg-bg-card shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[440px] md:rounded-[28px]">
         <div className="flex shrink-0 justify-center pt-2.5" aria-hidden="true">
           <span className="h-1 w-[42px] rounded-full bg-text/20" />

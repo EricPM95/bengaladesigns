@@ -13,7 +13,9 @@ import { usePermisosDelViaje } from '../../hooks/usePermisosDelViaje'
 import { AvisoNoCabe } from './AvisoNoCabe'
 import { CruzDeHoja } from '../ui/CruzDeHoja'
 import { TiradorDeHoja } from '../ui/TiradorDeHoja'
-import { DORADO } from '../ui/botonesOro'
+import { BOTON_CLARO, BOTON_ORO } from '../ui/botonesOro'
+import { IconoReorganizar } from './IconoReorganizar'
+import { FONDO_DE_HOJA } from '../ui/fondoDeHoja'
 
 /**
  * EL BOTÓN «REORGANIZAR» DEL PASE (Tanda 10S7, apartado 2; `Piezas/Reorganizar` R1 a R3). Se monta una vez por pantalla del viaje, junto al botón de los logros:
@@ -179,9 +181,7 @@ export function ReorganizarHost(): ReactNode {
             zIndex: debajo ? 31 : 100,
           }}
         >
-          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#F3D88F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M4 8h10l3-3 3 3M20 16H10l-3 3-3-3M17 5v6M7 13v6" />
-          </svg>
+          <IconoReorganizar />
         </button>
       )}
       {primero && puedeEditar && conPase && vuelos && !hojaAbierta && <AlertaAdaptarVuelos />}
@@ -203,19 +203,22 @@ function AlertaReorganizar({ trabajando, onReorganizar }: { trabajando: boolean;
   }, [])
   return createPortal(
     <div data-hoja="reorganizar" data-alerta-reorganizar="1" role="dialog" aria-modal="true" aria-label="¿Reorganizamos tu día?" style={{ position: 'fixed', inset: 0, zIndex: 110, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-      <div className="hoja-fondo" onClick={trabajando ? undefined : ahoraNo} style={{ position: 'absolute', inset: 0, background: 'rgba(20,16,10,.5)' }} />
+      <div className="hoja-fondo" onClick={trabajando ? undefined : ahoraNo} style={{ position: 'absolute', inset: 0, background: FONDO_DE_HOJA }} />
       <div className="hoja-panel" style={{ position: 'relative', width: '100%', maxWidth: 520, borderRadius: '32px 32px 0 0', background: '#FBF3E2', color: '#1C2230', padding: '10px 18px calc(28px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', gap: 14, boxShadow: '0 -20px 40px rgba(0,0,0,.25)' }}>
         <TiradorDeHoja />
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-          <span style={{ font: "400 28px/1.1 'Instrument Serif',serif" }}>¿Reorganizamos tu día?</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <IconoReorganizar circulo={44} />
+            <span style={{ font: "400 28px/1.1 'Instrument Serif',serif" }}>¿Reorganizamos tu día?</span>
+          </div>
           <CruzDeHoja enLinea onCerrar={ahoraNo} />
         </div>
         <span style={{ font: "400 14.5px/1.45 'Geist',sans-serif", color: 'rgba(28,34,48,.7)' }}>Adaptamos tus paradas a tu viaje y tus reservas a su hora, para que no pierdas tiempo.</span>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button type="button" data-reorganizar-si="1" onClick={onReorganizar} disabled={trabajando} style={{ flex: 1.2, height: 50, borderRadius: 15, border: 'none', cursor: 'pointer', background: DORADO, color: '#4A3510', font: "700 15.5px 'Geist',sans-serif", boxShadow: '0 10px 20px -14px rgba(110,80,24,.7), inset 0 1px 0 rgba(255,255,255,.55)', opacity: trabajando ? 0.7 : 1 }}>
+        <div data-dos-botones="1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <button type="button" data-reorganizar-si="1" onClick={onReorganizar} disabled={trabajando} style={{ ...BOTON_ORO, minHeight: 52, padding: '0 10px', lineHeight: 1.2, borderRadius: 16, border: 'none', cursor: 'pointer', font: "700 15px 'Geist',sans-serif", opacity: trabajando ? 0.7 : 1 }}>
             Reorganizar
           </button>
-          <button type="button" data-reorganizar-no="1" onClick={ahoraNo} disabled={trabajando} style={{ flex: 1, height: 50, borderRadius: 15, cursor: 'pointer', background: '#FFFDF8', border: '1px solid rgba(28,34,48,.18)', color: '#1C2230', font: "600 15px 'Geist',sans-serif" }}>
+          <button type="button" data-reorganizar-no="1" onClick={ahoraNo} disabled={trabajando} style={{ ...BOTON_CLARO, minHeight: 52, padding: '0 10px', lineHeight: 1.2, borderRadius: 16, cursor: 'pointer', font: "700 15px 'Geist',sans-serif" }}>
             Ahora no
           </button>
         </div>
@@ -247,19 +250,22 @@ function AlertaAdaptarVuelos(): ReactNode {
   }, [])
   return createPortal(
     <div data-hoja="adaptar-vuelos" data-alerta-adaptar="1" role="dialog" aria-modal="true" aria-label="¿Adaptamos tu primer y tu último día a tus vuelos?" style={{ position: 'fixed', inset: 0, zIndex: 110, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-      <div className="hoja-fondo" onClick={ahoraNo} style={{ position: 'absolute', inset: 0, background: 'rgba(20,16,10,.5)' }} />
+      <div className="hoja-fondo" onClick={ahoraNo} style={{ position: 'absolute', inset: 0, background: FONDO_DE_HOJA }} />
       <div className="hoja-panel" style={{ position: 'relative', width: '100%', maxWidth: 520, borderRadius: '32px 32px 0 0', background: '#FBF3E2', color: '#1C2230', padding: '10px 18px calc(28px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', gap: 14, boxShadow: '0 -20px 40px rgba(0,0,0,.25)' }}>
         <TiradorDeHoja />
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-          <span style={{ font: "400 28px/1.1 'Instrument Serif',serif" }}>¿Adaptamos tu primer y tu último día a tus vuelos?</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <IconoReorganizar circulo={44} />
+            <span style={{ font: "400 28px/1.1 'Instrument Serif',serif" }}>¿Adaptamos tu primer y tu último día a tus vuelos?</span>
+          </div>
           <CruzDeHoja enLinea onCerrar={ahoraNo} />
         </div>
         <span style={{ font: "400 14.5px/1.45 'Geist',sans-serif", color: 'rgba(28,34,48,.7)' }}>Solo cambiamos esos dos días, para que no pongan nada antes de que llegues ni después de irte. El resto de tu ruta se queda como está.</span>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button type="button" data-adaptar-si="1" onClick={() => void adaptarLosDias()} style={{ flex: 1.2, height: 50, borderRadius: 15, border: 'none', cursor: 'pointer', background: DORADO, color: '#4A3510', font: "700 15.5px 'Geist',sans-serif", boxShadow: '0 10px 20px -14px rgba(110,80,24,.7), inset 0 1px 0 rgba(255,255,255,.55)' }}>
+        <div data-dos-botones="1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <button type="button" data-adaptar-si="1" onClick={() => void adaptarLosDias()} style={{ ...BOTON_ORO, minHeight: 52, padding: '0 10px', lineHeight: 1.2, borderRadius: 16, border: 'none', cursor: 'pointer', font: "700 15px 'Geist',sans-serif" }}>
             Sí, adaptarlos
           </button>
-          <button type="button" data-adaptar-no="1" onClick={ahoraNo} style={{ flex: 1, height: 50, borderRadius: 15, cursor: 'pointer', background: '#FFFDF8', border: '1px solid rgba(28,34,48,.18)', color: '#1C2230', font: "600 15px 'Geist',sans-serif" }}>
+          <button type="button" data-adaptar-no="1" onClick={ahoraNo} style={{ ...BOTON_CLARO, minHeight: 52, padding: '0 10px', lineHeight: 1.2, borderRadius: 16, cursor: 'pointer', font: "700 15px 'Geist',sans-serif" }}>
             Ahora no
           </button>
         </div>

@@ -8,7 +8,7 @@ import { alDia } from '../../../lib/nombreDeDia'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { withUndo } from '../../../store/useAddFlowStore'
 import type { SitioCerca } from './useCercaDeAqui'
-import { BOTON_ORO } from '../../ui/botonesOro'
+import { BOTON_CLARO, BOTON_ORO } from '../../ui/botonesOro'
 
 /**
  * «CERCA DE TI» FUERA DE RUTA (Tanda HOY1, H8 y H8b; Design «Hoy Estados»).
@@ -90,7 +90,7 @@ export function FueraDeRuta({ sitio, tipo, route, day, tripId, fecha, onCerrar }
           <span style={{ font: "400 28px/1.1 'Instrument Serif',serif" }}>{titulo}</span>
           <span style={{ font: "400 14px/1.4 'Geist'", color: 'rgba(251,243,226,.8)' }}>{texto}</span>
           {esJunto ? (
-            <>
+            <div data-dos-botones="1" className="grid grid-cols-2 gap-2.5">
               <button
                 type="button"
                 disabled={anadiendo}
@@ -113,12 +113,12 @@ export function FueraDeRuta({ sitio, tipo, route, day, tripId, fecha, onCerrar }
                   anotarAhoraNo(tripId, fecha, sitio.sitio)
                   onCerrar()
                 }}
-                className="zona-toque -mt-1 self-center text-[13px] font-semibold underline underline-offset-[3px]"
-                style={{ color: 'rgba(251,243,226,.75)' }}
+                className={boton}
+                style={BOTON_CLARO}
               >
                 Ahora no
               </button>
-            </>
+            </div>
           ) : (
             <button type="button" data-fuera-de-ruta-boton="foto" onClick={() => useCamaraViajeStore.getState().abrir({ sitio: sitio.sitio, nombre: sitio.nombre, oculto: sitio.hay_emblema })} className={boton} style={oro}>
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#4A3510" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

@@ -45,6 +45,7 @@ import { ImagenDelCodigo } from './TarjetaBillete'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
 import { BOTON_ORO } from '../../ui/botonesOro'
 import { TiradorDeHoja } from '../../ui/TiradorDeHoja'
+import { FONDO_DE_HOJA } from '../../ui/fondoDeHoja'
 
 /** (10N8, N6) El nombre de la entrada con su artículo: «el Coliseo, Foro y Palatino» (la tabla de artículos solo conoce «Coliseo»: si el nombre entero no está, se usa el artículo del primer sitio que cubre). */
 function sitioDeLaEntrada(target: { name: string; placeNames: string[] }): string {
@@ -640,7 +641,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
 
   return createPortal(
     <div className="fixed inset-0 z-[90] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="add-reservation-heading">
-      <div className="trazo-notice-backdrop absolute inset-0 bg-text/25 backdrop-blur-[6px]" onClick={onClose} />
+      <div className="trazo-notice-backdrop absolute inset-0" style={{ background: FONDO_DE_HOJA }} onClick={onClose} />
       {/* (Noche 24-25 nov, Design «Excursion Nueva» X1 / «Entradas Billete») La hoja es crema (#FBF3E2), con el tirador de siempre. */}
       <div className="trazo-notice-panel relative flex max-h-[92dvh] w-full flex-col rounded-t-[32px] shadow-[0_-8px_40px_-12px_rgba(28,34,48,.35)] md:w-[440px] md:rounded-[28px]" style={{ background: '#FBF3E2' }}>
         <div className="flex shrink-0 justify-center pt-3" aria-hidden="true">

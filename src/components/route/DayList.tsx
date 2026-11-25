@@ -235,6 +235,8 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
         const toggle = () => onSelectDay(expanded ? null : day.id)
         const pasado = pasados.has(day.id)
         const fotosDelDia = fotosPorDia.get(day.dayNumber) ?? 0
+        // (V53 §5) «Hecho» solo si ese día hizo algo: al menos una foto o una parada marcada como vista ([He terminado] / «Ya he estado aquí»). Si no, «Ya pasó», sin ✓ verde. Igual en todos los destinos.
+        const hizoAlgo = fotosDelDia > 0 || day.stops.some((stop) => !!stop.checkedInAt)
         // «Hoy es un día completo: te recomendamos madrugar.» solo avisa: no mueve ni quita nada del día (Tanda 6z6).
         const diaCompleto = esDiaCompleto(route, day, reservations)
         // El color va con el día, no con su posición (PROMPT_UI, Parte 1).
@@ -313,8 +315,8 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
                   <p data-titulo-del-dia="1" className="min-h-[20px] font-display text-[18px] leading-[1.1] text-text [overflow-wrap:anywhere]">{title}</p>
                 )}
                 {pasado && (
-                  <p data-dia-hecho="1" className="text-[11.5px] font-medium leading-snug text-text/60">
-                    {fotosDelDia > 0 ? `Hecho · ${fotosDelDia} ${fotosDelDia === 1 ? 'foto' : 'fotos'}` : 'Hecho · Ver tu día'}
+                  <p data-dia-hecho={hizoAlgo ? '1' : undefined} data-dia-ya-paso={hizoAlgo ? undefined : '1'} className="text-[11.5px] font-medium leading-snug text-text/60">
+                    {fotosDelDia > 0 ? `Hecho · ${fotosDelDia} ${fotosDelDia === 1 ? 'foto' : 'fotos'}` : hizoAlgo ? 'Hecho · Ver tu día' : 'Ya pasó · Ver tu día'}
                   </p>
                 )}
                 <EtiquetaRecomendacion dayId={day.id} />
@@ -344,7 +346,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
               </div>
 
               <span onClick={(event) => event.stopPropagation()} className="flex items-center">
-                {pasado ? (
+                {pasado && !hizoAlgo ? null : pasado ? (
                   <span data-dia-hecho-marca="1" aria-label="Día hecho" role="img" className="flex h-[26px] w-[26px] items-center justify-center rounded-full" style={{ background: '#DCEBDD', color: '#2F6B43' }}>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                       <path d="M5 12.5l4.5 4.5L19 7.5" />

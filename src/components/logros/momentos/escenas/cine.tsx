@@ -3,6 +3,7 @@ import { cortarSonidoDe, prepararSonido, sonar } from '../../../../lib/sonidos'
 import { Emblema } from '../../dibujos'
 import '../momentos.css'
 import './escenas.css'
+import { BOTON_ORO } from '../../../ui/botonesOro'
 
 /**
  * EL CINE DE LOS EMBLEMAS (Tanda 8B). Una escena de ~10 s por emblema, dibujada con SVG y CSS (sin vídeo ni GIF), sobre un lienzo de 390 × 844 que se ajusta
@@ -168,7 +169,7 @@ export function sinMovimiento(): boolean {
   return typeof window !== 'undefined' && Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)
 }
 
-export const estiloBoton: CSSProperties = { position: 'absolute', left: 26, right: 26, bottom: 'calc(env(safe-area-inset-bottom,0px) + 40px)', height: 54, border: 'none', borderRadius: 999, background: 'linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A)', color: '#2A1D10', font: "700 15px 'Geist'", cursor: 'pointer', zIndex: 5 }
+export const estiloBoton: CSSProperties = { position: 'absolute', left: 26, right: 26, bottom: 'calc(env(safe-area-inset-bottom,0px) + 40px)', height: 54, border: 'none', borderRadius: 999, ...BOTON_ORO, font: "700 15px 'Geist'", cursor: 'pointer', zIndex: 5 }
 export const estiloSaltar: CSSProperties = { position: 'absolute', right: 8, top: 'calc(env(safe-area-inset-top,0px) + 14px)', minWidth: 60, height: 44, padding: '0 14px', border: 'none', background: 'transparent', color: 'rgba(255,253,248,.75)', font: "600 13px 'Geist'", cursor: 'pointer', zIndex: 6 }
 
 /** Lo que se ve al final: el emblema, su nombre y su línea. `animado`: entra con el estallido; si no, ya está puesto (tras tocar para saltar). */

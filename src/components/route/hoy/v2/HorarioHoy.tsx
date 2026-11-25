@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { IconoPendientes } from './IconoPendientes'
 import type { Coordinates, DayPlan, Route } from '../../../../lib/types'
 import { useDatosDeHorario } from '../../../../lib/horarioDeParada'
 import { numberedStopsOf } from '../../../../lib/stopKind'
@@ -10,7 +11,7 @@ import { conA, paradasJustasDeHoy, parrafoDeHoy, proponerAdelantar, quienLlegaTa
 import { useRouteStore } from '../../../../store/useRouteStore'
 import { Icono } from '../../../ui/Icono'
 import { AvisoDeHoy, CruzDeAviso, useAvisoCerrado } from './AvisosHoy'
-import { HojaPropuesta, Titulo, useContexto } from './CambiarPlan'
+import { HojaPropuesta, TarjetaDelSitio, Titulo, useContexto } from './CambiarPlan'
 import { HojaV2 } from './HojasV2'
 import { EnlaceDeAviso, EnlaceDejarlo } from '../piezas'
 import { BOTON_ORO } from '../../../ui/botonesOro'
@@ -125,6 +126,8 @@ export function AvisoDeHorarioEnDirecto({ route, day, dateIso, ubicacion, enCoch
           <div data-hoy-no-cabe className="flex flex-col gap-3">
             <Titulo texto="Pasar a otro día" onCerrar={() => setAbierta(false)} />
             <span className="text-[14.5px] font-medium leading-[1.4]">Hoy ya no llegas {conA(tarde.v.nombre)}, y no {tarde.v.plural ? 'caben' : 'cabe'} en ningún otro día de tu viaje.</span>
+            {/* (V53 §6; Design «Icono Pendientes» I3) La tarjeta del sitio, con el pin con reloj a la derecha en lugar de la fecha. */}
+            <TarjetaDelSitio t={{ nombre: displayStopName(tarde.v.stop.name), fotoUrl: tarde.v.stop.photoUrl || tarde.v.stop.fixedPhotoUrl || '', cuando: 'A Lugares pendientes', semanaCorta: '', numero: '', destino: '', diaDeHoy: '', aPendientes: true }} />
             <button
               type="button"
               data-no-cabe-guardar
@@ -138,7 +141,7 @@ export function AvisoDeHorarioEnDirecto({ route, day, dateIso, ubicacion, enCoch
               className="flex min-h-[50px] items-center justify-center rounded-2xl px-3 text-center text-[15px] font-bold"
               style={BOTON_ORO}
             >
-              {tarde.v.plural ? 'Guardarlos en pendientes' : 'Guardarlo en pendientes'}
+              <span className="flex items-center justify-center gap-2.5"><IconoPendientes size={20} color="#4A3510" grosor={1.9} />{tarde.v.plural ? 'Guardarlos en pendientes' : 'Guardarlo en pendientes'}</span>
             </button>
             <div className="flex flex-col items-center gap-0.5">
               <button

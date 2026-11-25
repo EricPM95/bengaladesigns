@@ -10,6 +10,7 @@ import { CruzDeHoja } from '../../../ui/CruzDeHoja'
 import { BOTON_CLARO, BOTON_ORO } from '../../../ui/botonesOro'
 import { ListaDeDias } from '../../dayDetail/ListaDeDias'
 import { ParadaFoto } from './ParadaFoto'
+import { FONDO_DE_HOJA } from '../../../ui/fondoDeHoja'
 
 const OJO = { font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' as const, color: 'rgba(28,34,48,.55)' }
 
@@ -22,7 +23,7 @@ export function HojaV2({ children, onCerrar, etiqueta, ancha = false, fondo = '#
   }, [onCerrar])
   return createPortal(
     <div className="fixed inset-0 z-[90] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-label={etiqueta}>
-      <div className="absolute inset-0" style={{ background: 'rgba(20,16,10,.5)' }} onClick={onCerrar} />
+      <div className="absolute inset-0" style={{ background: FONDO_DE_HOJA }} onClick={onCerrar} />
       <div className={`relative flex max-h-[88dvh] w-full flex-col gap-3 overflow-y-auto rounded-t-[32px] px-[18px] pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-2.5 md:rounded-[32px] ${ancha ? 'md:w-[520px]' : 'md:w-[440px]'}`} style={{ background: fondo, boxShadow: '0 -20px 40px rgba(0,0,0,.25)', scrollbarWidth: 'none' }}>
         <span className="h-1 w-[44px] flex-none self-center rounded-sm bg-[rgba(28,34,48,.25)]" aria-hidden="true" />
         {children}

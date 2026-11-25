@@ -8,6 +8,7 @@ import { centroDeVarios } from './mundo/proyeccion'
 import { buscarPaises, usePaisesYTierra, type Pais } from './mundo/paises'
 import './mundo/mundo.css'
 import { useLogrosPantallas, type PantallaDe } from './useLogrosPantallas'
+import { BOTON_ORO } from '../../ui/botonesOro'
 
 const VERDE = 'oklch(0.55 0.11 150)'
 const MARCADO = 'oklch(0.66 0.13 40)'
@@ -185,7 +186,7 @@ function LoQueHasGanado({ tierra, marcados, resultado }: { tierra: Parameters<ty
           </span>
         )}
         <div style={{ flex: 1 }} />
-        <button type="button" onClick={verMiMundo} style={{ position: 'relative', height: 54, width: '100%', border: 'none', borderRadius: 999, background: 'linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A)', color: '#2A1D10', font: "700 15px 'Geist'", cursor: 'pointer', animation: 'muUp .6s 3.8s ease both' }}>
+        <button type="button" onClick={verMiMundo} style={{ position: 'relative', height: 54, width: '100%', border: 'none', borderRadius: 999, ...BOTON_ORO, font: "700 15px 'Geist'", cursor: 'pointer', animation: 'muUp .6s 3.8s ease both' }}>
           Ver mi mundo
         </button>
       </div>

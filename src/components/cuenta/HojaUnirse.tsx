@@ -7,6 +7,8 @@ import { normalizarCodigo } from '../../lib/invitaciones'
 import { abrirViajeRecienUnido, unirseConCodigo } from '../../lib/unirseConCodigo'
 import { EVENTO_FRANJA_UNION, leerFranjaDeUnion, olvidarFranjaDeUnion, textosDeLaFranja, type FranjaDeUnion } from '../../lib/franjaDeUnion'
 import { TiradorDeHoja } from '../ui/TiradorDeHoja'
+import { FONDO_DE_HOJA } from '../ui/fondoDeHoja'
+import { BOTON_ORO } from '../ui/botonesOro'
 
 /**
  * LA HOJA «ESCRIBE EL CÓDIGO» (Tanda 10N5, apartado 3, `Piezas/Unirse Codigo` 01 y 02, exactamente igual): una hoja desde abajo con «UNIRME A UN VIAJE» / «Escribe el código», la ✕, los ocho huecos
@@ -87,7 +89,7 @@ export function HojaUnirse({ onCerrar }: { onCerrar: () => void }): ReactNode {
 
   return createPortal(
     <div data-hoja="unirse" data-hoja-unirse onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Escribe el código" style={{ position: 'fixed', inset: 0, zIndex: 96 }}>
-      <div className="hoja-fondo" onClick={onCerrar} style={{ position: 'absolute', inset: 0, background: 'rgba(28,34,48,.45)' }} />
+      <div className="hoja-fondo" onClick={onCerrar} style={{ position: 'absolute', inset: 0, background: FONDO_DE_HOJA }} />
       <div
         className="hoja-panel"
         style={{
@@ -177,7 +179,7 @@ export function HojaUnirse({ onCerrar }: { onCerrar: () => void }): ReactNode {
             cursor: !completo || error ? 'default' : 'pointer',
             ...(!completo || error || ocupado
               ? { background: 'rgba(28,34,48,.1)', color: 'rgba(28,34,48,.4)' }
-              : { background: 'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)', color: '#4A3510', boxShadow: '0 10px 20px -12px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55)' }),
+              : BOTON_ORO),
           }}
         >
           {ocupado ? 'Uniéndome…' : 'Unirme'}

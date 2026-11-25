@@ -11,6 +11,7 @@ import type { ColeccionDeEstado } from '../api'
 import { ListaDeColeccion } from '../../ficha/ListaDeColeccion'
 import { sinSorteo } from '../../../../lib/sorteo'
 import { ICONOS } from '../../../../lib/iconos'
+import { BOTON_ORO } from '../../../ui/botonesOro'
 
 /**
  * LO DE LA HOJA DE LOGROS «ANTES DEL VIAJE» (V25, Design `Logros Antes Viaje`): lo que te puedes llevar, la franja de colecciones que se abre una a una, y el bloque que vende el pase (sin pase). Solo piezas: los números salen
@@ -195,7 +196,7 @@ export function BloqueDelPase({ ciudad, secretos }: { ciudad: string; secretos: 
         type="button"
         data-conseguir-el-pase
         onClick={() => abrirPase()}
-        style={{ position: 'relative', height: 54, borderRadius: 16, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440)', boxShadow: '0 12px 22px -14px rgba(110,80,24,.75)', color: '#3A2A0A', font: "700 15.5px 'Geist'" }}
+        style={{ position: 'relative', height: 54, borderRadius: 16, border: 'none', cursor: 'pointer', ...BOTON_ORO, font: "700 15.5px 'Geist'" }}
       >
         {precio ? `Conseguir el pase · ${precio}` : 'Conseguir el pase'}
       </button>

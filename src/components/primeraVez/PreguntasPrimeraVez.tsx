@@ -10,6 +10,7 @@ import { useDestinosCurados } from '../../lib/destinosCurados'
 import { destinosDelMapa } from '../../lib/primeraVez'
 import { precargarDestinos } from './LoQueTePuedesLlevar'
 import { PalabraJutrip } from '../ui/LogoJutrip'
+import { BOTON_ORO } from '../ui/botonesOro'
 
 /**
  * (V31, Design «Primera Vez» Q1 a Q4) LAS PREGUNTAS DE LA PRIMERA VEZ: una por pantalla, con la barra de progreso, «Saltar» y [Continuar]. La pantalla «Listo» no va: al acabar la última se cierra y sale el Perfil.
@@ -31,7 +32,6 @@ const IC = {
   sun: 'M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6L7 7M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4',
 } as const
 const SERIE = "'Instrument Serif',serif"
-const ORO = 'linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440)'
 
 const FRECUENCIAS: { id: Frecuencia; n: string; s: string; i: keyof typeof IC }[] = [
   { id: 'una_vez_al_anio', n: 'Una vez al año', s: 'Un viaje largo, bien elegido', i: 'fl' },
@@ -130,7 +130,7 @@ export function PreguntasPrimeraVez({ onTerminar }: { onTerminar: () => void }):
           <p style={{ margin: 0, maxWidth: 300, font: "400 16px/1.45 'Geist'", color: 'rgba(28,34,48,.7)' }}>{conSuenos ? 'Cinco' : 'Cuatro'} preguntas rápidas para conocerte y empezamos</p>
         </div>
         <div className="flex-none px-[22px] pt-3" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom,0px) + 28px)' }}>
-          <button type="button" data-empezar onClick={() => setBienvenida(false)} className="zona-toque flex w-full items-center justify-center" style={{ height: 56, borderRadius: 18, border: 'none', background: ORO, boxShadow: '0 12px 22px -14px rgba(110,80,24,.75),inset 0 1px 0 rgba(255,255,255,.6)', color: '#4A3510', font: "700 16px 'Geist'" }}>
+          <button type="button" data-empezar onClick={() => setBienvenida(false)} className="zona-toque flex w-full items-center justify-center" style={{ height: 56, borderRadius: 18, border: 'none', ...BOTON_ORO, font: "700 16px 'Geist'" }}>
             Empezar
           </button>
         </div>
@@ -239,7 +239,7 @@ export function PreguntasPrimeraVez({ onTerminar }: { onTerminar: () => void }):
         )}
       </div>
       <div className="flex-none px-[22px] pt-3" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom,0px) + 28px)' }}>
-        <button type="button" data-continuar onClick={siguiente} disabled={guardando} className="zona-toque flex w-full items-center justify-center" style={{ height: 56, borderRadius: 18, border: 'none', background: ORO, boxShadow: '0 12px 22px -14px rgba(110,80,24,.75),inset 0 1px 0 rgba(255,255,255,.6)', color: '#4A3510', font: "700 16px 'Geist'" }}>
+        <button type="button" data-continuar onClick={siguiente} disabled={guardando} className="zona-toque flex w-full items-center justify-center" style={{ height: 56, borderRadius: 18, border: 'none', ...BOTON_ORO, font: "700 16px 'Geist'" }}>
           Continuar
         </button>
       </div>

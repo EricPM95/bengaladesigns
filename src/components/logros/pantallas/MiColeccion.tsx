@@ -9,6 +9,7 @@ import { Capa } from './Capa'
 import { useLogrosPantallas, type PantallaDe } from './useLogrosPantallas'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
 import { TiradorDeHoja } from '../../ui/TiradorDeHoja'
+import { FONDO_DE_HOJA } from '../../ui/fondoDeHoja'
 
 /**
  * «MI COLECCIÓN» (8C2; M1 y M2 de «Mi vitrina»): los logros de viajero, página a página (un grupo por página, con 9 huecos de 3 × 3; un grupo con más logros sigue en otra página).
@@ -126,7 +127,7 @@ function ComoConseguirlo({ logro, grupo, cerrar }: { logro: LogroDeColeccion; gr
   const nombre = logro.nombre_logro ?? NOMBRE_DE_FAMILIA[logro.id] ?? ''
   return (
     <>
-      <div className="dst-fondo" onClick={cerrar} style={{ position: 'absolute', inset: 0, zIndex: 40, background: 'rgba(28,34,48,.45)' }} />
+      <div className="dst-fondo" onClick={cerrar} style={{ position: 'absolute', inset: 0, zIndex: 40, background: FONDO_DE_HOJA }} />
       <div role="dialog" aria-modal="true" aria-label={nombre} className="dst-hoja" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 41, borderRadius: '32px 32px 0 0', background: '#FFFDF8', color: '#1C2230', padding: '12px 18px calc(env(safe-area-inset-bottom,0px) + 34px)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, textAlign: 'center' }}>
         <CruzDeHoja onCerrar={cerrar} />
         <TiradorDeHoja />

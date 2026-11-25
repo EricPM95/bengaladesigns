@@ -7,6 +7,7 @@ import { BotonHoja, EnlaceHoja, Hoja } from '../ui/Hoja'
 import { PalabraJutrip } from '../ui/LogoJutrip'
 import { MosaicoDeDestinos } from './MosaicoDeDestinos'
 import { PrivacidadScreen } from './PrivacidadScreen'
+import { BOTON_ORO } from '../ui/botonesOro'
 
 type Paso = 'inicio' | 'email' | 'enviado'
 const CLAVE_ULTIMO_ENVIO = 'trazo:cuenta:ultimoEnlace'
@@ -118,7 +119,7 @@ export function EntrarCuenta({ pasoInicial = 'inicio', emailInicial = '', aviso 
         type="button"
         onClick={() => setPaso('email')}
         data-entrar-email
-        style={{ position: 'relative', width: '100%', maxWidth: 420, height: 54, flex: 'none', borderRadius: 999, border: 'none', background: 'linear-gradient(135deg,#F6E6C4,#D8B98E 55%,#A67C52)', boxShadow: '0 10px 16px -10px rgba(111,78,55,.55)', color: '#3E2A14', font: "700 15px 'Geist'", cursor: 'pointer' }}
+        style={{ position: 'relative', width: '100%', maxWidth: 420, height: 54, flex: 'none', borderRadius: 999, border: 'none', ...BOTON_ORO, font: "700 15px 'Geist'", cursor: 'pointer' }}
       >
         Entrar con mi email
       </button>
@@ -168,7 +169,7 @@ export function EntrarCuenta({ pasoInicial = 'inicio', emailInicial = '', aviso 
             target={enlaceDeCorreo(email).startsWith('http') ? '_blank' : undefined}
             rel="noopener noreferrer"
             data-abrir-correo
-            style={{ height: 54, flex: 'none', borderRadius: 999, background: 'linear-gradient(135deg,#F6E6C4,#D8B98E 55%,#A67C52)', color: '#3E2A14', display: 'flex', alignItems: 'center', justifyContent: 'center', font: "700 15px 'Geist'", textDecoration: 'none' }}
+            style={{ height: 54, flex: 'none', borderRadius: 999, ...BOTON_ORO, display: 'flex', alignItems: 'center', justifyContent: 'center', font: "700 15px 'Geist'", textDecoration: 'none' }}
           >
             Abrir mi correo
           </a>

@@ -9,6 +9,7 @@ import { urlDeCamino } from '../../../lib/camaraViaje'
 import { useDestinationPool } from '../../../lib/useDestinationPool'
 import { EstilosDelVisto } from '../../logros/visto/Hojas'
 import { AVISO_GASOLINERAS_NORTE } from './CercaDeTi'
+import { FONDO_DE_HOJA } from '../../ui/fondoDeHoja'
 
 /**
  * «CERCA DE TI» EN HOY (Tanda HOY1, K5 a K8; Design «Hoy Estados», apartado 04). La fila fija debajo de la tarjeta de la siguiente parada.
@@ -162,7 +163,7 @@ function HojaCerca({ clave, route, origenRespaldo, onCerrar }: { clave: ClaveCer
   return createPortal(
     <div data-cerca-hoja={clave} role="dialog" aria-label={TITULO[clave]} className="fixed inset-0 z-[80] flex flex-col justify-end">
       <EstilosDelVisto />
-      <button type="button" aria-label="Cerrar" onClick={onCerrar} className="absolute inset-0 cursor-default border-0 p-0" style={{ background: 'rgba(20,16,10,.5)', animation: 'vistoFade .3s ease both' }} />
+      <button type="button" aria-label="Cerrar" onClick={onCerrar} className="absolute inset-0 cursor-default border-0 p-0" style={{ background: FONDO_DE_HOJA, animation: 'vistoFade .3s ease both' }} />
       <div className="relative mx-auto flex max-h-[85%] w-full max-w-[520px] flex-col gap-2.5 px-[18px] pb-[26px] pt-2.5" style={{ borderRadius: '32px 32px 0 0', background: '#FBF3E2', boxShadow: '0 -20px 40px rgba(0,0,0,.25)', animation: 'vistoSheet .5s cubic-bezier(.2,.8,.2,1) both', color: TINTA }}>
         <span className="self-center" style={{ width: 44, height: 4, borderRadius: 2, background: 'rgba(28,34,48,.25)' }} />
         <div className="flex items-center justify-between">

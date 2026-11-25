@@ -12,6 +12,6 @@ git commit -q -m "$MSG
 
 Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>" || { echo "NADA QUE COMMITEAR"; }
 git push origin main 2>&1 | tail -n 1
-NEW=$(grep -o 'assets/index-[A-Za-z0-9_-]*\.js' dist/index.html | head -n 1)
-for i in $(seq 1 30); do H=$(curl -s https://jutrip.app/ | grep -o 'assets/index-[A-Za-z0-9_-]*\.js' | head -n 1); [ "$H" = "$NEW" ] && { echo "PRODUCCION OK $H"; exit 0; }; sleep 20; done
-echo "PRODUCCION NO CAMBIA (local $NEW, prod $H)"; exit 5
+MARCA=$3
+for i in $(seq 1 30); do P=$(curl -s https://jutrip.app/ | grep -o "assets/index-[A-Za-z0-9_-]*.js" | head -n 1); for f in $(curl -s https://jutrip.app/$P | grep -o "assets/[A-Za-z0-9_.-]*.js" | sort -u); do curl -s https://jutrip.app/$f | grep -q "$MARCA" && { echo "PRODUCCION OK ($f)"; exit 0; }; done; sleep 20; done
+echo "PRODUCCION NO TIENE LA MARCA"; exit 5

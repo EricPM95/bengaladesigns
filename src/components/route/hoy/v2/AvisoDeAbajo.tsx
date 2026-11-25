@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { IconoPendientes } from './IconoPendientes'
 import { createPortal } from 'react-dom'
 import { useAvisoDeAbajo } from '../../../../store/useAvisoDeAbajo'
 import { AvisoSobreLaBarra } from '../../../ui/AvisoSobreLaBarra'
@@ -27,6 +28,7 @@ export function AvisoDeAbajoHost() {
     const accion = actual.accion
     return createPortal(
       <AvisoSobreLaBarra z={95} datos={{ 'data-aviso-de-abajo': actual.id }}>
+        {/pendientes/i.test(actual.texto) && <IconoPendientes size={22} color="#F3D88F" grosor={1.7} fondo="#1C2230" />}
         <span className="flex-1 text-[13.5px] font-medium leading-[1.35]">{actual.texto}</span>
         <button
           type="button"

@@ -553,7 +553,7 @@ export function LlegadaYVuelta({
         {!algoHecho ? (
           <>
             {/* (V50) Sin vuelos, como «Alojamiento»: plegado, solo la cabecera; abierto, «¿Ya tienes vuelo?» con [Añadir mi vuelo] (la hoja «Tu vuelo» de siempre) y «¿Aún no?» con [Buscar vuelos]. */}
-            <CabeceraBloque icono={iconoDeMedio(ida.mode)} titulo="Llegada y vuelta" estado={etiqueta} hecho={false} abierto={desplegado} onClick={() => setDesplegadoUsuario(!desplegado)} atributos={{ 'data-llegada-vacia': '' }} className="px-0.5 py-4" />
+            <CabeceraBloque icono={iconoDeMedio(ida.mode)} titulo="Llegada y vuelta" estado={etiqueta} hecho={false} abierto={desplegado} onClick={() => setDesplegadoUsuario(!desplegado)} atributos={{ 'data-llegada-vacia': '' }} className="px-4 py-4" />
             {desplegado && (
               <div data-llegada-vacia-abierta className="flex flex-col gap-2.5 px-4 pb-4">
                 <span className="text-[14px] font-medium">{ida.mode === 'avion' ? '¿Ya tienes vuelo?' : '¿Ya tienes tu billete?'}</span>

@@ -22,6 +22,8 @@ import { SiluetaDeEmblema } from '../dibujos/SiluetaDeEmblema'
 import { BloqueDelPase, ColeccionesAntes, LoQueTePuedesLlevar } from './hoja/AntesDelViaje'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
 import { TiradorDeHoja } from '../../ui/TiradorDeHoja'
+import { FONDO_DE_HOJA } from '../../ui/fondoDeHoja'
+import { BOTON_ORO } from '../../ui/botonesOro'
 
 const EscenaDeEmblema = lazyReintentable(() => import('./EscenaDeEmblema'))
 
@@ -98,7 +100,7 @@ export default function HojaLogros(): ReactNode {
 
   return (
     <div className="mo" style={{ position: 'fixed', inset: 0, zIndex: 9000, fontFamily: "'Geist',system-ui,sans-serif" }}>
-      <div onClick={cerrar} style={{ position: 'absolute', inset: 0, background: 'rgba(28,34,48,.45)', animation: 'moFade .3s ease both' }} />
+      <div onClick={cerrar} style={{ position: 'absolute', inset: 0, background: FONDO_DE_HOJA, animation: 'moFade .3s ease both' }} />
       <div role="dialog" aria-modal="true" aria-label="Tus logros" data-hoja-logros={fase} style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 64, display: 'flex', flexDirection: 'column', borderRadius: '32px 32px 0 0', background: '#FFFDF8', color: '#1C2230', animation: 'moSube .45s cubic-bezier(.2,.8,.2,1) both' }}>
         <TiradorDeHoja />
         {/* (V14) Lo único fijo es una barra fina con el título y la X: la medalla y el botón de reclamar se mueven con el resto al bajar (antes la cabecera quedaba quieta y tapaba la tarjeta de la medalla). */}
@@ -136,7 +138,7 @@ export default function HojaLogros(): ReactNode {
                 <button type="button" data-reintentar-logros onClick={() => {
                     olvidarPeticionDelEstado(tripId)
                     setIntento((n) => n + 1)
-                  }} style={{ height: 48, padding: '0 24px', borderRadius: 999, border: 0, cursor: 'pointer', background: 'linear-gradient(180deg,#FBF3E2,#EBD9AE)', color: '#6F4E37', font: "700 15px 'Geist'" }}>
+                  }} style={{ height: 48, padding: '0 24px', borderRadius: 999, border: 0, cursor: 'pointer', ...BOTON_ORO, font: "700 15px 'Geist'" }}>
                   Reintentar
                 </button>
               </div>

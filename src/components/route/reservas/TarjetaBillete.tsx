@@ -211,17 +211,14 @@ export function TarjetaBillete({
           </span>
         </button>
       ) : (
-        // (Noche 24-25 nov, Design «Reservas Billete» B1/B2) [+ Añade tu tarjeta de embarque] y la papelera, en la MISMA fila.
-        <div className="flex items-start gap-2.5" style={{ borderTop: filas.length === 0 ? PUNTEADA : undefined, paddingTop: filas.length === 0 ? 12 : 0 }}>
-          <div className="min-w-0 flex-1">
-            <BotonAnadirDocumento estilo="borde" texto={botonTexto} clave={claveDocumentoDeMedio(leg.mode)} onAnadir={onAnadirTarjeta} datos={`vuelo-${leg.kind}`} aMano={onDatos} />
-          </div>
-          <PapeleraRoja enLinea onClick={onQuitar} etiqueta={`Quitar ${esIda ? 'la ida' : 'la vuelta'}`} datos={`mitad-${leg.kind}`} atributos={{ 'data-eliminar': 'derecha' }} />
+        // (V53 §4) [+ Añade tu tarjeta de embarque] ocupa su fila; la papelera va ABAJO A LA DERECHA, como en todas las tarjetas de RESERVAS (ya no en la fila del botón).
+        <div style={{ borderTop: filas.length === 0 ? PUNTEADA : undefined, paddingTop: filas.length === 0 ? 12 : 0 }}>
+          <BotonAnadirDocumento estilo="borde" texto={botonTexto} clave={claveDocumentoDeMedio(leg.mode)} onAnadir={onAnadirTarjeta} datos={`vuelo-${leg.kind}`} aMano={onDatos} />
         </div>
       )}
 
-      {conCodigo && (
-        <div className="flex justify-end" style={{ borderTop: PUNTEADA, paddingTop: 12 }}>
+      {(
+        <div className="flex justify-end" style={conCodigo ? { borderTop: PUNTEADA, paddingTop: 12 } : undefined}>
           <PapeleraRoja enLinea onClick={onQuitar} etiqueta={`Quitar ${esIda ? 'la ida' : 'la vuelta'}`} datos={`mitad-${leg.kind}`} atributos={{ 'data-eliminar': 'derecha' }} />
         </div>
       )}

@@ -21,6 +21,8 @@ import {
 } from '../../lib/cuentanos/tipos'
 import { capturarPantalla, contextoDelAviso, enviarAviso, erroresRecientes, hayCuentaDeVerdad, reducirFoto } from '../../lib/cuentanos/envio'
 import { MapaDelAviso, direccionDe } from './MapaDelAviso'
+import { FONDO_DE_HOJA } from '../ui/fondoDeHoja'
+import { BOTON_ORO } from '../ui/botonesOro'
 
 /**
  * (V20) «CUÉNTANOS» (Design «Cuentanos Boton», U1 a U4): el menú de 8 botones, los formularios, «Buscar en el mapa» (U2h) y el gracias (U3). Un solo componente montado una vez en App.
@@ -28,7 +30,6 @@ import { MapaDelAviso, direccionDe } from './MapaDelAviso'
  */
 const SANS = "'Geist',sans-serif"
 const SERIE = "'Instrument Serif',serif"
-const ORO = 'linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440)'
 
 function Trazo({ d, tam = 20, color = 'currentColor', grosor = 1.9 }: { d: string; tam?: number; color?: string; grosor?: number }): ReactNode {
   return (
@@ -43,7 +44,7 @@ function Hoja({ titulo, tipo, onCerrar, children, dato }: { titulo: string; tipo
   const meta = tipo ? metaDe(tipo) : null
   return createPortal(
     <div data-cuentanos="hoja" data-hoja-cuentanos={dato} role="dialog" aria-modal="true" aria-label={titulo} className="fixed inset-0 z-[97]">
-      <div onClick={onCerrar} style={{ position: 'absolute', inset: 0, background: 'rgba(28,34,48,.45)' }} />
+      <div onClick={onCerrar} style={{ position: 'absolute', inset: 0, background: FONDO_DE_HOJA }} />
       <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, maxHeight: '92dvh', overflowY: 'auto', borderRadius: '30px 30px 0 0', background: '#FFFDF8', padding: '10px 18px calc(env(safe-area-inset-bottom,0px) + 20px)', display: 'flex', flexDirection: 'column', gap: 14, boxShadow: '0 -20px 40px -20px rgba(28,34,48,.5)', fontFamily: SANS, color: '#1C2230' }}>
         <span style={{ alignSelf: 'center', width: 42, height: 5, borderRadius: 5, background: 'rgba(28,34,48,.18)' }} />
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 }}>
@@ -426,7 +427,7 @@ function Formulario({ tipo }: { tipo: TipoAviso }): ReactNode {
         </label>
       )}
       {error && <span data-error-cuentanos style={{ font: `500 12.5px ${SANS}`, color: 'rgb(var(--accent-red))' }}>{error}</span>}
-      <button type="button" data-enviar-cuentanos disabled={!valido || enviando} onClick={() => void enviar()} style={{ height: 52, borderRadius: 16, border: 'none', cursor: valido && !enviando ? 'pointer' : 'default', opacity: valido ? 1 : 0.45, background: ORO, boxShadow: '0 12px 22px -14px rgba(110,80,24,.75),inset 0 1px 0 rgba(255,255,255,.6)', color: '#4A3510', font: `700 15.5px ${SANS}` }}>
+      <button type="button" data-enviar-cuentanos disabled={!valido || enviando} onClick={() => void enviar()} style={{ height: 52, borderRadius: 16, border: 'none', cursor: valido && !enviando ? 'pointer' : 'default', opacity: valido ? 1 : 0.45, ...BOTON_ORO, font: `700 15.5px ${SANS}` }}>
         {enviando ? 'Enviando…' : 'Enviar'}
       </button>
       {tipo === 'no_funciona' && <span style={{ textAlign: 'center', font: `400 11.5px/1.35 ${SANS}`, color: 'rgba(28,34,48,.5)', textWrap: 'balance' }}>{TEXTO_LEGAL_NO_FUNCIONA}</span>}

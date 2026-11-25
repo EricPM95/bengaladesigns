@@ -1,4 +1,4 @@
-import { BOTON_ORO } from '../../ui/botonesOro'
+import { BOTON_CLARO, BOTON_ORO } from '../../ui/botonesOro'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
 import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
@@ -8,6 +8,7 @@ import { EstilosDelVisto } from '../../logros/visto/Hojas'
 import { ParadaFoto } from './v2/ParadaFoto'
 import { CruzDeAviso } from './v2/AvisosHoy'
 import type { RetoDelDia, SitioCerca } from './useCercaDeAqui'
+import { FONDO_DE_HOJA } from '../../ui/fondoDeHoja'
 
 /**
  * EL JUEGO DE LOS EMBLEMAS OCULTOS (Tanda HOY1; Design «Companero», C16, C17 y C18).
@@ -71,7 +72,7 @@ export function HojaLlegadaOculta({ sitio, onCerrar }: { sitio: SitioCerca; onCe
   return createPortal(
     <div data-juego="llegada" role="dialog" aria-label="Aquí se esconde un Emblema Oculto" className="fixed inset-0 z-[80] flex flex-col justify-end">
       <EstilosDelVisto />
-      <button type="button" aria-label="Cerrar" onClick={onCerrar} className="absolute inset-0 cursor-default border-0 p-0" style={{ background: 'rgba(28,34,48,.42)', animation: 'vistoFade .3s ease both' }} />
+      <button type="button" aria-label="Cerrar" onClick={onCerrar} className="absolute inset-0 cursor-default border-0 p-0" style={{ background: FONDO_DE_HOJA, animation: 'vistoFade .3s ease both' }} />
       <div className="relative mx-auto flex w-full max-w-[520px] flex-col gap-3 overflow-hidden px-[18px] pb-8 pt-3" style={{ borderRadius: '26px 26px 0 0', background: 'radial-gradient(120% 90% at 85% 0%,#3A3550 0%,#1C2230 60%)', color: '#FFFDF8', boxShadow: '0 -12px 34px -18px rgba(0,0,0,.5)', animation: 'vistoSheet .5s cubic-bezier(.2,.8,.2,1) both' }}>
         <span className="pointer-events-none absolute -right-[70px] -top-20 h-60 w-60 rounded-full" style={{ background: 'repeating-conic-gradient(rgba(243,213,154,.18) 0 7deg,transparent 7deg 20deg)', WebkitMaskImage: 'radial-gradient(circle,#000 20%,transparent 68%)', maskImage: 'radial-gradient(circle,#000 20%,transparent 68%)', animation: 'vistoRays 24s linear infinite' }} />
         <span className="self-center" style={{ width: 42, height: 4, borderRadius: 4, background: 'rgba(255,253,248,.25)' }} />
@@ -103,7 +104,7 @@ export function HojaLlegadaOculta({ sitio, onCerrar }: { sitio: SitioCerca; onCe
           </svg>
           Hacer la foto
         </button>
-        <button type="button" data-juego-boton="ahora-no" onClick={onCerrar} className="relative min-h-11 self-center px-3 underline underline-offset-[3px]" style={{ font: "400 13px 'Geist'", color: 'rgba(255,253,248,.65)', background: 'none', border: 'none' }}>
+        <button type="button" data-juego-boton="ahora-no" onClick={onCerrar} className="relative flex min-h-12 items-center justify-center rounded-2xl" style={{ ...BOTON_CLARO, font: "700 14px 'Geist'" }}>
           Ahora no
         </button>
       </div>

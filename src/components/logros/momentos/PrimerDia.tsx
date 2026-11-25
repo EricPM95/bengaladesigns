@@ -6,6 +6,7 @@ import { FONDO_NOCHE, ORO } from './base'
 import './momentos.css'
 import { useMomentosUI } from './useMomentosUI'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
+import { BOTON_ORO } from '../../ui/botonesOro'
 
 /**
  * «HOY EMPIEZAS A GANAR LOGROS» (Tanda 8B, pantalla L0 de «Ayudas»). Sale una sola vez, al empezar el primer día del viaje con logros; se recuerda en el móvil.
@@ -71,7 +72,7 @@ export default function PrimerDia({ alCerrar }: { alCerrar?: () => void } = {}):
           </div>
         ))}
       </div>
-      <button type="button" onClick={cerrar} style={{ marginTop: 34, width: '100%', maxWidth: 360, height: 54, border: 'none', borderRadius: 999, background: 'linear-gradient(110deg,#D9BE85,#F3E3B8 50%,#D9BE85)', color: '#2A1D10', font: "700 15px 'Geist'", cursor: 'pointer', animation: 'moUp .6s .8s ease both' }}>Empezar mi día</button>
+      <button type="button" onClick={cerrar} style={{ marginTop: 34, width: '100%', maxWidth: 360, height: 54, border: 'none', borderRadius: 999, ...BOTON_ORO, font: "700 15px 'Geist'", cursor: 'pointer', animation: 'moUp .6s .8s ease both' }}>Empezar mi día</button>
     </div>
   )
 }

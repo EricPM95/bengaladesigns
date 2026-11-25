@@ -1,0 +1,120 @@
+[
+  {
+    "id": "1",
+    "texto": "Un solo botón dorado (BOTON_ORO) en toda la app; fuera el champán",
+    "estado": "ok",
+    "captura": "v53_1_cuenta_dorado_y_dos_botones.jpg",
+    "nota": "Se ha cambiado en la pieza común, así que vale para todos los sitios; solo se ha visto en una hoja de cuenta, en HOY y en Reorganizar.",
+    "explicacion": "Todos los botones principales usan ya el dorado de Design. El champán (BotonHoja, botonChampan, .btn-champan y los dorados hechos a mano) se ha cambiado por el mismo dorado."
+  },
+  {
+    "id": "2",
+    "texto": "La sombra de detrás de las hojas, la de Design, sin desenfoque, en todas las hojas",
+    "estado": "ok",
+    "captura": "v53_3_tres_opciones_hoy.jpg",
+    "nota": "Medido en una hoja de cuenta: color 20,16,10 al 50 % y sin blur.",
+    "explicacion": "Todas las hojas oscurecen la pantalla con la misma sombra, sin desenfoque. Está en una sola pieza (fondoDeHoja.ts)."
+  },
+  {
+    "id": "3-dos-opciones",
+    "texto": "Con dos opciones: dos botones iguales lado a lado (dorado y blanco con borde)",
+    "estado": "ok",
+    "captura": "v53_7b_adaptar_vuelos.jpg",
+    "explicacion": "Las hojas con dos opciones ponen el dorado y el blanco con borde juntos, del mismo tamaño (Reorganizar, «¿Cómo te llamas?», juntar viaje, recomendaciones, dos viajes, Nuevo viaje, «Cerca de ti», «Ahora no» de Fuera de ruta…)."
+  },
+  {
+    "id": "3-tres-o-mas",
+    "texto": "Con tres o más: dorado, blanco con borde debajo y la salida como texto pequeño",
+    "estado": "ok",
+    "captura": "v53_3_tres_opciones_hoy.jpg",
+    "explicacion": "En las hojas de propuesta de HOY con tres opciones el dorado va arriba, debajo el blanco con borde y «Dejarlo como está» pequeño al final."
+  },
+  {
+    "id": "4",
+    "texto": "La papelera de RESERVAS abajo a la derecha en todas las tarjetas, también la del vuelo",
+    "estado": "ok",
+    "captura": "v53_4_vuelo_papelera.jpg",
+    "nota": "Entradas, excursiones y alojamiento ya la tenían así (no se ha tocado); no se ha capturado cada una.",
+    "explicacion": "La papelera del vuelo ya no va en la fila del botón de la tarjeta de embarque: baja a su propia fila, abajo a la derecha, como en las demás tarjetas."
+  },
+  {
+    "id": "5-hecho",
+    "texto": "DÍAS: el día pasado que hizo algo sigue «Hecho · 1 foto» / «Hecho · Ver tu día» con ✓ verde",
+    "estado": "ok",
+    "captura": "v53_5_dias_lanzarote.jpg",
+    "explicacion": "El día con una foto sigue diciendo «Hecho · 1 foto» con su ✓ verde. Con una parada vista dice «Hecho · Ver tu día» (visto en Roma)."
+  },
+  {
+    "id": "5-ya-paso",
+    "texto": "DÍAS: el día pasado sin nada dice «Ya pasó · Ver tu día», sin ✓ verde",
+    "estado": "ok",
+    "captura": "v53_5_dias_lanzarote.jpg",
+    "explicacion": "Los días del 9 al 12 de Lanzarote, en los que no se hizo nada, dicen «Ya pasó · Ver tu día» y ya no llevan el ✓ verde."
+  },
+  {
+    "id": "6-cabecera",
+    "texto": "Icono D «Pin con reloj» en la cabecera de LUGARES PENDIENTES",
+    "estado": "ok",
+    "captura": "v53_6_cabecera_pendientes.jpg",
+    "explicacion": "La cabecera del bloque lleva el pin con reloj (la D) antes de «LUGARES PENDIENTES»."
+  },
+  {
+    "id": "6-tarjeta",
+    "texto": "El cuadrado de la derecha de la tarjeta de «Pasar a otro día» cuando va a pendientes",
+    "estado": "medias",
+    "captura": "v53_6_tarjeta_pendientes.jpg",
+    "nota": "La pieza se ve bien (montada suelta), pero no he llegado a abrir la hoja real «no cabe en ningún día» en una captura: hace falta un viaje donde ningún otro día admita la parada.",
+    "explicacion": "Cuando el sitio no cabe en ningún día, la tarjeta de la hoja enseña un cuadrado azul oscuro con el icono dorado en vez de la fecha."
+  },
+  {
+    "id": "6-boton",
+    "texto": "El botón [Guardar en pendientes] lleva el icono",
+    "estado": "ok",
+    "captura": "v53_6_boton_guardar_pendientes.jpg",
+    "explicacion": "El botón de la parada que ya ha cerrado y el de la hoja «no cabe» llevan el pin con reloj."
+  },
+  {
+    "id": "6-aviso",
+    "texto": "El aviso de abajo «… lo tienes en Lugares pendientes · [Deshacer]» lleva el icono",
+    "estado": "ok",
+    "captura": "v53_6_aviso_pendientes.jpg",
+    "explicacion": "El aviso de abajo que habla de Lugares pendientes lleva el pin con reloj a la izquierda del texto."
+  },
+  {
+    "id": "7-llegada",
+    "texto": "RESERVAS › «Llegada y vuelta» plegado: mismo margen que Alojamiento, Entradas y Excursiones",
+    "estado": "ok",
+    "captura": "v53_7a_llegada_plegada.jpg",
+    "explicacion": "La tarjeta y su icono de «Llegada y vuelta» plegada estaban 14 px más a la izquierda; ahora están en la misma línea que las demás (medido: 46 px las tres)."
+  },
+  {
+    "id": "7-reorganizar",
+    "texto": "Antes del título de «¿Adaptamos tu primer y tu último día…?» y de toda hoja de Reorganizar, el icono del botón flotante",
+    "estado": "ok",
+    "captura": "v53_7b_adaptar_vuelos.jpg",
+    "explicacion": "Las dos hojas de Reorganizar llevan antes del título el círculo azul con las dos flechas, el mismo icono del botón que se queda flotando (visto también en v53_7b_boton_flotante_queda.jpg)."
+  },
+  {
+    "id": "8-reglas",
+    "texto": "Reglas nuevas en CLAUDE.md: puntos 1-4 y 6, «se adapta si no se ve», «lo de Roma vale para todos los destinos»",
+    "estado": "ok",
+    "captura": null,
+    "nota": "Es texto, no tiene captura.",
+    "explicacion": "Están escritas en CLAUDE.md con sus piezas en la tabla."
+  },
+  {
+    "id": "8-lanzarote",
+    "texto": "Todo lo común vale para Lanzarote: comprobar al menos un caso allí",
+    "estado": "ok",
+    "captura": "v53_5_dias_lanzarote.jpg",
+    "explicacion": "Todo lo hecho está en piezas comunes, no escrito para Roma. En Lanzarote se ha visto DÍAS (Hecho · 1 foto y Ya pasó), RESERVAS plegada y la cabecera de Lugares pendientes con su icono."
+  },
+  {
+    "id": "9",
+    "texto": "Sin pruebas; npm run build sin errores; capturas en iPhone",
+    "estado": "ok",
+    "captura": null,
+    "nota": "Sin commit ni push (lo has pedido así): el push a main y la comprobación en jutrip.app quedan para después.",
+    "explicacion": "No se ha pasado ni escrito ninguna prueba. tsc (tsconfig.app.json) y npm run build salen sin errores."
+  }
+]

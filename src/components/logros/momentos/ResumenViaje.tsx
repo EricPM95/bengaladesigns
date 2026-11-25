@@ -1,3 +1,4 @@
+import { FONDO_DE_HOJA } from '../../ui/fondoDeHoja'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { useRouteStore } from '../../../store/useRouteStore'
@@ -365,7 +366,7 @@ function HojaDeSorpresas({ lista, ciudad, tripId, inicio, quedanSecretos, onCerr
   const plazo = fraseDelPlazo(useRouteStore.getState().route)?.replace('Puedes reclamar hasta', 'Hasta')
   return (
     <div role="dialog" aria-modal="true" aria-label="Sorpresas por reclamar" data-hoja-sorpresas style={{ position: 'fixed', inset: 0, zIndex: 9100 }}>
-      <div onClick={onCerrar} style={{ position: 'absolute', inset: 0, background: 'rgba(28,34,48,.5)' }} />
+      <div onClick={onCerrar} style={{ position: 'absolute', inset: 0, background: FONDO_DE_HOJA }} />
       <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, maxHeight: 'min(88%, calc(100% - env(safe-area-inset-top,0px) - 28px))', borderRadius: '32px 32px 0 0', background: '#FFFDF8', padding: '12px 0 calc(env(safe-area-inset-bottom,0px) + 28px)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, color: '#1C2230' }}>
         <CruzDeHoja onCerrar={onCerrar} fuerte />
         <span style={{ flex: 'none', width: 40, height: 5, borderRadius: 3, background: 'rgba(28,34,48,.2)' }} />

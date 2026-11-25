@@ -1,5 +1,6 @@
 import { useEffect, useSyncExternalStore } from 'react'
 import { actualizarAhora, avisarVersionNueva, suscribirVersionNueva, versionNuevaAvisada } from '../lib/cargaSegura'
+import { BOTON_ORO } from './ui/botonesOro'
 
 /**
  * «HAY UNA VERSIÓN NUEVA · [ACTUALIZAR]» (19-nov, decisión de Eric): cuando se publica una versión con la app abierta, una franja pequeña abajo avisa; la app solo se recarga al tocar [Actualizar] (o la próxima vez que se abra).
@@ -47,7 +48,7 @@ export function AvisoDeVersionNueva() {
   return (
     <div role="status" data-version-nueva style={{ position: 'fixed', left: 16, right: 16, bottom: 'calc(env(safe-area-inset-bottom,0px) + 84px)', zIndex: 9700, display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px 10px 16px', borderRadius: 999, background: '#1C2230', color: '#FFFDF8', boxShadow: '0 14px 30px -12px rgba(0,0,0,.5)', font: "500 13.5px/1.2 'Geist',system-ui,sans-serif" }}>
       <span style={{ flex: 1 }}>Hay una versión nueva</span>
-      <button type="button" data-actualizar-version onClick={actualizarAhora} style={{ flex: 'none', height: 40, padding: '0 18px', borderRadius: 999, border: 0, cursor: 'pointer', background: 'linear-gradient(180deg,#FBF3E2,#EBD9AE)', color: '#6F4E37', font: "700 13.5px 'Geist',system-ui,sans-serif" }}>
+      <button type="button" data-actualizar-version onClick={actualizarAhora} style={{ flex: 'none', height: 40, padding: '0 18px', borderRadius: 999, border: 0, cursor: 'pointer', ...BOTON_ORO, font: "700 13.5px 'Geist',system-ui,sans-serif" }}>
         Actualizar
       </button>
     </div>

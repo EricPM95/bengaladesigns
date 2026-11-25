@@ -3,6 +3,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { GeneralBookingModal } from '../reservas/GeneralBookingModal'
 import { Icono } from '../../ui/Icono'
 import { quitarConDeshacer } from '../../../store/useAddFlowStore'
+import { BOTON_ORO } from '../../ui/botonesOro'
 
 interface VehicleBlockProps {
   /** 'camper': sustituye por completo al bloque de alojamiento (es donde duermes). 'rental-car': aparece ADEMÁS del de alojamiento (logística aparte). */
@@ -43,7 +44,7 @@ export function VehicleBlock({ kind }: VehicleBlockProps) {
             data-vehiculo-anadir="1"
             aria-label={copy.title}
             onClick={() => setModalOpen(true)}
-            style={{ width: 34, height: 34, flex: 'none', borderRadius: '50%', border: 0, background: 'linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440)', boxShadow: '0 6px 12px -8px rgba(110,80,24,.8)', color: '#4A3510', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+            style={{ width: 34, height: 34, flex: 'none', borderRadius: '50%', border: 0, ...BOTON_ORO, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
           >
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
               <path d="M12 5v14M5 12h14" />

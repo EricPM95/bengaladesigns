@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMiPerfil } from '../../store/useMiPerfil'
 import { usePedirNombre } from '../../store/usePedirNombre'
-import { BotonHoja, Hoja } from '../ui/Hoja'
+import { BotonHoja, DosBotonesHoja, Hoja } from '../ui/Hoja'
 
 /**
  * «¿CÓMO TE LLAMAS?» (cuentas parte 3B, punto 5; sin pantalla de Design, hecha con las piezas de las hojas de siempre). Se pide una sola vez, cuando hace falta (al compartir un viaje, al unirse a
@@ -45,12 +45,14 @@ export function HojaComoTeLlamas() {
           {error}
         </p>
       )}
-      <BotonHoja tipo="oscuro" disabled={ocupado || !texto.trim()} onClick={() => void seguir()} datos="nombre-seguir">
-        Seguir
-      </BotonHoja>
-      <BotonHoja tipo="secundario" disabled={ocupado} onClick={cerrar} datos="nombre-ahora-no">
-        Ahora no
-      </BotonHoja>
+      <DosBotonesHoja>
+        <BotonHoja tipo="oscuro" disabled={ocupado || !texto.trim()} onClick={() => void seguir()} datos="nombre-seguir">
+          Seguir
+        </BotonHoja>
+        <BotonHoja tipo="secundario" disabled={ocupado} onClick={cerrar} datos="nombre-ahora-no">
+          Ahora no
+        </BotonHoja>
+      </DosBotonesHoja>
     </Hoja>
   )
 }

@@ -3,13 +3,14 @@ import { fechaCorta, mandar, pedir, type DestinosDelPanel } from './api'
 import { Bandera, isoDe } from './banderas'
 import { SERIE } from './estilo'
 import { parametrosDePeriodo, SelectorDePeriodo, TituloConPeriodo, usePeriodo } from './periodo'
+import { BOTON_ORO } from '../ui/botonesOro'
 
 /**
  * (V35A, Design P4/P4b/M4) DESTINOS PEDIDOS: los destinos que pide la gente en el periodo elegido («Los más pedidos · este mes», con bandera, barra y cuántos quieren que les avisemos) y los «Próximamente» con cuánta gente espera.
  * [Avisar] / [Ya está disponible: avisarles] avisa UNA sola vez por persona y destino: la campana (si tiene cuenta) y el correo. «Añadir un destino», «Pasar a Próximamente» y «Quitar» (que guardan los Próximamente en la base de datos)
  * (V35B) están encendidos: guardan los Próximamente en la base de datos (0091); sin ella salen apagados con «Pronto». [Avisar] y [Ya está disponible] solo si el destino YA está publicado en la app («Aún no está en la app»). Sin la clave de correo, solo la campana (y se dice).
  */
-const botonOro = (desactivado: boolean) => ({ height: 36, padding: '0 16px', borderRadius: 12, border: 'none', background: 'linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440)', color: '#4A3510', font: "700 13px 'Geist'", opacity: desactivado ? 0.4 : 1, cursor: desactivado ? 'default' : 'pointer' }) as const
+const botonOro = (desactivado: boolean) => ({ height: 36, padding: '0 16px', borderRadius: 12, border: 'none', ...BOTON_ORO, font: "700 13px 'Geist'", opacity: desactivado ? 0.4 : 1, cursor: desactivado ? 'default' : 'pointer' }) as const
 
 export function Destinos({ movil }: { movil: boolean }): ReactNode {
   const p = usePeriodo()
@@ -61,7 +62,7 @@ export function Destinos({ movil }: { movil: boolean }): ReactNode {
     <div data-seccion="destinos" style={{ display: 'flex', flexDirection: 'column', gap: movil ? 12 : 14 }}>
       {periodo}
       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-        <button type="button" data-anadir-destino disabled={!puede || ocupado} title={puede ? undefined : 'Pronto'} onClick={() => setFormulario(formulario ? null : { destino: '', pais: '' })} style={{ height: 44, padding: '0 22px', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440)', color: '#4A3510', font: "700 14px 'Geist'", opacity: puede ? 1 : 0.45, display: 'flex', alignItems: 'center', gap: 8, cursor: puede ? 'pointer' : 'default' }}>
+        <button type="button" data-anadir-destino disabled={!puede || ocupado} title={puede ? undefined : 'Pronto'} onClick={() => setFormulario(formulario ? null : { destino: '', pais: '' })} style={{ height: 44, padding: '0 22px', borderRadius: 14, border: 'none', ...BOTON_ORO, font: "700 14px 'Geist'", opacity: puede ? 1 : 0.45, display: 'flex', alignItems: 'center', gap: 8, cursor: puede ? 'pointer' : 'default' }}>
           <span style={{ fontSize: 18, lineHeight: 1 }}>+</span> Añadir un destino
         </button>
         {!puede && <span data-pronto style={{ font: "500 12.5px 'Geist'", color: 'rgba(28,34,48,.55)' }}>Pronto: falta aplicar la migración 0091</span>}

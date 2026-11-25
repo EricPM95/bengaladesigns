@@ -4,6 +4,7 @@ import { guardarBalda, guardarTitulo, useGanados, useHojasDeLogros, type FilaDeV
 import { ChapaDeFila, DibujoDeItem } from './dibujo'
 import { cuandoDe, cuentaDeFila, etiquetaDe, GRUPO, MAYUS, NOMBRE_DE_GRUPO, textoSiguiente } from './formato'
 import { TiradorDeHoja } from '../../../ui/TiradorDeHoja'
+import { FONDO_DE_HOJA } from '../../../ui/fondoDeHoja'
 
 const Repetir = lazy(() => import('./Repetir'))
 
@@ -59,7 +60,7 @@ export function FichaHoja({ g, clave, cerrar }: { g: Ganados; clave: string; cer
 
   return (
     <>
-      <button type="button" aria-label="Cerrar" onClick={cerrar} style={{ position: 'absolute', inset: 0, zIndex: 40, border: 'none', padding: 0, background: 'rgba(28,34,48,.45)', animation: 'vtFade .3s ease both', cursor: 'default' }} />
+      <button type="button" aria-label="Cerrar" onClick={cerrar} style={{ position: 'absolute', inset: 0, zIndex: 40, border: 'none', padding: 0, background: FONDO_DE_HOJA, animation: 'vtFade .3s ease both', cursor: 'default' }} />
       <div role="dialog" aria-modal="true" aria-label={nombre} data-ficha={clave} style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 41, borderRadius: '32px 32px 0 0', background: '#FFFDF8', color: '#1C2230', padding: '12px 18px calc(env(safe-area-inset-bottom,0px) + 30px)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, textAlign: 'center', animation: 'vtSheet .45s cubic-bezier(.2,.8,.2,1) both' }}>
         <TiradorDeHoja />
         <span style={{ marginTop: 8, filter: ganado ? 'none' : 'grayscale(1)', opacity: ganado ? 1 : 0.5 }}>{item ? <DibujoDeItem item={item} tam={140} /> : fila ? <ChapaDeFila fila={fila} tam={140} /> : null}</span>

@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { BOTON_CLARO, BOTON_ORO } from '../../ui/botonesOro'
 import type { Route } from '../../../lib/types'
 import { dayOnDate, type SaleMatch } from '../../../lib/bookings'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
@@ -61,7 +62,7 @@ export function SaleCards({ route }: { route: Route }) {
                 <button type="button" onClick={() => quitarConDeshacer(sale.kind === 'excursion' ? 'Excursión quitada del viaje' : 'Entrada quitada del viaje', () => resolveSale(sale.id, 'remove'))} className="zona-toque h-10 flex-1 rounded-full bg-text text-[14px] font-medium text-bg">
                   Quitar del viaje
                 </button>
-                <button type="button" onClick={() => resolveSale(sale.id, 'dismiss')} className="zona-toque h-10 flex-1 rounded-full border border-text/15 text-[14px] font-medium text-text">
+                <button type="button" onClick={() => resolveSale(sale.id, 'dismiss')} className="zona-toque h-11 flex-1 rounded-2xl text-[14px] font-bold" style={BOTON_CLARO}>
                   Ahora no
                 </button>
               </div>
@@ -76,11 +77,11 @@ export function SaleCards({ route }: { route: Route }) {
             </p>
             <div className="mt-3 flex gap-2">
               {day && (
-                <button type="button" onClick={() => resolveSale(sale.id, 'accept', excursionFor(sale))} className="zona-toque h-10 flex-1 rounded-full btn-champan text-[14px] font-medium ">
+                <button type="button" onClick={() => resolveSale(sale.id, 'accept', excursionFor(sale))} className="zona-toque h-11 flex-1 rounded-2xl text-[14px] font-bold" style={BOTON_ORO}>
                   Sí, ponla
                 </button>
               )}
-              <button type="button" onClick={() => resolveSale(sale.id, 'dismiss')} className="zona-toque h-10 flex-1 rounded-full border border-text/15 text-[14px] font-medium text-text">
+              <button type="button" onClick={() => resolveSale(sale.id, 'dismiss')} className="zona-toque h-11 flex-1 rounded-2xl text-[14px] font-bold" style={BOTON_CLARO}>
                 Ahora no
               </button>
             </div>

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouteStore } from '../../store/useRouteStore'
 import type { Punto } from '../../lib/cuentanos/tipos'
+import { BOTON_ORO } from '../ui/botonesOro'
 
 /**
  * (V20, Design U2h) «BUSCAR EN EL MAPA»: el mapa a pantalla completa con un pin fijo en el centro; el viajero mueve el mapa hasta dejar el pin encima del sitio, debajo sale la dirección de ese punto
@@ -123,7 +124,7 @@ export function MapaDelAviso({ inicial, onVolver, onElegido }: { inicial: Punto 
           </span>
           <span data-direccion-del-punto style={{ font: "600 15px/1.25 'Geist'", minWidth: 0 }}>{direccion ?? (centro ? `${centro.lat.toFixed(4)}, ${centro.lng.toFixed(4)}` : 'Mueve el mapa hasta el sitio')}</span>
         </div>
-        <button type="button" data-este-es-el-sitio disabled={!centro} onClick={() => centro && onElegido({ lat: centro.lat, lng: centro.lng, ...(direccion ? { direccion } : {}) })} style={{ height: 52, borderRadius: 16, border: 'none', cursor: centro ? 'pointer' : 'default', background: 'linear-gradient(135deg,#F6E8BE,#D8BE84 55%,#BE9440)', boxShadow: '0 12px 22px -14px rgba(110,80,24,.75),inset 0 1px 0 rgba(255,255,255,.6)', color: '#4A3510', font: "700 15.5px 'Geist'" }}>
+        <button type="button" data-este-es-el-sitio disabled={!centro} onClick={() => centro && onElegido({ lat: centro.lat, lng: centro.lng, ...(direccion ? { direccion } : {}) })} style={{ height: 52, borderRadius: 16, border: 'none', cursor: centro ? 'pointer' : 'default', ...BOTON_ORO, font: "700 15.5px 'Geist'" }}>
           Este es el sitio
         </button>
       </div>

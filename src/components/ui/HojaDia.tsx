@@ -7,6 +7,7 @@ import { CuadradoFecha } from './CuadradoFecha'
 import { CruzDeHoja } from './CruzDeHoja'
 import { TiradorDeHoja } from './TiradorDeHoja'
 import { DORADO } from './botonesOro'
+import { FONDO_DE_HOJA } from './fondoDeHoja'
 
 /**
  * (Tanda 10N8, apartado 3i) LA HOJA PARA ELEGIR UN DÍA, exactamente como `Piezas/Hoja Dia` de Design. Una sola para toda la app: siempre que haya que elegir un día (añadir algo a un día, pasar algo a otro,
@@ -77,7 +78,7 @@ export function HojaDia({
 
   return createPortal(
     <div data-hoja-dia={datos} data-hoja={datos} style={{ position: 'fixed', inset: 0, zIndex: z, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }} role="dialog" aria-modal="true" aria-label={titulo}>
-      <div className="hoja-fondo" onClick={ocupado ? undefined : onCerrar} style={{ position: 'absolute', inset: 0, background: 'rgba(20,16,10,.5)' }} />
+      <div className="hoja-fondo" onClick={ocupado ? undefined : onCerrar} style={{ position: 'absolute', inset: 0, background: FONDO_DE_HOJA }} />
       <div
         className="hoja-panel"
         style={{

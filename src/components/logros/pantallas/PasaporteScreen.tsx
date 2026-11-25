@@ -20,6 +20,7 @@ import { CruzDeHoja } from '../../ui/CruzDeHoja'
 import { marcarSelloEstampado, selloYaEstampado } from '../../../lib/selloEstampado'
 import { prepararSonido, sonar } from '../../../lib/sonidos'
 import { TiradorDeHoja } from '../../ui/TiradorDeHoja'
+import { FONDO_DE_HOJA } from '../../ui/fondoDeHoja'
 
 const BURDEOS = 'linear-gradient(150deg,#7A2034,#4A1220 60%,#36101A)'
 const ORO = 'oklch(0.8 0.14 70)'
@@ -343,7 +344,7 @@ export default function PasaporteScreen({ pantalla, ejemplo }: { pantalla: Panta
 
         {lista && (
           <>
-            <div onClick={() => setLista(false)} style={{ position: 'absolute', inset: 0, zIndex: 30, background: 'rgba(28,34,48,.4)', animation: 'muFade .25s ease both' }} />
+            <div onClick={() => setLista(false)} style={{ position: 'absolute', inset: 0, zIndex: 30, background: FONDO_DE_HOJA, animation: 'muFade .25s ease both' }} />
             <div role="dialog" aria-label="Países del pasaporte" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 31, borderRadius: '32px 32px 0 0', background: '#FFFDF8', padding: '10px 18px calc(28px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', animation: 'muSheet .35s cubic-bezier(.2,.8,.2,1) both' }}>
               <CruzDeHoja onCerrar={() => setLista(false)} estilo={{ top: 8, right: 8 }} />
               <TiradorDeHoja />
@@ -373,7 +374,7 @@ export default function PasaporteScreen({ pantalla, ejemplo }: { pantalla: Panta
 
         {aviso && (
           <>
-            <div onClick={() => setAviso(null)} style={{ position: 'absolute', inset: 0, zIndex: 30, background: 'rgba(28,34,48,.4)', animation: 'muFade .25s ease both' }} />
+            <div onClick={() => setAviso(null)} style={{ position: 'absolute', inset: 0, zIndex: 30, background: FONDO_DE_HOJA, animation: 'muFade .25s ease both' }} />
             <div role="dialog" aria-label={`Aún no has estado en ${aviso.ciudad}`} data-hoja-por-conseguir style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 31, borderRadius: '32px 32px 0 0', background: '#FFFDF8', padding: '10px 20px calc(30px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center', animation: 'muSheet .35s cubic-bezier(.2,.8,.2,1) both' }}>
               <CruzDeHoja onCerrar={() => setAviso(null)} />
               <TiradorDeHoja />
@@ -388,7 +389,7 @@ export default function PasaporteScreen({ pantalla, ejemplo }: { pantalla: Panta
 
         {sinSello && (
           <>
-            <div onClick={() => setSinSello(null)} style={{ position: 'absolute', inset: 0, zIndex: 30, background: 'rgba(28,34,48,.4)', animation: 'muFade .25s ease both' }} />
+            <div onClick={() => setSinSello(null)} style={{ position: 'absolute', inset: 0, zIndex: 30, background: FONDO_DE_HOJA, animation: 'muFade .25s ease both' }} />
             <div role="dialog" aria-label={`El sello de ${sinSello.ciudad}`} data-hoja-sin-sello style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 31, borderRadius: '32px 32px 0 0', background: '#FFFDF8', padding: '10px 20px calc(30px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center', animation: 'muSheet .35s cubic-bezier(.2,.8,.2,1) both' }}>
               <CruzDeHoja onCerrar={() => setSinSello(null)} />
               <TiradorDeHoja />

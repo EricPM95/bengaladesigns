@@ -1,3 +1,4 @@
+import { FONDO_DE_HOJA } from '../ui/fondoDeHoja'
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
 import textos from '../../../data/pase/textos.json'
@@ -15,6 +16,7 @@ import { listaParaDestino } from './lista/listaDeCoche'
 import { CruzDeHoja } from '../ui/CruzDeHoja'
 import { TiradorDeHoja } from '../ui/TiradorDeHoja'
 import { DORADO } from '../ui/botonesOro'
+import { BOTON_ORO } from '../ui/botonesOro'
 
 /**
  * LA LISTA DEL PASE POR PUNTOS (Tanda 10N11, apartado 5; `Piezas/Pase Lista` de Design, pantalla 1). Antes (10N10) era la última escena de la película; ahora es un componente propio, fiel al diseño y sin el código de la película
@@ -26,11 +28,6 @@ import { DORADO } from '../ui/botonesOro'
 const ORO = '#E9C77A'
 const CREMA = '#FBF3E2'
 const FILETE = 'rgba(233,199,122,.14)'
-const BOTON_ORO: CSSProperties = {
-  background: 'linear-gradient(135deg,#F7E8BC,#D9BC74 52%,#B58A2E)',
-  color: '#3A2A0A',
-  boxShadow: '0 14px 26px -12px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.6)',
-}
 const MONO = "'Geist Mono',monospace"
 const SERIF = "'Instrument Serif',serif"
 
@@ -163,7 +160,7 @@ export function ListaDelPase({ destino, tripId, desde, onCerrar, configInicial =
     </button>
       {hoja && !conPase && (
         <>
-          <div onClick={() => setHoja('')} style={{ position: 'absolute', inset: 0, background: 'rgba(10,8,5,.6)', zIndex: 15 }} />
+          <div onClick={() => setHoja('')} style={{ position: 'absolute', inset: 0, background: FONDO_DE_HOJA, zIndex: 15 }} />
           <div data-hoja-cuantos-sois="1" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 16, maxWidth: 480, margin: '0 auto', borderRadius: '32px 32px 0 0', background: CREMA, color: '#1C2230', padding: '14px 20px max(26px, env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', gap: 12, boxShadow: '0 -20px 40px rgba(0,0,0,.35)', maxHeight: '88%', overflowY: 'auto' }}>
             <TiradorDeHoja />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

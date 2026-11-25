@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { useArrastreParaCerrar } from './Hoja'
 import { CruzDeHoja } from './CruzDeHoja'
 import { TiradorDeHoja } from './TiradorDeHoja'
+import { FONDO_DE_HOJA } from './fondoDeHoja'
 
 /**
  * LA HOJA DE OPCIONES, IGUAL EN TODA LA APP (Tanda 10N4 §3, `Piezas/Hojas Opciones` de Design, 01 a 04).
@@ -90,7 +91,7 @@ export function HojaOpciones({
   return createPortal(
     // El portal sigue a sus padres en el árbol de React y el menú vive dentro de tarjetas que se abren al tocarlas: aquí se corta el toque.
     <div data-hoja={datos ?? ''} data-hoja-opciones={datos ?? ''} onClick={(e) => e.stopPropagation()} style={{ position: 'fixed', inset: 0, zIndex: z }} role="dialog" aria-modal="true" aria-label={typeof titulo === 'string' ? titulo : etiqueta}>
-      <div className="hoja-fondo" onClick={onCerrar} style={{ position: 'absolute', inset: 0, background: 'rgba(28,34,48,.45)' }} />
+      <div className="hoja-fondo" onClick={onCerrar} style={{ position: 'absolute', inset: 0, background: FONDO_DE_HOJA }} />
       <div
         className="hoja-panel"
         style={{
