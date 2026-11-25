@@ -1,13 +1,13 @@
 # Estado de la tanda seguido
 
-**Última actualización: 26/11/26, 0:09**
+**Última actualización: 26/11/26, 0:28**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-V60 a V64 subidas (e12e291d). Voy por la V65 (entradas y excursiones en grupo)
+V60 a V65 subidas (8c6d8839) con CHECKLIST y REPASO. Empiezo la V66 (HOY respuestas y emblema)
 
 ## Qué falta
-V65, CHECKLIST/REPASO V60-V65, luego V66 y V67
+V66, V67, CHECKLIST V66-V67; luego apagar PC (permitido por Eric)
 
 ## Procesos abiertos ahora mismo
 - node: 2
