@@ -1,13 +1,13 @@
-# Estado de la tanda seguido
+# Estado de la tanda v59
 
-**Última actualización: 25/11/26, 22:24**
+**Última actualización: 25/11/26, 22:58**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-Empiezo las 6 tandas V60-V65; dibujos descomprimidos; voy por la V60
+V59 terminada y subida (b41242df), produccion OK
 
 ## Qué falta
-V60 a V65, CHECKLIST y REPASO
+Nada: a la espera de Eric
 
 ## Procesos abiertos ahora mismo
 - node: 2
