@@ -2,7 +2,7 @@ import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
 
 /**
  * (Tanda 10N8 §8b-h) EL AVISO DE ABAJO OCUPA EXACTAMENTE EL SITIO DEL MENÚ DE ABAJO (Hoy · Ruta · Días · Explorar · Reservas): mismo alto, mismo ancho y mismas esquinas (las del menú: ninguna),
- * tapándolo entero mientras se ve, sin trozos del menú por encima. La regla vale para CUALQUIER aviso de abajo de la app (Deshacer, «Viaje eliminado», «marcada como visto», «Enlace copiado»…): usan este componente.
+ * tapándolo entero mientras se ve, sin trozos del menú por encima. La regla vale para CUALQUIER aviso de abajo de la app (Deshacer, «Viaje eliminado», «Has visto …», «Enlace copiado»…): usan este componente.
  * Se mide el propio menú (`nav[aria-label="Barra del viaje"]`), así vale en Safari, con la app añadida a la pantalla de inicio (otra zona de abajo del iPhone) y si cambia el alto del menú. Sin menú a la vista
  * (pantallas que lo tapan), se pone pegado al borde de abajo con el alto de un menú normal.
  */

@@ -294,10 +294,14 @@ export function vibrar(momento: string): boolean {
   }
 }
 
+/** (V52 §5) Los momentos cuyo sonido ya se pidió al ganarlos (en `reproducirMomentos`): la primera pantalla de una ronda no vuelve a pedirlo; si una ronda llega por otro camino (la cola sin conexión, «Lo de ayer»…), sí. */
+export const momentosConSonido = new WeakSet<object>()
+
 /** Tras ganar cosas: suena y vibra lo más importante. */
 export function reproducirMomentos(tipos: string[], momentos: { tipo?: string; grado?: unknown; id?: unknown; destino?: unknown; n?: unknown; coleccion?: unknown }[] = []) {
   let s = sonidoDeMomentos(tipos, momentos)
   if (!s) return
+  for (const m of momentos) if (m && typeof m === 'object') momentosConSonido.add(m)
   // (V29) Un sello que sube de grado suena a la medalla de ese grado (bronce < plata < oro < diamante).
   if (s === 'sello') {
     const g = String(momentos.find((m) => m.tipo === 'sello')?.grado ?? '')

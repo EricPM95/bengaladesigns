@@ -63,7 +63,7 @@ import { VolverAlAlojamiento } from './VolverAlAlojamiento'
 import { puntoDelAlojamiento } from '../../../../lib/direccionAlojamiento'
 import { avisarAbajo } from '../../../../store/useAvisoDeAbajo'
 import { marcarDicho, yaDicho } from '../../../../lib/avisosUnaVez'
-import { AVISO_SALTADA, avisoDeCerrada, cerradasDeHoy, lugaresPendientes } from '../../../../lib/hoyPendientes'
+import { AVISO_SALTADA, cerradasDeHoy, lugaresPendientes } from '../../../../lib/hoyPendientes'
 import { AvisoDeHoy, CruzDeAviso, ZonaDeAvisos } from './AvisosHoy'
 import { AvisoPlanActualizadoGlobal, useContexto } from './CambiarPlan'
 import { HoyYaNoDaTiempo } from './HoyYaNoDaTiempo'
@@ -250,20 +250,12 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   // (V44 §1) El GPS solo cuenta para los minutos y los cierres cuando el viajero está EN LA RUTA (a 30 min andando de la parada). En el aeropuerto, en casa o en otra ciudad se cuenta con el tiempo del plan: nada se va a pendientes ni sale «10407 min» por estar lejos.
   const zonaUbi = zonaDeUbicacion({ ubicacion: ubicacionReal, route, referencia: paradasDelDia.find((s) => !s.saltada && !s.checkedInAt) ?? null, enCoche })
   const ubicacion = zonaUbi === 'ruta' ? ubicacionReal : null
-  // (V2, 9) NUNCA MANDAR A UN SITIO CERRADO: si la siguiente parada ya está cerrada (o lo estará al llegar), no sale como siguiente: pasa sola a «Lugares pendientes» y sale la siguiente abierta.
+  // (V52 §1) LO CERRADO NO SE MANDA SOLO A PENDIENTES: la parada que ya ha cerrado (o cerrará al llegar) sale con su tarjeta de siempre como «YA HA CERRADO», con [Pasar a otro día] y [Guardar en pendientes]. Es el viajero quien decide; las dos cambian la ruta y llevan [Deshacer].
   const trayectoMinDe = (st: Stop) => trayectoHasta({ siguiente: st, ubicacion, anterior: null, enCoche, casa: null, ida: null })?.totalMin ?? 0
   const cerradas = conPaseOPrueba0 ? cerradasDeHoy({ day, horarioDe, ahoraMin: ahoraMinHoy, trayectoMin: trayectoMinDe }) : new Set<string>()
-  const paradas = paradasDelDia.map((st) => (cerradas.has(st.id) ? { ...st, saltada: true } : st))
+  const paradas = paradasDelDia
   const vigentes = paradas.filter((s) => !s.saltada)
-  useEffect(() => {
-    // V43 §6 y V44 §3: una vez por viaje, día y sitio (guardado en el móvil, se apunta al irse el aviso), y TODO LO QUE HA CERRADO, en UN solo aviso («Han cerrado A y B»). Sin `useRef`: el almacén ya descarta el que está a la vista o esperando.
-    const nuevos = paradasDelDia.filter((st) => cerradas.has(st.id) && !yaDicho(route.id, dateIso, `cerrada:${st.id}`))
-    if (nuevos.length === 0) return
-    const nombres = nuevos.map((st) => displayStopName(st.name))
-    const texto = nuevos.length === 1 ? avisoDeCerrada(nombres[0]) : `Han cerrado ${nombres.slice(0, -1).join(', ')} y ${nombres[nombres.length - 1]} · los tienes en Lugares pendientes`
-    avisarAbajo({ id: `cerrada:${nuevos.map((st) => st.id).join('+')}`, texto, alIrse: () => nuevos.forEach((st) => marcarDicho(route.id, dateIso, `cerrada:${st.id}`)) })
-  })
-  const pendientes = lugaresPendientes({ route, day, cerradas })
+  const pendientes = lugaresPendientes({ route, day, cerradas: new Set<string>() })
   // (HOY2b 8b) Los horarios de lo que queda por hacer hoy: la tarjeta de la mañana y el aviso en directo.
   const ventanasTodas = useVentanasDeHoy(route, day, dateIso)
   // (V2b) Los avisos de horario solo hablan de lo que queda por hacer HOY: lo ya hecho, lo saltado y lo que ha pasado a «Lugares pendientes» por cerrado no cuenta (ni en la cuenta del ritmo).
@@ -333,11 +325,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const vuelveH14 = (conPase: boolean) => (tarjetaVuelve || fichas.vuelta.hora || route.planVuelta?.hora ? <HoyVuelvesH14 route={route} day={day} tarjeta={tarjetaVuelve} mitad={fichas.vuelta} info={infoLlegada} conPase={conPase} onVerComoIr={() => fichas.abrir('vuelta')} /> : null)
   // (V44 §3) Saltar MIRA TODO EL DÍA DE GOLPE: lo que al saltarla también ha cerrado sale en el MISMO aviso («Han cerrado A y B»), no uno detrás de otro; y lleva [Deshacer] (todo lo que cambia la ruta lo lleva).
   const saltar = (stop: Stop) => {
-    const diaSin: DayPlan = { ...day, stops: day.stops.map((s) => (s.id === stop.id ? { ...s, saltada: true } : s)) }
-    const nuevas = conPaseOPrueba0 ? [...cerradasDeHoy({ day: diaSin, horarioDe, ahoraMin: ahoraMinHoy, trayectoMin: trayectoMinDe })].filter((id) => id !== stop.id && !cerradas.has(id)) : []
-    const nombresCerrados = nuevas.map((id) => displayStopName(day.stops.find((s) => s.id === id)?.name ?? '')).filter(Boolean)
-    for (const id of nuevas) marcarDicho(route.id, dateIso, `cerrada:${id}`)
-    const texto = nombresCerrados.length === 0 ? AVISO_SALTADA : nombresCerrados.length === 1 ? `Parada saltada. ${nombresCerrados[0]} ya ha cerrado · las tienes en Lugares pendientes` : `Parada saltada. Han cerrado ${nombresCerrados.slice(0, -1).join(', ')} y ${nombresCerrados[nombresCerrados.length - 1]} · las tienes en Lugares pendientes`
+    const texto = AVISO_SALTADA
     setStopSaltada(day.id, stop.id, true)
     avisarAbajo({ id: `saltada:${stop.id}`, texto, accion: { etiqueta: 'Deshacer', alTocar: () => setStopSaltada(day.id, stop.id, false) } })
     setUltimoVisto(null)
@@ -605,6 +593,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
           casa={zonaCoords}
           centroDelDia={centroDelDia}
           horario={horarioDe(siguiente)}
+          cerrada={cerradas.has(siguiente.id)}
           proximaApertura={proximaAperturaDe(siguiente)}
         />
       )}

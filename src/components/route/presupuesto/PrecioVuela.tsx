@@ -3,6 +3,7 @@ import { useRouteStore } from '../../../store/useRouteStore'
 import { usePresupuestoUi } from '../../../store/usePresupuestoUi'
 import { pagoActivo } from '../../../lib/pago'
 import { monedaDelViajero } from '../../../lib/useMoneda'
+import { sonar } from '../../../lib/sonidos'
 import { cajaDelObjetivo, crearSeguidor, cuandoLaCarteraSeVe, entradaDeEstado, lanzarEfectos, preciosCambiaron, textoParaLector, type UltimoClic } from '../../../lib/precioVuela'
 
 /**
@@ -38,7 +39,9 @@ export function PrecioVuela() {
       const clicDeAhora = ultimoClic
       const reducirMovimiento = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
       cuandoLaCarteraSeVe(
-        () =>
+        () => {
+          // (V52 §5) El dinero que vuela suena (antes no): un «vuuush» corto, solo con movimiento (sin «reducir movimiento» no hay vuelo).
+          if (!reducirMovimiento) void sonar('dinero')
           lanzarEfectos(difs, {
             document,
             ancho: window.innerWidth,
@@ -47,7 +50,8 @@ export function PrecioVuela() {
             ultimoClic: clicDeAhora,
             ahora: Date.now,
             esperar: (fn, ms) => setTimeout(fn, ms),
-          }),
+          })
+        },
         { document, ancho: window.innerWidth, alto: window.innerHeight },
       )
       setAviso(textoParaLector(difs))

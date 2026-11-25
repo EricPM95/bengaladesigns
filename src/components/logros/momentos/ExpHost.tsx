@@ -4,6 +4,7 @@ import type { ExpDeRespuesta } from '../../../lib/logros'
 import { useLogrosStore } from '../../../store/useLogrosStore'
 import { pasoTrasLaExp, type Paso } from './pasoTrasLaExp'
 import { useMomentosUI } from './useMomentosUI'
+import { sonar } from '../../../lib/sonidos'
 
 /**
  * LA EXP A LA VISTA (Tanda 8C2, «Logros · Momentos» y la pieza «Experiencia», E1 a E4). Lo que decidió Eric:
@@ -76,6 +77,10 @@ export function ExpHost(): ReactNode {
     setInfo(e)
     setPaso(primero)
   }, [mostrando, paso])
+  // (V52 §5) La barra de experiencia suena al salir cada paso (+EXP, nivel, rango): antes no sonaba. Dentro del estudio de sonidos no (lo hace sonar él).
+  useEffect(() => {
+    if (paso && !(window as unknown as { __estudioVisor?: unknown }).__estudioVisor) void sonar('exp')
+  }, [paso])
   // Al acabar el último paso (`+EXP`, nivel o rango), suelta el turno y sale lo que esperaba.
   useEffect(() => {
     if (paso === null && info) useMomentosUI.getState().soltar('exp')

@@ -1,6 +1,8 @@
 import { BOTON_ORO } from '../../ui/botonesOro'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
+import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { sonar } from '../../../lib/sonidos'
 import { useCamaraViajeStore } from '../../../lib/camaraViaje'
 import { EstilosDelVisto } from '../../logros/visto/Hojas'
 import { ParadaFoto } from './v2/ParadaFoto'
@@ -62,6 +64,10 @@ export function TarjetaBrilla({ nivel, onAhoraNo }: { nivel: 'brilla' | 'mas_cer
 
 /** Al llegar: «¡Aquí se esconde un Emblema Oculto!» (la hoja oscura de siempre del Visto), con [Hacer la foto]. */
 export function HojaLlegadaOculta({ sitio, onCerrar }: { sitio: SitioCerca; onCerrar: () => void }) {
+  // (V52 §5) La hoja del emblema oculto suena al salir (antes no sonaba).
+  useEffect(() => {
+    void sonar('oculto')
+  }, [])
   return createPortal(
     <div data-juego="llegada" role="dialog" aria-label="Aquí se esconde un Emblema Oculto" className="fixed inset-0 z-[80] flex flex-col justify-end">
       <EstilosDelVisto />

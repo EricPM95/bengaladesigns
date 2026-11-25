@@ -27,6 +27,9 @@ const POR_DEFECTO: Record<string, string> = {
   dia_completo: 'resumen_dia',
   primer_dia: 'primer_dia',
   vuelo: 'vuelo',
+  oculto: 'oculto',
+  exp: 'exp',
+  dinero: 'dinero',
   visto: 'visto',
   aviso: 'aviso',
   fuegos: 'fuegos',
@@ -49,4 +52,4 @@ export function animacionDe(sonido: string, momentos: MomentoMinimo[] = []): str
   return POR_DEFECTO[sonido] ?? null
 }
 /** Los que suenan sueltos, sin quedarse con la animación (el estudio vuelve a lo de antes): no cambian lo que se está enseñando. */
-export const SONIDOS_EFIMEROS = ['vuelo', 'visto', 'aviso']
+export const SONIDOS_EFIMEROS = ['vuelo', 'visto', 'aviso', 'dinero']

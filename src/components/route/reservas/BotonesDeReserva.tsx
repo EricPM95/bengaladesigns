@@ -6,6 +6,8 @@ import { Icono } from '../../ui/Icono'
 import { CandadoRedondo } from '../../pase/Candado'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { BOTON_ORO, DORADO } from '../../ui/botonesOro'
+import { quitarAvisoDeDocumento, useAvisoDeDocumento } from '../../../lib/avisoDeDocumento'
+import { useSyncStore } from '../../../store/useSyncStore'
 
 /**
  * LAS PIEZAS COMPARTIDAS DE LOS BLOQUES DE RESERVAS (Tanda 10S8, agente C; `Piezas/Billete Reservas` y `Piezas/Entradas Billete`): las usan Llegada y vuelta, Entradas y Free Tour y Alojamiento.
@@ -155,4 +157,27 @@ export function LapizDeReserva({ onClick, etiqueta, datos = 'lapiz', atributos }
       </span>
     </button>
   )
+}
+
+/**
+ * (V45 §6 y V52 §5b) LA LÍNEA NARANJA DE UN DOCUMENTO QUE NO CUADRA, UNA SOLA PIEZA: «⚠ Esta tarjeta de embarque es del viernes 13 y tu vuelo es el lunes 23. Revisa que sea la buena» con [Es correcta], DENTRO de la tarjeta.
+ * La usan el vuelo/tren/barco (con su texto), la entrada, la excursión y el alojamiento («Esta entrada…», «Esta reserva…»). Se queda hasta cambiar el documento o pulsar [Es correcta].
+ */
+export function LineaNaranjaDeDocumento({ texto, onCorrecta }: { texto: string; onCorrecta: () => void }) {
+  return (
+    <div data-aviso-documento="fecha" role="status" className="flex flex-col gap-1.5 rounded-[14px] px-3 py-2.5" style={{ background: '#FDECD9', border: '1px solid rgba(194,88,28,.4)' }}>
+      <span className="text-[13px] font-semibold leading-[1.3]" style={{ color: '#9A4A12' }}>⚠ {texto}</span>
+      <button type="button" onClick={onCorrecta} data-aviso-documento-correcta className="zona-toque self-start rounded-full px-3 py-1.5 text-[12.5px] font-bold" style={{ background: '#fff', border: '1px solid rgba(194,88,28,.4)', color: '#9A4A12' }}>
+        Es correcta
+      </button>
+    </div>
+  )
+}
+
+/** (V52 §5b) La línea naranja de la entrada, la excursión o el alojamiento: lee el aviso guardado de ese documento (clave = el id de la reserva o aloj:tramo) y no pinta nada si no hay. */
+export function AvisoDeDocumentoDeReserva({ clave }: { clave: string | null | undefined }) {
+  const tripId = useSyncStore((s) => s.activeTripId)
+  const texto = useAvisoDeDocumento(tripId, clave ?? '')
+  if (!clave || !texto) return null
+  return <LineaNaranjaDeDocumento texto={texto} onCorrecta={() => quitarAvisoDeDocumento(tripId, clave)} />
 }

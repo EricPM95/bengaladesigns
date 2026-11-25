@@ -268,6 +268,8 @@ export interface PropsCambiarPlan {
   onQuieroComer?: () => void
   /** (V43 §5) Sin nada abierto cerca: [Ver Explorar] y [Volver al alojamiento]. */
   onVerExplorar?: () => void
+  /** (V52 §1) La parada ya ha cerrado: en lugar de [Cambiar plan], [Pasar a otro día] (dorado, abre la hoja de siempre) y [Guardar en pendientes]. */
+  cerrada?: boolean
 }
 
 /** [Cambiar plan] y todo lo que abre. */
@@ -372,10 +374,21 @@ export function BotonCambiarPlan(p: PropsCambiarPlan) {
 
   return (
     <>
-      <button type="button" onClick={() => setPaso('menu')} data-hoy-cambiar-plan className="flex h-[52px] flex-1 items-center justify-center gap-[7px] whitespace-nowrap rounded-2xl px-2.5 text-[14px] font-bold" style={BOTON_MARFIL}>
-        <Pic d={D_CAMBIO} size={17} color="currentColor" grosor={2} />
-        Cambiar plan
-      </button>
+      {p.cerrada ? (
+        <>
+          <button type="button" onClick={() => setPaso('dias')} data-hoy-pasar-otro-dia className="flex h-[52px] flex-[1.5] items-center justify-center gap-2 whitespace-nowrap rounded-2xl px-2.5 text-[15px] font-bold" style={BOTON_ORO}>
+            Pasar a otro día
+          </button>
+          <button type="button" onClick={irSaltar} data-hoy-guardar-pendientes className="flex h-[52px] flex-1 items-center justify-center whitespace-nowrap rounded-2xl px-2.5 text-[14px] font-bold" style={BOTON_MARFIL}>
+            Guardar en pendientes
+          </button>
+        </>
+      ) : (
+        <button type="button" onClick={() => setPaso('menu')} data-hoy-cambiar-plan className="flex h-[52px] flex-1 items-center justify-center gap-[7px] whitespace-nowrap rounded-2xl px-2.5 text-[14px] font-bold" style={BOTON_MARFIL}>
+          <Pic d={D_CAMBIO} size={17} color="currentColor" grosor={2} />
+          Cambiar plan
+        </button>
+      )}
       {paso === 'menu' && (
         <HojaV2 onCerrar={cerrar} etiqueta="Cambiar plan" fondo={MARFIL}>
           <div data-cambiar-hoja="menu" className="flex flex-col gap-3">

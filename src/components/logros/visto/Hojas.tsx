@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
+import { sonar } from '../../../lib/sonidos'
 import { displayStopName } from '../../../lib/format'
 import { botonChampan } from '../../../lib/marcaBoton'
 import { Insignia } from '../dibujos/InsigniaPerezosa'
@@ -102,6 +103,10 @@ export interface AccionesDeHoja {
 export function HojaDelVisto({ hoja, acciones }: { hoja: Hoja; acciones: AccionesDeHoja }) {
   const { tipo } = hoja
   const nombre = displayStopName(hoja.parada.nombre)
+  // (V52 §5) La hoja «¡Aquí se esconde un Emblema Oculto!» suena al salir (antes no sonaba).
+  useEffect(() => {
+    if (tipo === 'oculto') void sonar('oculto')
+  }, [tipo])
   const oscura = tipo === 'oculto'
   const caja: CSSProperties = oscura
     ? { background: 'radial-gradient(120% 90% at 85% 0%,#3A3550 0%,#1C2230 60%)', color: '#FFFDF8' }
@@ -194,7 +199,7 @@ export function HojaDelVisto({ hoja, acciones }: { hoja: Hoja; acciones: Accione
   )
 }
 
-/** V1: «Fontana de Trevi marcada como visto · Deshacer», 5 segundos con su barra. */
+/** V1: «Has visto la Fontana de Trevi · Deshacer» (V52: sin género), 5 segundos con su barra. */
 export function AvisoDeVisto({ nombre, ms, onDeshacer }: { nombre: string; ms: number; onDeshacer: () => void }) {
   return createPortal(
     <AvisoSobreLaBarra z={85} datos={{ 'data-visto': 'aviso' }} className="relative overflow-hidden !px-0" estilo={{ background: TINTA, animation: 'vistoToast .35s ease both' }}>
@@ -202,7 +207,7 @@ export function AvisoDeVisto({ nombre, ms, onDeshacer }: { nombre: string; ms: n
         <span className="flex h-[22px] w-[22px] flex-none items-center justify-center rounded-full" style={{ background: 'oklch(0.55 0.11 150)' }}>
           <Trazo d={TRAZO.check} tam={12} grosor={3} />
         </span>
-        <span className="flex-1 py-3" style={{ font: "500 13.5px 'Geist'" }}>{displayStopName(nombre)} marcada como visto</span>
+        <span className="flex-1 py-3" style={{ font: "500 13.5px 'Geist'" }}>Has visto {displayStopName(nombre)}</span>
         <button type="button" onClick={onDeshacer} className="flex h-11 items-center rounded-full px-3.5" style={{ font: "700 13px 'Geist'", color: 'oklch(0.8 0.14 70)', background: 'none', border: 'none' }}>
           Deshacer
         </button>

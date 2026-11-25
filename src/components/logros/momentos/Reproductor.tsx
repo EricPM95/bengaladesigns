@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { Momento } from '../../../lib/logros'
-import { cortarSonidos, prepararSonido, sonar, vibrar } from '../../../lib/sonidos'
+import { cortarSonidos, momentosConSonido, prepararSonido, sonar, vibrar } from '../../../lib/sonidos'
 import { animacionDe } from '../../../lib/sonidos/animacionDe'
 import { aplicarYa, esperaDe } from '../../../lib/sonidos/estudioDeEric'
 import { useLogrosStore } from '../../../store/useLogrosStore'
@@ -53,7 +53,9 @@ export default function Reproductor({ momentos, exp: _exp = null, onTerminar }: 
   // Suena la pantalla que llega (la primera ya sonó al ganarla, en LogrosPorVisto).
   useEffect(() => {
     const p = pantallas[i]
-    if (!p || i === 0) return
+    if (!p) return
+    // (V52 §5) La primera pantalla ya sonó al ganarla (`reproducirMomentos`); si la ronda llegó por otro camino y nadie pidió su sonido («Y además…» sin sonido), suena ahora, con su animación.
+    if (i === 0 && p.momentos.some((m) => momentosConSonido.has(m))) return
     const so = sonidoDeLaPantalla(p)
     void sonar(so, { animacion: animacionDeLaPantalla(p) ?? undefined })
     vibrar(so)

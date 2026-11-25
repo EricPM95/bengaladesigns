@@ -207,6 +207,7 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
                 onLapizDatos={() => setDatosDe({ reserva, leida: null })}
                 onLeida={(leida) => setDatosDe({ reserva: corregirConElDocumento(reserva, { fecha: leida.fecha, hora: leida.hora }, 'reserva', excursionDe(reserva)), leida })}
                 onQuitar={quitar}
+                claveDeAviso={reserva.id}
                 extra={reserva.noMueve ? <VolverExcursionARuta route={route} reserva={reserva} excursion={excursion} /> : undefined}
               />
             </div>

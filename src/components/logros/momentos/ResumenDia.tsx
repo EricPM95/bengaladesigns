@@ -59,6 +59,8 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar, primeraVez
   const tripId = useSyncStore((s) => s.activeTripId) ?? null
   const [estado, setEstado] = useState<EstadoLogros | null>(estadoInicial)
   const [resumen, setResumen] = useState<ResumenLogros | null>(null)
+  // (V52 §5c) Hasta que el servidor contesta (con datos o sin ellos) y si no hay nada que enseñar ya, la pantalla NO dice «Aún no has ganado nada hoy»: sale con su hueco, sin ese texto, y se llena de una vez.
+  const [listo, setListo] = useState(false)
   useEffect(() => {
     let vivo = true
     void (async () => {
@@ -66,7 +68,10 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar, primeraVez
       if (!vivo) return
       setEstado(e)
       const r = await pedirResumen(tripId, e?.viaje?.hoy ?? null)
-      if (vivo) setResumen(r)
+      if (vivo) {
+        setResumen(r)
+        setListo(true)
+      }
     })()
     return () => {
       vivo = false
@@ -87,6 +92,7 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar, primeraVez
   const filasSello = sellosDelDia.map((x) => textoDeSello(x.nace, x.sello, x.grado, estado?.sellos.find((e) => e.id === x.sello)?.nombre))
   const lineas = ORDEN_FILAS.filter((k) => (cuentas[k] ?? 0) > 0)
   const hayAlgo = lineas.length > 0 || filasSello.length > 0
+  const esperando = !listo && !hayAlgo
   // (V38C) Los números suben (y suena) solo la primera vez y solo si hay números que subir.
   const sube = (primeraVez || dentroDelEstudio()) && !movimientoReducido() && lineas.length > 0
   const progreso = useProgresoDeCifras(sube)
@@ -102,7 +108,7 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar, primeraVez
       <CruzDeHoja onCerrar={alCerrar} estilo={{ position: 'fixed', top: 'calc(env(safe-area-inset-top,0px) + 8px)', right: 8 }} />
       <div style={{ padding: 'calc(env(safe-area-inset-top,0px) + 34px) 24px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 8 }}>
         <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(28,34,48,.55)', animation: 'moUp .6s ease both' }}>{ciudad ? `Tu día en ${ciudad}` : 'Tu día'}</span>
-        <span style={{ font: "400 36px/1.05 'Instrument Serif',serif", animation: 'moUp .6s .1s ease both' }}>{hayAlgo ? 'Lo que te llevas de hoy' : 'Aún no has ganado nada hoy'}</span>
+        <span style={{ font: "400 36px/1.05 'Instrument Serif',serif", animation: 'moUp .6s .1s ease both' }}>{esperando ? ' ' : hayAlgo ? 'Lo que te llevas de hoy' : 'Aún no has ganado nada hoy'}</span>
         {sello && sello.grado && (
           <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, animation: 'moIn .8s .25s both' }}>
             <Sello id={sello.id} grado={sello.grado as GradoDeSello} tam={112} />
@@ -118,17 +124,17 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar, primeraVez
               <span style={{ font: "500 15px 'Geist'" }}>{texto}</span>
             </li>
           ))}
-          {lineas.map((k, n0) => { const n = n0 + filasSello.length; return (
+          {lineas.map((k, n0) => { const n = n0 + filasSello.length; const mostrado = (c: string) => Math.max(1, cifraQueSube(cuentas[c] ?? 0, progreso)); return (
             <li key={k} style={{ display: 'flex', alignItems: 'baseline', gap: 12, padding: '14px 4px', borderBottom: '1px solid rgba(28,34,48,.1)', animation: `moUp .5s ${(0.3 + n * 0.08).toFixed(2)}s ease both` }}>
-              <span style={{ font: "400 28px/1 'Instrument Serif',serif", minWidth: 36, color: '#A67C52' }}>{cifraQueSube(cuentas[k] ?? 0, progreso)}</span>
-              <span style={{ font: "500 15px 'Geist'" }}>{fila(k, cuentas[k])}</span>
+              <span style={{ font: "400 28px/1 'Instrument Serif',serif", minWidth: 36, color: '#A67C52' }}>{mostrado(k)}</span>
+              <span style={{ font: "500 15px 'Geist'" }}>{fila(k, mostrado(k))}</span>
             </li>
           ) })}
         </ul>
       )}
       <div style={{ padding: '18px 24px 0', display: 'flex', flexDirection: 'column', gap: 8, textAlign: 'center' }}>
-        {estado && lineaDeSecretos(ciudad, estado.secretos.total, estado.secretos.encontrados) && <span data-secretos="" style={{ font: "500 13.5px 'Geist'", color: 'rgba(28,34,48,.7)' }}>{lineaDeSecretos(ciudad, estado.secretos.total, estado.secretos.encontrados)}</span>}
-        {pendiente && <span style={{ font: "600 13.5px 'Geist'", color: 'oklch(0.55 0.17 5)' }}>{pendiente}</span>}
+        {!esperando && estado && lineaDeSecretos(ciudad, estado.secretos.total, estado.secretos.encontrados) && <span data-secretos="" style={{ font: "500 13.5px 'Geist'", color: 'rgba(28,34,48,.7)' }}>{lineaDeSecretos(ciudad, estado.secretos.total, estado.secretos.encontrados)}</span>}
+        {!esperando && pendiente && <span style={{ font: "600 13.5px 'Geist'", color: 'oklch(0.55 0.17 5)' }}>{pendiente}</span>}
       </div>
       <div style={{ flex: 1 }} />
       <div style={{ padding: '24px 20px calc(env(safe-area-inset-bottom,0px) + 28px)', display: 'flex', flexDirection: 'column', gap: 10 }}>

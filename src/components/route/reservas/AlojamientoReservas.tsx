@@ -21,6 +21,7 @@ import { TimeListWheel } from '../../ui/TimeListWheel'
 import type { EnCambioDeVuelo } from '../../../lib/cambioDeVuelo'
 import { BotonComoLlegarAlojamiento } from '../alojamiento/BotonComoLlegarAlojamiento'
 import { ReservaDelAlojamiento } from './ReservaDelAlojamiento'
+import { AvisoDeDocumentoDeReserva } from './BotonesDeReserva'
 import { MapaDelAlojamiento, MapaPequenoDelAlojamiento } from './MapaDelAlojamiento'
 import { reservaConDatos, textoHorasReserva } from '../../../lib/reservaAlojamiento'
 
@@ -224,6 +225,7 @@ export function AlojamientoReservas({
                             )}
                             {!hayFilas && <span className="text-[13px] text-text/55">Para quién es y cuánto ha costado.</span>}
                           </SeccionDatos>
+                          <AvisoDeDocumentoDeReserva clave={`aloj:${segmentDayId}`} />
                           {pago && (elegida || direccion) && <BotonComoLlegarAlojamiento direccion={direccion} variante="design" />}
                           {hotel && botonAnadir}
                           {hotel && <PapeleraRoja etiqueta="Quitar el alojamiento" datos="alojamiento" onClick={() => quitarConDeshacer('Alojamiento quitado del viaje', () => setHotel(segmentDayId, null))} />}

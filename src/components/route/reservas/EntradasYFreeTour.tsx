@@ -195,6 +195,7 @@ export function EntradasYFreeTour({ route, info, abierto }: { route: Route; info
           onLapizDatos={() => setTarget({ ...targetOf(item), existing: reserva, soloDatos: true })}
           onLeida={(lectura) => setTarget({ ...targetOf(item), existing: corregirConElDocumento(reserva, { fecha: lectura.fecha, hora: lectura.hora }, 'entrada'), lectura })}
           onQuitar={quitar}
+          claveDeAviso={reserva.id}
         />
         {reserva.fueraDeRuta && <FueraDeRutaFila reservaId={reserva.id} esFreeTour={item.isFreeTour} />}
         {avisoDe(reserva.id) && <AvisoFueraDeDiaTarjeta aviso={avisoDe(reserva.id)!} />}

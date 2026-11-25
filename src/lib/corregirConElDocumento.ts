@@ -4,6 +4,9 @@ import { dayOnDate } from './bookings'
 import { fechaCorta } from './excursionMove'
 import { useRouteStore } from '../store/useRouteStore'
 import { withUndo } from '../store/useAddFlowStore'
+import { useSyncStore } from '../store/useSyncStore'
+import { fechaEnProsa } from './nombreDeDia'
+import { ponerAvisoDeDocumento, quitarAvisoDeDocumento } from './avisoDeDocumento'
 
 /**
  * (V50) AL SUBIR UNA ENTRADA O UNA EXCURSIÓN CUYO DOCUMENTO TRAE OTRO DÍA U OTRA HORA, la app lo CORRIGE y lo dice (como ya hace con el vuelo): la reserva pasa al día y a la hora del documento, con el aviso de abajo
@@ -16,6 +19,10 @@ export function corregirConElDocumento(reserva: Reservation, doc: { fecha: strin
   if (!route) return reserva
   const fechaValida = doc.fecha && route.answers.dateRange && dayOnDate(route, doc.fecha) ? doc.fecha : null
   const horaValida = doc.hora && /^\d{1,2}:\d{2}$/.test(doc.hora) ? (doc.hora.length === 4 ? `0${doc.hora}` : doc.hora) : null
+  // (V52 §5b) Un documento de un día que NO está en el viaje no se puede corregir: se queda la reserva y la tarjeta lleva la línea naranja «Esta entrada es del… Revisa que sea la buena» con [Es correcta].
+  const tripId = useSyncStore.getState().activeTripId
+  if (doc.fecha && !fechaValida && route.answers.dateRange) ponerAvisoDeDocumento(tripId, reserva.id, `${nombre === 'entrada' ? 'Esta entrada' : 'Esta reserva'} es del ${fechaEnProsa(doc.fecha)} y tu viaje es del ${fechaEnProsa(route.answers.dateRange.start)} al ${fechaEnProsa(route.answers.dateRange.end)}. Revisa que sea la buena`)
+  else quitarAvisoDeDocumento(tripId, reserva.id)
   const cambiaFecha = Boolean(fechaValida && fechaValida !== reserva.dateIso)
   const cambiaHora = Boolean(horaValida && horaValida !== reserva.time)
   if (!cambiaFecha && !cambiaHora) return reserva

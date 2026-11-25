@@ -1,0 +1,170 @@
+[
+  {
+    "id": "0",
+    "texto": "Los ~1.200 archivos de docs/dias sin subir",
+    "estado": "medias",
+    "captura": null,
+    "nota": "Lo ha mirado el coordinador (capturas e informes regenerados por pruebas viejas); no se ha tocado nada ni hecho git restore.",
+    "explicacion": "No he tocado esos archivos: son capturas e informes que las pruebas viejas vuelven a escribir."
+  },
+  {
+    "id": "1",
+    "texto": "La parada que ya ha cerrado: una sola regla, sale su tarjeta y no se manda sola a pendientes",
+    "estado": "ok",
+    "captura": "v52_1_museos_cerrados_tarjeta.jpg",
+    "nota": "Visto con los Museos Vaticanos cerrados a las 18:20 (última entrada 18:00). Probado en un viaje de prueba con hora falsa, no con GPS real.",
+    "explicacion": "Lo que ya ha cerrado deja de irse solo a «Lugares pendientes»: sale su tarjeta de siempre y el viajero decide. El aviso de arriba «ya ha cerrado» ya no existe."
+  },
+  {
+    "id": "1-etiqueta",
+    "texto": "Etiqueta «YA HA CERRADO» en lugar de «SIGUIENTE PARADA»; «Cerrado · Abre mañana…» en rojo",
+    "estado": "ok",
+    "captura": "v52_1_museos_cerrados_tarjeta.jpg",
+    "nota": "La caja HORARIO dice «Cerrado» en rojo y «Abre mañana a las 8:00» (la hora sale de los datos del sitio; en el ejemplo era 8:00).",
+    "explicacion": "La etiqueta de la foto cambia a «YA HA CERRADO» y la caja del horario lo dice en rojo, también cuando cerró por la última entrada."
+  },
+  {
+    "id": "1-pasar",
+    "texto": "[Cómo llegar] pasa a [Pasar a otro día] (dorado) y abre la hoja de siempre",
+    "estado": "ok",
+    "captura": "v52_1_pasar_a_otro_dia_hoja.jpg",
+    "nota": "También en v52_1_pasar_a_otro_dia_propuesta.jpg (la hoja de propuesta de siempre, con [Pasarlo al domingo] y [Dejarlo como está]). El aviso de abajo con [Deshacer] lo pone la misma hoja de siempre; no lo he vuelto a capturar tras aplicar.",
+    "explicacion": "El botón dorado de la tarjeta cerrada abre directamente la hoja «Pasar a otro día» de Cambiar plan (la misma pieza)."
+  },
+  {
+    "id": "1-pendientes",
+    "texto": "[Cambiar plan] pasa a [Guardar en pendientes], con aviso de abajo y [Deshacer]",
+    "estado": "ok",
+    "captura": "v52_1_guardar_en_pendientes_aviso.jpg",
+    "nota": "Tras guardar, sale la siguiente parada abierta y el aviso «Parada saltada · la tienes en Lugares pendientes» con [Deshacer] sobre el menú.",
+    "explicacion": "Guarda la parada en «Lugares pendientes» (la misma acción de saltar de siempre) y avisa abajo con [Deshacer]."
+  },
+  {
+    "id": "1-sin-ubicacion",
+    "texto": "Sin el recuadro de la ubicación y sin «¿Ya estás aquí?»; la historia se queda",
+    "estado": "ok",
+    "captura": "v52_1_museos_cerrados_tarjeta.jpg",
+    "nota": "Visto sin ubicación (el caso que antes enseñaba «Sin tu ubicación…»). «Escucha su historia por el camino» se queda.",
+    "explicacion": "La tarjeta cerrada no pide ubicación ni [Ya he llegado]; la historia sigue ahí."
+  },
+  {
+    "id": "1-claude",
+    "texto": "Actualizar la regla V44 de CLAUDE.md y quitar el aviso de arriba «ya ha cerrado»",
+    "estado": "ok",
+    "captura": null,
+    "nota": "Regla V44 ampliada y sección V52 al final de CLAUDE.md. Se quita también el aviso «Han cerrado A y B» al saltar (ahora solo «Parada saltada»).",
+    "explicacion": "CLAUDE.md dice ahora que lo cerrado no se manda solo a pendientes. En el código no queda ningún aviso de «ya ha cerrado»."
+  },
+  {
+    "id": "2",
+    "texto": "Aviso «Has visto Via della Conciliazione» (sin género)",
+    "estado": "ok",
+    "captura": "v52_2_has_visto_aviso.jpg",
+    "nota": "También «Has visto X» en lugar de «X, marcada como visitada» al pulsar [Ya lo visité] en Lugares pendientes. Revisados todos los textos con «marcado/marcada» de src, server y shared: no queda ninguno que el viajero vea. «país marcado» del pasaporte es un contador y no se toca.",
+    "explicacion": "El aviso al marcar un sitio como visto ya no lleva género: «Has visto Via della Conciliazione»."
+  },
+  {
+    "id": "3",
+    "texto": "«Guarda un recuerdo de {sitio}»: solo en una parada sin foto y una vez por sitio",
+    "estado": "medias",
+    "captura": "v52_3_guarda_un_recuerdo_hoja.jpg",
+    "nota": "Visto cómo se ve la hoja; la condición (sin foto y una vez por sitio) está en el código pero no la he podido probar de punta a punta porque necesita al servidor de logros con cuenta. El texto real de la hoja es «Guarda un recuerdo de…» (no «tus recuerdos»). La hoja de «pedazo ganado» (que también dice «Guarda un recuerdo…») no se ha tocado.",
+    "explicacion": "La hoja ya no sale cada vez: solo al terminar una parada sin foto, y una sola vez por sitio y viaje."
+  },
+  {
+    "id": "4",
+    "texto": "El emblema oculto sale al llegar (GPS o [Ya he llegado]), antes de [He terminado], una vez por sitio y día",
+    "estado": "ok",
+    "captura": "v52_4_emblema_oculto_al_llegar.jpg",
+    "nota": "Visto con [Ya he llegado] y un emblema simulado (la demo no tiene servidor de logros): antes de llegar no sale (v52_4_antes_de_llegar.jpg), al pulsar sale con «He terminado» debajo y, al cerrarla y volver a mirar, no sale otra vez. Con GPS real no lo he probado: usa la misma marca que ya usaba el aviso del servidor, así nunca salen dos.",
+    "explicacion": "La hoja «¡Aquí se esconde un Emblema Oculto!» se abre en cuanto llegas (con GPS o pulsando [Ya he llegado]), cuando aún puedes hacer la foto."
+  },
+  {
+    "id": "5",
+    "texto": "Mirar qué sonido le toca a cada uno y por qué no suena; los que no tengan, al estudio",
+    "estado": "medias",
+    "captura": "v52_5_y_ademas.jpg",
+    "nota": "No tengo iPhone: lo comprobado es qué sonidos PIDE la app (lista en REPASO_V52.md). «Y además…» tenía sonido pero no lo pedía cuando era la primera pantalla de una ronda que no venía de un [Visto]; arreglado. Si en el iPhone sigue sin sonar habrá que mirar el audio del móvil.",
+    "explicacion": "Emblema oculto, barra de experiencia y dinero volando no tenían ningún sonido: ahora tienen uno provisional y su tarjeta en el estudio. «Y además…» ya pide su sonido."
+  },
+  {
+    "id": "5-ademas",
+    "texto": "Sonido de «Y además…» (país, destino, Patrimonio, logros de viajero)",
+    "estado": "medias",
+    "captura": "v52_5_y_ademas.jpg",
+    "nota": "En la demo, antes no pedía ningún sonido cuando era la primera pantalla; ahora pide «viajero». En el iPhone no comprobado.",
+    "explicacion": "Si «Y además…» es la primera pantalla de la ronda y nadie había pedido su sonido, ahora suena al salir."
+  },
+  {
+    "id": "5-oculto",
+    "texto": "Sonido del emblema oculto",
+    "estado": "ok",
+    "captura": "v52_4_emblema_oculto_al_llegar.jpg",
+    "nota": "La app lo pide al abrirse la hoja (lista de sonidos pedidos: «oculto»). Oído en el iPhone: no comprobado. Tarjeta nueva «Emblema oculto (al llegar al sitio)» en el estudio.",
+    "explicacion": "La hoja del emblema oculto no tenía sonido; ahora suena uno provisional (dos latidos y un brillo) que Eric puede cambiar en el estudio."
+  },
+  {
+    "id": "5-exp",
+    "texto": "Sonido de la barra de experiencia",
+    "estado": "medias",
+    "captura": null,
+    "nota": "Hecho en el código (suena al salir cada paso de «+EXP», nivel o rango) y añadido al estudio como «La barra de experiencia»; sin captura ni prueba porque la demo no da EXP.",
+    "explicacion": "La barra de experiencia no tenía sonido; ahora suena uno provisional (tics y un brillo) y está en el estudio."
+  },
+  {
+    "id": "5-dinero",
+    "texto": "Sonido del dinero volando al presupuesto",
+    "estado": "medias",
+    "captura": null,
+    "nota": "Hecho en el código (suena cuando el precio vuela, no con «reducir movimiento») y añadido al estudio como «El dinero vuela al presupuesto»; sin captura ni prueba.",
+    "explicacion": "El dinero que vuela a la cartera no tenía sonido; ahora suena un «vuuush» corto provisional y está en el estudio."
+  },
+  {
+    "id": "5b",
+    "texto": "Lo que quedó de la V50",
+    "estado": "ok",
+    "captura": "v52_5b_linea_naranja_entrada.jpg",
+    "nota": "Ver los dos subpuntos.",
+    "explicacion": "Las dos cosas pendientes de la V50 están hechas."
+  },
+  {
+    "id": "5b-naranja",
+    "texto": "Línea naranja del documento en entradas, excursiones y alojamiento con [Es correcta]",
+    "estado": "medias",
+    "captura": "v52_5b_linea_naranja_entrada.jpg",
+    "nota": "La línea se ve bien en las tres tarjetas (también v52_5b_linea_naranja_excursion.jpg y _alojamiento.jpg) y [Es correcta] la quita, pero el aviso lo he puesto a mano: la lectura real del documento necesita el servidor de IA. Solo salta si la fecha del documento NO está en el viaje (si es un día del viaje, la reserva se corrige sola como en la V50). Es una decisión mía: ver DECISIONES_V52.md.",
+    "explicacion": "Una entrada, excursión o alojamiento cuyo documento es de otro día fuera del viaje enseña «Esta entrada es del… Revisa que sea la buena» con [Es correcta], como el vuelo."
+  },
+  {
+    "id": "5b-museos",
+    "texto": "Captura de la tarjeta cerrada de los Museos Vaticanos (aviso «Hoy ya no puedes entrar» y hoja A3)",
+    "estado": "ok",
+    "captura": "v52_1_museos_cerrados_tarjeta.jpg",
+    "nota": "Con la regla nueva, ya no sale el aviso «Hoy ya no puedes entrar»: sale la tarjeta cerrada. La hoja A3 (la propuesta de pasarlo a otro día) se ve en v52_1_pasar_a_otro_dia_propuesta.jpg.",
+    "explicacion": "Los Museos Vaticanos cerrados se ven como tarjeta «YA HA CERRADO» con [Pasar a otro día]; la hoja que sale es la de siempre."
+  },
+  {
+    "id": "5c",
+    "texto": "«Lo que te llevas de hoy»: no sale vacío primero; números y plurales bien",
+    "estado": "ok",
+    "captura": "v52_5c_resumen_con_filas.jpg",
+    "nota": "Visto con la respuesta retrasada 2,5 s: mientras carga, el título queda en blanco (v52_5c_resumen_cargando.jpg) y luego se llena (v52_5c_resumen_listo.jpg). Medido durante la subida: la etiqueta siempre sigue al número («1 País nuevo» → «2 Países nuevos»; nunca «0 · Destino nuevo»).",
+    "explicacion": "El resumen no dice «Aún no has ganado nada» mientras espera al servidor, y cada fila lleva su número en singular o plural según lo que se ve."
+  },
+  {
+    "id": "5c-cuando",
+    "texto": "Cuándo sale exactamente (una sola vez)",
+    "estado": "ok",
+    "captura": null,
+    "nota": "Explicado en REPASO_V52.md; sale de MomentosHost.tsx y resumenDelDia.ts.",
+    "explicacion": "Sale al marcar o saltar la última parada del día, o al abrir la app esa noche (desde las 21:00) o al día siguiente, una vez por día."
+  },
+  {
+    "id": "6",
+    "texto": "Sin pruebas; build sin errores y capturas en modo iPhone de los puntos 1, 2 y 4",
+    "estado": "ok",
+    "captura": "v52_1_museos_cerrados_tarjeta.jpg",
+    "nota": "tsc con tsconfig.app.json sin errores y npm run build sin errores. No se ha pasado ninguna prueba. NO hecho (lo hace el coordinador): commit, push, comprobar jutrip.app y reiniciar el api-server al final.",
+    "explicacion": "Compila sin errores y las capturas de los puntos 1, 2 y 4 están en docs/dias/V52_capturas."
+  }
+]

@@ -28,7 +28,11 @@ import type { HorarioDeParada } from '../../../../lib/horarioDeParada'
 import { abrirAvisoPase } from '../../../../lib/avisoPase'
 import { avisarAbajo } from '../../../../store/useAvisoDeAbajo'
 import { useHistoriaDeParada, type HistoriaDeParada } from './useHistoriaDeParada'
-import { etiquetaDePedazos, nombreDePedazos, piezaDeParada, usePedazosDeParada } from './usePedazosDeParada'
+import { emblemaDeParada, etiquetaDePedazos, nombreDePedazos, piezaDeParada, usePedazosDeParada } from './usePedazosDeParada'
+import { HojaLlegadaOculta } from '../JuegoCerca'
+import { anotarQueSalio, yaSalio } from '../AvisosDeCerca'
+import { sugerenciasDelCompanero } from '../../../../lib/sugerenciasCompanero'
+import type { SitioCerca } from '../useCercaDeAqui'
 import { fotoDeParada } from '../../../logros/visto/VistoFlujo'
 import { TuEntradaEnHoy } from '../TuEntradaEnHoy'
 import { Cruz, HojaV2 } from './HojasV2'
@@ -311,6 +315,8 @@ export interface PropsParada {
   zonaUbicacion?: ZonaUbicacion
   /** (V44 §1) Si el viajero ha dado su ubicación (aunque HOY no la use: `ubicacion` solo llega aquí cuando está en la ruta). */
   hayUbicacion?: boolean
+  /** (V52 §1) La parada ya ha cerrado (o cerrará al llegar): etiqueta «YA HA CERRADO», [Pasar a otro día] y [Guardar en pendientes], sin el recuadro de la ubicación. */
+  cerrada?: boolean
 }
 
 /**
@@ -343,6 +349,15 @@ export function TarjetaParada(p: PropsParada) {
   const nombresPedazos = usePedazosDeParada(tripId, siguiente, true)
   const pedazos = nombresPedazos.length > 0 ? nombresPedazos : null
   const pieza = piezaDeParada(tripId, siguiente.id)
+  // (V52 §4) El emblema oculto sale EN EL MOMENTO DE LLEGAR: cuando el GPS dice que estás aquí o cuando pulsas [Ya he llegado] (`aqui` es las dos cosas), antes de [He terminado]. Una vez por sitio y día (la misma marca que usa el aviso del servidor, así nunca salen dos).
+  const emblemaOculto = emblemaDeParada(tripId, siguiente)
+  const [hojaOculta, setHojaOculta] = useState<SitioCerca | null>(null)
+  useEffect(() => {
+    if (!aqui || !p.conPase || !emblemaOculto || !sugerenciasDelCompanero()) return
+    if (yaSalio(tripId, dateIso, emblemaOculto.sitio, 'llegada')) return
+    anotarQueSalio(tripId, dateIso, emblemaOculto.sitio, 'llegada')
+    setHojaOculta(emblemaOculto)
+  }, [aqui, p.conPase, emblemaOculto?.sitio, tripId, dateIso]) // eslint-disable-line react-hooks/exhaustive-deps
   const [masTiempo, setMasTiempo] = useState<15 | 30 | null>(null)
 
   // (HOY2b, E; Eric, 5-nov) +15 / +30 NO mueve la ruta: la app solo mira si con ese tiempo de más llegas a algo cerrado o tarde a una reserva (v2/MasTiempo.tsx).
@@ -369,12 +384,15 @@ export function TarjetaParada(p: PropsParada) {
   const nombre = displayStopName(siguiente.name)
 
   // (V47) Las tres cajas (HORARIO, A PIE / EN COCHE, VISITA): lo que dice cada una según la hora real y el sitio de salida.
-  const estadoH = estadoDelHorario(p.horario, ahoraMin, p.proximaApertura ?? null)
+  const estadoBase = estadoDelHorario(p.horario, ahoraMin, p.proximaApertura ?? null)
+  // (V52 §1) Si la parada ya ha cerrado (también por la última entrada o por el trayecto), la caja lo dice en rojo: «Cerrado · Abre mañana a las 9:00».
+  const estadoH: typeof estadoBase = p.cerrada && estadoBase.caso !== 'despues' && estadoBase.caso !== 'cerrado_hoy' ? { grande: 'Cerrado', tono: 'rojo', sub: p.proximaApertura ? `Abre ${p.proximaApertura}` : 'Cerrado ahora', subTono: 'rojo', caso: 'despues' } : estadoBase
   const modoCaja = trayecto?.modo ?? (enCoche ? 'coche' : 'pie')
   const minutosVisita = siguiente.durationMinutes > 0 ? `${Math.round(siguiente.durationMinutes)} min` : '—'
   const dialogos = (
     <>
       {masTiempo && <AvisoMasTiempo route={route} day={day} dateIso={dateIso} paradaId={siguiente.id} minutos={masTiempo} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMin} onCerrar={() => setMasTiempo(null)} />}
+      {hojaOculta && <HojaLlegadaOculta sitio={hojaOculta} onCerrar={() => setHojaOculta(null)} />}
       {hojaTiempo && <HojaMasTiempo onElegir={elegirTiempo} onCerrar={() => setHojaTiempo(false)} />}
     </>
   )
@@ -451,7 +469,7 @@ export function TarjetaParada(p: PropsParada) {
     )
   }
 
-  const etiqueta = anterior ? 'SIGUIENTE PARADA' : 'PRIMERA PARADA'
+  const etiqueta = p.cerrada ? 'YA HA CERRADO' : anterior ? 'SIGUIENTE PARADA' : 'PRIMERA PARADA'
   // (V44 §1) La caja de minutos: en la ruta, «12 min · Desde ti»; en el destino pero lejos de la ruta (el aeropuerto) o sin ubicación, el tiempo del plan («Del alojamiento al Coliseo», «Del Panteón a la Fontana de Trevi»); fuera del destino, «—» y «Estás lejos».
   const zona: ZonaUbicacion = p.zonaUbicacion ?? (ubicacion ? 'ruta' : 'sin')
   const origenDelPlan = anterior && !anterior.isBreak ? displayStopName(anterior.name) : null
@@ -459,7 +477,7 @@ export function TarjetaParada(p: PropsParada) {
   const subCaja = zona === 'fuera' ? 'Estás lejos' : zona === 'ruta' ? 'Desde ti' : desdeDonde(origenDelPlan, !p.casa)
   return (
     <>
-      <div data-hoy-siguiente data-hoy-estado="llegar" data-tarjeta="clara" className="flex-none overflow-hidden rounded-[28px]" style={TARJETA_PARADA}>
+      <div data-hoy-siguiente data-hoy-estado={p.cerrada ? 'cerrada' : 'llegar'} data-tarjeta="clara" className="flex-none overflow-hidden rounded-[28px]" style={TARJETA_PARADA}>
         <div onClick={p.onQueVasAVer} data-hoy-abrir-ficha="1">
           <FotoDeLaParada parada={siguiente} ciudad={day.city} dateIso={dateIso} alto={140}>
             <span data-hoy-insignia className="absolute left-3.5 top-3.5 flex h-7 items-center rounded-full px-[13px]" style={{ ...PILDORA_FOTO, font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em' }}>{etiqueta}</span>
@@ -478,7 +496,7 @@ export function TarjetaParada(p: PropsParada) {
               sub={subCaja}
               datos={{ 'data-hoy-trayecto': modoCaja, 'data-hoy-trayecto-zona': zona }}
               extra={
-                zona === 'ruta' ? (
+                zona === 'ruta' && !p.cerrada ? (
                   <button type="button" onClick={p.pedirUbicacion} data-hoy-actualizar-ubicacion className="-mb-1 flex min-h-11 items-center self-start text-[11px] font-bold underline underline-offset-[3px]" style={{ color: ORO_TEXTO }}>
                     {p.ubicacionEstado === 'pidiendo' ? 'Buscando…' : 'Actualizar'}
                   </button>
@@ -487,14 +505,14 @@ export function TarjetaParada(p: PropsParada) {
             />
             <CajaDeParada dato="visita" icono="arena" etiqueta="VISITA" grande={minutosVisita} sub="Lo que recomendamos" datos={{ 'data-hoy-visita': '1' }} />
           </div>
-          {salida && fija != null && (
+          {salida && fija != null && !p.cerrada && (
             <div data-hoy-salida={salida} className="flex items-center gap-2 rounded-xl px-3 py-2 text-[13px] font-semibold leading-[1.3]" style={salida === 'tarde' ? { background: '#FBE6E2', border: '1px solid #E5766B', color: '#8A2A1F' } : { background: '#F6F0E2', border: '1px solid rgba(181,138,46,.4)', color: '#6E5018' }}>
               <Icono nombre="reloj" size={15} grosor={2} />
               {textoDeSalida(salida, fija)}
             </div>
           )}
           {/* (V46) El recuadro de la ubicación («Estás lejos…» / «Sin tu ubicación…») va DEBAJO de las cajas y ENCIMA de «Escucha su historia» (dibujo T2 y T4). */}
-          {zona === 'fuera' && (
+          {zona === 'fuera' && !p.cerrada && (
             <RecuadroDePuntos data-hoy-lejos className="flex-col gap-1">
               <span className="flex items-center gap-2.5 text-[13px] font-medium leading-[1.35]" style={{ color: 'rgba(28,34,48,.75)' }}>
                 <IconoDeUbicacion />
@@ -502,7 +520,7 @@ export function TarjetaParada(p: PropsParada) {
               </span>
             </RecuadroDePuntos>
           )}
-          {zona === 'sin' && (
+          {zona === 'sin' && !p.cerrada && (
             <RecuadroDePuntos data-hoy-sin-ubicacion className="flex-col gap-2.5">
               <span className="flex items-center gap-2.5 text-[13px] font-medium leading-[1.35]" style={{ color: 'rgba(28,34,48,.75)' }}>
                 <IconoDeUbicacion />
@@ -542,7 +560,7 @@ export function TarjetaParada(p: PropsParada) {
             </button>
           )}
           <div className="flex gap-[9px]">
-            {comoLlegar ? (
+            {p.cerrada ? null : comoLlegar ? (
               <a href={comoLlegar} target="_blank" rel="noopener noreferrer" className="flex h-[52px] flex-[1.5] items-center justify-center gap-2 whitespace-nowrap rounded-2xl text-[15px] font-bold no-underline" style={BOTON_ORO_A}>
                 <Icono nombre="localizar" size={17} grosor={2} />
                 Cómo llegar
@@ -551,12 +569,12 @@ export function TarjetaParada(p: PropsParada) {
               <span className="flex h-[52px] flex-[1.5] items-center justify-center rounded-2xl text-[15px] font-bold opacity-50" style={BOTON_ORO_A}>Cómo llegar</span>
             )}
             {/* HOY2 (B): [Cambiar plan] sustituye a [No me da tiempo] (v2/CambiarPlan.tsx) */}
-            <BotonCambiarPlan route={route} day={day} dateIso={dateIso} siguiente={siguiente} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMin} onSaltar={p.onSaltar} />
+            <BotonCambiarPlan route={route} day={day} dateIso={dateIso} siguiente={siguiente} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMin} onSaltar={p.onSaltar} cerrada={p.cerrada} />
           </div>
           <ExtraDeParada parada={siguiente} dayId={day.id} vista={false} contexto="tarjeta" route={route} reserva={reservaSiguiente} />
           {/* (V43 §8) Con ubicación: «¿Ya estás aquí?» y [Ya he llegado]; sin ella, el recuadro «Sin tu ubicación no sabemos cuándo llegas» con [Usar mi ubicación] y [Ya he llegado]. */}
           {/* (V46) «¿Ya estás aquí? Ya he llegado» (con ubicación en la ruta) se queda abajo, como en el dibujo (T1). */}
-          {(zona === 'ruta' || zona === 'destino') && (
+          {(zona === 'ruta' || zona === 'destino') && !p.cerrada && (
             <div className="flex items-center justify-center gap-1 text-center text-[12.5px] font-medium" style={{ color: 'rgba(28,34,48,.55)' }}>
               ¿Ya estás aquí?
               <button type="button" onClick={() => setForzada(siguiente.id)} data-hoy-ya-he-llegado aria-label={`Ya he llegado a ${nombre}`} className="inline-flex min-h-11 items-center px-1 font-bold underline underline-offset-[3px]" style={{ color: ORO_TEXTO }}>

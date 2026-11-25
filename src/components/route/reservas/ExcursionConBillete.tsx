@@ -8,7 +8,7 @@ import { Candado } from '../../pase/Candado'
 import { CodigoPantallaCompleta, ImagenDelCodigo } from './TarjetaBillete'
 import { INK } from './BloqueReservas'
 import { HojaAbajo } from './HojaAbajo'
-import { BotonAnadirDocumento, IconoDeDocumento, LapizDeReserva, PapeleraRoja } from './BotonesDeReserva'
+import { AvisoDeDocumentoDeReserva, BotonAnadirDocumento, IconoDeDocumento, LapizDeReserva, PapeleraRoja } from './BotonesDeReserva'
 import { CajaDia, CajaHora, FilaIcono, ParaQuienDesign, SeccionDatos, TarjetaCrema, Trazo } from './PiezasDesignReservas'
 
 /**
@@ -95,6 +95,7 @@ export function TarjetaExcursionDesign({
   onLeida,
   año,
   extra,
+  claveDeAviso,
 }: {
   chip: string
   nombre: string
@@ -114,6 +115,8 @@ export function TarjetaExcursionDesign({
   onLeida: (datos: DatosExcursionLeida) => void
   año?: number
   extra?: ReactNode
+  /** (V52 §5b) El id de la reserva: la línea naranja «Esta reserva es del… Revisa que sea la buena» + [Es correcta]. */
+  claveDeAviso?: string
 }) {
   const [ampliado, setAmpliado] = useState(false)
   const conCodigo = excursionConCodigo(billete)
@@ -179,6 +182,7 @@ export function TarjetaExcursionDesign({
         {!hayFilas && <span className="text-[13px] text-text/55">Para quién es, cuánto ha costado y dónde es el punto de encuentro.</span>}
       </SeccionDatos>
       <div data-excursion-billete={billete && (billete.localizador || conCodigo) ? 'con-billete' : 'sin-billete'} className="flex flex-col gap-3">
+        <AvisoDeDocumentoDeReserva clave={claveDeAviso} />
         {conCodigo && billete && (
           <button type="button" onClick={() => setAmpliado(true)} data-excursion-codigo-pequeno className="flex w-full items-center gap-3.5 text-left">
             <span className="rounded-xl bg-white p-1.5" style={{ border: '1px solid rgba(28,34,48,.14)' }}>

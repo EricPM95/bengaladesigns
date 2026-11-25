@@ -18,6 +18,8 @@ import {
 } from '../../../lib/reservaAlojamiento'
 import { HojaAbajo } from './HojaAbajo'
 import { BotonAnadirDocumento } from './BotonesDeReserva'
+import { fechaEnProsa } from '../../../lib/nombreDeDia'
+import { ponerAvisoDeDocumento, quitarAvisoDeDocumento } from '../../../lib/avisoDeDocumento'
 import { Trazo as TrazoDesign } from './PiezasDesignReservas'
 import { CampoDeHora } from '../../ui/HojaDeHora'
 
@@ -351,6 +353,14 @@ export function ReservaDelAlojamiento({ hotel, segmentDayId, nombreMostrado, con
     if (!localizador) useBilleteStore.getState().ponerAlojamiento(tripId, segmentDayId, heredado)
     setHotel(segmentDayId, { ...hotel, reserva: { ...reserva, localizador: null } })
   }, [esAdmin, heredado, cargado, tripId, localizador, segmentDayId, reserva, hotel, setHotel])
+  // (V52 §5b) Una reserva cuyas fechas caen fuera del viaje: línea naranja «Esta reserva es del… Revisa que sea la buena» + [Es correcta] dentro de la tarjeta del alojamiento.
+  const avisarSiNoCuadra = (leidos: DatosReservaLeida) => {
+    const rango = useRouteStore.getState().route?.answers.dateRange
+    const clave = `aloj:${segmentDayId}`
+    if (leidos.leida && leidos.entrada && rango && (leidos.entrada > rango.end || (leidos.salida ?? leidos.entrada) < rango.start)) {
+      ponerAvisoDeDocumento(tripId, clave, `Esta reserva es del ${fechaEnProsa(leidos.entrada)}${leidos.salida ? ` al ${fechaEnProsa(leidos.salida)}` : ''} y tu viaje es del ${fechaEnProsa(rango.start)} al ${fechaEnProsa(rango.end)}. Revisa que sea la buena`)
+    } else quitarAvisoDeDocumento(tripId, clave)
+  }
   const guardar = ({ nombre, reserva: nueva, usarDireccionDeLaReserva }: { nombre: string; reserva: ReservaAlojamiento | null; usarDireccionDeLaReserva: boolean }) => {
     // Lo común (nombre, dirección, fechas, teléfono) va en el alojamiento, que ve todo el viaje; el localizador, solo en lo privado de quien lo añade.
     const privado = nueva?.localizador ?? null
@@ -364,7 +374,7 @@ export function ReservaDelAlojamiento({ hotel, segmentDayId, nombreMostrado, con
   }
   return (
     <>
-      {children({ reserva, localizador, esAdmin, abrirDatos: () => setHoja({ leidos: null, modo: 'datos' }), botonAnadir: esAdmin && !reserva ? <BotonAnadirReserva año={año} onLeida={(leidos) => setHoja({ leidos, modo: 'leida' })} onAMano={() => setHoja({ leidos: null, modo: 'datos' })} /> : null })}
+      {children({ reserva, localizador, esAdmin, abrirDatos: () => setHoja({ leidos: null, modo: 'datos' }), botonAnadir: esAdmin && !reserva ? <BotonAnadirReserva año={año} onLeida={(leidos) => { avisarSiNoCuadra(leidos); setHoja({ leidos, modo: 'leida' }) }} onAMano={() => setHoja({ leidos: null, modo: 'datos' })} /> : null })}
       {hoja && (
         <HojaReservaAlojamiento
           nombreActual={nombreMostrado ?? ''}

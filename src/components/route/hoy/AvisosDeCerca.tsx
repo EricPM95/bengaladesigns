@@ -17,14 +17,14 @@ import { useCercaDeAqui, type SitioCerca } from './useCercaDeAqui'
  * Solo con el pase (o en el día de prueba) y con «Sugerencias del compañero» encendido. Nada cambia el día salvo [Añadir a mi ruta], que lleva [Deshacer].
  */
 const claveJuego = (tripId: string, fecha: string, sitio: string, nivel: string) => `trazo:hoy1:juego:${tripId}:${fecha}:${sitio}:${nivel}`
-const yaSalio = (tripId: string, fecha: string, sitio: string, nivel: string): boolean => {
+export const yaSalio = (tripId: string, fecha: string, sitio: string, nivel: string): boolean => {
   try {
     return window.localStorage.getItem(claveJuego(tripId, fecha, sitio, nivel)) === '1'
   } catch {
     return false
   }
 }
-const anotarQueSalio = (tripId: string, fecha: string, sitio: string, nivel: string) => {
+export const anotarQueSalio = (tripId: string, fecha: string, sitio: string, nivel: string) => {
   try {
     window.localStorage.setItem(claveJuego(tripId, fecha, sitio, nivel), '1')
   } catch {

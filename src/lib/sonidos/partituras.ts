@@ -155,6 +155,15 @@ export function partituraDe(id: string, o: OpcionesDePartitura = {}): Partitura 
       // (V35B) «Tu primer día» («Hoy empiezas a ganar logros»): el título entra a los 0,1 s y cada fila de lo que hay que hacer sube a los 0,3, 0,45 y 0,6 s (`moUp` de PrimerDia.tsx): un clic suave por fila y un brillo al acabar. (V38D) El brillo del título y el del final son dos sonidos con su fila cada uno (`brillo_titulo` y `brillo`): antes compartían archivo y Eric no podía separarlos.
       return { id, dura: e(1.4) + 0.6, premio: false, notas: [archivo('brillo_titulo', e(0.3), 0.6), archivo('clic', e(0.5), 0.55), archivo('clic', e(0.65), 0.55), archivo('clic', e(0.8), 0.55), archivo('brillo', e(1.4), 0.9)] }
     }
+    case 'oculto':
+      // (V52 §5) «¡Aquí se esconde un Emblema Oculto!» (la hoja que sale al llegar al sitio): dos latidos suaves y un brillo. Provisional: Eric pone el suyo en el estudio.
+      return { id, dura: 1.6, premio: false, notas: [sint('toque', 0.15, { vol: 0.4 }), sint('toque', 0.45, { vol: 0.55 }), archivo('brillo', 0.8, 0.8)] }
+    case 'exp':
+      // (V52 §5) La barra de experiencia que se llena («+405 EXP»): tics que suben y un brillo al llenarse. Provisional: Eric pone el suyo en el estudio.
+      return { id, dura: 1.9, premio: false, notas: [...tics(0.2, 0.9, 0.15), archivo('brillo', 1.2, 0.9)] }
+    case 'dinero':
+      // (V52 §5) El dinero que vuela a la cartera del presupuesto: el «vuuush» del vuelo. Provisional: Eric pone el suyo en el estudio.
+      return { id, dura: 1.1, premio: false, notas: [archivo('vuelo', 0.55, 0.8)] }
     case 'vuelo':
       return { id, dura: TIEMPOS_DE_VUELO.dura + 0.1, premio: false, notas: [archivo('vuelo', TIEMPOS_DE_VUELO.dura * 0.7)] }
     case 'apertura': {
@@ -193,7 +202,7 @@ export function partituraDe(id: string, o: OpcionesDePartitura = {}): Partitura 
 }
 
 /** Todas las animaciones que tienen partitura (para la prueba, la página de sonidos y el repaso). */
-export const IDS_DE_PARTITURA: string[] = ['visto', 'aviso', 'pedazo', 'sello', 'coleccion', 'emblema', 'pais', 'destino_nuevo', 'continente', 'maravilla', 'maravilla_nueva', 'patrimonio', 'viajero', 'dia_completo', 'primer_dia', 'vuelo', 'apertura', 'escena', 'fuegos', 'sello_pasaporte', ...GRADOS_DE_MEDALLA.map((g) => `medalla_${g}`)]
+export const IDS_DE_PARTITURA: string[] = ['visto', 'aviso', 'pedazo', 'sello', 'coleccion', 'emblema', 'pais', 'destino_nuevo', 'continente', 'maravilla', 'maravilla_nueva', 'patrimonio', 'viajero', 'dia_completo', 'primer_dia', 'vuelo', 'oculto', 'exp', 'dinero', 'apertura', 'escena', 'fuegos', 'sello_pasaporte', ...GRADOS_DE_MEDALLA.map((g) => `medalla_${g}`)]
 
 /** Cada partitura, en palabras (para el repaso y la página de sonidos). */
 export const EN_PALABRAS: Record<string, string> = {
@@ -212,6 +221,9 @@ export const EN_PALABRAS: Record<string, string> = {
   viajero: 'Logro de viajero: igual que patrimonio.',
   dia_completo: 'El resumen del día y del viaje: los números que suben con tics y un brillo al acabar.',
   primer_dia: 'Tu primer día («Hoy empiezas a ganar logros»): el brillo del título al entrar, un clic suave por cada fila que aparece y el brillo del final al acabar.',
+  oculto: 'Emblema oculto, al llegar al sitio («¡Aquí se esconde un Emblema Oculto!»): dos latidos suaves y un brillo (provisional).',
+  exp: 'La barra de experiencia que se llena («+405 EXP»): tics que suben y un brillo al llenarse (provisional).',
+  dinero: 'El dinero que vuela a la cartera del presupuesto: un vuuush corto (provisional).',
   vuelo: 'Lo ganado que vuela al botón o al Perfil: un vuuush de lo que dura el vuelo.',
   escena: 'Las escenas de cada sitio (Roma y Lanzarote): un redoble que sube y el golpe del premio cuando estalla la luz, y un clic y un brillo cuando entran el emblema y su nombre.',
   fuegos: 'Los fuegos: el golpe del premio al estallar y dos brillos que caen detrás.',

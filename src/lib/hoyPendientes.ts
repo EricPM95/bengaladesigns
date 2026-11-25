@@ -6,7 +6,7 @@ import { numberedStopsOf } from './stopKind'
  *
  * Qué es un lugar pendiente (todo se deduce de la ruta; no hay nada nuevo que guardar):
  *   · lo SALTADO hoy (la parada con `saltada`);
- *   · lo que YA HA CERRADO o habrá cerrado al llegar (la parada siguiente no sale como siguiente: pasa sola aquí y sale la siguiente abierta);
+ *   · (V52) lo que YA HA CERRADO NO pasa solo aquí: sale su tarjeta «YA HA CERRADO» con [Pasar a otro día] y [Guardar en pendientes]; solo entra al guardarlo el viajero;
  *   · lo que quedó sin ver de los días ANTERIORES (saltado o que no dio tiempo): al acabar el día pasa solo y sigue saliendo los días siguientes hasta que el viajero decide
  *     ([Pasar a otro día], [Recuperar hoy], [Ya lo visité] o [Quitar]: cada una cambia la ruta y la parada deja de estar pendiente).
  * Los días anteriores solo cuentan si ese día se usó la app (alguna parada hecha): un viaje que se hizo sin abrir HOY no llena la lista de todo lo no marcado.
@@ -91,6 +91,4 @@ export function lugaresPendientes(p: { route: Route; day: DayPlan; cerradas: Set
   return salida
 }
 
-/** El aviso de abajo cuando una parada pasa sola a pendientes por cerrada. */
-export const avisoDeCerrada = (nombre: string): string => `${nombre} ya ha cerrado · la tienes en Lugares pendientes`
 export const AVISO_SALTADA = 'Parada saltada · la tienes en Lugares pendientes'

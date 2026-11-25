@@ -5,7 +5,7 @@ import { entradaConCodigo } from '../../../store/useBilleteStore'
 import { CodigoPantallaCompleta, ImagenDelCodigo } from './TarjetaBillete'
 import { INK } from './BloqueReservas'
 import type { Persona } from '../../../store/useViajeCompartido'
-import { BotonAnadirDocumento, IconoDeDocumento, LapizDeReserva, PapeleraRoja } from './BotonesDeReserva'
+import { AvisoDeDocumentoDeReserva, BotonAnadirDocumento, IconoDeDocumento, LapizDeReserva, PapeleraRoja } from './BotonesDeReserva'
 import { CajaDia, CajaHora, FilaIcono, ParaQuienDesign, SeccionDatos, TarjetaCrema, Trazo } from './PiezasDesignReservas'
 import { Etiqueta } from '../../ui/Etiqueta'
 
@@ -95,6 +95,7 @@ export function TarjetaEntradaDesign({
   año,
   extra,
   datos,
+  claveDeAviso,
 }: {
   chip: string
   nombre: string
@@ -114,6 +115,8 @@ export function TarjetaEntradaDesign({
   año?: number
   extra?: ReactNode
   datos?: string
+  /** (V52 §5b) El id de la reserva: la línea naranja «Esta entrada es del… Revisa que sea la buena» + [Es correcta] sale dentro de la tarjeta. */
+  claveDeAviso?: string
 }) {
   const [ampliado, setAmpliado] = useState(false)
   const conCodigo = entradaConCodigo(billete)
@@ -162,6 +165,7 @@ export function TarjetaEntradaDesign({
         {!hayFilas && <span className="text-[13px] text-text/55">Para quién es y cuánto ha costado.</span>}
       </SeccionDatos>
       <div data-entrada-billete={billete && (billete.localizador || conCodigo) ? 'con-billete' : 'sin-billete'} className="flex flex-col gap-3">
+        <AvisoDeDocumentoDeReserva clave={claveDeAviso} />
         {conCodigo && billete && (
           <button type="button" onClick={() => setAmpliado(true)} data-entrada-codigo-pequeno className="flex w-full items-center gap-3.5 text-left">
             <span className="rounded-xl bg-white p-1.5" style={{ border: '1px solid rgba(28,34,48,.14)' }}>

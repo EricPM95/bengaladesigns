@@ -11,6 +11,7 @@ import { fechasDelViaje, hoyLocal, lineaDeGaleria, textoDelPlazo } from './fecha
 import { abrirGaleriaDeReclamo, HostDeReclamar } from '../reclamar/Reclamar'
 import { HostDeCompanero } from '../companero/Companero'
 import { faseDeReclamo, textoDeLoDeAyer } from '../../../lib/reclamar'
+import { primeraVez } from '../../../lib/avisosUnaVez'
 import { AvisoDeVisto, EstilosDelVisto, FranjaSinConexion, HojaDePermisos, HojaDelVisto, HojaFotoDentro, HojaGaleria, HojaLoDeAyer, NotaCorta, type ParadaDeAyer } from './Hojas'
 import { faltaDe, hojaSegunRespuesta as decidirHoja } from './decidir'
 import { deSitio, enSitio } from '../../../lib/articulos'
@@ -142,6 +143,11 @@ export async function procesarVisto(p: { tripId: string; dayId: string; stopId: 
   if (!hoja || p.sinHoja) return
   const falta = faltaDe(hoja.tipo)
   if (falta) useVistoStore.getState().anotarPendiente(p.stopId, { tripId: p.tripId, falta, nombre: parada.nombre, fotoDentro: hoja.fotoDentro ?? null })
+  // (V52 §3) «Guarda un recuerdo de {sitio}» sale SOLO en una parada sin foto y UNA vez por sitio (por viaje; guardado en el móvil, 0 KB de red). Con foto ya hecha, o si ya salió, no se vuelve a abrir (la tira de la parada sigue ahí).
+  if (hoja.tipo === 'recuerdo') {
+    if (useVistoStore.getState().conFoto[p.stopId]) return
+    if (!primeraVez(p.tripId, 'recuerdos', `recuerdo:${p.stopId}`)) return
+  }
   abrirHoja(hoja)
 }
 

@@ -3,7 +3,7 @@ import { llamar, logrosActivos } from '../../../../lib/logros'
 import { unaSolaVez } from '../../../../lib/sondeo'
 import type { Stop } from '../../../../lib/types'
 import { hasRealCoordinates } from '../../../../lib/distanceMock'
-import type { RespuestaCerca } from '../useCercaDeAqui'
+import type { RespuestaCerca, SitioCerca } from '../useCercaDeAqui'
 
 /**
  * LOS PEDAZOS QUE SE GANAN EN ESTA PARADA (V2, «Aquí ganas 2 pedazos: «…» y «…»»): los nombres de las colecciones donde ese sitio da un pedazo AÚN POR GANAR. Los emblemas ocultos NUNCA se anuncian
@@ -13,6 +13,18 @@ import type { RespuestaCerca } from '../useCercaDeAqui'
 const guardados = new Map<string, string[]>()
 // (V47) La colección y el sitio del PRIMER pedazo de cada parada, para dibujar su trozo en color sobre el círculo blanco.
 const piezas = new Map<string, { coleccion: string; sitio: string }>()
+
+// (V52 §4) El emblema oculto de cada parada, de la MISMA respuesta (0 KB más): solo para abrir «¡Aquí se esconde un Emblema Oculto!» en el momento de llegar. NUNCA se anuncia antes.
+const emblemas = new Map<string, SitioCerca>()
+
+/** (V52 §4) El emblema oculto que se esconde en esta parada (si el servidor lo dijo y aún no se ha ganado). */
+export function emblemaDeParada(tripId: string | null, parada: Stop): SitioCerca | null {
+  if (import.meta.env.DEV) {
+    const falso = (window as unknown as { __emblemaDemo?: Record<string, SitioCerca> }).__emblemaDemo?.[parada.name]
+    if (falso) return falso
+  }
+  return emblemas.get(`${tripId}:${parada.id}`) ?? null
+}
 
 /** El trozo que se gana en esta parada (la primera colección), si el servidor mandó sus ids. */
 export function piezaDeParada(tripId: string | null, paradaId: string): { coleccion: string; sitio: string } | null {
@@ -51,6 +63,8 @@ export function usePedazosDeParada(tripId: string | null, parada: Stop, activo: 
       const aqui = r.cerca.find((c) => c.dentro && c.hay_pedazo)
       const lista = aqui?.pedazos_nombres ?? (aqui?.coleccion_nombre ? [aqui.coleccion_nombre] : [])
       guardados.set(`${tripId}:${parada.id}`, lista)
+      const conEmblema = r.cerca.find((c) => c.dentro && c.hay_emblema)
+      if (conEmblema) emblemas.set(`${tripId}:${parada.id}`, conEmblema)
       if (aqui?.pedazos_colecciones?.[0]) piezas.set(`${tripId}:${parada.id}`, { coleccion: aqui.pedazos_colecciones[0], sitio: aqui.sitio })
       setNombres({ id: parada.id, lista })
     })

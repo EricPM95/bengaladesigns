@@ -6,7 +6,7 @@ import { diaEntero } from '../../../lib/billete'
 import type { BilleteGuardado, CodigoDelBillete } from '../../../store/useBilleteStore'
 import { Icono } from '../../ui/Icono'
 import { iconoDeMedio, INK } from './BloqueReservas'
-import { BotonAnadirDocumento, IconoDeDocumento, LapizDeReserva, PapeleraRoja, claveDocumentoDeMedio } from './BotonesDeReserva'
+import { BotonAnadirDocumento, LineaNaranjaDeDocumento, IconoDeDocumento, LapizDeReserva, PapeleraRoja, claveDocumentoDeMedio } from './BotonesDeReserva'
 
 /**
  * LA MITAD DEL VUELO (O DEL TREN…) EN RESERVAS, con su billete (Tanda 10S5 §4; 10S8 §3, `Piezas/Billete Reservas` B1b a B3). Todo lo del billete es de esta persona (se guarda en su móvil y se ve sin internet). Por bloques:
@@ -195,14 +195,7 @@ export function TarjetaBillete({
         </div>
       )}
 
-      {avisoDeFecha && (
-        <div data-aviso-documento="fecha" role="status" className="flex flex-col gap-1.5 rounded-[14px] px-3 py-2.5" style={{ background: '#FDECD9', border: '1px solid rgba(194,88,28,.4)' }}>
-          <span className="text-[13px] font-semibold leading-[1.3]" style={{ color: '#9A4A12' }}>⚠ {avisoDeFecha.texto}</span>
-          <button type="button" onClick={avisoDeFecha.onCorrecta} data-aviso-documento-correcta className="zona-toque self-start rounded-full px-3 py-1.5 text-[12.5px] font-bold" style={{ background: '#fff', border: '1px solid rgba(194,88,28,.4)', color: '#9A4A12' }}>
-            Es correcta
-          </button>
-        </div>
-      )}
+      {avisoDeFecha && <LineaNaranjaDeDocumento texto={avisoDeFecha.texto} onCorrecta={avisoDeFecha.onCorrecta} />}
       {conCodigo && billete?.codigo ? (
         <button type="button" onClick={onAmpliar} data-billete-codigo-pequeno className="flex w-full items-center gap-3.5 text-left" style={{ borderTop: PUNTEADA, paddingTop: 12 }}>
           <span className="rounded-xl bg-white p-1.5" style={{ border: '1px solid rgba(28,34,48,.14)' }}>

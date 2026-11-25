@@ -61,7 +61,7 @@ export function LugaresPendientes({ route, day, dateIso, pendientes }: { route: 
   }
   const visitado = (p: Pendiente) => {
     setStopVisto(p.dayId, p.stop.id, true)
-    conDeshacer(`visitado:${p.stop.id}`, `${displayStopName(p.stop.name)}, marcada como visitada`, () => setStopVisto(p.dayId, p.stop.id, false))
+    conDeshacer(`visitado:${p.stop.id}`, `Has visto ${displayStopName(p.stop.name)}`, () => setStopVisto(p.dayId, p.stop.id, false))
   }
   const pasar = (p: Pendiente, aDayId: string) => {
     const estabaSaltada = Boolean(p.stop.saltada)
