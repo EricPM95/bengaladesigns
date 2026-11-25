@@ -288,7 +288,11 @@ export function resumen({ datos, destino, items, viaje, desde = null, hasta = nu
   const t = d.textos.resumen_viaje
   const queda = estado.secretos.total - secretos
   return {
-    ganado: ganado.map((it) => ({ clave: it.clave, logro: it.logro, escalon: it.escalon, destino: it.destino, en: it.en })),
+    // (V59) `nombre`: el nombre de un Patrimonio o de una maravilla, para la miniatura del resumen del día («Centro histórico de Roma»).
+    ganado: ganado.map((it) => {
+      const nombre = it.logro === 'patrimonio' ? Object.values(datos.destinos).map((x) => x.patrimonios?.[it.escalon]).find(Boolean)?.nombre : it.logro === 'maravilla' ? datos.viajero?.maravillas?.[it.escalon]?.nombre : undefined
+      return { clave: it.clave, logro: it.logro, escalon: it.escalon, destino: it.destino, en: it.en, ...(nombre ? { nombre } : {}) }
+    }),
     por_categoria: Object.fromEntries(Object.entries(porCategoria).map(([k, v]) => [k, v.length])),
     pendiente: pendientes({ datos, destino, viaje, items, hoy, nombreDe }),
     // Cuál de los dos textos del resumen del viaje toca.

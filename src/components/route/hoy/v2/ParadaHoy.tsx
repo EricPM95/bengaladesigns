@@ -50,6 +50,7 @@ import { desdeDonde, type ZonaUbicacion } from '../../../../lib/ubicacionHoy'
 import { estadoDelHorario, type TonoDeCaja } from '../../../../lib/horarioDeLaCaja'
 import { InsigniaPartes } from '../../../logros/dibujos/InsigniaPartes'
 import { Etiqueta, RecuadroDePuntos } from '../piezas'
+import { ImagenComida } from '../../../ui/ImagenComida'
 
 /** Los colores del diseño «Hoy Estados» (apartado 04): tinta, marfil, oro. */
 const TINTA = '#1C2230'
@@ -153,9 +154,9 @@ function FotoDeLaParada({ parada, ciudad, dateIso, alto, children }: { parada: S
 }
 
 /** (Noche 24-25 nov; Design «Parada Tarjeta» T1-T3) La tarjeta de la parada: esquinas de 28, fondo marfil claro, filo finito y sombra suave. */
-const TARJETA_PARADA = { background: '#FFFDF8', border: '1px solid rgba(28,34,48,.07)', boxShadow: '0 20px 34px -24px rgba(28,34,48,.5)' } as const
-const PILDORA_FOTO = { background: 'rgba(28,34,48,.55)', color: '#FFFDF8' } as const
-const NOMBRE_SOBRE_FOTO = { font: "400 34px/1 'Instrument Serif',serif", color: '#FFFDF8', textShadow: '0 2px 16px rgba(0,0,0,.55)', textWrap: 'balance' as never }
+export const TARJETA_PARADA = { background: '#FFFDF8', border: '1px solid rgba(28,34,48,.07)', boxShadow: '0 20px 34px -24px rgba(28,34,48,.5)' } as const
+export const PILDORA_FOTO = { background: 'rgba(28,34,48,.55)', color: '#FFFDF8' } as const
+export const NOMBRE_SOBRE_FOTO = { font: "400 34px/1 'Instrument Serif',serif", color: '#FFFDF8', textShadow: '0 2px 16px rgba(0,0,0,.55)', textWrap: 'balance' as never }
 const BOTON_ORO_A = BOTON_ORO
 const BOTON_BLANCO_A = { background: '#FFFDF8', border: '1px solid rgba(28,34,48,.18)', color: TINTA }
 
@@ -229,7 +230,7 @@ const COLOR_CAJA: Record<TonoDeCaja | 'gris', string> = { negro: '#1C2230', verd
  * (V47; Design «Parada Tarjeta» T1-T3) UNA caja de las tres de la tarjeta de la parada: la etiqueta con su icono (HORARIO, A PIE / EN COCHE, VISITA), lo grande y la línea pequeña de debajo.
  * Tres en una fila: a 375 px caben sin cortar texto (lo largo baja a otra línea).
  */
-function CajaDeParada({ icono, etiqueta, grande, tono = 'negro', sub, subTono = 'gris', dato, extra, datos }: { icono: Parameters<typeof Icono>[0]['nombre']; etiqueta: string; grande: string; tono?: TonoDeCaja; sub: string; subTono?: TonoDeCaja | 'gris'; dato: string; extra?: ReactNode; datos?: Record<string, string | undefined> }) {
+export function CajaDeParada({ icono, etiqueta, grande, tono = 'negro', sub, subTono = 'gris', dato, extra, datos }: { icono: Parameters<typeof Icono>[0]['nombre']; etiqueta: string; grande: string; tono?: TonoDeCaja; sub: string; subTono?: TonoDeCaja | 'gris'; dato: string; extra?: ReactNode; datos?: Record<string, string | undefined> }) {
   return (
     <div data-caja-parada={dato} {...datos} className="flex min-h-[98px] min-w-0 flex-col gap-1.5 rounded-[18px] px-2.5 pb-3 pt-[11px]" style={{ background: '#F7F1E4' }}>
       <span className="flex items-center gap-[5px]" style={{ color: '#6F4E37' }}>
@@ -260,13 +261,52 @@ function BotonIcono({ icono, etiqueta, dato, onClick, oro = false, candado = fal
 }
 
 /** El círculo con la chincheta del recuadro de la ubicación (T1: 32 px, fondo #F3E3B2). */
-function IconoDeUbicacion() {
+export function IconoDeUbicacion() {
   return (
     <span aria-hidden="true" className="flex h-8 w-8 flex-none items-center justify-center rounded-full" style={{ background: '#F3E3B2' }}>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E5018" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 21s-6-5.5-6-10a6 6 0 0 1 12 0c0 4.5-6 10-6 10zM12 8.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z" />
       </svg>
     </span>
+  )
+}
+
+/**
+ * (V46; V59 §3) El recuadro de la ubicación de la tarjeta de la parada Y de la de la comida («Estás lejos…» / «Sin tu ubicación no sabemos cuándo llegas»). Una sola pieza.
+ * `onLlegado`: con él sale [Ya he llegado] junto a [Usar mi ubicación]; sin él, solo [Usar mi ubicación]. `textoSin` cambia la frase de «sin ubicación» (la comida sin restaurante).
+ */
+export function RecuadroDeUbicacion({ zona, destino, ubicacionEstado, pedirUbicacion, onLlegado, nombre, textoSin }: { zona: ZonaUbicacion; destino: string; ubicacionEstado: 'libre' | 'pidiendo' | 'no'; pedirUbicacion: () => void; onLlegado?: () => void; nombre: string; textoSin?: string }) {
+  const [hoja, setHoja] = useState(false)
+  if (zona === 'fuera')
+    return (
+      <RecuadroDePuntos data-hoy-lejos className="flex-col gap-1">
+        <span className="flex items-center gap-2.5 text-[13px] font-medium leading-[1.35]" style={{ color: 'rgba(28,34,48,.75)' }}>
+          <IconoDeUbicacion />
+          Estás lejos de {destino}. Cuando llegues, contaremos desde donde estés.
+        </span>
+      </RecuadroDePuntos>
+    )
+  if (zona !== 'sin') return null
+  return (
+    <>
+      <RecuadroDePuntos data-hoy-sin-ubicacion className="flex-col gap-2.5">
+        <span className="flex items-center gap-2.5 text-[13px] font-medium leading-[1.35]" style={{ color: 'rgba(28,34,48,.75)' }}>
+          <IconoDeUbicacion />
+          {textoSin ?? 'Sin tu ubicación no sabemos cuándo llegas'}
+        </span>
+        <div className="flex gap-2.5">
+          <button type="button" onClick={() => (ubicacionEstado === 'no' ? setHoja(true) : pedirUbicacion())} disabled={ubicacionEstado === 'pidiendo'} data-hoy-usar-ubicacion className="flex h-11 flex-1 items-center justify-center rounded-[14px] text-[14px] font-bold" style={BOTON_ORO}>
+            {ubicacionEstado === 'pidiendo' ? 'Buscando…' : 'Usar mi ubicación'}
+          </button>
+          {onLlegado && (
+            <button type="button" onClick={onLlegado} data-hoy-ya-he-llegado aria-label={`Ya he llegado a ${nombre}`} className="flex h-11 flex-1 items-center justify-center whitespace-nowrap rounded-[14px] text-[14px] font-bold" style={BOTON_CLARO}>
+              Ya he llegado
+            </button>
+          )}
+        </div>
+      </RecuadroDePuntos>
+      {hoja && <HojaActivaUbicacion onCerrar={() => setHoja(false)} onReintentar={() => { setHoja(false); pedirUbicacion() }} />}
+    </>
   )
 }
 
@@ -333,7 +373,6 @@ export interface PropsParada {
 export function TarjetaParada(p: PropsParada) {
   const { route, day, dateIso, siguiente, anterior, reservaSiguiente, ubicacion, enCoche } = p
   const [forzada, setForzada] = useState<string | null>(null)
-  const [hojaUbicacion, setHojaUbicacion] = useState(false)
   const [hojaTiempo, setHojaTiempo] = useState(false)
   const [verEntrada, setVerEntrada] = useState(false)
   const ahoraMin = useAhoraMin()
@@ -519,30 +558,7 @@ export function TarjetaParada(p: PropsParada) {
             </div>
           )}
           {/* (V46) El recuadro de la ubicación («Estás lejos…» / «Sin tu ubicación…») va DEBAJO de las cajas y ENCIMA de «Escucha su historia» (dibujo T2 y T4). */}
-          {zona === 'fuera' && !p.cerrada && (
-            <RecuadroDePuntos data-hoy-lejos className="flex-col gap-1">
-              <span className="flex items-center gap-2.5 text-[13px] font-medium leading-[1.35]" style={{ color: 'rgba(28,34,48,.75)' }}>
-                <IconoDeUbicacion />
-                Estás lejos de {route.destination}. Cuando llegues, contaremos desde donde estés.
-              </span>
-            </RecuadroDePuntos>
-          )}
-          {zona === 'sin' && !p.cerrada && (
-            <RecuadroDePuntos data-hoy-sin-ubicacion className="flex-col gap-2.5">
-              <span className="flex items-center gap-2.5 text-[13px] font-medium leading-[1.35]" style={{ color: 'rgba(28,34,48,.75)' }}>
-                <IconoDeUbicacion />
-                Sin tu ubicación no sabemos cuándo llegas
-              </span>
-              <div className="flex gap-2.5">
-                <button type="button" onClick={() => (p.ubicacionEstado === 'no' ? setHojaUbicacion(true) : p.pedirUbicacion())} disabled={p.ubicacionEstado === 'pidiendo'} data-hoy-usar-ubicacion className="flex h-11 flex-1 items-center justify-center rounded-[14px] text-[14px] font-bold" style={BOTON_ORO}>
-                  {p.ubicacionEstado === 'pidiendo' ? 'Buscando…' : 'Usar mi ubicación'}
-                </button>
-                <button type="button" onClick={() => setForzada(siguiente.id)} data-hoy-ya-he-llegado aria-label={`Ya he llegado a ${nombre}`} className="flex h-11 flex-1 items-center justify-center whitespace-nowrap rounded-[14px] text-[14px] font-bold" style={BOTON_CLARO}>
-                  Ya he llegado
-                </button>
-              </div>
-            </RecuadroDePuntos>
-          )}
+          {!p.cerrada && <RecuadroDeUbicacion zona={zona} destino={route.destination} ubicacionEstado={p.ubicacionEstado} pedirUbicacion={p.pedirUbicacion} onLlegado={() => setForzada(siguiente.id)} nombre={nombre} />}
           {/* (V44 §2) «Escucha su historia por el camino · 3 min», en azul oscuro DESDE EL PRINCIPIO: al darle al play solo cambia ▶ por ❚❚ y se mueven las ondas. */}
           {historia.hay && (
             <button type="button" onClick={alEscuchar} data-hoy-escuchar-camino data-escuchar={historia.candado ? 'candado' : historia.estado} aria-label={historia.estado === 'hablando' ? 'Pausar la historia' : 'Escuchar su historia por el camino'} className="flex min-h-[68px] items-center gap-3 rounded-[20px] py-3 pl-3 pr-3.5 text-left" style={{ background: 'linear-gradient(135deg,#232A3C,#1C2230)', color: '#FFFDF8', boxShadow: '0 14px 22px -16px rgba(28,34,48,.8)' }}>
@@ -589,7 +605,6 @@ export function TarjetaParada(p: PropsParada) {
               </button>
             </div>
           )}
-          {hojaUbicacion && <HojaActivaUbicacion onCerrar={() => setHojaUbicacion(false)} onReintentar={() => { setHojaUbicacion(false); p.pedirUbicacion() }} />}
         </div>
       </div>
       {dialogos}
@@ -724,9 +739,8 @@ export function TuDia({ route, day, dateIso, paradas, siguienteId, reservaDe, ho
                   {cabecera}
                   {/* La comida y la cena, sin hora: se hacen en su franja, cuando toque. */}
                   <div data-hoy-fila="comida" className="flex items-center gap-3 py-1.5">
-                    <span className="flex h-[46px] w-[46px] flex-none items-center justify-center rounded-[14px]" style={{ background: '#F3E3B2', color: '#6E5018' }}>
-                      <Icono nombre="comida" size={20} grosor={1.8} />
-                    </span>
+                    <ImagenComida tipo={fila.meal.mealTime === 'dinner' ? 'cenar' : 'comer'} tam={46} />
+
                     <span className="min-w-0 flex-1 truncate text-[14.5px] font-semibold">{tituloDeComida(fila.meal)}</span>
                   </div>
                 </Fragment>

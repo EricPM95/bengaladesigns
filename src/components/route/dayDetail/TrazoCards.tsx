@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { KIND_ICON, KIND_STYLE, PERIOD_STYLE, type DayPeriod, type StopKind } from '../../../lib/stopKind'
 import { Icono, IconoRuta } from '../../ui/Icono'
 import { EtiquetaBarrio } from '../../ui/EtiquetaBarrio'
+import { ImagenComida, type TipoDeComida } from '../../ui/ImagenComida'
 
 /**
  * Piezas del día abierto en DIAS con el diseño "Trazo Itinerario": UNA sola tarjeta para todo lo que
@@ -235,7 +236,9 @@ export function TimelineNote({ time, children, onClick, photoUrl }: { time?: str
  * minutos está; a la derecha, "Cambiar". El desayuno, en pequeño: más baja, el nombre en letra normal y "Cambiar" como
  * enlace.
  */
-export function MealCard({ label, reservedTime, name, sub, iconPath, onOpen, onChange, accion = 'Cambiar', small = false, menu }: {
+export function MealCard({ label, reservedTime, name, sub, iconPath, onOpen, onChange, accion = 'Cambiar', small = false, menu, imagen }: {
+  /** (V59 §3) La imagen fija de la comida o de la cena (Design «Imagen Comida») en lugar del círculo con el icono. */
+  imagen?: TipoDeComida
   label: string
   /** Solo la hora que el viajero ha reservado en el restaurante; la franja de la comida no se enseña. */
   reservedTime?: string | null
@@ -262,9 +265,13 @@ export function MealCard({ label, reservedTime, name, sub, iconPath, onOpen, onC
   ) : null
   const content = (
     <>
-      <span className={`flex shrink-0 items-center justify-center rounded-full btn-champan ${small ? 'h-8 w-8' : 'h-10 w-10 max-[479px]:h-8 max-[479px]:w-8'}`}>
-        <Icon d={iconPath} size={small ? 15 : 18} />
-      </span>
+      {imagen ? (
+        <ImagenComida tipo={imagen} tam={small ? 36 : 44} redondeo={small ? 11 : 14} />
+      ) : (
+        <span className={`flex shrink-0 items-center justify-center rounded-full btn-champan ${small ? 'h-8 w-8' : 'h-10 w-10 max-[479px]:h-8 max-[479px]:w-8'}`}>
+          <Icon d={iconPath} size={small ? 15 : 18} />
+        </span>
+      )}
       <span className="flex min-w-0 flex-1 flex-col gap-0.5 text-left">
         <span className="whitespace-nowrap font-mono text-[10.5px] font-semibold uppercase tracking-[.08em] text-accent max-[479px]:text-[10px] max-[479px]:tracking-[.04em]">
           {label}

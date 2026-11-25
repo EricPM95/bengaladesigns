@@ -4,11 +4,11 @@ import { catalogoEnMemoria } from '../../../../lib/destinationPlacesApi'
 import { hasRealCoordinates } from '../../../../lib/distanceMock'
 import { displayStopName } from '../../../../lib/format'
 import { numberedStopsOf } from '../../../../lib/stopKind'
-import { urlComoLlegar } from '../../../../lib/hoyParada'
+import { estaAqui, urlComoLlegar } from '../../../../lib/hoyParada'
 import { aHora, viajeMin, type Propuesta } from '../../../../lib/hoyCambiarPlan'
 import { RESTAURANT_SUB_CATEGORIES } from '../../../../lib/placeCategories'
-import { comidaActiva, horarioDeComer, proponerComerAhora, restaurantesAbiertos, restaurantesMasCercanos, type RestauranteCerca } from '../../../../lib/hoyComer'
-import { zonaDeUbicacion } from '../../../../lib/ubicacionHoy'
+import { aperturaDeHoy, comidaActiva, horarioDeComer, proponerComerAhora, restaurantesAbiertos, restaurantesMasCercanos, type RestauranteCerca } from '../../../../lib/hoyComer'
+import { zonaDeUbicacion, type ZonaUbicacion } from '../../../../lib/ubicacionHoy'
 import { useExploreAperturaStore } from '../../../../store/useExploreAperturaStore'
 import { useRouteStore } from '../../../../store/useRouteStore'
 import { useUbicacionHoy } from './useUbicacionHoy'
@@ -17,7 +17,9 @@ import { aplicarPropuesta, volverALaRutaOriginal } from '../../../../lib/hoyCamb
 import { useDestinationPool } from '../../../../lib/useDestinationPool'
 import { StopsMapView, type StopsMapMarker } from '../../../map/StopsMapView'
 import { Icono } from '../../../ui/Icono'
-import { AvisoPlanActualizado, HojaPropuesta, Titulo, useContexto } from './CambiarPlan'
+import { AvisoPlanActualizado, BotonCambiarPlan, HojaPropuesta, Titulo, useContexto } from './CambiarPlan'
+import { CajaDeParada, NOMBRE_SOBRE_FOTO, PILDORA_FOTO, RecuadroDeUbicacion, TARJETA_PARADA } from './ParadaHoy'
+import { ImagenComida } from '../../../ui/ImagenComida'
 import { HojaV2 } from './HojasV2'
 import { BOTON_ORO, BOTON_CLARO } from '../../../ui/botonesOro'
 
@@ -25,13 +27,11 @@ import { BOTON_ORO, BOTON_CLARO } from '../../../ui/botonesOro'
  * HOY2 (agente C, apartado 3): «Quiero comer ahora» (pantalla 24) y «A la hora de comer» (Completa 4).
  *  · `HojaComerAhora`: el mapa con los restaurantes ABIERTOS AHORA más cercanos (los nuestros) y [Ir aquí]. Al elegir uno, la comida pasa a ahora y el resto del día se recoloca como PROPUESTA con el formato común
  *    (Cambia… / Se mantiene… / [Aplicar] / [Ver otra opción] / «Volver a mi ruta original»); nada se mueve sin [Aplicar] y después sale «Plan actualizado · Deshacer».
- *  · `TarjetaDeComida`: cuando toca comer, la tarjeta de arriba es «Tu restaurante está a N minutos» con [Cómo llegar] y [Cambiar] (este abre la misma hoja).
+ *  · `TarjetaDeComida`: cuando toca comer, la misma tarjeta de la parada con la imagen fija de comida (V59, C1-C6).
  */
 const TINTA = '#1C2230'
 const MARFIL = '#FBF3E2'
-const ORO_CLARO = '#F3D88F'
 const ORO_TEXTO = '#8E6820'
-const BOTON_MARFIL = BOTON_CLARO
 const normaliza = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
 
 /** De dónde cuenta las distancias: tu ubicación (solo si estás en la ruta; V44 §1); sin ella, DESDE LA PARADA DE AHORA (V44 §5; si no tiene coordenadas, la última vista). */
@@ -43,7 +43,6 @@ export function origenDeComer(day: DayPlan, siguiente: Stop, ubicacion: Coordina
   return { origen: ultima ? ultima.coordinates : null, exacto: false, desde: ultima ? displayStopName(ultima.name) : null }
 }
 
-const textoMin = (min: number, modo: 'coche' | 'pie') => `${modo === 'coche' ? 'En coche' : 'A pie'} · ${min} min`
 
 /* ------------------------------------------------------------------ */
 /* La hoja (24)                                                         */
@@ -213,63 +212,134 @@ export function useComidaDeAhora(route: Route, day: DayPlan, siguiente: Stop | n
   }
 }
 
-export function TarjetaDeComida({ route, day, dateIso, meal, siguiente, ubicacion, enCoche, ahoraMin, onHecha }: { route: Route; day: DayPlan; dateIso: string; meal: MealSlot; siguiente: Stop; ubicacion: Coordinates | null; enCoche: boolean; ahoraMin: number; onHecha: () => void }) {
+type PropsTarjetaDeComida = { route: Route; day: DayPlan; dateIso: string; meal: MealSlot; siguiente: Stop; ubicacion: Coordinates | null; enCoche: boolean; ahoraMin: number; onHecha: () => void; zonaUbicacion: ZonaUbicacion; ubicacionEstado: 'libre' | 'pidiendo' | 'no'; pedirUbicacion: () => void; hayUbicacion?: boolean; onSaltar: () => void }
+
+/** El rótulo de las cajas: lo que se tarda en comer (por dentro 1 h; cena 1 h 30; se enseña). */
+const TIEMPO_DE_COMER = '1 h'
+const TIEMPO_DE_CENAR = '1 h 30'
+
+/**
+ * (V59 §3; Design «Hora de Comer», C1-C6) LA TARJETA DE LA COMIDA Y DE LA CENA: la misma tarjeta de la parada (esquinas, cajas, recuadro de la ubicación, botones) con la imagen fija de comida (`ImagenComida`) en lugar de la foto.
+ *  · C1/C2, con restaurante: «COMIDA» / «CENA», «Es hora de comer · Nombre»; HORARIO / A PIE / COMIDA (1 h; cena 1 h 30); el recuadro de la ubicación; [Cómo llegar] y [Elegir otro sitio] (abre «Comer cerca de ti»); «Ya he comido · seguir con el plan».
+ *  · C5/C6, ya en el restaurante (GPS a 150 m o [Ya he llegado]): A PIE «Aquí · Ya has llegado»; sin recuadro, botones ni enlace; solo [He terminado] verde (pasa a la siguiente parada).
+ *  · C3/C4, sin restaurante: «12 abiertos · Restaurantes cerca de ti», [Elegir sitio] y [Cambiar plan]. Al elegir uno en la hoja, la comida lleva ese restaurante y pasa a C1/C2.
+ * Si pasa la hora de la comida (`comidaActiva`) sin pulsar nada, la tarjeta se va sola y sale la de la parada. Vale igual en coche (Lanzarote: «EN COCHE»).
+ */
+export function TarjetaDeComida(p: PropsTarjetaDeComida) {
+  const sitio = p.meal.chosenRestaurant ?? p.meal.recommendedRestaurant ?? null
+  return sitio ? <TarjetaDeComidaConSitio {...p} /> : <TarjetaDeComidaSinSitio {...p} />
+}
+
+/** Sin restaurante: cuenta los abiertos cerca (en el móvil, del catálogo que ya está en memoria; no pregunta a Supabase). */
+function TarjetaDeComidaSinSitio(p: PropsTarjetaDeComida) {
+  const { places, resolved } = useDestinationPool(p.route.destination, true)
+  const { origen } = origenDeComer(p.day, p.siguiente, p.ubicacion)
+  const abiertos = useMemo(() => (resolved ? restaurantesAbiertos({ restaurantes: places, origen, dateIso: p.dateIso, ahoraMin: p.ahoraMin, enCoche: p.enCoche, limite: 999, maxMin: 600 }) : []), [resolved, places, origen?.lat, origen?.lng, p.dateIso, p.ahoraMin, p.enCoche]) // eslint-disable-line react-hooks/exhaustive-deps
+  return <TarjetaDeComidaBase {...p} cerca={resolved ? { n: abiertos.length, minutos: abiertos[0]?.minutos ?? null } : null} />
+}
+
+function TarjetaDeComidaConSitio(p: PropsTarjetaDeComida) {
+  return <TarjetaDeComidaBase {...p} cerca={null} />
+}
+
+function TarjetaDeComidaBase({ route, day, dateIso, meal, siguiente, ubicacion, enCoche, ahoraMin, onHecha, zonaUbicacion, ubicacionEstado, pedirUbicacion, onSaltar, cerca }: PropsTarjetaDeComida & { cerca: { n: number; minutos: number | null } | null }) {
   const [hoja, setHoja] = useState(false)
+  const [forzada, setForzada] = useState(false)
   const sitio = meal.chosenRestaurant ?? meal.recommendedRestaurant ?? null
+  const esCena = meal.mealTime === 'dinner'
   const catalogo = catalogoEnMemoria(route.destination)
-  const ficha = sitio ? (catalogo?.places.find((p) => p.kind === 'restaurant' && normaliza(p.name) === normaliza(sitio.name)) ?? null) : null
+  const ficha = sitio ? (catalogo?.places.find((x) => x.kind === 'restaurant' && normaliza(x.name) === normaliza(sitio.name)) ?? null) : null
   const estado = ficha ? horarioDeComer(ficha, dateIso, ahoraMin) : null
   const cerrado = estado?.abierto === false
-  const { origen, exacto } = origenDeComer(day, siguiente, ubicacion)
+  // Sin tu ubicación se cuenta desde la ÚLTIMA parada que has hecho (`Desde el Panteón`); si aún no has hecho ninguna, desde el origen de siempre (`origenDeComer`).
+  const base = origenDeComer(day, siguiente, ubicacion)
+  const ultima = numberedStopsOf(day).filter((x) => x.checkedInAt && hasRealCoordinates(x.coordinates)).pop() ?? null
+  const exacto = base.exacto
+  const origen = !exacto && ultima ? ultima.coordinates : base.origen
+  const desde = !exacto && ultima ? displayStopName(ultima.name) : base.desde
   const coordsSitio = sitio && hasRealCoordinates(sitio.coordinates) ? sitio.coordinates : null
   const minutos = coordsSitio ? viajeMin(origen ? { coordinates: origen } : null, { coordinates: coordsSitio }, enCoche) : null
+  // «Ya has llegado»: el GPS a 150 m del restaurante (solo si estás en la ruta: `ubicacion` ya viene filtrada) o [Ya he llegado].
+  const llegado = Boolean(sitio) && (forzada || (coordsSitio != null && estaAqui(ubicacion, { coordinates: coordsSitio } as Stop)))
   const modo = enCoche ? 'coche' : 'pie'
-  const cocina = ficha?.what_to_order ? ficha.what_to_order.split(/[,;(.]/)[0].trim().slice(0, 40) : null
-  const esCena = meal.mealTime === 'dinner'
-  const titulo = !sitio ? (esCena ? 'Es hora de cenar' : 'Es hora de comer') : cerrado ? `${displayStopName(sitio.name)} está cerrado ahora` : exacto && minutos != null ? `Tu restaurante está a ${minutos} ${minutos === 1 ? 'minuto' : 'minutos'}` : `${esCena ? 'Hoy cenas' : 'Hoy comes'} en ${displayStopName(sitio.name)}`
+  const nombre = sitio ? displayStopName(sitio.name) : null
+  const aloj = useRouteStore((s) => s.accommodationSelections)
+  const conHotel = Object.values(aloj ?? {}).some((x) => Boolean((x as { name?: string } | null)?.name))
+  const subTitulo = nombre ?? (conHotel ? 'Cerca de tu alojamiento' : 'Cerca de ti')
+
+  // HORARIO: «Abierto» en verde (V46), «Cerrado» en rojo; la línea de debajo, hasta cuándo o cuándo abre.
+  const abre = cerrado && ficha ? aperturaDeHoy(ficha, dateIso, ahoraMin) : null
+  const horario = !sitio
+    ? null
+    : cerrado
+      ? { grande: 'Cerrado', tono: 'rojo' as const, sub: abre != null ? `Abre a las ${aHora(abre, false)}` : 'Hoy no abre más', subTono: 'rojo' as const }
+      : { grande: 'Abierto', tono: 'verde' as const, sub: estado?.cierraMin != null ? `Cierra a las ${aHora(estado.cierraMin, false)}` : 'Sin horario fijo', subTono: 'gris' as const }
+  const cajaCome = <CajaDeParada dato="comida" icono="arena" etiqueta={esCena ? 'CENA' : 'COMIDA'} grande={esCena ? TIEMPO_DE_CENAR : TIEMPO_DE_COMER} sub="Lo que recomendamos" datos={{ 'data-hoy-comida-duracion': esCena ? 'cena' : 'comida' }} />
+  const cajaPie = (grande: string, sub: string, zona: string) => <CajaDeParada dato="minutos" icono={enCoche ? 'coche' : 'andando'} etiqueta={enCoche ? 'EN COCHE' : 'A PIE'} grande={grande} sub={sub} datos={{ 'data-hoy-trayecto': modo, 'data-hoy-trayecto-zona': zona }} />
+  const estadoDeLaTarjeta = !sitio ? 'sin_sitio' : llegado ? 'llegado' : cerrado ? 'cerrado' : 'normal'
+
   return (
     <>
-      <div data-hoy-comida data-hoy-comida-estado={!sitio ? 'sin_sitio' : cerrado ? 'cerrado' : 'normal'} className="flex-none overflow-hidden rounded-[26px]" style={{ background: TINTA, color: MARFIL, boxShadow: '0 18px 30px -18px rgba(28,34,48,.7)' }}>
-        <div className="flex items-center gap-2.5 px-4 pt-3.5">
-          <span className="rounded-full px-2.5 py-1 text-[10.5px] font-bold tracking-[.14em]" style={{ background: 'rgba(243,216,143,.16)', border: '1px solid rgba(243,216,143,.4)', color: ORO_CLARO, fontFamily: "'Geist Mono',monospace" }}>{esCena ? 'CENA' : 'COMIDA'}</span>
-        </div>
-        <div className="flex flex-col gap-[9px] px-4 pb-4 pt-2.5">
-          <span data-hoy-comida-titulo style={{ font: "400 30px/1.05 'Instrument Serif',serif", textWrap: 'balance' as never }}>{titulo}</span>
-          {sitio && minutos != null && !cerrado && (
-            <span className="flex items-center gap-2.5 text-[13.5px]" data-hoy-comida-trayecto={modo}>
-              <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full" style={{ background: 'rgba(251,243,226,.1)', color: ORO_CLARO }}>
-                <Icono nombre={enCoche ? 'coche' : 'andando'} size={17} grosor={1.8} />
-              </span>
-              <span className="flex flex-col gap-px">
-                <b style={{ font: "700 14.5px 'Geist'" }}>{textoMin(minutos, modo)}</b>
-                <span className="text-[12px]" style={{ color: 'rgba(251,243,226,.65)' }}>
-                  {displayStopName(sitio.name)}
-                  {cocina ? ` · ${cocina}` : ''}
-                  {!exacto ? ' · desde tu última parada' : ''}
-                </span>
-              </span>
-            </span>
-          )}
-          {cerrado && <span className="text-[13px] leading-[1.35]" style={{ color: '#FFC2BA' }}>Mira otro sitio abierto cerca.</span>}
-          {!sitio && <span className="text-[13px] leading-[1.35]" style={{ color: 'rgba(251,243,226,.75)' }}>Te enseñamos los restaurantes abiertos más cerca de ti.</span>}
-          <div className="grid grid-cols-2 gap-2">
-            {coordsSitio && !cerrado ? (
-              <a href={urlComoLlegar(coordsSitio, ubicacion, enCoche)} target="_blank" rel="noopener noreferrer" data-hoy-comida-como-llegar className="flex h-12 items-center justify-center gap-1.5 rounded-2xl px-2.5 text-[13.5px] font-bold no-underline" style={BOTON_ORO}>
-                <Icono nombre="localizar" size={17} grosor={1.9} />
-                Cómo llegar
-              </a>
-            ) : (
-              <button type="button" onClick={() => setHoja(true)} data-hoy-comida-elegir className="flex h-12 items-center justify-center rounded-2xl px-2.5 text-[13.5px] font-bold" style={BOTON_ORO}>
-                Elegir sitio
-              </button>
-            )}
-            <button type="button" onClick={() => setHoja(true)} data-hoy-comida-cambiar className="flex h-12 items-center justify-center gap-1.5 rounded-2xl px-2.5 text-[13.5px] font-bold" style={BOTON_MARFIL}>
-              Cambiar
-            </button>
+      <div data-hoy-comida data-hoy-siguiente data-tarjeta="clara" data-hoy-comida-estado={estadoDeLaTarjeta} className="flex-none overflow-hidden rounded-[28px]" style={TARJETA_PARADA}>
+        <div data-hoy-foto-parada className="relative overflow-hidden" style={{ height: 156 }}>
+          <ImagenComida tipo={esCena ? 'cenar' : 'comer'} />
+          <span className="absolute inset-0" style={{ background: 'linear-gradient(180deg,rgba(0,0,0,.18) 0%,rgba(0,0,0,0) 40%,rgba(0,0,0,.35))' }} />
+          <span data-hoy-insignia className="absolute left-3.5 top-3.5 flex h-7 items-center rounded-full px-[13px]" style={{ ...PILDORA_FOTO, font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em' }}>{esCena ? 'CENA' : 'COMIDA'}</span>
+          <div className="absolute inset-x-[18px] bottom-3.5 flex flex-col gap-1">
+            <span data-hoy-comida-titulo style={NOMBRE_SOBRE_FOTO}>{esCena ? 'Es hora de cenar' : 'Es hora de comer'}</span>
+            <span data-hoy-comida-sitio className="text-[15px] font-semibold leading-[1.2]" style={{ color: '#FFFDF8', textShadow: '0 2px 12px rgba(0,0,0,.4)' }}>{subTitulo}</span>
           </div>
-          <button type="button" onClick={onHecha} data-hoy-comida-hecha className="flex min-h-11 items-center justify-center text-[12.5px] underline underline-offset-2" style={{ color: 'rgba(251,243,226,.7)' }}>
-            Ya he {esCena ? 'cenado' : 'comido'} · seguir con el plan
-          </button>
+        </div>
+        <div className="flex flex-col gap-3 px-3.5 pb-4 pt-3.5">
+          <div data-hoy-cajas className="grid grid-cols-3 gap-2">
+            {sitio && horario ? (
+              <>
+                <CajaDeParada dato="horario" icono="reloj" etiqueta="HORARIO" grande={horario.grande} tono={horario.tono} sub={horario.sub} subTono={horario.subTono} />
+                {llegado ? cajaPie('Aquí', 'Ya has llegado', 'aqui') : cajaPie(minutos != null ? `${minutos} min` : '—', exacto ? 'Desde ti' : desde ? `Desde ${desde}` : 'Desde tu parada', zonaUbicacion)}
+                {cajaCome}
+              </>
+            ) : (
+              <>
+                <CajaDeParada dato="cerca" icono="comida" etiqueta="CERCA" grande={cerca ? `${cerca.n} abiertos` : '—'} sub="Restaurantes cerca de ti" datos={{ 'data-hoy-comida-abiertos': String(cerca?.n ?? '') }} />
+                {cajaPie(cerca?.minutos != null ? `${cerca.minutos} min` : '—', 'El más cercano', zonaUbicacion)}
+                {cajaCome}
+              </>
+            )}
+          </div>
+          {llegado ? (
+            <button type="button" onClick={onHecha} data-hoy-comida-terminado className="flex h-[54px] items-center justify-center gap-2 whitespace-nowrap rounded-2xl text-[15px] font-bold text-white" style={{ background: 'linear-gradient(180deg,#3E9A5E,#2B7F45)', boxShadow: '0 10px 16px -12px rgba(30,100,60,.8),inset 0 1px 0 rgba(255,255,255,.25)' }}>
+              <Icono nombre="hecho" size={17} grosor={2.4} />
+              He terminado
+            </button>
+          ) : (
+            <>
+              <RecuadroDeUbicacion zona={zonaUbicacion} destino={route.destination} ubicacionEstado={ubicacionEstado} pedirUbicacion={pedirUbicacion} onLlegado={sitio ? () => setForzada(true) : undefined} nombre={nombre ?? 'el restaurante'} textoSin={sitio ? undefined : 'Sin tu ubicación, te enseñamos los de cerca de tu última parada'} />
+              <div className="flex gap-[9px]">
+                {sitio && coordsSitio && !cerrado ? (
+                  <a href={urlComoLlegar(coordsSitio, ubicacion, enCoche)} target="_blank" rel="noopener noreferrer" data-hoy-comida-como-llegar className="flex h-[52px] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-2xl text-[15px] font-bold no-underline" style={BOTON_ORO}>
+                    <Icono nombre="localizar" size={17} grosor={2} />
+                    Cómo llegar
+                  </a>
+                ) : (
+                  <button type="button" onClick={() => setHoja(true)} data-hoy-comida-elegir className="flex h-[52px] flex-[1.5] items-center justify-center gap-2 whitespace-nowrap rounded-2xl text-[15px] font-bold" style={BOTON_ORO}>
+                    <Icono nombre="comida" size={17} grosor={2} />
+                    {sitio ? 'Elegir otro sitio' : 'Elegir sitio'}
+                  </button>
+                )}
+                {sitio && coordsSitio && !cerrado ? (
+                  <button type="button" onClick={() => setHoja(true)} data-hoy-comida-cambiar className="flex h-[52px] flex-[1.3] items-center justify-center gap-1.5 whitespace-nowrap rounded-2xl px-2 text-[14px] font-bold" style={BOTON_CLARO}>
+                    <Icono nombre="comida" size={16} grosor={2} />
+                    Elegir otro sitio
+                  </button>
+                ) : (
+                  <BotonCambiarPlan route={route} day={day} dateIso={dateIso} siguiente={siguiente} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMin} onSaltar={onSaltar} />
+                )}
+              </div>
+              <button type="button" onClick={onHecha} data-hoy-comida-hecha className="-mt-0.5 flex min-h-11 items-center justify-center text-[13.5px] font-semibold underline underline-offset-[3px]" style={{ color: '#6E5018' }}>
+                Ya he {esCena ? 'cenado' : 'comido'} · seguir con el plan
+              </button>
+            </>
+          )}
         </div>
       </div>
       {hoja && <HojaComerAhora route={route} day={day} dateIso={dateIso} siguiente={siguiente} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMin} onCerrar={() => setHoja(false)} />}

@@ -11,7 +11,7 @@ import { useSyncStore } from '../../../../store/useSyncStore'
 import { AvisoDeHoy, D_AVISO, FilaDeAviso, avisoCerrado, cerrarAvisoDelDia } from './AvisosHoy'
 import { AvisoPlanActualizado, HojaPropuesta, Titulo, useContexto } from './CambiarPlan'
 import { HojaSolucion } from './HojaSolucion'
-import { HoyYaNoDaTiempo } from './HoyYaNoDaTiempo'
+import { HojaDeCierre, HojaVoyConRetraso, retrasoConHojaNueva } from './HojaDelDia'
 import { HojaV2 } from './HojasV2'
 
 /**
@@ -135,23 +135,13 @@ export function AvisoDeEntradas({ route, day, dateIso, ubicacion, enCoche, ahora
           onCerrar={cierra}
         />
       )}
-      {hoja === 'retraso' && (
-        <HojaPropuesta
-          titulo="Voy con retraso"
-          propuestas={propuestas}
-          indice={0}
-          vacio="No hay nada más que ajustar hoy: tu día sigue igual."
-          onOtra={() => undefined}
-          onAplicar={(pr) => {
-            aplicarPropuesta(route.id, dateIso, pr)
-            cierra()
-          }}
-          onCerrar={cierra}
-        />
-      )}
-      {hoja === 'pasada' && pasadas[0] && (
-        <HoyYaNoDaTiempo route={route} day={day} dateIso={dateIso} info={{ entrada: { nombre: displayStopName(pasadas[0].stop.name), hora: horaTexto(pasadas[0].horaMin), freeTour: esTurno(pasadas[0].stop) } }} enCoche={enCoche} ahoraMin={ahoraMin} onCerrar={cierra} />
-      )}
+      {hoja === 'retraso' && (retrasoConHojaNueva(propuestas) ? (
+        <HojaVoyConRetraso route={route} day={day} dateIso={dateIso} enCoche={enCoche} propuestas={propuestas} ahoraMin={ahoraMin} onCerrar={cierra} />
+      ) : (
+        <HojaPropuesta titulo="Voy con retraso" propuestas={propuestas} indice={0} vacio="No hay nada más que ajustar hoy: tu día sigue igual." onOtra={() => undefined} onAplicar={(pr) => { aplicarPropuesta(route.id, dateIso, pr); cierra() }} onCerrar={cierra} />
+      ))}
+      {hoja === 'pasada' && pasadas[0] && <HojaDeCierre variante="h1" route={route} day={day} dateIso={dateIso} enCoche={enCoche} ahoraMin={ahoraMin} onCerrar={cierra} />}
+
     </>
   )
 }

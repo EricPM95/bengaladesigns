@@ -62,6 +62,7 @@ export function MealTimeAccordion({ destino, city, coordinates, curatedZone, cur
         name={chosenName}
         sub={walkNote ?? (zoneText ? zoneText.replace(/^en /, 'En ') : null)}
         iconPath={franja === 'cena' ? KIND_ICON.moon : KIND_ICON.fork}
+        imagen={franja === 'cena' ? 'cenar' : 'comer'}
         onOpen={onOpen}
         onChange={onChange}
       />
@@ -74,6 +75,7 @@ export function MealTimeAccordion({ destino, city, coordinates, curatedZone, cur
       name={zoneText ? `${franjaLabel} ${zoneText}` : franjaLabel}
       sub={subtitle ?? 'Recomendaciones de restaurantes cerca'}
       iconPath={franja === 'cena' ? KIND_ICON.moon : KIND_ICON.fork}
+        imagen={franja === 'cena' ? 'cenar' : 'comer'}
       onOpen={onOpen}
       onChange={onVerRestaurantes}
       accion="Ver restaurantes"

@@ -72,7 +72,12 @@ import { marcarDicho, yaDicho } from '../../../../lib/avisosUnaVez'
 import { AVISO_SALTADA, cerradasDeHoy, lugaresPendientes } from '../../../../lib/hoyPendientes'
 import { AvisoDeHoy, CruzDeAviso, ZonaDeAvisos } from './AvisosHoy'
 import { AvisoPlanActualizadoGlobal, useContexto } from './CambiarPlan'
-import { HoyYaNoDaTiempo } from './HoyYaNoDaTiempo'
+import { useLogrosStore } from '../../../../store/useLogrosStore'
+import { HojaDeCierre } from './HojaDelDia'
+import { CLAVE_DEL_CIERRE, diaDeAyer, sinVerDelDia, tocaCierreDeHoy } from '../../../../lib/cierreDelDia'
+import { useMomentosUI } from '../../../logros/momentos/useMomentosUI'
+import { abrirElResumenDeUnDia } from '../../../logros/momentos/resumenDelDia'
+import { useCuenta } from '../../../cuenta/useCuenta'
 import { UbicacionDeHoy } from './UbicacionDeHoy'
 import { zonaDeUbicacion } from '../../../../lib/ubicacionHoy'
 import { yaNoDaTiempo } from '../../../../lib/hoyCambiarPlan'
@@ -288,6 +293,26 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   useEffect(() => {
     if (hayYaNo && !yaDicho(route.id, dateIso, 'ya-no-da-tiempo')) setYaNoAbierta(true)
   }, [hayYaNo, route.id, dateIso])
+  // (V59) El cierreDelDia del día (Design «Cierre del día», H2 y H3): a las 22:00 o al hacer la última parada («Por hoy ya está»), y a la mañana siguiente si no se abrió («Ayer te quedaron N sitios sin ver»). Una vez por viaje y día; nunca el día de vuelta.
+  // Espera a que acabe lo que haya en pantalla (las sorpresas de la última parada). Al cerrarla, de cualquier forma, sale el resumen del día.
+  const cuentaApp = useCuenta()
+  const [, repintarCierre] = useState(0)
+  const ocupadoConMomentos = useMomentosUI((s) => s.ronda !== null || s.fila.mostrando !== null || s.compartir !== null)
+  const sorpresasPendientes = useLogrosStore((s) => s.momentos.length > 0)
+  const ayerCerrable = conPaseOPrueba0 && !esVuelta ? diaDeAyer(route, dateIso) : null
+  const cierreDelDia: { variante: 'h2' | 'h3'; dia: DayPlan; iso: string } | null =
+    conPaseOPrueba0 && !esVuelta && tocaCierreDeHoy({ day, ahoraMin: ahoraMinHoy }) && !yaDicho(route.id, dateIso, CLAVE_DEL_CIERRE)
+      ? { variante: 'h2', dia: day, iso: dateIso }
+      : ayerCerrable && sinVerDelDia(ayerCerrable.day).length > 0 && !yaDicho(route.id, ayerCerrable.iso, CLAVE_DEL_CIERRE)
+        ? { variante: 'h3', dia: ayerCerrable.day, iso: ayerCerrable.iso }
+        : null
+  const cerrarCierre = () => {
+    if (!cierreDelDia) return
+    marcarDicho(route.id, cierreDelDia.iso, CLAVE_DEL_CIERRE)
+    repintarCierre((n) => n + 1)
+    const tripIdCierre = useSyncStore.getState().activeTripId
+    if (logrosActivos() && cuentaApp.tipo === 'cuenta' && tripIdCierre) abrirElResumenDeUnDia(tripIdCierre, cierreDelDia.iso, cierreDelDia.variante === 'h3', (de) => useMomentosUI.getState().abrirResumenDia(de))
+  }
   const sinParadasDeVuelta = esVuelta && paradas.length === 0
   const tarjetaVuelve = tarjetaHoyVuelvesDelDia(route, day)
   const diaCompleto = esDiaCompleto(route, day, reservations)
@@ -609,11 +634,11 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {ultimoVisto && siguiente && sumaDelVisto && <LineaDelLogro texto={`+1 en ${sumaDelVisto}`} />}
 
       {/* (V43 §8) La ubicación en todo HOY: la tarjeta de la parada ya la lleva; aquí, en el resto de estados. */}
-      {conPaseOPrueba0 && !esVuelta && (!siguiente || Boolean(comidaDeAhora) || bienvenida) && <UbicacionDeHoy hay={Boolean(ubicacionReal)} zona={zonaUbi} destino={route.destination} estado={ubicacionEstado} pedir={pedirUbicacion} />}
+      {conPaseOPrueba0 && !esVuelta && (!siguiente || bienvenida) && <UbicacionDeHoy hay={Boolean(ubicacionReal)} zona={zonaUbi} destino={route.destination} estado={ubicacionEstado} pedir={pedirUbicacion} />}
 
-      {/* HOY2 (Completa 4): a la hora de comer, la tarjeta de la comida en lugar de la de la parada */}
+      {/* HOY2 (Completa 4) + V59 §3: a la hora de comer o de cenar, la tarjeta de la comida (la misma que la de la parada, con la imagen fija) en lugar de la de la parada; ya lleva su recuadro de ubicación */}
       {!sinParadasDeVuelta && !bienvenida && siguiente && comidaDeAhora && !esVuelta && (
-        <TarjetaDeComida route={route} day={day} dateIso={dateIso} meal={comidaDeAhora} siguiente={siguiente} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMinHoy} onHecha={comidaHecha} />
+        <TarjetaDeComida route={route} day={day} dateIso={dateIso} meal={comidaDeAhora} siguiente={siguiente} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMinHoy} onHecha={comidaHecha} zonaUbicacion={zonaUbi} ubicacionEstado={ubicacionEstado} pedirUbicacion={pedirUbicacion} hayUbicacion={Boolean(ubicacionReal)} onSaltar={() => saltar(siguiente)} />
       )}
       {!sinParadasDeVuelta && !bienvenida && siguiente && !(comidaDeAhora && !esVuelta) && (
         <TarjetaParada
@@ -752,7 +777,8 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
         />
       )}
       {/* (V48) Una sola hoja cada vez: primero la tarjeta de temporada («Navidad en Roma») y, al cerrarla, esta. */}
-      {yaNoAbierta && yaNo && !seasonCardPending(route) && <HoyYaNoDaTiempo route={route} day={day} dateIso={dateIso} info={yaNo} enCoche={enCoche} ahoraMin={ahoraMinHoy} onCerrar={() => { marcarDicho(route.id, dateIso, 'ya-no-da-tiempo'); setYaNoAbierta(false) }} />}
+      {cierreDelDia && !ocupadoConMomentos && !sorpresasPendientes && !seasonCardPending(route) && <HojaDeCierre key={`${cierreDelDia.variante}-${cierreDelDia.iso}`} variante={cierreDelDia.variante} route={route} day={cierreDelDia.dia} dateIso={dateIso} enCoche={enCoche} ahoraMin={ahoraMinHoy} onCerrar={cerrarCierre} />}
+      {!cierreDelDia && yaNoAbierta && yaNo && !seasonCardPending(route) && <HojaDeCierre variante="h1" route={route} day={diaVivo} dateIso={dateIso} enCoche={enCoche} ahoraMin={ahoraMinHoy} onCerrar={() => { marcarDicho(route.id, dateIso, 'ya-no-da-tiempo'); setYaNoAbierta(false) }} />}
       {fichaCompleta && <FichaCompletaDeHoy route={route} day={day} dateIso={dateIso} parada={fichaCompleta} onCerrar={() => setFichaCompleta(null)} />}
     </>
   )

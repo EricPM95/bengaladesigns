@@ -44,6 +44,7 @@ import { HojaComerAhora } from './ComerAhora'
 import { LineaUbicacion } from './LineaUbicacion'
 import { BOTON_ORO, BOTON_CLARO } from '../../../ui/botonesOro'
 import { Etiqueta, EnlaceDejarlo } from '../piezas'
+import { HojaVoyConRetraso, retrasoConHojaNueva } from './HojaDelDia'
 
 /**
  * HOY2 (agente B, pantallas 22 a 27b y 30 del recorrido): [Cambiar plan] SUSTITUYE a [No me da tiempo]. Un botón en la tarjeta de la parada y, al tocarlo, la hoja de 5 opciones:
@@ -162,7 +163,7 @@ export function TarjetaDelSitio({ t, sinFranja = false }: { t: NonNullable<Propu
 /**
  * (V55) LAS TARJETAS DE UNA PROPUESTA, una por cada sitio que cambia, y debajo la franja verde de lo que se queda igual. Con más de 3, las 3 primeras y «y 5 más» en gris, que al tocarlo despliega el resto.
  */
-export function TarjetasDeCambios({ tarjetas, franja }: { tarjetas: NonNullable<Propuesta['tarjetaDia']>[]; franja: string }) {
+export function TarjetasDeCambios({ tarjetas, franja }: { tarjetas: NonNullable<Propuesta['tarjetaDia']>[]; /** Sin franja (null): la hoja de «Por hoy ya está» no dice qué sigue igual. */ franja: string | null }) {
   const [abierto, setAbierto] = useState(false)
   const visibles = abierto ? tarjetas : tarjetas.slice(0, 3)
   const resto = tarjetas.length - visibles.length
@@ -176,7 +177,7 @@ export function TarjetasDeCambios({ tarjetas, franja }: { tarjetas: NonNullable<
           </button>
         )}
       </div>
-      <FranjaVerde texto={franja} />
+      {franja && <FranjaVerde texto={franja} />}
     </>
   )
 }
@@ -442,7 +443,8 @@ export function BotonCambiarPlan(p: PropsCambiarPlan) {
         </HojaV2>
       )}
       {paso === 'comer' && <HojaComerAhora route={route} day={day} dateIso={dateIso} siguiente={siguiente} ubicacion={p.ubicacion} enCoche={p.enCoche} ahoraMin={p.ahoraMin} onCerrar={cerrar} />}
-      {paso === 'retraso' && <HojaPropuesta titulo={titulo} propuestas={propuestas} indice={indice} vacio={vacio} onOtra={() => setIndice((i) => (i + 1) % propuestas.length)} onAplicar={aplicar} onCerrar={cerrar} />}
+      {/* (V59) «Voy con retraso»: la hoja de cierre H4 (aún da tiempo a todo) o H5 (ya no da tiempo); solo si hay que preguntar por lo más importante sigue la hoja de propuesta. */}
+      {paso === 'retraso' && (retrasoConHojaNueva(propuestas) ? <HojaVoyConRetraso route={route} day={day} dateIso={dateIso} enCoche={p.enCoche} propuestas={propuestas} ahoraMin={p.ahoraMin} onCerrar={cerrar} /> : <HojaPropuesta titulo={titulo} propuestas={propuestas} indice={indice} vacio={vacio} onOtra={() => setIndice((i) => (i + 1) % propuestas.length)} onAplicar={aplicar} onCerrar={cerrar} />)}
       {paso === 'saltar_reserva' && (
         // (V55) «Saltarme esta parada» con una reserva por llegar: la misma hoja de propuesta (la tarjeta del sitio que va a pendientes, el dorado que dice lo que hace y [Dejarlo como está]).
         <HojaPropuesta

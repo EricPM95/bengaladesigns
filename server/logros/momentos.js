@@ -12,6 +12,27 @@ import { GLOBAL, categoriaDe, clave, paisDeDestino } from './motor.js'
 const rellenar = (texto, v) => String(texto ?? '').replace(/\{(\w+)\}/g, (_, k) => (v[k] ?? `{${k}}`))
 const MAYUS = (s) => s.charAt(0).toUpperCase() + s.slice(1)
 
+/**
+ * (V59) LO QUE ACABAS DE CONSEGUIR, en una frase, para un logro de viajero de «contar» que no trae la suya (la línea del logro es la descripción general: «Patrimonios de la Humanidad que has visitado.»).
+ * Con 1: «Tu primer Patrimonio de la Humanidad». Con más: «Ya son 5 Patrimonios de la Humanidad». Sin dato del logro, null (se queda la línea de siempre).
+ */
+const COSAS_QUE_CUENTAN = {
+  paises: ['país', 'países', 'primer'],
+  destinos: ['destino', 'destinos', 'primer'],
+  capitales: ['capital', 'capitales', 'primera'],
+  maravillas: ['maravilla del mundo', 'maravillas del mundo', 'primera'],
+  patrimonios: ['Patrimonio de la Humanidad', 'Patrimonios de la Humanidad', 'primer'],
+  viajes: ['viaje', 'viajes', 'primer'],
+  emblemas: ['emblema oculto', 'emblemas ocultos', 'primer'],
+  colecciones: ['colección completa', 'colecciones completas', 'primera'],
+}
+const loQueConsigues = (def, escalon) => {
+  const c = def?.tipo === 'contar' ? COSAS_QUE_CUENTAN[def.que] : null
+  const n = Number(escalon)
+  if (!c || !(n > 0)) return null
+  return n === 1 ? `Tu ${c[2]} ${c[0]}` : `Ya son ${n} ${c[1]}`
+}
+
 /** La frase de suspense: al azar entre las de los ajustes, sin repetir la última que vio esa persona. */
 export function elegirFrase(frases, ultima, azar = Math.random) {
   const posibles = frases.filter((f) => f !== ultima)
@@ -90,7 +111,7 @@ export function armarMomentos({ datos, nuevos, despues, antes, ultimaFrase = nul
       const pais = it.pais ?? paisDeDestino(datos.destinos[viajes?.[it.trip_id]?.destino]) ?? 'tu país'
       const vals = { ciudad: dd?.ciudad ?? '', anio: it.escalon, total: dd?.emblemas?.length ?? '', limite: dd?.pionero?.limite ?? '', n: it.escalon, pais }
       const nombre = rellenar(esc?.nombre ?? def?.nombre ?? id, vals)
-      const linea = rellenar(esc?.linea ?? def?.linea ?? '', vals)
+      const linea = esc?.linea ? rellenar(esc.linea, vals) : (loQueConsigues(def, it.escalon) ?? rellenar(def?.linea ?? '', vals))
       salida.push({ tipo: 'viajero', cat: 'viajero', clave: it.clave, logro: id, escalon: it.escalon, destino: it.destino, nombre: MAYUS(nombre), linea, primera_vez: true, en: it.en })
     }
   }

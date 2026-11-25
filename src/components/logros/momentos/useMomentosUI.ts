@@ -16,6 +16,8 @@ interface MomentosUI {
   rondaExp: ExpDeRespuesta | null
   /** Se sigue con el resumen del día por sí solo, sin sorpresas antes (al acabar la ruta). */
   resumenDia: boolean
+  /** (V59) De qué día es el resumen que se enseña (null = el de hoy) y si sale a la mañana siguiente («Tu día de ayer en Roma»). */
+  resumenDe: { iso: string; manana: boolean } | null
   resumenViaje: boolean
   hojaLogros: boolean
   compartir: QueCompartir | null
@@ -28,7 +30,7 @@ interface MomentosUI {
   fila: Fila
   empezarRonda: (m: Momento[], exp?: ExpDeRespuesta | null) => void
   terminarRonda: () => void
-  abrirResumenDia: () => void
+  abrirResumenDia: (de?: { iso: string; manana: boolean }) => void
   cerrarResumenDia: () => void
   abrirResumenViaje: () => void
   cerrarResumenViaje: () => void
@@ -46,6 +48,7 @@ export const useMomentosUI = create<MomentosUI>((set) => ({
   ronda: null,
   rondaExp: null,
   resumenDia: false,
+  resumenDe: null,
   resumenViaje: false,
   hojaLogros: false,
   compartir: null,
@@ -59,8 +62,8 @@ export const useMomentosUI = create<MomentosUI>((set) => ({
   },
   empezarRonda: (m, exp = null) => set({ ronda: m, rondaExp: exp }),
   terminarRonda: () => set({ ronda: null, rondaExp: null }),
-  abrirResumenDia: () => set({ resumenDia: true }),
-  cerrarResumenDia: () => set({ resumenDia: false }),
+  abrirResumenDia: (de) => set({ resumenDia: true, resumenDe: de ?? null }),
+  cerrarResumenDia: () => set({ resumenDia: false, resumenDe: null }),
   abrirResumenViaje: () => set({ resumenViaje: true }),
   cerrarResumenViaje: () => set({ resumenViaje: false }),
   abrirHojaLogros: () => set({ hojaLogros: true }),

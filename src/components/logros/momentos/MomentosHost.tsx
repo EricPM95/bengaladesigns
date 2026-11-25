@@ -8,7 +8,9 @@ import { getTodayTripContext } from '../../../lib/todayMode'
 import { useCuenta } from '../../cuenta/useCuenta'
 import { ExpHost } from './ExpHost'
 import type { PantallaDeMomentos } from './fila'
-import { claveDelResumen, diaCompleto, diaPendienteDeResumen } from './resumenDelDia'
+import { abrirElResumenDeUnDia, claveDelResumen, diaCompleto, diaPendienteDeResumen } from './resumenDelDia'
+import { CLAVE_DEL_CIERRE, sinVerDelDia } from '../../../lib/cierreDelDia'
+import { yaDicho } from '../../../lib/avisosUnaVez'
 import { useMomentosUI } from './useMomentosUI'
 
 /**
@@ -50,6 +52,7 @@ function Encendido() {
   const rondaExp = useMomentosUI((s) => s.rondaExp)
   const mostrando = useMomentosUI((s) => s.fila.mostrando)
   const resumenDia = useMomentosUI((s) => s.resumenDia)
+  const resumenDe = useMomentosUI((s) => s.resumenDe)
   const resumenViaje = useMomentosUI((s) => s.resumenViaje)
   const compartir = useMomentosUI((s) => s.compartir)
   const hojaLogros = useMomentosUI((s) => s.hojaLogros)
@@ -90,13 +93,13 @@ function Encendido() {
         return false
       }
     }
-    const abrir = (iso: string) => {
-      try {
-        window.localStorage.setItem(claveDelResumen(tripId, iso), 'si')
-      } catch {
-        /* sin almacenamiento: puede salir otra vez */
-      }
-      ui.getState().abrirResumenDia()
+    const abrir = (iso: string, manana = false) => {
+      abrirElResumenDeUnDia(tripId, iso, manana, (de) => ui.getState().abrirResumenDia(de))
+    }
+    // (V59) Con sitios sin ver, la hoja de cierre de HOY sale antes («Por hoy ya está» / «Ayer te quedaron…»); el resumen sale al cerrarla, no antes.
+    const esperaLaHoja = (iso: string, dia: NonNullable<ReturnType<typeof useRouteStore.getState>['route']>['days'][number]) => {
+      const ruta = useRouteStore.getState().route
+      return Boolean(ruta) && !dia.isReturnLeg && sinVerDelDia(dia).length > 0 && !yaDicho((ruta as { id: string }).id, iso, CLAVE_DEL_CIERRE)
     }
     const hoyDe = (route: NonNullable<ReturnType<typeof useRouteStore.getState>['route']>) => getTodayTripContext(route, useRouteStore.getState().dev_simulated_today_iso ?? undefined)
     // Al abrir la app (con el viaje ya cargado): ¿quedó el resumen de anoche o de ayer sin enseñar?
@@ -109,8 +112,8 @@ function Encendido() {
       const ahora = new Date()
       const hoyIso = simulado ?? `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`
       const hora = simulado ? 23 : ahora.getHours()
-      const pendiente = diaPendienteDeResumen(route, hoyIso, hora, yaSalio)
-      if (pendiente) abrir(pendiente)
+      const pendiente = diaPendienteDeResumen(route, hoyIso, hora, yaSalio, esperaLaHoja)
+      if (pendiente) abrir(pendiente, pendiente < hoyIso)
     }
     alAbrir()
     return useRouteStore.subscribe((estado, previo) => {
@@ -148,7 +151,7 @@ function Encendido() {
         if (e && e.ganada > 0) useLogrosStore.setState((s) => ({ exp: s.exp ? { ...s.exp, antes: e.antes, final: true } : { ...e, final: true } }))
         ui.getState().soltar('ronda')
       }} />}
-      {tocaResumenDia && <ResumenDia primeraVez ganado={[]} estado={null} alCerrar={() => ui.getState().cerrarResumenDia()} />}
+      {tocaResumenDia && <ResumenDia primeraVez ganado={[]} estado={null} de={resumenDe} alCerrar={() => ui.getState().cerrarResumenDia()} />}
       {tocaResumenViaje && <ResumenViaje />}
       {compartir && <Compartir />}
       {tocaHoja && <HojaLogros />}

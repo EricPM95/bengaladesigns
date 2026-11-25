@@ -51,7 +51,7 @@ export interface Pendiente {
 }
 export interface ResumenLogros {
   ok: boolean
-  ganado: { clave: string; logro: string; escalon: string; destino: string; en: string }[]
+  ganado: { clave: string; logro: string; escalon: string; destino: string; en: string; /** (V59) El nombre de un Patrimonio o de una maravilla. */ nombre?: string }[]
   por_categoria: Record<string, number>
   pendiente: Pendiente
   texto_viaje: string
@@ -59,7 +59,7 @@ export interface ResumenLogros {
 }
 
 /** Para las pruebas en desarrollo (`window.__momentos`): si hay datos puestos a mano, se usan en vez de llamar al servidor. */
-export const datosDePrueba: { estado: EstadoLogros | null; resumen: ResumenLogros | null } = { estado: null, resumen: null }
+export const datosDePrueba: { estado: EstadoLogros | null; resumen: ResumenLogros | null; /** (V59) Las fotos del día para la tira del resumen (direcciones), solo en desarrollo y en las capturas. */ fotos: string[] | null } = { estado: null, resumen: null, fotos: null }
 
 /** El servidor de pruebas (y un servidor viejo) pueden mandar el estado sin alguna lista: aquí siempre salen todas. */
 function completar(e: EstadoLogros, dePrueba = false): EstadoLogros {

@@ -2,6 +2,7 @@ import { seasonFit } from '../../shared/routeEngine/availability.js'
 import { hasRealCoordinates, haversineMeters } from './distanceMock'
 import { horarioDeParada } from './horarioDeParada'
 import { displayStopName } from './format'
+import { puntualidadDe } from './puntualidadEntradas'
 import { posicionDeMenosRodeo, primerHuecoLibre, pesoDe, type DatosDeImportancia } from './masVisitas'
 import { numberedStopsOf } from './stopKind'
 import type { ChosenRestaurant, Coordinates, DayPlan, Route, Stop } from './types'
@@ -297,8 +298,9 @@ export interface Propuesta {
   intactas: string[]
 }
 
-export const mantieneDe = (fijasOrden: Item[], ctx: Contexto, sufijo = ''): Propuesta['mantiene'] => {
-  const f = fijasOrden.find((it) => it.fija)
+export const mantieneDe = (fijasOrden: Item[], ctx: Contexto, sufijo = '', ahoraMin: number = new Date().getHours() * 60 + new Date().getMinutes()): Propuesta['mantiene'] => {
+  // (V59) Una entrada o reserva cuya hora YA pasó nunca sale como «Sigue igual» en ninguna hoja de HOY: solo cuentan las que aún están por venir.
+  const f = fijasOrden.find((it) => it.fija && (ctx.horaFijaMin?.(it.stop) ?? it.t ?? 24 * 60) >= ahoraMin)
   if (f) {
     const h = ctx.horaFijaMin?.(f.stop) ?? f.t
     return { titulo: h != null ? `tu entrada de las ${aHora(h, false)}` : `lo que tienes reservado${sufijo}`, detalle: 'Las reservas y lo importante no se tocan.' }
@@ -508,7 +510,7 @@ export function yaNoDaTiempo(p: { day: DayPlan; ahoraMin: number; ctx: Contexto;
   const mananaPasada = p.vistas === 0 && primeraDelDia != null && ahoraMin - primeraDelDia > 90
   if (!retrasoGrande && !mananaPasada) return null
   const fijas = ctx.fijasDe(day)
-  const e = pendientes.find((s) => claseDe(s, fijas, ctx.datos) === 'fija' && (ctx.horaFijaMin?.(s) ?? minDe(s.time) ?? 24 * 60) < ahoraMin)
+  const e = pendientes.find((s) => claseDe(s, fijas, ctx.datos) === 'fija' && puntualidadDe(s.name).tipo === 'estricta' && (ctx.horaFijaMin?.(s) ?? minDe(s.time) ?? 24 * 60) < ahoraMin)
   return { entrada: e ? { nombre: nombre(e), hora: aHora((ctx.horaFijaMin?.(e) ?? minDe(e.time)) as number, false), freeTour: Boolean(e.isFreeTour) } : null }
 }
 
@@ -563,7 +565,7 @@ export function proponerPasarLoQueFalta(p: { route: Route; day: DayPlan; ctx: Co
  * (V54 §1) «Hoy ya no llegas a 3 sitios» › [Ver]: la hoja de «Pasar a otro día» con UNA TARJETA POR SITIO. Cada sitio se pasa al mejor día donde quepa; lo que no cabe en ninguno, a «Lugares pendientes» (no se pierde).
  * Los sitios son visitas sueltas (nunca una reserva): `proponerPasarADia` ya lo comprueba para uno solo; aquí se cuentan todos seguidos, en un día de trabajo que se va actualizando.
  */
-export function proponerPasarSitios(p: { route: Route; day: DayPlan; ctx: Contexto; stops: Stop[]; /** Lo que se dice arriba: «Hoy ya no llegas a …». */ intro: string }): Propuesta | null {
+export function proponerPasarSitios(p: { route: Route; day: DayPlan; ctx: Contexto; stops: Stop[]; /** Lo que se dice arriba: «Hoy ya no llegas a …». */ intro: string; /** (V59) Todos a «Lugares pendientes», sin buscarles día ([Guardarlos en pendientes]). */ soloPendientes?: boolean; /** (V59) La tarjeta dice «Al jueves 26» (el día al que va) en vez de «Por la mañana». */ cuandoConDia?: boolean }): Propuesta | null {
   const { route, day, ctx } = p
   const fijas = ctx.fijasDe(day)
   const sitios = p.stops.filter((s) => !fijas.has(s.id) && !s.reservedId)
@@ -575,7 +577,7 @@ export function proponerPasarSitios(p: { route: Route; day: DayPlan; ctx: Contex
   let dias: DayPlan[] = route.days
   const semanaCorta = (iso: string | null) => (iso ? ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'][new Date(`${iso}T12:00:00Z`).getUTCDay()] : 'DÍA')
   for (const s of sitios) {
-    const mejor = mejorDiaPara({ route, day, stop: s, ctx, dias })
+    const mejor = p.soloPendientes ? null : mejorDiaPara({ route, day, stop: s, ctx, dias })
     const clase = claseDe(s, fijas, ctx.datos)
     const fotoUrl = s.photoUrl || s.fixedPhotoUrl || ''
     if (mejor) {
@@ -588,7 +590,7 @@ export function proponerPasarSitios(p: { route: Route; day: DayPlan; ctx: Contex
       ops.push(...o)
       const iso = ctx.fechaDe?.(mejor.dia) ?? null
       quitadas.push({ id: s.id, nombre: nombre(s), clase, destino: 'manana', aDia: mejor.etiqueta })
-      tarjetas.push({ nombre: nombre(s), fotoUrl, cuando: 'Por la mañana', semanaCorta: semanaCorta(iso), numero: iso ? String(Number(iso.slice(8, 10))) : String(mejor.dia.dayNumber), destino: mejor.etiqueta, diaDeHoy: ctx.etiquetaDia(day), parada: s, ciudad: day.city })
+      tarjetas.push({ nombre: nombre(s), fotoUrl, cuando: p.cuandoConDia ? `Al ${mejor.etiqueta}` : 'Por la mañana', semanaCorta: semanaCorta(iso), numero: iso ? String(Number(iso.slice(8, 10))) : String(mejor.dia.dayNumber), destino: mejor.etiqueta, diaDeHoy: ctx.etiquetaDia(day), parada: s, ciudad: day.city })
     } else {
       ops.push({ t: 'campo', dia: day.id, id: s.id, antes: { time: s.time, saltada: Boolean(s.saltada) }, despues: { time: s.time, saltada: true } })
       quitadas.push({ id: s.id, nombre: nombre(s), clase, destino: 'sobra' })
