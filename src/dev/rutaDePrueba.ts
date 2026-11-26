@@ -164,7 +164,8 @@ export async function crearRutaLanzarote(opciones: { zona?: string; coche?: 'alq
     const { propuestaDeVuelos, ponerDiasAdaptados } = await import('../lib/adaptarVuelos')
     const actual = useRouteStore.getState()
     if (actual.route) {
-      const propuesta = await propuestaDeVuelos(actual.route, actual.reservations)
+      // (V74) Con un «hoy» antiguo: las fechas fijas de este viaje de prueba ya pasaron y Reorganizar no toca los días pasados.
+      const propuesta = await propuestaDeVuelos(actual.route, actual.reservations, { hoy: '2000-01-01' })
       if (propuesta) { useRouteStore.getState().ponerPlanes(propuesta.planes); ponerDiasAdaptados(propuesta.dias) }
     }
     await espera(500)

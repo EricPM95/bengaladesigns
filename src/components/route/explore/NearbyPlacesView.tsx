@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { ImagenConFundido } from '../../ui/ImagenConFundido'
 import { searchPlaces } from '../../../lib/mapboxGeocoding'
 import { searchNearbyPlaces, type NearbyPlaceResult } from '../../../lib/nearbyPlacesSearch'
 import { buildAppleMapsUrlFromHere, buildGoogleMapsUrlFromHere } from '../../../lib/mapsLinks'
@@ -82,7 +83,7 @@ export function NearbyPlacesView({ city, categoryLabel, categoryIds, onBack, res
             <div key={place.id} className={`overflow-hidden rounded-xl border transition-colors ${expanded ? 'border-accent bg-accent-soft/40' : 'border-border hover:border-border-accent'}`}>
               <button type="button" onClick={() => onSelectId(expanded ? null : place.id)} className="flex w-full items-center gap-3 p-2 text-left">
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full btn-champan text-caption font-semibold ">{index + 1}</span>
-                <img src={place.photoUrl} alt="" className="h-16 w-16 shrink-0 rounded-lg object-cover" />
+                <span className="relative block h-16 w-16 shrink-0 overflow-hidden rounded-lg"><ImagenConFundido src={place.photoUrl} /></span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-small font-semibold text-text">{place.name}</p>
                   <p className="text-caption text-text-muted">{place.categoryLabel}</p>

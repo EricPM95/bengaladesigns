@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { ImagenConFundido } from '../../ui/ImagenConFundido'
 import { createPortal } from 'react-dom'
 import { Icono } from '../../ui/Icono'
 import { useDestinationPool } from '../../../lib/useDestinationPool'
@@ -104,7 +105,7 @@ export function OtraReservaBuscador({ route, sitiosConEntrada, enRuta, onElegir,
                   <li key={s.nombre}>
                     <button type="button" onClick={() => elegirSugerencia(s)} data-sugerencia-otra={s.nombre} className="flex min-h-[56px] w-full items-center gap-3 rounded-2xl border border-text/10 bg-[#FFFDF8] p-2 text-left transition-colors hover:bg-bg-hover">
                       <span className="h-10 w-10 flex-none overflow-hidden rounded-xl bg-bg-hover" aria-hidden="true">
-                        {foto ? <img src={foto} alt="" loading="lazy" className="h-full w-full object-cover" /> : null}
+                        {foto ? <span className="relative block h-full w-full"><ImagenConFundido src={foto} loading="lazy" fondo="transparent" /></span> : null}
                       </span>
                       <span className="min-w-0 flex-1 text-[14.5px] font-semibold leading-snug text-text">{s.nombre}</span>
                       <Icono nombre="adelante" size={16} className="flex-none text-text/40" />

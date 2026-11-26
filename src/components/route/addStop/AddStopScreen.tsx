@@ -1,4 +1,5 @@
 import { InterruptorElegir } from '../../ui/Elegir'
+import { ImagenConFundido } from '../../ui/ImagenConFundido'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -438,7 +439,7 @@ export function AddStopScreen({
           {/* Mini-ficha flotante al seleccionar un POI */}
           {selected && !detailOpen && (
             <div className="absolute inset-x-3 bottom-3 z-10 flex gap-3 rounded-xl bg-bg-card p-3 shadow-lg">
-              {selected.photoUrl ? <img src={selected.photoUrl} alt="" className="h-16 w-16 shrink-0 rounded-lg object-cover" /> : <span aria-hidden="true" className="h-16 w-16 shrink-0 rounded-lg bg-bg-hover" />}
+              {selected.photoUrl ? <span className="relative block h-16 w-16 shrink-0 overflow-hidden rounded-lg"><ImagenConFundido src={selected.photoUrl} /></span> : <span aria-hidden="true" className="h-16 w-16 shrink-0 rounded-lg bg-bg-hover" />}
               <div className="min-w-0 flex-1 space-y-1">
                 <p className="truncate text-small font-semibold text-text">{selected.name}</p>
                 {selected.place ? (
@@ -561,7 +562,7 @@ export function AddStopScreen({
                         selected?.id === candidate.id ? 'border-accent bg-accent-soft' : 'border-border hover:bg-bg-hover'
                       }`}
                     >
-                      <img src={candidate.photoUrl} alt="" className="h-14 w-14 shrink-0 rounded-lg object-cover" />
+                      <span className="relative block h-14 w-14 shrink-0 overflow-hidden rounded-lg"><ImagenConFundido src={candidate.photoUrl} /></span>
                       <div className="min-w-0 flex-1 space-y-0.5">
                         <div className="flex items-center gap-1.5">
                           <p className="truncate text-small font-semibold text-text">{candidate.name}</p>

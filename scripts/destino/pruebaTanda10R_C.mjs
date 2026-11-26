@@ -52,7 +52,9 @@ debe(pago.avisoDelPaseSeEnsena('documento_entrada') === false, '1f4', 'con pase,
 const botones = leer('src/components/route/reservas/BotonesDeReserva.tsx')
 debe(/usePaseParaDocumentos\(\)/.test(botones) && !/usePasePintable/.test(botones), '1g', 'BotonAnadirDocumento usa el hook de los documentos')
 const llegada = leer('src/components/route/reservas/LlegadaYVuelta.tsx')
-debe(/estadoDelPaseParaDocumentos\(\) === 'sin'/.test(llegada) && !/estadoDelPaseParaPintar/.test(llegada), '1h', '«Cambiar el archivo» del vuelo mira lo mismo')
+// (V74) Desde la V64 el vuelo cambia de archivo por `FlujoDelBillete` (la hoja ya no decide nada del pase): ahí está la misma comprobación.
+const flujo = leer('src/components/route/reservas/FlujoDelBillete.tsx')
+debe(/estadoDelPaseParaDocumentos\(\) === 'sin'/.test(flujo) && !/estadoDelPaseParaPintar/.test(flujo) && !/estadoDelPaseParaPintar/.test(llegada) && /Cambiar el archivo/.test(llegada), '1h', '«Cambiar el archivo» del vuelo mira lo mismo')
 const estado = leer('src/lib/paseEstado.ts')
 debe((estado.match(/fijarSinPaseParaDocumentos\(/g) ?? []).length >= 5 && /fijarSinPaseParaDocumentos\(r\.pases\.length === 0\)/.test(estado), '1i', 'el estado del pase del servidor alimenta el candado de los documentos (respuesta, caché, sin respuesta, forzado)')
 const general = leer('src/lib/pago.ts')

@@ -108,7 +108,8 @@ async function reorganizar(destino, inicio, dias) {
     const m = new RegExp(`vuelo ${vuelo.replace(':', ':')}: OK\\s+Días que cambian: (\\d+) \\(.*?\\) de (\\d+)\\s+Tarjetas de la hoja: (\\d+); a pendientes: \\d+; quitadas: (\\d+)`).exec(salida)
     if (m) {
       debe(Number(m[4]) === 0, 'reorganizar', `${destino} ${vuelo}: 0 tarjetas «se quita»`)
-      debe(Number(m[1]) <= 2 && Number(m[1]) < Number(m[2]), 'reorganizar', `${destino} ${vuelo}: cambio mínimo (${m[1]} días de ${m[2]}, ${m[3]} tarjetas; antes 3 y 45)`)
+      // (V74) Los Vaticanos y el Free Tour entran en el mejor día siguiente y lo menos importante de ese día sale a pendientes: pueden cambiar hasta 3 días (el de la llegada y los dos que reciben), nunca todos ni 45 tarjetas.
+      debe(Number(m[1]) <= 3 && Number(m[1]) < Number(m[2]), 'reorganizar', `${destino} ${vuelo}: cambio mínimo (${m[1]} días de ${m[2]}, ${m[3]} tarjetas; antes 3 y 45)`)
       debe(Number(m[3]) <= 20, 'reorganizar', `${destino} ${vuelo}: pocas tarjetas (${m[3]})`)
     }
   }

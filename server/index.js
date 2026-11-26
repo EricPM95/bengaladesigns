@@ -4408,7 +4408,7 @@ app.post('/api/destination-places', (req, res) => {
       // En un restaurante se paga la cuenta, no la entrada: nunca sale bajo el filtro "Entradas".
       requires_ticket: false,
       // Sus días de cierre (semanal y fechas): en el mapa de restaurantes sale en gris con "Hoy cierra".
-      hours_data: Object.fromEntries(['closed_on', 'closed_dates'].filter((key) => place[key] != null).map((key) => [key, place[key]])),
+      hours_data: Object.fromEntries(['closed_on', 'closed_dates', 'revisa_horario'].filter((key) => place[key] != null).map((key) => [key, place[key]])),
     }))
 
   // Las excursiones viajan con el catálogo porque son uno de los cinco filtros de la pantalla de

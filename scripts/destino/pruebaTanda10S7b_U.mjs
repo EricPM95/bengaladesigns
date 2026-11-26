@@ -26,8 +26,9 @@ const leer = (f) => fs.readFileSync(f, 'utf8')
 // ── 0. Lo que se ve en el código ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 {
   const host = leer('src/components/reorganizar/ReorganizarHost.tsx')
-  debe(host.includes('¿Adaptamos tu primer y tu último día a tus vuelos?'), 'la alerta no dice «¿Adaptamos tu primer y tu último día a tus vuelos?»')
-  debe(/>\s*Sí, adaptarlos\s*<\/button>/.test(host) && />\s*Ahora no\s*<\/button>/.test(host), 'la alerta no lleva [Sí, adaptarlos] y [Ahora no]')
+  // (V74) Desde la V61 la alerta es `HojaDeReorganizar`: «¿Adaptamos tus días a tu vuelo?», [Reorganizar mi día / mis días] y [Dejarlo como está].
+  debe(host.includes('¿Adaptamos tus días a tu vuelo?'), 'la alerta no dice «¿Adaptamos tus días a tu vuelo?»')
+  debe(/Reorganizar mis días/.test(host) && /Reorganizar mi día/.test(host) && />\s*Dejarlo como está\s*<\/button>/.test(leer('src/components/reorganizar/HojaDeReorganizar.tsx')), 'la alerta no lleva [Reorganizar mi día / mis días] y [Dejarlo como está]')
   const lib = leer('src/lib/adaptarVuelos.ts')
   debe(lib.includes("'Hemos adaptado tus días a tus vuelos'"), 'la franja no dice «Hemos adaptado tus días a tus vuelos»')
   debe(/ponerPlanes\(propuesta\.planes\)/.test(lib), 'los planes (lo que informa) no se ponen siempre')
@@ -39,7 +40,7 @@ const leer = (f) => fs.readFileSync(f, 'utf8')
   debe(!/regenerateRouteForDates\(/.test(viejo.replace(/\/\*[\s\S]*?\*\//g, '')), 'cambioDeVuelo.ts rehace la ruta entera (regenerateRouteForDates)')
   debe(!/regenerateRouteForDates/.test(lib) && !/rehacerDiasSinTocar\(null\)/.test(lib), 'adaptarVuelos.ts rehace la ruta entera')
   const reorg = leer('src/lib/reorganizarDia.ts')
-  debe(/diaAdaptadoAlVuelo/.test(reorg), '«Reorganizar» no mira el vuelo (diaAdaptadoAlVuelo)')
+  debe(/adaptacionAlVuelo/.test(reorg), '«Reorganizar» no mira el vuelo (adaptacionAlVuelo; V68: una sola propuesta para todo el viaje)')
   debe(leer('docs/dias/PENDIENTES_ANTES_DEL_LANZAMIENTO.md').includes('«Reorganizar» no puede poner un sitio a una hora en que ese día está cerrado'), 'falta el pendiente de los cierres en PENDIENTES_ANTES_DEL_LANZAMIENTO.md')
   debe(leer('docs/REGLAS_DE_LA_APP.md').includes('«Reorganizar» no puede poner un sitio a una hora en que ese día está cerrado'), 'falta el pendiente de los cierres en REGLAS_DE_LA_APP.md')
 }
@@ -58,6 +59,8 @@ async function abrir(version) {
   for (let i = 0; i < 120 && !(await a.evaluar("typeof window.__rutaPrueba === 'function'")); i++) await a.esp(500)
   await a.evaluar('window.__rutaPrueba().then(() => true)')
   for (let i = 0; i < 90 && !(await a.evaluar(s('return Boolean(st().route)'))); i++) await a.esp(1000)
+  // (V74) Desde la V68 Reorganizar no toca los días que ya pasaron: el viaje de pruebas sale en octubre (ya pasado), así que se lleva a fechas futuras (mismos 4 días) para que haya algo que proponer.
+  await a.evaluar(s("const r = JSON.parse(JSON.stringify(st().route)); r.answers = { ...r.answers, dateRange: { start: '2027-03-05', end: '2027-03-08' } }; R.setState({ route: r }); return true"))
   await a.esp(3000)
   await a.evaluar(s("st().setMode('days'); st().setActiveDayId(st().route.days[1].id); return true"))
   await a.esp(2000)
@@ -118,7 +121,7 @@ try {
   debe(igual(trasPreguntar, inicio), 'antes de contestar, la alerta ya ha movido paradas (nada se mueve sin preguntar)')
   if (salio) {
     const texto = await a.evaluar("document.querySelector('[data-alerta-adaptar]').innerText")
-    debe(/¿Adaptamos tu primer y tu último día a tus vuelos\?/.test(texto) && /Sí, adaptarlos/.test(texto) && /Ahora no/.test(texto), `la alerta no dice lo que debe: «${texto}»`)
+    debe(/¿Adaptamos tus días a tu vuelo\?/.test(texto) && /Reorganizar mi/.test(texto) && /Dejarlo como está/.test(texto), `la alerta no dice lo que debe: «${texto}»`)
     await a.captura(path.join(SALIDA, '10s7b_vuelos_01_alerta.jpg'))
 
     // (2) «Ahora no»: no cambia nada, y se queda el botón «Reorganizar» en esos días.

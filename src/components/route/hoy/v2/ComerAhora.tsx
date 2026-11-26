@@ -151,7 +151,9 @@ export function HojaComerAhora({ route, day, dateIso, siguiente, ubicacion, enCo
                     {r.precio && <span>{r.precio}</span>}
                   </span>
                   {noAbiertos ? (
-                    <span data-comer-abre className="text-[12px] font-semibold" style={{ color: '#6E5018' }}>{r.abreMin != null ? `Abre a las ${aHora(r.abreMin, false)}` : 'Hoy no abre más'}</span>
+                    <span data-comer-abre className="text-[12px] font-semibold" style={{ color: '#6E5018' }}>{r.abreMin != null ? `Abre a las ${aHora(r.abreMin, false)}` : r.revisaHorario ? 'Revisa el horario' : 'Hoy no abre más'}</span>
+                  ) : r.revisaHorario ? (
+                    <span data-comer-revisa className="text-[12px] font-semibold" style={{ color: '#6E5018' }}>Revisa el horario</span>
                   ) : cierraPronto ? (
                     <span data-comer-cierra-pronto className="text-[12px] font-bold" style={{ color: '#C2581C' }}>Cierra pronto</span>
                   ) : (
@@ -271,6 +273,8 @@ function TarjetaDeComidaBase({ route, day, dateIso, meal, siguiente, ubicacion, 
   const abre = cerrado && ficha ? aperturaDeHoy(ficha, dateIso, ahoraMin) : null
   const horario = !sitio
     ? null
+    : estado?.abierto === null
+      ? { grande: 'Revisa el horario', tono: 'negro' as const, sub: 'No lo tenemos confirmado', subTono: 'gris' as const } // (V74, 44)
     : cerrado
       ? { grande: 'Cerrado', tono: 'rojo' as const, sub: abre != null ? `Abre a las ${aHora(abre, false)}` : 'Hoy no abre más', subTono: 'rojo' as const }
       : { grande: 'Abierto', tono: 'verde' as const, sub: estado?.cierraMin != null ? `Cierra a las ${aHora(estado.cierraMin, false)}` : 'Sin horario fijo', subTono: 'gris' as const }

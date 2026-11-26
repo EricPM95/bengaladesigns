@@ -241,7 +241,7 @@ export function CajaDeParada({ icono, trazo, etiqueta, grande, tono = 'negro', s
         </span>
         <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.08em' }}>{etiqueta}</span>
       </span>
-      <b data-caja-grande className={`${trazo ? 'break-words' : 'whitespace-nowrap'} font-bold leading-[1.15]`} style={{ color: COLOR_CAJA[tono], fontSize: grande.length > 8 ? 14 : 15 }}>{grande}</b>
+      <b data-caja-grande className={`${trazo || grande.length > 12 ? 'break-words' : 'whitespace-nowrap'} font-bold leading-[1.15]`} style={{ color: COLOR_CAJA[tono], fontSize: grande.length > 8 ? 14 : 15 }}>{grande}</b>
       <span data-caja-sub className="text-[11px] font-medium leading-[1.3]" style={{ color: COLOR_CAJA[subTono] }}>{sub}</span>
       {extra}
     </div>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { ImagenConFundido } from '../../ui/ImagenConFundido'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Coordinates } from '../../../lib/types'
 import { hasRealCoordinates } from '../../../lib/distanceMock'
@@ -66,7 +67,7 @@ function CuratedCard({ restaurant, selectable, active, justHighlighted, onSelect
     <div className="flex gap-3 rounded-xl border bg-white p-2.5" style={{ borderColor: GOLD_BORDER }}>
       {/* Los restaurantes van sin foto (color neutro): una foto de stock al azar no es del sitio. Las de antes, guardadas con una de picsum, tampoco se enseñan. */}
       {restaurant.foto && !restaurant.foto.includes('picsum.photos') ? (
-        <img src={restaurant.foto} alt="" className="h-16 w-16 shrink-0 rounded-lg object-cover" />
+        <span className="relative block h-16 w-16 shrink-0 overflow-hidden rounded-lg"><ImagenConFundido src={restaurant.foto} /></span>
       ) : (
         <span aria-hidden="true" className="h-16 w-16 shrink-0 rounded-lg bg-bg-hover" />
       )}
@@ -106,7 +107,7 @@ function CuratedCard({ restaurant, selectable, active, justHighlighted, onSelect
 function NearbyRow({ place }: { place: NearbyPlaceResult }) {
   return (
     <div className="flex items-center gap-3 rounded-xl border border-border bg-bg-card p-2">
-      {place.photoUrl ? <img src={place.photoUrl} alt="" className="h-11 w-11 shrink-0 rounded-lg object-cover" /> : <span className="h-11 w-11 shrink-0 rounded-lg bg-bg-hover" aria-hidden="true" />}
+      {place.photoUrl ? <span className="relative block h-11 w-11 shrink-0 overflow-hidden rounded-lg"><ImagenConFundido src={place.photoUrl} /></span> : <span className="h-11 w-11 shrink-0 rounded-lg bg-bg-hover" aria-hidden="true" />}
       <div className="min-w-0 flex-1">
         <p className="truncate text-small font-medium text-text">{place.name}</p>
         <p className="truncate text-caption text-text-soft">{place.address}</p>

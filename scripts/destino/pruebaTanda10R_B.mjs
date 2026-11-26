@@ -29,7 +29,8 @@ console.log('A. El código')
   debe(textos.includes('Con el {pase}, guardas el billete de tu excursión y lo tienes a mano en el punto de encuentro, aunque no haya internet.'), 'aviso', 'el aviso pequeño de la excursión, con el texto de Eric')
   debe(/excursiones\?: Record<string, BilleteDeExcursion>/.test(store) && /ponerExcursion/.test(store) && /quitarExcursion/.test(store), 'store', '`excursiones[refId]` en el store del billete (ponerExcursion / quitarExcursion)')
   debe(/salida\.excursiones = excursiones/.test(store), 'privado', 'lo de las excursiones es privado por persona (delDueno lo filtra, como las entradas)')
-  debe(/PapeleraRoja/.test(exc) && /LapizDeReserva/.test(exc) && /SeccionDatos/.test(exc) && /CajaDia/.test(exc) && /CajaHora/.test(exc), 'piezas', 'usa las piezas de la 10S8: papelera roja, lápices, datos, cajas de día y hora')
+  // (V74) La sección de datos ya no es el componente `SeccionDatos`: va en la propia tarjeta con su `data-seccion-datos`.
+  debe(/PapeleraRoja/.test(exc) && /LapizDeReserva/.test(exc) && /data-seccion-datos="excursion"/.test(exc) && /CajaDia/.test(exc) && /CajaHora/.test(exc), 'piezas', 'usa las piezas de la 10S8: papelera roja, lápices, datos, cajas de día y hora')
   debe(/Datos de la excursión/.test(exc) && /Guardar los datos/.test(exc) && /Cómo llegar al punto de encuentro/.test(exc) && /Toca para ampliar/.test(exc), 'textos', 'Datos de la excursión, [Guardar los datos], [Cómo llegar al punto de encuentro] y «Toca para ampliar»')
   debe(!/LineaReservada/.test(lista) && /TarjetaExcursionDesign/.test(lista), 'lista', 'en RESERVAS la excursión reservada ya no es una línea verde: es la tarjeta de Design')
   debe(!/addReservation\(/.test(lista), 'no mueve', 'guardar los datos no vuelve a colocar la excursión (no llama a addReservation)')
@@ -104,7 +105,8 @@ async function pasada(version) {
     debe(e1.chip === 'Excursión' && /Excursión a Pompeya y Sorrento/.test(e1.nombre ?? '') && e1.nombreFuente === '28px', 'E1 nombre', `«Excursión» pequeño y el nombre grande a 28 px (${e1.chip} · ${e1.nombreFuente})`)
     debe(/07:30/.test(e1.hora ?? '') && /\d/.test(e1.dia ?? ''), 'E1 cajas', `el día y la hora en sus dos cuadros (${(e1.dia ?? '').trim()} · ${(e1.hora ?? '').trim()})`)
     debe(e1.lapices.length === 1 && e1.lapices.every(([w, h]) => w === 44 && h === 44), 'E1 lapices', `un solo lápiz (10S9, 1-nov: antes dos → ahora uno sin documento → decisión de Eric) de 44 × 44 (${JSON.stringify(e1.lapices)})`)
-    debe(e1.papelera.length === 1 && e1.papelera[0][0] === 44 && e1.papelera[0][1] === 44, 'E1 papelera', `la papelera roja de 44 × 44 (${JSON.stringify(e1.papelera)})`)
+    // (V74) V64 §7: la papelera es un círculo de 38 px (el de Design); el toque sigue en 44 por `zona-toque`.
+    debe(e1.papelera.length === 1 && e1.papelera[0][0] === 38 && e1.papelera[0][1] === 38, 'E1 papelera', `la papelera roja de 38 × 38 (el toque sigue en 44) (${JSON.stringify(e1.papelera)})`)
     debe(/98,26 €|98.26 €|€ ?98/.test(e1.texto), 'E1 precio', `el precio en su fila (${e1.texto.slice(0, 140)})`)
     debe(/Piazza della Repubblica/.test(e1.texto), 'E1 punto', 'el punto de encuentro en su fila')
     debe(e1.boton === 'Sube tu reserva' && e1.candado === (sin ? '1' : '0'), 'candado', sin ? '[+ Sube tu reserva] lleva el candado dorado sin pase' : '[+ Sube tu reserva] sin candado con pase')
@@ -128,15 +130,16 @@ async function pasada(version) {
     /* — E2: con su billete (guardado antes de que acabase el pase: se ve igual) — */
     await ev(`(async () => { const S = await import('/src/store/useBilleteStore.ts'); const st = S.useBilleteStore.getState(); st.ponerExcursion(st.tripId, 'pompeya_sorrento', { personas: 2, localizador: 'CIV48213', codigo: { texto: 'CIVITATIS|CIV48213', formato: 'qr', imagen: null, dibujo: ${JSON.stringify(DIBUJO)} }, dueno: null }); return true })()`)
     await a.esp(1500)
-    const e2 = await ev(`(() => { const f = document.querySelector(${JSON.stringify(fila)}); return { texto: f.innerText.replace(/\\s+/g, ' '), codigo: Boolean(f.querySelector('[data-excursion-codigo-pequeno] img')), anadir: Boolean(f.querySelector('[data-anadir-doc]')), papelera: f.querySelectorAll('[data-papelera]').length } })()`)
-    debe(/Localizador CIV48213/.test(e2.texto) && /Toca para ampliar/.test(e2.texto) && e2.codigo, 'E2', `con billete: localizador y el código con «Toca para ampliar» (${sin ? 'SIN pase: lo guardado se ve' : 'con pase'})`)
+    const e2 = await ev(`(() => { const f = document.querySelector(${JSON.stringify(fila)}); return { texto: f.innerText.replace(/\\s+/g, ' '), codigo: Boolean(f.querySelector('[data-bloque-codigo="excursion"] [data-billete-codigo-qr]')), ampliar: Boolean(f.querySelector('[data-bloque-codigo="excursion"] [data-billete-ampliar]')), anadir: Boolean(f.querySelector('[data-anadir-doc]')), papelera: f.querySelectorAll('[data-papelera]').length } })()`)
+    // (V74) El código está en el bloque oscuro «TU ENTRADA · Enséñala en la puerta» con su botón [Ampliar] (V65); el localizador, en su caja «LOCALIZADOR».
+    debe(/localizador CIV48213/i.test(e2.texto) && e2.codigo && e2.ampliar, 'E2', `con billete: localizador y el código con su botón [Ampliar] (${sin ? 'SIN pase: lo guardado se ve' : 'con pase'})`)
     debe(!e2.anadir && e2.papelera === 1, 'E2 limpio', 'sin [Añadir tu excursión] y con la papelera')
     await a.captura(path.join(SALIDA, `10r_reservas_excursion_billete_${version}_375.jpg`)).catch(() => {})
     // El código a pantalla completa.
-    await ev(`document.querySelector(${JSON.stringify(fila + ' [data-excursion-codigo-pequeno]')})?.click(); true`)
+    await ev(`document.querySelector(${JSON.stringify(fila + ' [data-billete-ampliar]')})?.click(); true`)
     await a.esp(800)
     const grande = await ev("(document.querySelector('[role=dialog]')?.innerText ?? document.body.innerText).replace(/\\s+/g, ' ')")
-    debe(/Excursión a Pompeya y Sorrento/.test(grande) && /Localizador CIV48213/.test(grande), 'E3', 'el código a pantalla completa con el nombre y el localizador')
+    debe(/Excursión a Pompeya y Sorrento/.test(grande) && /Localizador CIV48213/i.test(grande), 'E3', 'el código a pantalla completa con el nombre y el localizador')
     await ev("document.querySelector('[data-billete-cerrar]')?.click(); true")
     await a.esp(500)
 

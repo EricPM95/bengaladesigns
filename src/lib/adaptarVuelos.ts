@@ -36,7 +36,7 @@ import { esDestinoDeCoche } from './experienceCategoryBank'
 import { withUndo } from '../store/useAddFlowStore'
 import { useReorganizarStore, alDeshacerOcultaLaHoja } from '../store/useReorganizarStore'
 import { marcarDiaReorganizado } from './diaReorganizado'
-import { cambioMinimo, diaBloqueado } from './reorganizarMinimo'
+import { cambioMinimo, claveDeSitio, diaBloqueado } from './reorganizarMinimo'
 
 export interface DiaAdaptado {
   dayId: string
@@ -351,7 +351,7 @@ function diasDeVuelo(route: Route): DayPlan[] {
  * Pide al motor lo que cambia con los vuelos de ahora: los planes (siempre) y los días que cambiarían (primero, último y vuelta; solo los que se pueden adaptar). No toca la ruta.
  * Devuelve null si la ruta no es de las que rehace el motor.
  */
-export async function propuestaDeVuelos(route: Route, reservations: Reservation[], opciones: { /** (V57, probador del panel) Forzar con o sin pase en vez de leerlo de la cuenta. */ pase?: boolean; coche?: CocheReservado; /** (V68, SOLO para las capturas de «antes») Lo que proponía el motor día por día, sin el cambio mínimo. */ sinMinimo?: boolean } = {}): Promise<PropuestaDeVuelos | null> {
+export async function propuestaDeVuelos(route: Route, reservations: Reservation[], opciones: { /** (V57, probador del panel) Forzar con o sin pase en vez de leerlo de la cuenta. */ pase?: boolean; coche?: CocheReservado; /** (V68, SOLO para las capturas de «antes») Lo que proponía el motor día por día, sin el cambio mínimo. */ sinMinimo?: boolean; /** (V74, SOLO desarrollo y pruebas) El «hoy» con que se deciden los días que ya pasaron (no se tocan): los viajes de prueba tienen fechas fijas y con el tiempo quedan en el pasado. */ hoy?: string } = {}): Promise<PropuestaDeVuelos | null> {
   if (!esRutaDelMotor(route)) return null
   const conPase = opciones.pase ?? pagoActivo()
   const { vuelo, info } = await datosDelVuelo(route, reservations, opciones.coche)
@@ -376,13 +376,13 @@ export async function propuestaDeVuelos(route: Route, reservations: Reservation[
     // (LL) Lanzarote: el reparto entero depende del día de llegada y del de vuelta, así que se miran todos los días.
     for (const day of esDestinoDeCoche(route.destination) || vuelo.llegada || vuelo.vuelta ? route.days : diasDeVuelo(route)) {
       // (V68) Los días que ya pasaron y lo ya hecho de hoy están bloqueados: Reorganizar no los toca.
-      if (diaBloqueado(route, day)) continue
+      if (diaBloqueado(route, day, opciones.hoy)) continue
       const adaptado = await adaptarUnDia(route, day, vuelo, info, generadoDeVuelta, reservations)
       if (adaptado) dias.push(adaptado)
     }
     // (V68) El cambio MÍNIMO y nada se quita: con el vuelo de llegada solo cambia el día de la llegada; lo que no cabe va al día donde mejor quepa o a «Lugares pendientes» (src/lib/reorganizarMinimo.ts).
     if (dias.length > 0 && !opciones.sinMinimo) {
-      const minimo = await cambioMinimo(route, dias, { hayLlegada: Boolean(vuelo.llegada), hayVuelta: Boolean(vuelo.vuelta), enCoche: esDestinoDeCoche(route.destination) })
+      const minimo = await cambioMinimo(route, dias, { hayLlegada: Boolean(vuelo.llegada), hayVuelta: Boolean(vuelo.vuelta), enCoche: esDestinoDeCoche(route.destination), hoy: opciones.hoy })
       dias.length = 0
       dias.push(...minimo)
     }
@@ -396,7 +396,11 @@ export async function propuestaDeVuelos(route: Route, reservations: Reservation[
     const segunda = await adaptarUnDiaDeCoche(nueva, nueva.days.find((day) => day.isReturnLeg) ?? vueltaActual, vuelo, reservations)
     const resto = dias.filter((dia) => dia !== vueltaPropuesta)
     dias.length = 0
-    dias.push(...resto, ...(segunda ? [{ ...segunda, dayId: vueltaActual.id }] : []))
+    // (V74) El día de vuelta que vuelve a montar el motor no repite lo que ya está en otro día (el guardián de sitios repetidos no guardaría el cambio entero): lo repetido se queda solo en su día.
+    const enOtrosDias = new Set(nueva.days.filter((other) => !other.isReturnLeg).flatMap((other) => other.stops.filter((stop) => !stop.isArrival && !stop.isBreak).map((stop) => claveDeSitio(stop.name))))
+    const eranDeLaVuelta = new Set(vueltaActual.stops.map((stop) => claveDeSitio(stop.name)))
+    const vueltaSinRepetidos = segunda ? { ...segunda, dayId: vueltaActual.id, next: { ...segunda.next, stops: segunda.next.stops.filter((stop) => stop.isArrival || stop.isBreak || eranDeLaVuelta.has(claveDeSitio(stop.name)) || !enOtrosDias.has(claveDeSitio(stop.name))) } } : null
+    dias.push(...resto, ...(vueltaSinRepetidos ? [vueltaSinRepetidos] : []))
   }
   return { dias, planes }
 }
@@ -514,6 +518,57 @@ export function adaptarLosDias(): number {
 export function olvidarRespuestasDelMotor(): void {
   guardadas.clear()
   propuestasGuardadas.clear()
+}
+
+// ── (V74, 34) Lanzarote sin Reorganizar: la hora de salir al aeropuerto la calcula el motor de coche, UNA vez ──────────────────────────
+const planDeVueltaCalculado = new Map<string, string>()
+
+/**
+ * Lanzarote con el vuelo de vuelta puesto pero SIN el plan de la vuelta del motor (`Route.planVuelta` sin `salir_de_la_zona`): se lo pide al motor de coche (`/api/rebuild-day`, la misma cuenta que Roma, con la
+ * zona y el coche del viajero) y lo guarda en `planVuelta` SIN mover ninguna parada. Cada cuánto: UNA vez por viaje y combinación (vuelo + zona del alojamiento + coche); solo se repite si cambia alguno de los tres,
+ * nunca por tiempo ni a cada minuto. Cuánto baja: una respuesta de `/api/rebuild-day` (un día, ~10-20 KB), del servidor de la app, no de Supabase.
+ */
+export async function asegurarElPlanDeVuelta(): Promise<void> {
+  const { route, reservations, rentalVehicleBooking } = useRouteStore.getState()
+  if (!route || !esDestinoDeCoche(route.destination) || !route.departureFlightTime) return
+  // (Solo para las capturas de «antes», en desarrollo: sin pedir el plan de la vuelta.)
+  if (import.meta.env.DEV && (window as unknown as { __sinPlanDeVuelta?: boolean }).__sinPlanDeVuelta) return
+  const clave = [route.departureFlightTime, route.accommodationZone ?? '', route.answers.coche ?? '', rentalVehicleBooking?.horaRecogida ?? '', rentalVehicleBooking?.horaDevolucion ?? ''].join('|')
+  const previa = planDeVueltaCalculado.get(route.id)
+  if (previa === clave) return
+  const tiene = typeof route.planVuelta?.salir_de_la_zona === 'string' && route.planVuelta?.hora === route.departureFlightTime
+  planDeVueltaCalculado.set(route.id, clave)
+  // Ya lo trae el viaje (generado con el vuelo o tras Reorganizar) y no ha cambiado nada desde que se abrió: no se pide.
+  if (previa === undefined && tiene) return
+  try {
+    const { vuelo } = await datosDelVuelo(route, reservations)
+    if (!vuelo.vuelta) return
+    const ciudad = route.days.filter((day) => !day.isReturnLeg)
+    const vueltaDia = route.days.find((day) => day.isReturnLeg)
+    const zona = route.accommodationZone
+    const cuerpo = {
+      destination: route.destination,
+      answers: { ...route.answers, zona: zona ?? 'nose', pase: true, coche: route.answers.coche ?? 'alquiler' },
+      zona: zona ?? 'nose',
+      pase: true,
+      coche: route.answers.coche ?? 'alquiler',
+      all_days: ciudad.map((other) => ({ day_number: other.dayNumber, city: other.city })),
+      day_number: vueltaDia ? vueltaDia.dayNumber : ciudad.length + 1,
+      must_include_places: route.mustIncludePlaces ?? [],
+      inside_names: route.insideNames ?? [],
+      reservas: reservasParaMotor(reservations),
+      ...vuelo,
+      ...(ordenDeLosDias(route).length > 0 ? { force_order: ordenDeLosDias(route) } : {}),
+    }
+    const response = await fetch('/api/rebuild-day', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo) })
+    if (!response.ok) return
+    const generado = ((await response.json()) as { day?: GeneratedDay }).day
+    // Si mientras tanto cambió el viaje (otro vuelo), esta respuesta ya no vale.
+    const ahora = useRouteStore.getState().route
+    if (generado?.return_day && ahora?.id === route.id && ahora.departureFlightTime === route.departureFlightTime) useRouteStore.getState().ponerPlanes({ vuelta: generado.return_day })
+  } catch {
+    planDeVueltaCalculado.delete(route.id) // sin red: se vuelve a intentar al volver a abrir HOY, no en bucle
+  }
 }
 
 // ── (LZ2a) Lanzarote: cada día desde la zona del viajero ─────────────────────────────────────────────────────────

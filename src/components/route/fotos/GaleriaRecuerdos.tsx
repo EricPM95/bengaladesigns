@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ImagenConFundido } from '../../ui/ImagenConFundido'
 import { borrarFoto, urlParaMostrar, type FotoViaje } from '../../../lib/fotosViaje'
 import { useFotosViaje } from '../../../lib/useFotosViaje'
 import { addDaysToIso, isoToLocalDate } from '../../../lib/dateRange'
@@ -88,7 +89,7 @@ export function GaleriaRecuerdos() {
                 <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                   {grupo.fotos.map((foto) => (
                     <li key={foto.id} className="relative overflow-hidden rounded-2xl bg-bg-hover">
-                      {urlParaMostrar(foto) ? <img onClick={() => setGrande(foto)} src={urlParaMostrar(foto)} alt={foto.stopName ?? `Foto del ${rotuloDia(foto.dayNumber, inicio)}`} loading="lazy" className="aspect-square w-full cursor-zoom-in object-cover" /> : <div className="aspect-square w-full" />}
+                      {urlParaMostrar(foto) ? <div onClick={() => setGrande(foto)} role="img" aria-label={foto.stopName ?? `Foto del ${rotuloDia(foto.dayNumber, inicio)}`} className="relative aspect-square w-full cursor-zoom-in"><ImagenConFundido src={urlParaMostrar(foto)} loading="lazy" fondo="transparent" /></div> : <div className="aspect-square w-full" />}
                       {confirmando === foto.id ? (
                         <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 bg-bg-card/95 px-2.5 py-2 text-[12.5px] text-text">
                           <span>¿Quitamos esta foto?</span>

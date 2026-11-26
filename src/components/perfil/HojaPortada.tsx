@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { ImagenConFundido } from '../ui/ImagenConFundido'
 import { urlParaMostrar, type FotoViaje } from '../../lib/fotosViaje'
 import { fotosParaPortada, subirPortadaDeGaleria } from '../../lib/portadaViaje'
 import { usePortadas } from '../../store/usePortadas'
@@ -54,7 +55,7 @@ export function HojaPortada({ tripId, destino, onCerrar }: { tripId: string; des
             {fotos.map((f) => (
               <li key={f.id}>
                 <button type="button" data-portada-foto={f.id} aria-label={f.stopName ? `Usar la foto de ${f.stopName}` : 'Usar esta foto'} onClick={() => void poner({ f: 'viaje', id: f.id, ruta: f.storagePath })} className="block aspect-square w-full overflow-hidden rounded-xl bg-bg-hover">
-                  {urlParaMostrar(f) && <img src={urlParaMostrar(f)} alt="" loading="lazy" className="h-full w-full object-cover" />}
+                  {urlParaMostrar(f) && <span className="relative block h-full w-full"><ImagenConFundido src={urlParaMostrar(f)} loading="lazy" fondo="transparent" /></span>}
                 </button>
               </li>
             ))}

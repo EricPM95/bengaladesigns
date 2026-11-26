@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ImagenConFundido } from '../ui/ImagenConFundido'
 import { borrarFoto, limiteDeFotos, urlParaMostrar, type FotoViaje } from '../../lib/fotosViaje'
 import { useFotosViaje } from '../../lib/useFotosViaje'
 import { diaParaFotoSuelta, type ResumenViaje } from '../../lib/viajesPerfil'
@@ -44,7 +45,7 @@ export function CuadriculaDeFotos({ fotos, conMargen = false }: { fotos: FotoVia
         <ul className={`grid grid-cols-3 gap-1.5 ${conMargen ? 'mt-4' : ''}`} data-cuadricula-album>
           {ordenDelAlbum(fotos).map((foto) => (
             <li key={foto.id} className="relative overflow-hidden rounded-xl bg-bg-hover">
-              {urlParaMostrar(foto) ? <img onClick={() => setGrande(foto)} src={urlParaMostrar(foto)} alt={foto.stopName ?? 'Foto del viaje'} loading="lazy" className="aspect-square w-full cursor-zoom-in object-cover" /> : <div className="aspect-square w-full" />}
+              {urlParaMostrar(foto) ? <div onClick={() => setGrande(foto)} role="img" aria-label={foto.stopName ?? 'Foto del viaje'} className="relative aspect-square w-full cursor-zoom-in"><ImagenConFundido src={urlParaMostrar(foto)} loading="lazy" fondo="transparent" /></div> : <div className="aspect-square w-full" />}
               {confirmando === foto.id ? (
                 <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 bg-bg-card/95 px-2 py-1.5 text-[11.5px] leading-tight text-text">
                   <span>¿Quitamos esta foto?</span>

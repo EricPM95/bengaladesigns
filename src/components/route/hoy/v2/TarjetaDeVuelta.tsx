@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { Coordinates, DayPlan, Route, Stop } from '../../../../lib/types'
 import { useRouteStore } from '../../../../store/useRouteStore'
 import { useBilleteStore } from '../../../../store/useBilleteStore'
@@ -74,6 +74,19 @@ function leerSalida(route: Route, dateIso: string): number | null {
   }
 }
 
+/** (V74, 35) El minuto en que ya estabas EN EL AEROPUERTO (GPS, o pasado el trayecto desde [Salgo hacia…]): un recuerdo de este móvil, por viaje y día. El resumen del viaje sale 2 horas después. */
+const claveEnElSitio = (route: Route, dateIso: string) => `trazo:hoy:enaeropuerto:${route.id}:${dateIso}`
+export function leerEnElSitio(route: Route, dateIso: string): number | null {
+  try {
+    const v = localStorage.getItem(claveEnElSitio(route, dateIso))
+    if (v != null) return Number(v)
+    const s = leerSalida(route, dateIso)
+    return s == null ? null : s + 30 // el trayecto que la tarjeta da por defecto (`salida.trayectoMin ?? 30`)
+  } catch {
+    return null
+  }
+}
+
 function sitioDeFuera(route: Route): string {
   const t = ladoDeFuera(ciudadDeSalida(route), route.departureOtroPunto)
   const m = /\((.+)\)\s*$/.exec(t)
@@ -112,6 +125,16 @@ export function TarjetaDeVuelta({ route, day, dateIso, mitad, info, paradas, ubi
   const trayecto = salida.trayectoMin ?? 30
   const yaEnElSitio = dentroDelSitio || (salioMin != null && ahoraMin >= salioMin + trayecto)
   const decamino = salioMin != null && !yaEnElSitio
+  // (V74, 35) Se apunta UNA vez el minuto en que ya estás en el aeropuerto (para sacar el resumen del viaje 2 h después, aunque la tarjeta ya no esté en pantalla).
+  useEffect(() => {
+    if (!yaEnElSitio) return
+    try {
+      const k = claveEnElSitio(route, dateIso)
+      if (localStorage.getItem(k) == null) localStorage.setItem(k, String(dentroDelSitio || salioMin == null ? ahoraMin : salioMin + trayecto))
+    } catch {
+      /* sin almacenamiento: queda la hora del vuelo */
+    }
+  }, [yaEnElSitio]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const marcarSalida = () => {
     setSalioMin(ahoraMin)

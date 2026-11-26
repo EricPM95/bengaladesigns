@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ImagenConFundido } from '../../ui/ImagenConFundido'
 import type { DayPlan } from '../../../lib/types'
 import { pagoActivo } from '../../../lib/pago'
 import { urlParaMostrar, type FotoViaje } from '../../../lib/fotosViaje'
@@ -23,7 +24,7 @@ export function TusFotosDeHoy({ day }: { day: DayPlan }) {
       <div className="-mx-1 flex gap-2.5 overflow-x-auto px-1 pb-0.5" data-miniaturas>
         {deHoy.map((foto) => (
           <button key={foto.id} type="button" onClick={() => setGrande(foto)} aria-label={foto.stopName ? `Foto de ${foto.stopName}` : 'Foto suelta de hoy'} className="h-[88px] w-[88px] flex-none overflow-hidden rounded-[20px] bg-text/10">
-            {urlParaMostrar(foto) ? <img src={urlParaMostrar(foto)} alt="" className="h-full w-full object-cover" loading="lazy" /> : null}
+            {urlParaMostrar(foto) ? <span className="relative block h-full w-full"><ImagenConFundido src={urlParaMostrar(foto)} loading="lazy" fondo="transparent" /></span> : null}
           </button>
         ))}
       </div>

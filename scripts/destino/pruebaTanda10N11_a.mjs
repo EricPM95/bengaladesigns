@@ -140,7 +140,8 @@ try {
   await ev("document.querySelector('[data-blk=\"aloj\"]')?.scrollIntoView({ block: 'start' }); true")
   await a.esp(600)
   const tarjeta = await ev("document.querySelector('[data-blk=\"aloj\"]')?.innerText.replace(/\\s+/g, ' ') ?? ''")
-  debe(/Hotel Aurora/.test(tarjeta) && /Zona Prati/.test(tarjeta) && /Via Cola di Rienzo, 45/.test(tarjeta) && /Cómo llegar a tu alojamiento/.test(tarjeta) && Boolean(await ev("Boolean(document.querySelector('[data-blk=\"aloj\"] [data-lapiz=\"aloj-arriba\"]'))")) && Boolean(await ev("Boolean(document.querySelector('[data-blk=\"aloj\"] [data-en-este-alojamiento]')) && /Tú/.test(document.querySelector('[data-blk=\"aloj\"] [data-en-este-alojamiento-nombres]')?.textContent ?? '')")), 'A1', `tarjeta 09p (${tarjeta.slice(0, 200)})`)
+  // (V74) La etiqueta de la zona sale en mayúsculas («ZONA Prati»): se compara sin distinguir mayúsculas.
+  debe(/Hotel Aurora/.test(tarjeta) && /Zona Prati/i.test(tarjeta) && /Via Cola di Rienzo, 45/.test(tarjeta) && /Cómo llegar a tu alojamiento/.test(tarjeta) && Boolean(await ev("Boolean(document.querySelector('[data-blk=\"aloj\"] [data-lapiz=\"aloj-arriba\"]'))")) && Boolean(await ev("Boolean(document.querySelector('[data-blk=\"aloj\"] [data-en-este-alojamiento]')) && /Tú/.test(document.querySelector('[data-blk=\"aloj\"] [data-en-este-alojamiento-nombres]')?.textContent ?? '')")), 'A1', `tarjeta 09p (${tarjeta.slice(0, 200)})`)
   debe(!/Con el Pase/.test(tarjeta), 'A1', 'con pase, la tarjeta sin frase del pase')
   const inicial = await ev("(() => { const c = document.querySelector('[data-blk=\"aloj\"] [data-en-este-alojamiento] [data-para-quien-design] > span > span'); return c ? c.textContent.trim() : null })()")
   debe(inicial === 'E', 'A1', `«Tú» con su inicial «E», no «T» (${inicial})`)

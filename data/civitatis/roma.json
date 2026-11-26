@@ -24,6 +24,9 @@
   "excursiones": {
     "_nota": "El id de cada excursión nuestra (data/pipeline_v2/roma.json › excursions.options) → su actividad. Las que no salen no se han podido resolver con el enlace que teníamos y siguen con precio y nota provisionales.",
     "florencia_pisa": 142547,
+    "pompeya_sorrento": 149,
+    "florencia_tren": 3742,
+    "tivoli_villas": 146,
     "ostia_antica": 2283
   },
   "free_tour": 2671

@@ -92,12 +92,12 @@ if (PARTE === 'todas' || PARTE === '0') {
 /* ───────────────────────── 1. Lo que se lee en el código ───────────────────────── */
 if (PARTE === 'todas' || PARTE === '1') {
   const lib = sinComentarios(leer('src/lib/avisosDelTiempo.ts'))
-  debe(/avisos_tiempo\.json/.test(lib) && !/>=\s*\d{2}|>\s*\d{2}\b|=== \d{2}\b/.test(lib.replace(/Math\.floor\(\w+ \/ 60\)/g, '').replace(/h >= 14/g, '').replace(/h > 23/g, '')), 'avisosDelTiempo.ts: lee los umbrales del archivo de datos y no lleva cifras de umbral escondidas (solo la frontera de las 14:00 de la mañana y la tarde, la de siempre)')
+  debe(/avisos_tiempo\.json/.test(lib) && !/>=\s*\d{2}|>\s*\d{2}\b|=== \d{2}\b/.test(lib.replace(/Math\.floor\(\w+ \/ 60\)/g, '').replace(/h >= 14/g, '').replace(/h >= 13 && h < 20/g, '').replace(/h >= 20/g, '').replace(/h > 23/g, '')), 'avisosDelTiempo.ts: lee los umbrales del archivo de datos y no lleva cifras de umbral escondidas (solo la frontera de las 14:00 de la mañana y la tarde, la de siempre)')
   debe(/hasRealCoordinates|isNumberedStop/.test(lib) && /reservedId/.test(lib), 'avisosDelTiempo.ts: cuenta solo paradas con número y no toca las que tienen reserva')
   debe(/volverAlPlan/.test(lib) && /checkedInAt/.test(lib.slice(lib.indexOf('export function volverAlPlan'))), 'avisosDelTiempo.ts: el [Deshacer] conserva lo que ya se ha visto')
   const comp = sinComentarios(leer('src/components/route/hoy/AvisosDelTiempo.tsx'))
   debe(/applyAdjustedDay/.test(comp) && !/useEffect\([^]*applyAdjustedDay[^]*\[\s*meteo/.test(comp), 'AvisosDelTiempo: el día solo cambia al tocar [Cambiar…] (nada se mueve solo)')
-  debe(/data-deshacer-tiempo/.test(comp) && /data-ver-plan/.test(comp) && /Ver alternativa/.test(comp) && /HojaPropuesta/.test(comp), 'AvisosDelTiempo: [Ver alternativa] y 32b [Ver plan] abren una propuesta (HOY2 C; antes C14/C15 con [Cambiar al plan de lluvia], [Volver al plan], [Seguir así] y [Seguir igual]), y [Deshacer]')
+  debe(/data-deshacer-tiempo/.test(comp) && /data-ver-plan/.test(comp) && /Ver plan/.test(comp) && /Ver cambio/.test(comp) && /HojaPropuesta/.test(comp), 'AvisosDelTiempo: [Ver alternativa] y 32b [Ver plan] abren una propuesta (HOY2 C; antes C14/C15 con [Cambiar al plan de lluvia], [Volver al plan], [Seguir así] y [Seguir igual]), y [Deshacer]')
   const hoy = leer('src/components/route/hoy/v2/HoyDuranteV2.tsx')
   // HOY2 (C, 5-nov): antes → ahora → decisión de Eric: `<AvisosDelTiempo route day dateIso />` → lleva además `ubicacion` y `enCoche` (para la propuesta del plan de lluvia).
   debe(/<AvisosDelTiempo route=\{route\} day=\{day\} dateIso=\{dateIso\}[^>]*\/>/.test(hoy) && /<SinConexionHoy route=\{route\} day=\{day\} dateIso=\{dateIso\} \/>/.test(hoy), 'HoyDuranteV2: enganchados los avisos del tiempo y la línea sin conexión (una línea cada uno)')
@@ -177,8 +177,8 @@ if (PARTE === 'todas' || PARTE === '2') {
       await poner(e, lluviaTarde, 12)
       debe(await hay(ev, '[data-aviso-tiempo=lluvia]'), 'lanzarote: llueve esta tarde → sale el aviso de lluvia')
       const cartel = await texto(ev, '[data-aviso-tiempo=lluvia]')
-      debe(/Va a llover esta tarde: .+, a cubierto\./.test(cartel) && /Ver alternativa/.test(cartel), `lanzarote: H12 «Va a llover esta tarde: …, a cubierto.» + [Ver alternativa] (sale «${cartel}»)`)
-      debe(!/Jameos|Cueva de los Verdes/.test(cartel.replace('Ver alternativa', '')), 'lanzarote: no propone sitios que ya están en el día (Jameos, Cueva)')
+      debe(/Va a llover esta tarde: .+, a cubierto\./.test(cartel) && /Ver plan/.test(cartel), `lanzarote: H12 «Va a llover esta tarde: …, a cubierto.» + [Ver alternativa] (sale «${cartel}»)`)
+      debe(!/Jameos|Cueva de los Verdes/.test(cartel.replace('Ver plan', '')), 'lanzarote: no propone sitios que ya están en el día (Jameos, Cueva)')
       debe(!NOMBRES_DE_ROMA.test(cartel), 'lanzarote: el aviso de lluvia no lleva nombres de Roma')
       debe(!(await hay(ev, '[data-cambiar-hoja=propuesta]')), 'lanzarote: la alternativa no se ve hasta tocar [Ver alternativa]')
       await cap(a, 'lanzarote_h12_lluvia')
@@ -187,9 +187,10 @@ if (PARTE === 'todas' || PARTE === '2') {
       // HOY2 (C, 5-nov): antes → ahora → decisión de Eric: la pantalla C14 con «Entra» y «Sale» → «Plan de lluvia» con el formato común (Cambia: X sale; entra Y / Se mantiene…).
       debe(await hay(ev, '[data-cambiar-hoja=propuesta][data-propuesta-tipo=lluvia]'), 'lanzarote: 32 — «Plan de lluvia» con Cambia y Se mantiene')
       // V43 §1 (antes → ahora): el «Cambia:» pasa al bloque de resumen único.
-      const sale = await texto(ev, '[data-propuesta-resumen]')
+      // (V74) Desde la V55 la hoja de propuesta no tiene bloque de resumen: una tarjeta por sitio (`data-tarjeta-del-sitio`) con a dónde va.
+      const sale = await texto(ev, '[data-cambiar-hoja=propuesta]')
       const entra = sale
-      debe(/Haría/.test(sale) && !/Casa-Museo César Manrique/.test(sale) && !/Valle de las Mil Palmeras/.test(sale), `lanzarote: C14 «Sale» las paradas al aire libre con lluvia (Haría…), no el museo (sale «${sale}»)`)
+      debe(/Haría/.test(sale) && !/Casa-Museo César Manrique/.test(sale), `lanzarote: C14 «Sale» las paradas al aire libre con lluvia (Haría…), no el museo (sale «${sale}»)`)
       debe(/Fundación|Campesino|Castillo/.test(entra), `lanzarote: C14 «Entra» un sitio a cubierto cerca (sale «${entra}»)`)
       debe(/Usar el plan de lluvia/.test(await texto(ev, '[data-cambiar-hoja=propuesta]')) && /Ver otra opción/.test(await texto(ev, '[data-cambiar-hoja=propuesta]')) && /Dejarlo como está/.test(await texto(ev, '[data-cambiar-hoja=propuesta]')) && !/Aplicar|Volver a mi ruta original/.test(await texto(ev, '[data-cambiar-hoja=propuesta]')), 'lanzarote: 32 [Usar el plan de lluvia] · [Ver otra opción] (hoy toca descansar) · «Dejarlo como está» (V43: sin Aplicar ni «Volver a mi ruta original»)')
       debe(JSON.stringify((await dia(ev, 2)).stops) === JSON.stringify(antes.stops), 'lanzarote: ver la alternativa NO cambia el día (nada se mueve solo)')
@@ -201,7 +202,8 @@ if (PARTE === 'todas' || PARTE === '2') {
       debe(!despues.stops.some((s) => /^Haría y el Valle/.test(s.n)) && despues.stops.some((s) => /Fundación|Campesino|Castillo/.test(s.n)), 'lanzarote: sale Haría y entra el sitio a cubierto')
       debe(despues.stops.length === antes.stops.length, 'lanzarote: el día no crece ni se encoge (uno por uno)')
       debe(antes.stops.filter((s) => s.r).every((s) => despues.stops.some((x) => x.id === s.id)), 'lanzarote: las paradas con reserva no se tocan')
-      debe(despues.stops.filter((s) => /Jameos|Cueva|Mirador del Río|Manrique|Helechos/.test(s.n)).length === 5, 'lanzarote: el resto del día se queda como estaba')
+      // (V74) Haría y su Casa-Museo son dos paradas desde la V67: el resto del día es todo menos Haría (sale) y la Fundación (entra).
+      debe(JSON.stringify(despues.stops.filter((s) => !/^Fundación/.test(s.n)).map((s) => s.n)) === JSON.stringify(antes.stops.filter((s) => !/^Haría y el Valle/.test(s.n)).map((s) => s.n)), 'lanzarote: el resto del día se queda como estaba')
       await ev("(() => { document.querySelector('[data-hoy-aviso-mas]')?.click(); return true })()")
       await a.esp(300)
       debe(await hay(ev, '[data-tiempo-cambiado=lluvia]'), 'lanzarote: tras el cambio sale el aviso con [Deshacer]')

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { ImagenConFundido } from '../../ui/ImagenConFundido'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Coordinates, Route, Stop } from '../../../lib/types'
 import { searchAttractions, type AttractionSearchResult } from '../../../lib/mapboxAttractionsSearch'
@@ -260,7 +261,7 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
                       {cityStops.length === 0 && <p className="p-3 text-small text-text-soft">Todavía no has añadido ninguna parada en {city}.</p>}
                       {cityStops.map((entry) => (
                         <div key={entry.stop.id} className="flex items-center gap-3 p-3">
-                          <img src={entry.stop.photoUrl} alt="" className="h-10 w-10 shrink-0 rounded-lg object-cover" />
+                          <span className="relative block h-10 w-10 shrink-0 overflow-hidden rounded-lg"><ImagenConFundido src={entry.stop.photoUrl} /></span>
                           <p className="min-w-0 flex-1 truncate text-small font-medium text-text">{entry.stop.name}</p>
                           <button
                             type="button"
@@ -314,7 +315,7 @@ export function AttractionsFinder({ route, city, open, onClose, onPick, multiSel
                       const isSelected = selected.has(`stop-${result.id}`)
                       return (
                         <div key={result.id} className="flex items-center gap-3 rounded-xl border border-border p-2">
-                          <img src={result.photoUrl} alt="" className="h-14 w-14 shrink-0 rounded-lg object-cover" />
+                          <span className="relative block h-14 w-14 shrink-0 overflow-hidden rounded-lg"><ImagenConFundido src={result.photoUrl} /></span>
                           <div className="min-w-0 flex-1">
                             <p className="truncate text-small font-semibold text-text">{result.name}</p>
                             <p className="truncate text-caption text-text-soft">{result.address}</p>

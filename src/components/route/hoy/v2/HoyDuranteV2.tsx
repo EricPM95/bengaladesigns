@@ -46,7 +46,7 @@ import { TarjetaDiaDePrueba, TarjetaP3 } from './TarjetasPase'
 import { TarjetaDeLlegada } from './TarjetaDeLlegada'
 import { CabeceraParada, LineaDelLogro, TarjetaParada, TuDia, ojoDeParada, useAhoraMin, useUltimaSuma } from './ParadaHoy'
 import { HoyVuelvesH14, datosDeLaSalida } from './VueltaH14'
-import { TarjetaDeVuelta } from './TarjetaDeVuelta'
+import { TarjetaDeVuelta, leerEnElSitio } from './TarjetaDeVuelta'
 import { HoyDespuesV2 } from './HoyDespuesV2'
 import { FilaDeAviso, D_AVISO } from './AvisosHoy'
 import { esDiaRecienReorganizado } from '../../../../lib/reorganizarDia'
@@ -374,6 +374,12 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const esPorLaManana = Boolean(salidaManana && minSalida != null && ahoraMinHoy < minSalida)
   // (V57) El día de vuelta NUNCA sale vacío: con vuelo, su tarjeta (con «Sal hacia el aeropuerto a las …»); sin vuelo (avión), «Añade tu vuelo de vuelta…» con [Añadir mi vuelo] (la hoja «Tu vuelo» de RESERVAS).
   const vueloPuesto = Boolean(tarjetaVuelve || fichas.vuelta.hora || route.planVuelta?.hora)
+  // (V74, 34) Lanzarote sin Reorganizar: la hora de salir y el aviso «hoy no te da tiempo» salen del motor de coche. Se calcula UNA vez por (vuelo, zona, coche): solo se repite si cambia alguno, nunca a cada minuto.
+  const horaDeVueltaPuesta = route.departureFlightTime ?? ''
+  const zonaDelAloj = route.accommodationZone ?? ''
+  useEffect(() => {
+    if (esVuelta && enCoche && vueloPuesto) void import('../../../../lib/adaptarVuelos').then((m) => m.asegurarElPlanDeVuelta())
+  }, [esVuelta, enCoche, vueloPuesto, horaDeVueltaPuesta, zonaDelAloj, route.answers.coche])
   const pideVuelo = esVuelta && !vueloPuesto && (enCoche || fichas.vuelta.mode === 'avion')
   const anadirVuelo = () => { setMode('bookings'); useReservasFocusStore.getState().pedir('llegada', 'departure') }
   // (V70) Con el pase y con la hora del vuelo, la tarjeta de la vuelta es la de la llegada (V62) en versión vuelta; sin pase o sin hora, la de siempre.
@@ -443,7 +449,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   // (V57) El vuelo de vuelta ya ha salido: nada de «Tu vuelo sale a las…», «Devuelve el coche» ni «0 paradas hoy». Dos horas después, HOY pasa a lo de después del viaje; antes, «Buen viaje de vuelta».
   if (vueloYaSalio) {
     const iso = route.answers.dateRange?.start
-    return ahoraMinHoy >= (vueloMin as number) + 120 && iso ? (
+    return ahoraMinHoy >= Math.max(leerEnElSitio(route, dateIso) ?? (vueloMin as number), 0) + 120 && iso ? (
       <HoyDespuesV2 route={route} startIso={iso} />
     ) : (
       <>

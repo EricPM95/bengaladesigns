@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { ImagenConFundido } from '../../ui/ImagenConFundido'
 import type { DestinationPlace } from '../../../lib/destinationPlacesApi'
 import { historiaCorta, lineaDeSitio, TITULO_OTROS_SITIOS } from '../../../lib/useSitiosNuestros'
 import { Icono } from '../../ui/Icono'
@@ -13,7 +14,7 @@ export function FilaSitioNuestro({ place, foto, activa = false, yaEnRuta = false
   return (
     <div data-sitio-nuestro={place.name} className={`flex w-full items-center gap-3 rounded-xl border p-2.5 transition-colors ${activa ? 'border-accent bg-accent-soft' : 'border-border hover:bg-bg-hover'}`}>
       <button type="button" onClick={onClick} className="flex min-w-0 flex-1 items-center gap-3 text-left">
-        {foto ? <img src={foto} alt="" className="h-14 w-14 shrink-0 rounded-lg object-cover" /> : <span aria-hidden="true" className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-bg-hover text-text-muted"><Icono nombre="mapa" className="h-5 w-5" /></span>}
+        {foto ? <span className="relative block h-14 w-14 shrink-0 overflow-hidden rounded-lg"><ImagenConFundido src={foto} /></span> : <span aria-hidden="true" className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-bg-hover text-text-muted"><Icono nombre="mapa" className="h-5 w-5" /></span>}
         <span className="min-w-0 flex-1 space-y-0.5">
           <span className="flex items-center gap-1.5">
             <span className="truncate text-small font-semibold text-text">{place.name}</span>

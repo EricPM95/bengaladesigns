@@ -1077,9 +1077,9 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
         guardar(placeReservedEntrance(unpinned, reservation))
         const ahora = get().route
         if (ahora && rutaAntesDeGuardar && ahora !== rutaAntesDeGuardar) {
-          void Promise.all([import('./useAddFlowStore'), import('../lib/excursionMove'), import('../lib/loQueHizoLaReserva')]).then(([{ useAddFlowStore }, { fechaCorta }, { resumenDeLoMovido }]) => {
+          void Promise.all([import('./useAddFlowStore'), import('../lib/excursionMove'), import('../lib/loQueHizoLaReserva'), import('../lib/articulos')]).then(([{ useAddFlowStore }, { fechaCorta }, { resumenDeLoMovido }, { lugarCon }]) => {
             const hecho = resumenDeLoMovido(rutaAntesDeGuardar, ahora).texto
-            useAddFlowStore.setState({ toast: { message: `Tu ${reservation.name}, el ${fechaCorta(reservation.dateIso ?? null, Number(reservation.dayNumber ?? 0))}. ${hecho}`.trim(), previous: rutaAntesDeGuardar, previousReservations: reservasAntesDeGuardar, id: Date.now() } })
+            useAddFlowStore.setState({ toast: { message: `Tu entrada ${lugarCon('de', reservation.placeNames?.[0] ?? reservation.name)}, el ${fechaCorta(reservation.dateIso ?? null, Number(reservation.dayNumber ?? 0))}. ${hecho}`.trim(), previous: rutaAntesDeGuardar, previousReservations: reservasAntesDeGuardar, id: Date.now() } })
           })
         }
         return
@@ -1103,9 +1103,10 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
               // (V68) El aviso dice EXACTAMENTE lo que ha hecho la app: el día entero que se ha pasado, o solo los sitios que se han movido (`loQueHizoLaReserva.ts`).
               const { resumenDeLoMovido } = await import('../lib/loQueHizoLaReserva')
               const { tituloSimpleDelDia } = await import('../lib/tituloDelDia')
+              const { lugarCon } = await import('../lib/articulos') // (V74, 48) el mismo título que la hoja E1: «Tu entrada del Coliseo, el domingo 18»
               const ahora = get().route
               const hecho = ahora ? resumenDeLoMovido(rutaAntesDeGuardar, ahora, (day) => tituloSimpleDelDia(rutaAntesDeGuardar, day)).texto : ''
-              useAddFlowStore.setState({ toast: { message: `Tu ${reservation.name}, el ${fechaCorta(reservation.dateIso ?? null, Number(reservation.dayNumber ?? 0))}. ${hecho}`.trim(), previous: rutaAntesDeGuardar, previousReservations: reservasAntesDeGuardar, id: Date.now() } })
+              useAddFlowStore.setState({ toast: { message: `Tu entrada ${lugarCon('de', reservation.placeNames?.[0] ?? reservation.name)}, el ${fechaCorta(reservation.dateIso ?? null, Number(reservation.dayNumber ?? 0))}. ${hecho}`.trim(), previous: rutaAntesDeGuardar, previousReservations: reservasAntesDeGuardar, id: Date.now() } })
             }
           })
           .catch(() => {})

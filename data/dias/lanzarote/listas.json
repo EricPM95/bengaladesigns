@@ -55,15 +55,15 @@
        "tipo": "parada",
        "lugar": "Salinas de Janubio",
        "modo": null,
-       "doc": "Salinas de Janubio, desde el mirador ~20 min",
-       "min": 20
+       "doc": "Salinas de Janubio, desde el mirador ~30 min",
+       "min": 30
       },
       {
        "tipo": "parada",
        "lugar": "Playa de Montaña Bermeja",
        "modo": null,
-       "doc": "(opcional) Playa de Montaña Bermeja, la arena negra bajo la montaña roja ~15 min",
-       "min": 15,
+       "doc": "(opcional) Playa de Montaña Bermeja, la arena negra bajo la montaña roja ~20 min",
+       "min": 20,
        "opcional": true
       },
       {
@@ -77,8 +77,7 @@
        "tipo": "parada",
        "lugar": "El Golfo y el Charco de los Clicos",
        "modo": null,
-       "doc": "El Golfo y el Charco de los Clicos: la laguna verde desde el mirador y el pueblo, hasta el atardecer",
-       "hasta_atardecer": true,
+       "doc": "El Golfo y el Charco de los Clicos: la laguna verde desde el mirador y el pueblo",
        "tiempo_de_playa": true
       }
      ],

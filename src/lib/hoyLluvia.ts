@@ -25,12 +25,23 @@ export function fraseDelPlanDeLluvia(texto: string | undefined | null): string {
   return cierre.charAt(0).toUpperCase() + cierre.slice(1)
 }
 
-const opParadas = (antes: DayPlan, despues: DayPlan): Op => ({
-  t: 'paradas',
-  dia: antes.id,
-  antes: { stops: antes.stops, rainBackup: antes.rainBackup ?? null },
-  despues: { stops: despues.stops, rainBackup: despues.rainBackup ?? null },
-})
+/**
+ * (V74) La operación que cambia las paradas del día por el tiempo. Lo que sale de hoy (una visita: no los «de camino» ni los paseos) va DE VERDAD a «Lugares pendientes», con su motivo, para poder hacerlo otro día
+ * (así el texto «A Lugares pendientes» de la hoja es verdad); lo que vuelve a la ruta sale de pendientes. [Deshacer] lo devuelve todo. Las reservas no salen nunca (`aplicarCambio` ya las respeta).
+ */
+const opParadas = (antes: DayPlan, despues: DayPlan, motivo = 'Salió de hoy por el tiempo.'): Op => {
+  const sigue = new Set(despues.stops.map((s) => s.id))
+  const esVisita = (s: Stop) => !s.isArrival && !s.isBreak && !s.passThrough && !s.isFreeWalk && !s.isZoneWalk && !s.reservedId && !s.reservationTime
+  const spareSale = antes.stops.filter((s) => !sigue.has(s.id) && !s.checkedInAt && esVisita(s)).map((s) => ({ ...s, spareReason: motivo }))
+  return {
+    t: 'paradas',
+    dia: antes.id,
+    antes: { stops: antes.stops, rainBackup: antes.rainBackup ?? null },
+    despues: { stops: despues.stops, rainBackup: despues.rainBackup ?? null },
+    ...(spareSale.length > 0 ? { spareSale } : {}),
+    ...((antes.spareStops ?? []).some((s) => sigue.has(s.id)) ? { spareVuelve: (antes.spareStops ?? []).filter((s) => sigue.has(s.id)) } : {}),
+  }
+}
 
 const mantieneReservas = (day: DayPlan, ctx: Contexto) => mantieneDe(itemsDe(numberedStopsOf(day).filter((s) => !s.saltada && !s.checkedInAt), ctx.fijasDe(day), ctx.datos), ctx)
 
@@ -133,7 +144,7 @@ export function proponerVolverAlPlan(p: { day: DayPlan; ctx: Contexto }): Propue
         detalle: seQuedan.length ? `Y ${listaDeNombres(seQuedan)} se ${seQuedan.length > 1 ? 'quedan' : 'queda'} para otro día.` : 'Lo que cambió por la lluvia vuelve a su sitio.',
       },
       mantiene: { titulo: mantiene.titulo, detalle: 'Las reservas no se tocan.' },
-      ops: [opParadas(day, despues)],
+      ops: [opParadas(day, despues, 'Entró por la lluvia: se queda para otro día.')],
       quitadas: [],
       corridas: 0,
       intactas: intactas(day, ctx),

@@ -179,7 +179,7 @@ sitio({
 
 // ── Nivel 1 ──
 sitio({
-  id: 'playas_de_papagayo', name: 'Playas de Papagayo', level: 2, zone: 'sur', dura: 240, dura_max: 480, type: 'exterior', ver_por: null, tags: ['playa', 'pista_de_tierra', 'sin_socorrista'],
+  id: 'playas_de_papagayo', name: 'Playas de Papagayo', level: 2, zone: 'sur', dura: 180, dura_max: 480, type: 'exterior', ver_por: null, tags: ['playa', 'pista_de_tierra', 'sin_socorrista'],
   horario: { schedule: '09:00-19:00', windows: ['09:00-19:00'], closed_on: [], closed_dates: [], hours_audit: auditoria('baja', 'La Voz de Lanzarote / Annua Hotels [blog]', 'Aparcamiento de 9:00 a 19:00 según un blog; no hay horario oficial de la barrera. En verano de 2025 el control cerró dos días por semana (La Voz).') },
   extra: {
     precio: { por_coche: 3, no_residentes: true, moneda: 'EUR', fuente: 'La Voz de Lanzarote, ago-2025', nota: 'Los residentes no pagan. Pago solo con tarjeta: lo dice un blog, sin confirmar oficialmente.' },
@@ -212,7 +212,7 @@ sitio({
   verificar: 'Tiempo de visita y aparcamiento sin confirmar en las fuentes (30 min de LANZAROTE_SITIOS.md).',
 })
 sitio({
-  id: 'salinas_de_janubio', name: 'Salinas de Janubio', level: 2, zone: 'suroeste', dura: 20, type: 'exterior', ver_por: null, libre: true, tags: ['mirador', 'atardecer', 'salinas'],
+  id: 'salinas_de_janubio', name: 'Salinas de Janubio', level: 2, zone: 'suroeste', dura: 30, type: 'exterior', ver_por: null, libre: true, tags: ['mirador', 'atardecer', 'salinas'],
   horario: { closed_on: [], hours_audit: auditoria('media', 'https://www.hellocanaryislands.com/museums-and-places-of-interest/lanzarote/janubio-salt-mines/', 'Mirador libre. Precio, horario y visitas guiadas de las salinas, sin confirmar (la web oficial no abrió).') },
   extra: { precio: { adulto: 0, nota: 'El mirador es gratis.' }, visita_guiada_civitatis: { duracion: '2 h', precio_aprox_eur: 22, verificar: true }, mejor_momento: 'atardecer desde el mirador' },
   verificar: 'Precio y horario de la visita a las salinas.',
@@ -286,7 +286,7 @@ sitio({ id: 'mirador_de_guinate', name: 'Mirador de Guinate', level: 3, zone: 'n
 sitio({ id: 'ciudad_estratificada_rofera_de_teseguite', name: 'Ciudad Estratificada (Rofera de Teseguite)', level: 3, zone: 'centro_norte', dura: 25, type: 'exterior', ver_por: null, libre: true, tags: ['geologia', 'fotogenico'],
   horario: { closed_on: [], hours_audit: auditoria('baja', 'Solo Sophie [blog]', 'Libre y gratis; aparcamiento de tierra y sin servicios.') },
   extra: { precio: { adulto: 0 } }, avisos: [aviso('fragil', 'No subirse: las formaciones son frágiles, y hay quejas de basura y pintadas: «llévate tu basura».', 'Solo Sophie [blog]'), PISTA], verificar: 'Todo de un blog.' })
-sitio({ id: 'playa_de_montana_bermeja', name: 'Playa de Montaña Bermeja', level: 3, zone: 'suroeste', dura: 15, dura_max: 20, type: 'exterior', ver_por: null, libre: true, tags: ['playa', 'arena_negra'],
+sitio({ id: 'playa_de_montana_bermeja', name: 'Playa de Montaña Bermeja', level: 3, zone: 'suroeste', dura: 20, dura_max: 20, type: 'exterior', ver_por: null, libre: true, tags: ['playa', 'arena_negra'],
   horario: { closed_on: [], hours_audit: auditoria('media', 'spain.info', 'Libre, poco visitada y sin servicios.') },
   extra: { precio: { adulto: 0 } }, avisos: [aviso('no_es_de_bano', 'No es de baño: viento y mar de fondo fuerte.', 'spain.info')] })
 sitio({ id: 'las_grietas_montana_blanca', name: 'Las Grietas (Montaña Blanca)', level: 3, zone: 'centro', dura: 40, dura_max: 45, type: 'exterior', ver_por: null, libre: true, tags: ['geologia', 'fotogenico', 'pista_de_tierra'],
@@ -303,7 +303,7 @@ sitio({ id: 'mirador_de_haria', name: 'Mirador de Haría', level: 3, zone: 'nort
   extra: { precio: { adulto: 0 }, no_es_de_atardecer: true }, avisos: [aviso('pista', 'Un tramo de pista de tierra con baches (La Voz).', 'La Voz de Lanzarote')], verificar: 'Duración estimada.' })
 sitio({ id: 'mirador_de_los_helechos', name: 'Mirador de los Helechos', level: 3, zone: 'norte', dura: 15, type: 'exterior', ver_por: null, libre: true, tags: ['mirador'],
   horario: { closed_on: [], hours_audit: auditoria('baja', 'LANZAROTE_SITIOS.md (nota de Haría)', 'Sin ficha propia en los datos: es la mejor vista del Valle de las Mil Palmeras.') },
-  extra: { precio: { adulto: 0, verificar: true } }, verificar: 'Sin ficha de datos: horario, duración y aparcamiento por comprobar.' })
+  extra: { passThrough: true, precio: { adulto: 0, verificar: true } }, verificar: 'Sin ficha de datos: horario, duración y aparcamiento por comprobar.' })
 sitio({ id: 'castillo_de_santa_barbara', name: 'Castillo de Santa Bárbara', level: 3, zone: 'centro_norte', dura: 30, dura_max: 45, type: 'exterior', ver_por: null, tags: ['castillo', 'mirador'],
   horario: { closed_on: [], solo_por_fuera: true, hours_audit: auditoria('baja', 'La Voz de Lanzarote, 23-jul-2026; La Maleta Inquieta', 'El Museo de la Piratería ya no existe: el castillo está vacío. Horario sin confirmar (blog: 10:00–15:00, 3 €; Google: 10:00–14:30, cerrado viernes y sábado, gratis).') },
   extra: { precio: { adulto: null, verificar: true, nota: '3 € o gratis, sin confirmar.' } }, avisos: [aviso('museo_cerrado', 'El Museo de la Piratería ya no funciona (castillo vacío desde 2026); las señales de la carretera aún lo anuncian. Solo por fuera, por las vistas.', 'La Voz de Lanzarote, 23-jul-2026')],
@@ -476,10 +476,10 @@ const dias = {
       ],
       comida: comida('en La Geria', '13:15', 'En La Geria, hacia las 13:15 (domingo: fuera de Bodega La Geria, que cierra a las 14:00 ⚠️)'),
       tarde: [
-        parada('salinas_de_janubio', 20, { doc: 'Salinas de Janubio, desde el mirador ~20 min' }),
-        { ...parada('playa_de_montana_bermeja', 15, { doc: '(opcional) Playa de Montaña Bermeja, la arena negra bajo la montaña roja ~15 min' }), opcional: true },
+        parada('salinas_de_janubio', 30, { doc: 'Salinas de Janubio, desde el mirador ~30 min' }),
+        { ...parada('playa_de_montana_bermeja', 20, { doc: '(opcional) Playa de Montaña Bermeja, la arena negra bajo la montaña roja ~20 min' }), opcional: true },
         parada('los_hervideros', 30, { doc: 'Los Hervideros, la costa de lava ~30 min' }),
-        { ...parada('el_golfo_y_el_charco_de_los_clicos', null, { doc: 'El Golfo y el Charco de los Clicos: la laguna verde desde el mirador y el pueblo, hasta el atardecer' }), hasta_atardecer: true, tiempo_de_playa: true },
+        { ...parada('el_golfo_y_el_charco_de_los_clicos', null, { doc: 'El Golfo y el Charco de los Clicos: la laguna verde desde el mirador y el pueblo' }), tiempo_de_playa: true },
       ],
       cena: cena('en El Golfo, después del atardecer (en verano, antes del atardecer o cerca del alojamiento)', 'En El Golfo, después del atardecer. Solo en invierno: los restaurantes de El Golfo cierran entre las 20:00 y las 21:00; en verano (atardecer ~20:55) se cena antes del atardecer en El Golfo o cerca del alojamiento'),
     } },

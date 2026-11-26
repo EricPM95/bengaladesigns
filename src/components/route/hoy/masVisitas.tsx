@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { ImagenConFundido } from '../../ui/ImagenConFundido'
 import type { DayPlan, Route } from '../../../lib/types'
 import { catalogoEnMemoria, fetchDestinationPlaces } from '../../../lib/destinationPlacesApi'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
@@ -77,7 +78,7 @@ export function HojaMasVisitas({ visitas, onAnadir, onCerrar }: { visitas: MasVi
         <ul className="flex flex-col divide-y divide-text/[.08]">
           {visitas.map((visita) => (
             <li key={visita.stop.id} data-mas-visita={visita.stop.name} className="flex items-center gap-3 py-3">
-              {visita.stop.photoUrl ? <img src={visita.stop.photoUrl} alt="" loading="lazy" className="h-14 w-14 flex-none rounded-xl bg-text/10 object-cover" /> : <span className="h-14 w-14 flex-none rounded-xl bg-text/10" aria-hidden="true" />}
+              {visita.stop.photoUrl ? <span className="relative block h-14 w-14 flex-none overflow-hidden rounded-xl"><ImagenConFundido src={visita.stop.photoUrl} /></span> : <span className="h-14 w-14 flex-none rounded-xl bg-text/10" aria-hidden="true" />}
               <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <span className="font-display text-[17px] leading-[1.15] text-text [overflow-wrap:anywhere]">{displayStopName(visita.stop.name)}</span>
                 <span className="text-[12px] leading-[1.35] text-text/60">

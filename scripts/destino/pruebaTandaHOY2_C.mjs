@@ -70,7 +70,7 @@ async function ir(a, { min = 715, mut = '', pos = null, perm = 'denied', tiempo 
     const st = ${R}; const { numberedStopsOf } = await import('/src/lib/stopKind.ts')
     const r = JSON.parse(${JSON.stringify(ORIGINAL)})
     const dia = (n) => r.days.find((d) => d.dayNumber === n)
-    const parada = (d, nombre) => d.stops.find((s) => s.name.startsWith(nombre))
+    const parada = (d, nombre) => d.stops.find((s) => s.name.startsWith(nombre)) ?? (() => { throw new Error('sin parada ' + nombre + ' en el día ' + d.dayNumber + ': ' + d.stops.map((s) => s.name).join(' | ')) })()
     r.days.forEach((d) => { delete d.sunsetText; delete d.rainBackup; numberedStopsOf(d).forEach((s) => { delete s.checkedInAt; delete s.saltada; delete s.isSunset; delete s.reservationTime }) })
     ${mut}
     st.setState({ route: r, screen: 'route' })
@@ -99,6 +99,8 @@ const hay = async (a, sel) => {
   return a.evaluar(`Boolean(document.querySelector(${JSON.stringify(sel)}))`)
 }
 const cuantos = (a, sel) => a.evaluar(`document.querySelectorAll(${JSON.stringify(sel)}).length`)
+// (V74) V54: los avisos con botón no llevan X: se van deslizándolos hacia arriba.
+const deslizar = (a, sel) => a.evaluar(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); if (!e) return false; const t = (y) => new Touch({ identifier: 1, target: e, clientX: 150, clientY: y }); e.dispatchEvent(new TouchEvent('touchstart', { bubbles: true, cancelable: true, touches: [t(300)], targetTouches: [t(300)], changedTouches: [t(300)] })); e.dispatchEvent(new TouchEvent('touchend', { bubbles: true, cancelable: true, touches: [], targetTouches: [], changedTouches: [t(200)] })); return true })()`)
 const clic = (a, sel) => a.evaluar(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); if (!e) return false; e.click(); return true })()`)
 const hoja = async (a) => {
   const t = await a.evaluar("(() => { const d = document.querySelectorAll('[role=\"dialog\"]'); return d.length ? d[d.length - 1].innerText.replace(/\\s+/g, ' ').trim() : null })()")
@@ -225,22 +227,22 @@ try {
     await a.esp(800)
     const p = (await hoja(a)) ?? ''
     debe((await dia3()).meals.find((m) => m.id === 'meal-3-lunch').sitio === antesMeal.sitio, '24 propuesta', 'elegir un sitio no mueve nada: antes hay propuesta')
-    debe((await hay(a, '[data-propuesta-resumen]')) && /Comer en/.test(p) && /Dejarlo como está/.test(p) && !/Cambia:|Aplicar|Volver a mi ruta original/.test(p), '24 formato', `con el formato nuevo (${p.slice(0, 220)})`)
-    debe(/La comida pasa a ahora, en/.test(p), '24 cambia', 'dice que la comida pasa a ahora')
-    debe(/Casa-Museo|4:30|16:30|tu entrada|sigue igual/i.test((await txt(a, '[data-propuesta-resumen]')) ?? ''), '24 mantiene', `«Se mantiene» nombra lo fijo (${await txt(a, '[data-propuesta-resumen]')})`)
+    debe((await hay(a, '[data-tarjeta-del-sitio]')) && /Comer cerca de ti|Vas a comer en/.test(p) && /Dejarlo como está/.test(p) && !/Cambia:|Aplicar|Volver a mi ruta original/.test(p), '24 formato', `con el formato nuevo (${p.slice(0, 220)})`)
+    debe(/Vas a comer en/.test(p), '24 cambia', 'dice que vas a comer ahí (V55)')
+    debe(/Casa-Museo|4:30|16:30|tu entrada|sigue igual/i.test((await txt(a, '[data-cambiar-hoja=propuesta]')) ?? ''), '24 mantiene', `«Se mantiene» nombra lo fijo (${await txt(a, '[data-cambiar-hoja=propuesta]')})`)
     debe(!/\d+\s*min/.test(p.replace(/\d+:\d+/g, '')), '24 sin minutos', 'sin minutos crudos en la propuesta')
     await capturaHoja(a, 'comer_24_propuesta')
     // [Ver otra opción] si hay
     const hayOtra = await hay(a, '[data-propuesta-otra]')
     if (hayOtra) {
-      const c1 = await txt(a, '[data-propuesta-resumen]')
+      const c1 = await txt(a, '[data-cambiar-hoja=propuesta]')
       await clic(a, '[data-propuesta-otra]')
       await a.esp(500)
-      debe((await txt(a, '[data-propuesta-resumen]')) !== c1, '24 otra', '[Ver otra opción] enseña otra propuesta')
+      debe((await txt(a, '[data-cambiar-hoja=propuesta]')) !== c1, '24 otra', '[Ver otra opción] enseña otra propuesta')
       await clic(a, '[data-propuesta-otra]')
       await a.esp(400)
     }
-    const sitioElegido = ((await txt(a, '[data-propuesta-resumen]')) ?? '').match(/en ([^,]+?)(?: y |$)/)?.[1] ?? ''
+    const sitioElegido = ((await txt(a, '[data-cambiar-hoja=propuesta]')) ?? '').match(/en ([^,]+?)(?: y |$)/)?.[1] ?? ''
     await clic(a, '[data-propuesta-aplicar]')
     await a.esp(1000)
     const d = await dia3()
@@ -290,13 +292,13 @@ try {
   await sec(async () => {
     await ir(a, { min: 13 * 60 + 54, mut: MUT_COMIDA, pos: MIRADOR, perm: 'granted' })
     debe(await hay(a, '[data-hoy-comida]'), 'Completa 4', 'a la hora de comer, la tarjeta de la comida')
-    debe(!(await hay(a, '[data-hoy-siguiente]')), 'Completa 4', 'sustituye a la tarjeta de la parada')
+    debe(!(await hay(a, '[data-hoy-siguiente]:not([data-hoy-comida])')), 'Completa 4', 'sustituye a la tarjeta de la parada (la tarjeta de la comida es la siguiente)')
     const titulo = (await txt(a, '[data-hoy-comida-titulo]')) ?? ''
-    debe(/^Tu restaurante está a \d+ minutos?$/.test(titulo), 'Completa 4', `«Tu restaurante está a N minutos» (${titulo})`)
+    debe(/^Es hora de comer$/.test(titulo), 'Completa 4', `«Es hora de comer» (${titulo})`)
     const cab = (await txt(a, '[data-hoy-cabecera]')) ?? ''
     debe(/Hora de comer/.test(cab), 'Completa 4', `la cabecera dice «Hora de comer» (${cab})`)
-    const tray = (await txt(a, '[data-hoy-comida-trayecto]')) ?? ''
-    debe(/En coche · \d+ min/.test(tray) && /El Veril/.test(tray), 'Completa 4', `«En coche · N min» y el sitio (${tray})`)
+    const tray = (await txt(a, '[data-hoy-comida-sitio]')) ?? ''
+    debe(/El Veril/.test(tray), 'Completa 4', `el sitio (${tray})`)
     debe(await hay(a, '[data-hoy-comida-como-llegar]'), 'Completa 4', 'lleva [Cómo llegar]')
     const href = await a.evaluar("document.querySelector('[data-hoy-comida-como-llegar]')?.href ?? ''")
     debe(/29\.23045/.test(href) && /driving/.test(href), 'Completa 4', `[Cómo llegar] va al restaurante en coche (${href.slice(0, 90)})`)
@@ -386,24 +388,24 @@ try {
     // Lejos y tarde: Jameos antes, el turno de las 11:30 detrás
     await ir(a, { min: 10 * 60 + 50, mut: MUT, pos: CERCA_DEL_MIRADOR, perm: 'granted' })
     debe(await hay(a, '[data-hoy-peligro]'), '29 aviso', 'a tu ritmo no llegas al turno: aviso de peligro')
-    const tx = (await txt(a, '[data-hoy-peligro-texto]')) ?? ''
-    debe(/Tu entrada de las 11:30 en Cueva de los Verdes corre peligro\./.test(tx), '29 texto', `«Tu entrada… corre peligro» (${tx})`)
-    debe(await hay(a, '[data-hoy-peligro] [data-hoy-aviso-x]'), '29 X', 'lleva su X')
+    const tx = (await txt(a, '[data-hoy-peligro]')) ?? ''
+    debe(/Si no sales ya, no llegas a tu entrada de las 11:30 en la Cueva de los Verdes/.test(tx), '29 texto', `«Si no sales ya, no llegas a tu entrada…» (V54) (${tx})`)
+    debe(!(await hay(a, '[data-hoy-peligro] [data-hoy-aviso-x]')), '29 X', 'sin X (V54): el aviso con botón se va deslizándolo hacia arriba')
     debe(await hay(a, '[data-peligro-ver-solucion]'), '29 botón', 'lleva [Ver solución]')
     const orden = await a.evaluar(`(() => { const r = document.querySelector('[data-hoy-v2]'); const t = Array.from(r.querySelectorAll('*')); const q = (s) => t.indexOf(r.querySelector(s)); return [q('[data-hoy-avisos]'), q('[data-hoy-peligro]'), q('[data-hoy-siguiente]')] })()`)
     debe(orden[1] > orden[0] && orden[2] > orden[1], '29 orden', `arriba, encima de la tarjeta (${orden.join(',')})`)
-    debe(await a.evaluar("document.querySelector('[data-hoy-avisos] > *')?.hasAttribute('data-hoy-peligro') === true"), '29 primero', 'es el primero de los avisos (el más urgente), encima del cierre de horario')
+    debe(await a.evaluar("Boolean(document.querySelector('[data-hoy-avisos] [data-hoy-peligro]')) && document.querySelector('[data-hoy-avisos] [data-hoy-peligro]') === document.querySelector('[data-hoy-avisos] [data-hoy-peligro], [data-hoy-avisos] [data-aviso-tiempo], [data-hoy-avisos] [data-hoy-entrada-pasada]')"), '29 primero', 'es el primero de los avisos (el más urgente), encima del cierre de horario')
     await capturaEntera(a, 'peligro_29_aviso')
     const inicio = await snap()
     await clic(a, '[data-peligro-ver-solucion]')
     await a.esp(700)
     const t = (await hoja(a)) ?? ''
     if (!/Cambia:/.test(t)) console.log('DEBUG 29b', t)
-    debe(/Una solución/.test(t), '29b titulo', '«Una solución»')
-    debe(/Llegarás tarde a tu entrada de las 11:30\./.test(t) || /tendríamos que dejar/.test(t), '29b intro', `«Llegarás tarde a tu entrada de las 11:30» (${t.slice(0, 160)})`)
-    debe(!/Cambia:|Se mantiene:|Aplicar|Volver a mi ruta original/.test(t) && /Dejarlo como está/.test(t) && (await hay(a, '[data-propuesta-resumen]')), '29b formato', 'formato nuevo: resumen / botón dorado / «Dejarlo como está» (V43)')
-    debe(/11:30/.test((await txt(a, '[data-propuesta-resumen]')) ?? ''), '29b mantiene', `«Se mantiene» nombra el turno (${await txt(a, '[data-propuesta-resumen]')})`)
-    debe(/Jameos/.test((await txt(a, '[data-propuesta-resumen]')) ?? ''), '29b cambia', `lo que sale es lo de antes del turno (${await txt(a, '[data-propuesta-resumen]')})`)
+    debe(/Pasar a otro día/.test(t), '29b titulo', '«Pasar a otro día» (V54: se acabó «Una solución»)')
+    debe(/Para llegar a tu entrada de las 11:30/.test(t), '29b intro', `«Llegarás tarde a tu entrada de las 11:30» (${t.slice(0, 160)})`)
+    debe(!/Cambia:|Se mantiene:|Aplicar|Volver a mi ruta original/.test(t) && /Dejarlo como está/.test(t) && (await hay(a, '[data-tarjeta-del-sitio]')), '29b formato', 'formato nuevo: resumen / botón dorado / «Dejarlo como está» (V43)')
+    debe(/11:30/.test((await txt(a, '[data-cambiar-hoja=propuesta]')) ?? ''), '29b mantiene', `«Se mantiene» nombra el turno (${await txt(a, '[data-cambiar-hoja=propuesta]')})`)
+    debe(/Jameos/.test((await txt(a, '[data-cambiar-hoja=propuesta]')) ?? ''), '29b cambia', `lo que sale es lo de antes del turno (${await txt(a, '[data-cambiar-hoja=propuesta]')})`)
     debe(!/\d+\s*min\b/.test(t), '29b sin minutos', 'sin minutos crudos')
     debe((await dia3()).stops.find((s) => s.n.startsWith('Jameos')).saltada === false && (await snap()) === inicio, '29b nada solo', 'ver la solución no mueve nada')
     await capturaHoja(a, 'peligro_29b_solucion')
@@ -428,9 +430,9 @@ try {
     await a.esp(800)
     await ir(a, { min: 10 * 60 + 50, mut: MUT, pos: MIRADOR, perm: 'granted', limpiar: false })
     // La X: cierra y no vuelve ese día
-    await clic(a, '[data-hoy-peligro] [data-hoy-aviso-x]')
+    await deslizar(a, '[data-hoy-peligro]')
     await a.esp(500)
-    debe(!(await hay(a, '[data-hoy-peligro]')), '29 X', 'la X cierra el aviso')
+    debe(!(await hay(a, '[data-hoy-peligro]')), '29 X', 'deslizarlo hacia arriba cierra el aviso')
     await ir(a, { min: 10 * 60 + 52, mut: MUT, pos: MIRADOR, perm: 'granted', limpiar: false })
     debe(!(await hay(a, '[data-hoy-peligro]')), '29 X', 'el aviso cerrado no vuelve ese día')
     // Pasada la hora, ya no avisa
@@ -447,7 +449,7 @@ try {
     debe(await hay(a, '[data-aviso-tiempo="lluvia"]'), '32 aviso', 'con lluvia por la tarde, aviso del tiempo')
     const av = (await txt(a, '[data-aviso-tiempo="lluvia"]')) ?? ''
     debe(/Va a llover esta tarde/.test(av), '32 aviso', `«Va a llover esta tarde…» (${av})`)
-    debe(await hay(a, '[data-aviso-tiempo="lluvia"] [data-hoy-aviso-x]'), '32 X', 'lleva su X')
+    debe(!(await hay(a, '[data-aviso-tiempo="lluvia"] [data-hoy-aviso-x]')), '32 X', 'sin X (V54): se va deslizándolo hacia arriba')
     await capturaEntera(a, 'lluvia_32_aviso')
     const inicio = await snap()
     await clic(a, '[data-ver-alternativa]')
@@ -456,15 +458,15 @@ try {
     debe(/Plan de lluvia/.test(t), '32 titulo', '«Plan de lluvia»')
     debe(/Va a llover esta tarde\. Te proponemos un plan a cubierto\./.test(t), '32 intro', `«Va a llover esta tarde. Te proponemos un plan a cubierto.» (${t.slice(0, 140)})`)
     debe(!/Cambia:|Se mantiene:|Aplicar|Volver a mi ruta original/.test(t) && /Dejarlo como está/.test(t) && /Usar el plan de lluvia/.test(t) && /Ver otra opción/.test(t), '32 formato', 'formato nuevo: resumen / [Usar el plan de lluvia] / [Ver otra opción] / «Dejarlo como está» (V43)')
-    debe(/sale|salen/.test((await txt(a, '[data-propuesta-resumen]')) ?? '') && /entra|entran/.test((await txt(a, '[data-propuesta-resumen]')) ?? ''), '32 cambia', `lo que sale y lo que entra (${await txt(a, '[data-propuesta-resumen]')})`)
-    debe(/Las reservas no se tocan/.test((await txt(a, '[data-propuesta-resumen]')) ?? ''), '32 mantiene', 'las reservas no se tocan')
+    debe(/Lugares pendientes/.test((await txt(a, '[data-cambiar-hoja=propuesta]')) ?? '') && /Hoy, en lugar de|Entra/.test((await txt(a, '[data-cambiar-hoja=propuesta]')) ?? ''), '32 cambia', `lo que sale y lo que entra (${await txt(a, '[data-cambiar-hoja=propuesta]')})`)
+    debe(/Sigue igual/.test((await txt(a, '[data-cambiar-hoja=propuesta]')) ?? ''), '32 mantiene', 'lo que sigue igual (la franja verde; las reservas no se tocan)')
     debe(!ROMA.test(t), 'sin_roma', 'sin textos de Roma')
     debe((await snap()) === inicio, '32 nada solo', 'ver la alternativa no mueve nada')
     await capturaHoja(a, 'lluvia_32_plan')
     // Otra opción: hoy toca descansar
     await clic(a, '[data-propuesta-otra]')
     await a.esp(500)
-    debe(/descansar/.test((await txt(a, '[data-propuesta-resumen]')) ?? ''), '32 otra', `[Ver otra opción]: hoy toca descansar (${await txt(a, '[data-propuesta-resumen]')})`)
+    debe(/descansar/.test((await txt(a, '[data-cambiar-hoja=propuesta]')) ?? ''), '32 otra', `[Ver otra opción]: hoy toca descansar (${await txt(a, '[data-cambiar-hoja=propuesta]')})`)
     await clic(a, '[data-propuesta-otra]')
     await a.esp(400)
     await clic(a, '[data-propuesta-aplicar]')
@@ -496,8 +498,8 @@ try {
     await a.esp(700)
     const v = (await hoja(a)) ?? ''
     debe(/¿Volvemos al plan\?/.test(v), '32b titulo', '«¿Volvemos al plan?»')
-    debe(/Ha parado de llover\./.test(v) && /vuelve|vuelven/.test(v) && /para otro día/.test(v), '32b texto', `lo que vuelve a tu ruta y lo que se queda para otro día (${v.slice(0, 220)})`)
-    debe(!/Cambia:|Se mantiene:|Aplicar|Volver a mi ruta original/.test(v) && /Las reservas no se tocan/.test(v) && /Volver a mi plan/.test(v) && /Dejarlo como está/.test(v), '32b formato', 'formato nuevo: [Volver a mi plan] / «Dejarlo como está» (V43)')
+    debe(/Ha parado de llover\./.test(v) && /Lugares pendientes/.test(v) && /Hoy, en lugar de/.test(v), '32b texto', `lo que vuelve a tu ruta y lo que se queda para otro día (${v.slice(0, 220)})`)
+    debe(!/Cambia:|Se mantiene:|Aplicar|Volver a mi ruta original/.test(v) && /Sigue igual/.test(v) && /Volver a mi plan/.test(v) && /Dejarlo como está/.test(v), '32b formato', 'formato nuevo: [Volver a mi plan] / «Dejarlo como está» (V43)')
     debe((await snap()) === conLluvia, '32b nada solo', 'ver el plan no mueve nada')
     await capturaHoja(a, 'lluvia_32b_volvemos')
     await clic(a, '[data-propuesta-aplicar]')
@@ -560,7 +562,7 @@ try {
     await a.esp(3200)
     const roma0 = await snap()
     debe(await hay(a, '[data-aviso-lluvia]'), 'roma lluvia', 'Roma con lluvia: el aviso de «Si llueve»')
-    debe(/Hay previsión de lluvia/.test((await txt(a, '[data-aviso-lluvia]')) ?? '') && (await hay(a, '[data-aviso-lluvia] [data-hoy-aviso-x]')), 'roma lluvia', 'con su texto y su X')
+    debe(/Va a llover/.test((await txt(a, '[data-aviso-lluvia]')) ?? '') && !(await hay(a, '[data-aviso-lluvia] [data-hoy-aviso-x]')), 'roma lluvia', 'con su texto y su X')
     await clic(a, '[data-aviso-lluvia] [data-ver-alternativa]')
     await a.esp(700)
     const t = (await hojaSinRegistrar(a)) ?? ''
@@ -583,7 +585,7 @@ try {
     await clic(a, '[data-ver-plan]')
     await a.esp(600)
     const v = (await hojaSinRegistrar(a)) ?? ''
-    debe(/¿Volvemos al plan\?/.test(v) && /vuelve|vuelven/.test(v), 'roma 32b', `«¿Volvemos al plan?» (${v.slice(0, 160)})`)
+    debe(/¿Volvemos al plan\?/.test(v) && /Lugares pendientes|Hoy, en lugar de/.test(v), 'roma 32b', `«¿Volvemos al plan?» (${v.slice(0, 160)})`)
     await clic(a, '[data-propuesta-aplicar]')
     await a.esp(900)
     debe((await ev(`${R}.getState().route.days[0].rainBackup ? 1 : 0`)) === 0 && (await ev(`${R}.getState().route.days[0].stops.map((s) => s.name).includes(window.__romaSale)`)), 'roma 32b', 'el plan de antes vuelve')

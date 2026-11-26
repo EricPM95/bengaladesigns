@@ -205,7 +205,9 @@
     "horario": "Lanzarote3 (actualizado en septiembre de 2025) da todos los días de 12:00 a 23:00. Una reseña de 2021 decía que cerraba los lunes, así que el lunes está sin confirmar.",
     "reserva": "por su web.",
     "cierra_dias": [],
-    "dias_sin_confirmar": [1]
+    "revisa_horario": [
+     1
+    ]
    },
    {
     "rol": "alternativa",
@@ -217,7 +219,7 @@
     "cocina": "canaria con pescado del día, en una antigua casa de pescadores (abierto desde 1987). Unos 35-60 € por persona.",
     "horario": "sin confirmar.",
     "cierra_dias": [],
-    "dias_sin_confirmar": true
+    "revisa_horario": true
    }
   ],
   "D4_cena": [
@@ -228,7 +230,7 @@
     "cocina": "mediterránea; arroz negro y pescado del día. Precio €€.",
     "horario": "Wanderlog da todos los días de 13:00 a 22:00. En 2023 era de lunes a sábado de 18:00 a 21:30, así que está sin confirmar.",
     "cierra_dias": [],
-    "dias_sin_confirmar": true
+    "revisa_horario": true
    },
    {
     "rol": "alternativa",
@@ -246,7 +248,7 @@
     "nombre": "Cena especial",
     "nota": "(con «Vino y cocina canaria»), los dos con reserva:",
     "cierra_dias": [],
-    "dias_sin_confirmar": true
+    "revisa_horario": true
    }
   ],
   "D5_comida": [
@@ -266,7 +268,7 @@
     "cocina": "pescado a la brasa y arroces. Precio sin confirmar.",
     "horario": "sin confirmar.",
     "cierra_dias": [],
-    "dias_sin_confirmar": true
+    "revisa_horario": true
    }
   ],
   "D5_cena": [
@@ -288,7 +290,7 @@
     "lng": -13.54796,
     "coord_fuente": "Mapbox Search Box: Restaurante Dunas de Famara, C. Chirimoya, Teguise",
     "cierra_dias": [],
-    "dias_sin_confirmar": true
+    "revisa_horario": true
    }
   ],
   "DG_comida": [
@@ -302,7 +304,10 @@
     "cierra_dias": [
      2,
      3
-    ]
+    ],
+    "lat": 29.23119,
+    "lng": -13.50336,
+    "coord_fuente": "Photon/OpenStreetMap: Casa Enriqueta, Calle Mar de Barlovento 6, Caleta de Sebo (misma calle y número que la dirección)"
    },
    {
     "rol": "alternativa",
@@ -321,7 +326,7 @@
     "direccion": "Av. Virgen del Mar, 99, frente al puerto.",
     "horario": "sin confirmar.",
     "cierra_dias": [],
-    "dias_sin_confirmar": true
+    "revisa_horario": true
    }
   ],
   "DG_orzola": [
@@ -345,7 +350,7 @@
     "cocina": "pescado y marisco junto al puerto, no caro.",
     "horario": "sin confirmar.",
     "cierra_dias": [],
-    "dias_sin_confirmar": true
+    "revisa_horario": true
    },
    {
     "rol": "tercera",
@@ -355,7 +360,58 @@
     "lng": -13.45171,
     "coord_fuente": "Mapbox Search Box: Restaurante Mirador El Roque, C/ Peña del Señor Dionisio 8, Órzola",
     "cierra_dias": [],
-    "dias_sin_confirmar": true
+    "revisa_horario": true
+   }
+  ],
+  "V_comida_arrecife": [
+   {
+    "nombre": "Malecón Restaurante & Copas",
+    "nota": "(Charco)",
+    "cocina": "tapas y paella. Barato (€).",
+    "horario": "de miércoles a lunes de 10:00 a 23:00 (dato de 2023).",
+    "cierra_dias": [
+     2
+    ],
+    "rol": "restaurante",
+    "direccion": "Av. César Manrique, 6 (Charco de San Ginés)."
+   },
+   {
+    "rol": "alternativa",
+    "nombre": "Tasca La Raspa",
+    "nota": "(en el Charco de San Ginés)",
+    "direccion": "Av. César Manrique, 20. Coordenadas: 28.962326, -13.546774. Teléfono 928 80 84 05.",
+    "lat": 28.962326,
+    "lng": -13.546774,
+    "cocina": "tapas canarias, con terraza sobre el Charco. Unos 20-30 € por persona.",
+    "horario": "todos los días de 13:00 a 00:00.",
+    "reserva": "sin confirmar.",
+    "cierra_dias": []
+   },
+   {
+    "rol": "tercera",
+    "nombre": "Cala",
+    "nota": "(Charco de San Ginés)",
+    "direccion": "Av. César Manrique (Charco de San Ginés).",
+    "cocina": "tradicional, moderna y de tapas. €€.",
+    "horario": "sin confirmar: un listado (Planomato) da de miércoles a lunes de 13:00 a 23:00 y cierra los martes.",
+    "cierra_dias": [],
+    "revisa_horario": true
+   },
+   {
+    "nombre": "Lilium",
+    "nota": "(Marina Lanzarote)",
+    "direccion": "Av. Olof Palme.",
+    "cocina": "regional, de autor. €€. Está en la Guía Michelin 2026 y tiene 1 Sol Repsol 2026.",
+    "horario": "solo comidas de viernes y sábado de 13:30 a 15:00 (los demás días solo cena).",
+    "reserva": "sí.",
+    "cierra_dias": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "rol": "otra"
    }
   ]
  },
@@ -403,7 +459,7 @@
     "nombre": "Para pescado: La Cofradía",
     "nota": ", en el Varadero. Pescado de la cofradía de pescadores y precios bajos. Horario sin confirmar; la reseña es de 2020. Lanzarote Information",
     "cierra_dias": [],
-    "dias_sin_confirmar": true
+    "revisa_horario": true
    }
   ],
   "playa_blanca": [
@@ -413,19 +469,22 @@
     "cierra_dias": [
      1,
      2
-    ]
+    ],
+    "lat": 28.85688,
+    "lng": -13.81261,
+    "coord_fuente": "Photon/OpenStreetMap: Primario Gastrobar, Paseo Marítimo, Playa Blanca (Marina Rubicón; mismo nombre, la calle del OSM es el paseo)"
    },
    {
     "nombre": "La Tapita",
     "nota": ", en C/ El Correíllo, 14. Tapas, unos 12-18 € por persona. Horario sin confirmar. La Maleta, 2026",
     "cierra_dias": [],
-    "dias_sin_confirmar": true
+    "revisa_horario": true
    },
    {
     "nombre": "Restaurante La Cubierta",
     "nota": ", en C/ El Berrugo, 2. Todos los días de 12:00 a 22:00. Precio asequible. Es apoyo: solo tengo su ficha de Wanderlog. Wanderlog",
     "cierra_dias": [],
-    "dias_sin_confirmar": true
+    "revisa_horario": true
    }
   ],
   "costa_teguise": [
@@ -502,7 +561,10 @@
     "cocina": "brasa de leña. Unos 20-30 € por persona. Tiene nota de 9,0 sobre más de 4.300 opiniones.",
     "horario": "sin confirmar. Conviene reservar el domingo.",
     "cierra_dias": [],
-    "dias_sin_confirmar": true
+    "revisa_horario": true,
+    "lat": 29.19582,
+    "lng": -13.47857,
+    "coord_fuente": "Photon/OpenStreetMap: Volcán de la Corona, Calle Malpaís, Haría (Yé)"
    },
    {
     "nombre": "Centro Sociocultural La Tegala",
@@ -517,7 +579,10 @@
     "nota": ", en Arrieta (C/ El Charcón, 13).",
     "horario": "sin confirmar si abre por la noche; una ficha solo da «martes de 12:00 a 20:00».",
     "cierra_dias": [],
-    "dias_sin_confirmar": true
+    "revisa_horario": true,
+    "lat": 29.13277,
+    "lng": -13.4587,
+    "coord_fuente": "Photon/OpenStreetMap: El Charcón, Haría (Arrieta)"
    }
   ],
   "el_interior": [
@@ -538,7 +603,10 @@
     "cierra_dias": [
      1,
      2
-    ]
+    ],
+    "lat": 29.10886,
+    "lng": -13.66616,
+    "coord_fuente": "Photon/OpenStreetMap: El Barquillo, Calle Recalmón 20, La Santa (misma calle y número)"
    },
    {
     "nombre": "Palacio Ico",
@@ -555,7 +623,7 @@
     "nombre": "Casa Cejas",
     "nota": ", en Teguise (Plaza San Francisco, 5). Tasca canaria, unos 20-25 € por persona. Horario sin confirmar. La Maleta, 2026",
     "cierra_dias": [],
-    "dias_sin_confirmar": true
+    "revisa_horario": true
    }
   ]
  }

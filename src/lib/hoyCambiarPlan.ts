@@ -56,7 +56,15 @@ export type Op =
   | { t: 'sobra_sacar'; dia: string; stop: Stop }
   /* HOY2 (agente C): la comida que pasa a ahora en otro sitio, y el cambio de las paradas de un día entero (el plan de lluvia y volver al plan). */
   | { t: 'comida_sitio'; dia: string; id: string; antes: { time: string; sitio: ChosenRestaurant | null; mealAfter: MealAfter }; despues: { time: string; sitio: ChosenRestaurant | null; mealAfter: MealAfter } }
-  | { t: 'paradas'; dia: string; antes: { stops: Stop[]; rainBackup: DayPlan['rainBackup'] }; despues: { stops: Stop[]; rainBackup: DayPlan['rainBackup'] } }
+  | {
+      t: 'paradas'
+      dia: string
+      antes: { stops: Stop[]; rainBackup: DayPlan['rainBackup'] }
+      despues: { stops: Stop[]; rainBackup: DayPlan['rainBackup'] }
+      /** (V74) Lo que sale de hoy por el tiempo va DE VERDAD a «Lugares pendientes» (para poder hacerlo otro día): al aplicar entra en `spareStops` (y sale de ahí lo que vuelve a la ruta); al deshacer, al revés. */
+      spareSale?: Stop[]
+      spareVuelve?: Stop[]
+    }
 
 const mealTrasSacar = (m: MealAfter, i: number): MealAfter => (m ? { ...(m.lunch !== undefined ? { lunch: m.lunch >= i ? m.lunch - 1 : m.lunch } : {}), ...(m.dinner !== undefined ? { dinner: m.dinner >= i ? m.dinner - 1 : m.dinner } : {}) } : m)
 const mealTrasMeter = (m: MealAfter, i: number): MealAfter => (m ? { ...(m.lunch !== undefined ? { lunch: m.lunch >= i ? m.lunch + 1 : m.lunch } : {}), ...(m.dinner !== undefined ? { dinner: m.dinner >= i ? m.dinner + 1 : m.dinner } : {}) } : m)
@@ -92,7 +100,14 @@ export function aplicarOpADia(day: DayPlan, op: Op, dir: 'adelante' | 'atras'): 
       })
       for (const s of day.stops) if (s.checkedInAt && !stops.some((o) => o.id === s.id)) stops.push(s)
       stops.sort((a, b) => (minDe(a.time) != null && minDe(b.time) != null ? (minDe(a.time) as number) - (minDe(b.time) as number) : 0))
-      return { ...day, stops, rainBackup: v.rainBackup ?? null }
+      // (V74) Lo que salió por el tiempo está en «Lugares pendientes» mientras el cambio esté puesto; lo que vuelve a la ruta, fuera de ahí.
+      const entran = (fwd ? op.spareSale : op.spareVuelve) ?? []
+      const salen = (fwd ? op.spareVuelve : op.spareSale) ?? []
+      if (entran.length === 0 && salen.length === 0) return { ...day, stops, rainBackup: v.rainBackup ?? null }
+      const nombresQueSalen = new Set(salen.map((s) => s.id))
+      const sobra = (day.spareStops ?? []).filter((s) => !nombresQueSalen.has(s.id))
+      const yaEstan = new Set(sobra.map((s) => s.id))
+      return { ...day, stops, rainBackup: v.rainBackup ?? null, spareStops: [...sobra, ...entran.filter((s) => !yaEstan.has(s.id) && !stops.some((o) => o.id === s.id))] }
     }
     case 'sobra_meter':
     case 'sobra_sacar': {

@@ -806,7 +806,7 @@
    ],
    "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md (Papagayo 28.84292,-13.78813; Mujeres 28.85331,-13.792615). Pista de tierra «despacio» (+15-20 min con la barrera y el pago de 3 €)",
    "aparcar_min": 20,
-   "duration_minutes": 240,
+   "duration_minutes": 180,
    "min_max": 480,
    "type": "exterior",
    "ver_por": null,
@@ -1047,8 +1047,8 @@
    ],
    "coordinates_fuente": "DATOS_NATURALEZA_PUEBLOS_COCHE.md (mirador; salinas 28.938,-13.821019)",
    "aparcar_min": 5,
-   "duration_minutes": 20,
-   "min_max": 20,
+   "duration_minutes": 30,
+   "min_max": 30,
    "type": "exterior",
    "ver_por": null,
    "tags": [
@@ -1660,7 +1660,7 @@
    ],
    "coordinates_fuente": "Google Maps, vista de satélite (4-nov-2026)",
    "aparcar_min": 5,
-   "duration_minutes": 15,
+   "duration_minutes": 20,
    "min_max": 20,
    "type": "exterior",
    "ver_por": null,
@@ -1849,6 +1849,7 @@
   {
    "id": "mirador_de_los_helechos",
    "name": "Mirador de los Helechos",
+   "passThrough": true,
    "level": 3,
    "zone": "norte",
    "coordinates": [

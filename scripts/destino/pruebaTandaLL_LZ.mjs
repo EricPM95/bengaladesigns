@@ -18,15 +18,16 @@ const opt = (zona, llegada, vuelo, extra = {}) => ({ pase: true, zona, coche: 'a
 const semanaDe = (iso) => new Date(`${iso}T12:00:00Z`).getUTCDay()
 const abiertoEseDia = (nombre, semana) => {
   const todos = [...Object.values(rest.comidas).flat(), ...Object.values(rest.cenas_por_zona).flat()].filter((x) => x.nombre === nombre)
-  return todos.length > 0 && todos.every((x) => !(x.cierra_dias ?? []).includes(semana) && !x.dias_sin_confirmar)
+  // (V74) Un restaurante con revisa_horario sale igual (su caja dice «Revisa el horario»); el mismo nombre puede estar en varias listas con otros días: basta que alguna esté abierta ese día.
+  return todos.length > 0 && todos.some((x) => !(x.cierra_dias ?? []).includes(semana))
 }
 
 // ── 1. La hora útil y las filas ──
 {
   const d = dia(6, 1, '2026-11-08', opt('costa_teguise', '08:25', '19:40'))
-  debe(d?.dia_id === 'LL' && d.llegada_ll?.hora_util === '11:25' && d.llegada_ll.fila === 'B', `Eric: aterriza 08:25, Costa Teguise, alquiler → hora útil 11:25, fila B (sale ${d?.llegada_ll?.hora_util} ${d?.llegada_ll?.fila})`)
+  debe(d?.dia_id === 'LL' && d.llegada_ll?.hora_util === '10:45' && d.llegada_ll.fila === 'A', `Eric: aterriza 08:25, Costa Teguise, alquiler → hora útil 10:45 (V74: «instalarse» 20 min en Lanzarote), fila A (sale ${d?.llegada_ll?.hora_util} ${d?.llegada_ll?.fila})`)
   const propio = dia(6, 1, '2026-11-08', opt('costa_teguise', '08:25', '19:40', { coche: 'propio' }))
-  debe(propio?.llegada_ll?.hora_util === '10:25', `con coche propio, 1 h menos (${propio?.llegada_ll?.hora_util})`)
+  debe(propio?.llegada_ll?.hora_util === '09:45', `con coche propio, 1 h menos (${propio?.llegada_ll?.hora_util})`)
   const sinZona = dia(6, 1, '2026-11-08', opt(null, '10:00', '19:40'))
   debe(sinZona?.llegada_ll?.zona === 'playa_blanca', `sin zona se cuenta la más lejana del aeropuerto (${sinZona?.llegada_ll?.zona})`)
   const sinPase = dia(6, 1, '2026-11-08', { ...opt('costa_teguise', '08:25', '19:40'), pase: false })
@@ -89,7 +90,7 @@ debe(['A', 'B', 'C', 'D', 'E', 'F'].every((f) => filasVistas.has(f)), `salen las
   const d = (n) => dia(6, n, '2026-11-08', o)
   const [d1, d2, d3, d4, d5, d6] = [1, 2, 3, 4, 5, 6].map(d)
   debe(d1.dia_id === 'LL', 'domingo: día de llegada')
-  debe(d1.stops[0]?.name.startsWith('Teguise') && d1.stops[0].suggested_time === '11:58', `domingo: Teguise y el mercadillo a las 11:58 (${d1.stops[0]?.name} ${d1.stops[0]?.suggested_time})`)
+  debe(d1.stops[0]?.name.startsWith('Teguise') && d1.stops[0].suggested_time === '11:18', `domingo: Teguise y el mercadillo a las 11:18 (V74: «instalarse» 20 min) (${d1.stops[0]?.name} ${d1.stops[0]?.suggested_time})`)
   debe(d1.stops.some((s) => /Fundación/.test(s.name)) && d1.stops.some((s) => /Charco/.test(s.name)), 'domingo: Fundación y Charco de San Ginés')
   debe(d1.meals.find((m) => m.time === 'dinner')?.options.every((x) => x.name !== 'SeBE'), 'domingo: la cena no es SeBE (cierra el domingo)')
   debe(d2.dia_id === 'D1' && d2.stops[0].name.startsWith('Montañas del Fuego') && d2.stops[0].suggested_time === '09:00', 'lunes: el sur volcánico con Timanfaya a las 09:00')

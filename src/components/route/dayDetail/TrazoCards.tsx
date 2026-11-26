@@ -219,7 +219,7 @@ export function TimelineNote({ time, children, onClick, photoUrl }: { time?: str
       <span className="absolute -left-[19px] top-[13px] h-[9px] w-[9px] rounded-full border-[1.5px] border-text/30 bg-bg-card" aria-hidden="true" />
       {time && <span className="shrink-0 font-mono text-[11px] font-semibold text-text/50">{time}</span>}
       <span className="min-w-0 flex-1 text-[12.5px] leading-[1.4] text-text/65">{children}</span>
-      {photoUrl && <img src={photoUrl} alt="" loading="lazy" className="h-9 w-9 shrink-0 rounded-lg object-cover" />}
+      {photoUrl && <span className="relative block h-9 w-9 shrink-0 overflow-hidden rounded-lg"><ImagenConFundido src={photoUrl} /></span>}
     </>
   )
   return onClick ? (

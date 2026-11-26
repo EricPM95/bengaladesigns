@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { sonar } from '../../../lib/sonidos'
 import { displayStopName } from '../../../lib/format'
 import { botonChampan } from '../../../lib/marcaBoton'
 import { Insignia } from '../dibujos/InsigniaPerezosa'
@@ -71,7 +70,6 @@ function Boton({ icono, texto, onClick, estilo, disabled }: { icono: string; tex
 const BTN_CAM: CSSProperties = { ...botonChampan(), border: 'none' }
 const BTN_GAL: CSSProperties = { background: '#FFFFFF', color: TINTA, border: '1px solid rgba(28,34,48,.16)' }
 export const BTN_CAM_ORO: CSSProperties = { ...BOTON_ORO, border: 'none' }
-const BTN_GAL_OSCURO: CSSProperties = { background: 'transparent', color: '#FFFDF8', border: '1px solid rgba(255,253,248,.3)' }
 
 /** El pedazo ganado (V2): la tarjeta oscura de arriba con la INSIGNIA de su colección y el pedazo de este sitio encendido (el dibujo de verdad de «Logros · Modelos»). */
 function PedazoGanado({ nombre, coleccion, coleccionId, ganados, linea }: { nombre: string; coleccion: string; coleccionId: string | null; ganados: string[]; linea: string | null }) {
@@ -105,15 +103,9 @@ export interface AccionesDeHoja {
 export function HojaDelVisto({ hoja, acciones }: { hoja: Hoja; acciones: AccionesDeHoja }) {
   const { tipo } = hoja
   const nombre = displayStopName(hoja.parada.nombre)
-  // (V52 §5) La hoja «¡Aquí se esconde un Emblema Oculto!» suena al salir (antes no sonaba).
-  useEffect(() => {
-    if (tipo === 'oculto') void sonar('oculto')
-  }, [tipo])
-  const oscura = tipo === 'oculto'
-  const caja: CSSProperties = oscura
-    ? { background: 'radial-gradient(120% 90% at 85% 0%,#3A3550 0%,#1C2230 60%)', color: '#FFFDF8' }
-    : { background: '#FFFDF8', color: TINTA }
-  const sub = oscura ? 'rgba(255,253,248,.82)' : 'rgba(28,34,48,.68)'
+  // (V74, 29) Sin rama «oculto»: el Emblema Oculto sale con su propia hoja (`HojaDelEmblema`, en VistoFlujo) y esta nunca la recibía.
+  const caja: CSSProperties = { background: '#FFFDF8', color: TINTA }
+  const sub = 'rgba(28,34,48,.68)'
   let titulo = ''
   let subtitulo: string | null = null
   let icono = TRAZO.cam
@@ -148,15 +140,6 @@ export function HojaDelVisto({ hoja, acciones }: { hoja: Hoja; acciones: Accione
     iconoFondo = 'rgb(var(--accent-soft))'
     iconoColor = 'rgb(var(--accent))'
     botones = <Boton icono={TRAZO.gal} texto="Elegir de la galería" onClick={acciones.onGaleria} estilo={BTN_CAM} />
-  } else if (tipo === 'oculto') {
-    titulo = '¡Aquí se esconde un Emblema Oculto!'
-    subtitulo = `Sube una foto ${enSitio(nombre)} y descúbrelo.`
-    botones = (
-      <>
-        <Boton icono={TRAZO.cam} texto="Hacer la foto" onClick={acciones.onCamara} estilo={BTN_CAM_ORO} />
-        <Boton icono={TRAZO.gal} texto="Elegir de la galería" onClick={acciones.onGaleria} estilo={BTN_GAL_OSCURO} />
-      </>
-    )
   } else {
     titulo = `Guarda un recuerdo ${deSitio(nombre)}`
     subtitulo = 'Una foto para tu álbum.'
@@ -171,29 +154,19 @@ export function HojaDelVisto({ hoja, acciones }: { hoja: Hoja; acciones: Accione
     <Capa onCerrar={acciones.onCerrar} etiqueta={titulo}>
       {tipo === 'ganado' && hoja.pedazo && <PedazoGanado nombre={nombre} coleccion={hoja.pedazo.nombre} coleccionId={typeof hoja.pedazo.coleccion === 'string' ? hoja.pedazo.coleccion : null} ganados={Array.isArray(hoja.pedazo.sitios) ? (hoja.pedazo.sitios as string[]) : []} linea={hoja.pedazo.linea ?? null} />}
       <div data-visto={`hoja-${tipo}`} className="relative flex flex-col gap-3 overflow-hidden rounded-t-[26px] px-[18px] pb-8 pt-3" style={{ ...caja, boxShadow: '0 -12px 34px -18px rgba(0,0,0,.5)' }}>
-        {oscura && <span className="pointer-events-none absolute -right-[70px] -top-20 h-60 w-60 rounded-full" style={{ background: 'repeating-conic-gradient(rgba(243,213,154,.18) 0 7deg,transparent 7deg 20deg)', WebkitMaskImage: 'radial-gradient(circle,#000 20%,transparent 68%)', maskImage: 'radial-gradient(circle,#000 20%,transparent 68%)', animation: 'vistoRays 24s linear infinite' }} />}
         <TiradorDeHoja oscura />
-        <Cruz onCerrar={acciones.onCerrar} oscura={oscura} />
+        <Cruz onCerrar={acciones.onCerrar} />
         <div className="relative flex items-start gap-3.5 pr-11">
-          {oscura ? (
-            <span className="flex h-16 w-16 flex-none items-center justify-center">
-              <span className="flex h-[46px] w-[46px] rotate-45 items-center justify-center rounded-xl" style={{ background: 'linear-gradient(140deg,#F7E6BE,#D9B86A 55%,#B8903E)', boxShadow: '0 0 22px rgba(243,213,154,.55),inset 0 1px 0 rgba(255,255,255,.6)' }}>
-                <span className="-rotate-45" style={{ font: `400 26px/1 ${SERIF}`, color: '#3A2A10' }}>?</span>
-              </span>
-            </span>
-          ) : (
-            <span className="flex h-[52px] w-[52px] flex-none items-center justify-center rounded-[14px]" style={{ background: iconoFondo, color: iconoColor }}>
-              <Trazo d={icono} tam={22} grosor={1.7} />
-            </span>
-          )}
+          <span className="flex h-[52px] w-[52px] flex-none items-center justify-center rounded-[14px]" style={{ background: iconoFondo, color: iconoColor }}>
+            <Trazo d={icono} tam={22} grosor={1.7} />
+          </span>
           <span className="flex min-w-0 flex-1 flex-col gap-1">
-            {oscura && <span style={{ font: `600 10px ${MONO}`, letterSpacing: '.16em', textTransform: 'uppercase', color: 'oklch(0.86 0.12 85)' }}>Emblema Oculto</span>}
             <span style={{ font: `400 22px/1.1 ${SERIF}`, textWrap: 'balance' as never }}>{titulo}</span>
             {subtitulo && <span style={{ font: "400 13px/1.45 'Geist'", color: acciones.errorUbicacion && tipo === 'sin_ubicacion' ? ROJO : sub, textWrap: 'pretty' as never }}>{subtitulo}</span>}
           </span>
         </div>
         {botones && <div className="grid grid-cols-2 gap-2">{botones}</div>}
-        <button type="button" onClick={acciones.onDesmarcar} className="min-h-11 self-center px-3 underline underline-offset-[3px]" style={{ font: "400 12px 'Geist'", color: oscura ? 'rgba(255,253,248,.55)' : 'rgba(28,34,48,.5)', background: 'none', border: 'none' }}>
+        <button type="button" onClick={acciones.onDesmarcar} className="min-h-11 self-center px-3 underline underline-offset-[3px]" style={{ font: "400 12px 'Geist'", color: 'rgba(28,34,48,.5)', background: 'none', border: 'none' }}>
           ¿No estás aquí? Desmarcar visto
         </button>
       </div>

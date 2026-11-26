@@ -6,7 +6,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { abrirApp } from './_enLaApp.mjs'
 
-const CAP = path.resolve('docs/dias/V68_capturas')
+const CAP = path.resolve(process.env.CAP_DIR ?? 'docs/dias/V68_capturas')
 fs.mkdirSync(CAP, { recursive: true })
 const QUE = process.argv[2] ?? 'hoja'
 const FASE = process.argv[3] ?? 'despues'
@@ -28,6 +28,17 @@ try {
     const h = await a.evaluar("(() => { const b = Array.from(document.querySelectorAll('button')).find((x) => /^(Siguiente|Entendido|Vale|Cerrar)$/.test((x.textContent || '').trim())); if (!b) return false; b.click(); return true })()")
     if (!h) break
     await a.esp(600)
+  }
+  // (V74) TRIP=probador: el viaje es el que monta el probador de Reorganizar del panel (el mismo motor y los mismos datos que el viaje de la pantalla «Probar Reorganizar»), no el viaje de pruebas de la app.
+  if (process.env.TRIP === 'probador') {
+    await a.evaluar(`(async () => {
+      const m = await import('/src/components/panel/reorganizar/motorDelProbador.ts')
+      const caso = { ...m.casoPorDefecto('${lanza ? 'Lanzarote' : 'Roma'}'), inicio: '${lanza ? '2027-03-07' : '2026-11-27'}', dias: ${lanza ? 6 : 4}, llegada: '', salida: '', punto: '', freeTour: 'sin_hora' }
+      const r = await m.probar(caso);
+      ${R}.setState({ route: r.antes, reservations: [] })
+      return true
+    })()`)
+    await a.esp(1500)
   }
   // El viaje sale el viernes 27 de noviembre, con el vuelo de ida a la hora pedida (Roma: Ciampino).
   await a.evaluar(`(async () => {

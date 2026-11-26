@@ -132,6 +132,9 @@ export function horarioDeComer(r: Pick<DestinationPlace, 'schedule' | 'hours_dat
   const fechas = (Array.isArray(hd.closed_dates) ? hd.closed_dates : []).map((x) => String(x))
   if (fechas.some((f) => f === dateIso || f === dateIso.slice(5))) return { abierto: false, cierraMin: null }
   if (cierraOn.includes(dia)) return { abierto: false, cierraMin: null }
+  // (V74, 44) Un restaurante con `revisa_horario` (`true`, o con ese día de la semana) no tiene horario seguro ese día: sale como los demás y su caja dice «Revisa el horario».
+  const rv = hd.revisa_horario
+  if (rv === true || (Array.isArray(rv) && rv.includes(dia))) return desconocido
   const v = ventanasDeHorario(r.schedule, cierraOn)
   if (!v) return desconocido
   const rangos = v.get(dia)
@@ -156,6 +159,8 @@ export interface RestauranteCerca {
   tipo: string | null
   /** (V44 §5) Solo en «los más cercanos» cuando aún no ha abierto nada: a qué hora abre hoy (minutos). */
   abreMin?: number | null
+  /** (V74, 44) No sabemos su horario de hoy: la fila dice «Revisa el horario». */
+  revisaHorario?: boolean
 }
 
 const TIPOS_DE_LOCAL: Record<string, string> = { restaurante: 'Restaurante', horno: 'Horno', pizzeria: 'Pizzería', heladeria: 'Heladería', cafeteria: 'Cafetería', bar_de_vinos: 'Bar de vinos', comida_rapida: 'Comida rápida', pub: 'Pub' }
@@ -195,15 +200,15 @@ export function restaurantesAbiertos(p: { restaurantes: DestinationPlace[]; orig
   for (const r of p.restaurantes) {
     if (r.kind !== 'restaurant' || !hasRealCoordinates(r.coordinates)) continue
     const h = horarioDeComer(r, p.dateIso, p.ahoraMin)
-    if (h.abierto !== true) continue
+    if (h.abierto === false) continue // (V74, 44) sin horario seguro (abierto === null) YA NO se esconde: sale con «Revisa el horario»
     const sub = r.sub_category ?? null
     if (p.sub ? sub !== p.sub : sub != null && SOLO_CON_SU_FILTRO.has(sub)) continue
     const metros = origen && hasRealCoordinates(origen) ? haversineMeters(origen, r.coordinates) : 0
     const minutos = viajeMin(origen ? { coordinates: origen } : null, { coordinates: r.coordinates }, p.enCoche)
     if (origen && minutos > tope) continue
-    salida.push({ nombre: r.name, coordinates: r.coordinates, metros, minutos, modo: p.enCoche ? 'coche' : 'pie', precio: r.price_range ?? null, cocina: cocinaCorta(r.what_to_order), direccion: r.address ?? null, cierraMin: h.cierraMin, sub, tipo: tipoDeLocal(r) })
+    salida.push({ nombre: r.name, coordinates: r.coordinates, metros, minutos, modo: p.enCoche ? 'coche' : 'pie', precio: r.price_range ?? null, cocina: cocinaCorta(r.what_to_order), direccion: r.address ?? null, cierraMin: h.cierraMin, sub, tipo: tipoDeLocal(r), ...(h.abierto === null ? { revisaHorario: true } : {}) })
   }
-  salida.sort((a, b) => a.metros - b.metros || a.nombre.localeCompare(b.nombre))
+  salida.sort((a, b) => Number(a.revisaHorario === true) - Number(b.revisaHorario === true) || a.metros - b.metros || a.nombre.localeCompare(b.nombre))
   return salida.slice(0, p.limite ?? 5)
 }
 
@@ -221,7 +226,7 @@ export function restaurantesMasCercanos(p: { restaurantes: DestinationPlace[]; o
     const h = horarioDeComer(r, p.dateIso, p.ahoraMin)
     const metros = origen && hasRealCoordinates(origen) ? haversineMeters(origen, r.coordinates) : 0
     const minutos = viajeMin(origen ? { coordinates: origen } : null, { coordinates: r.coordinates }, p.enCoche)
-    salida.push({ nombre: r.name, coordinates: r.coordinates, metros, minutos, modo: p.enCoche ? 'coche' : 'pie', precio: r.price_range ?? null, cocina: cocinaCorta(r.what_to_order), direccion: r.address ?? null, cierraMin: h.cierraMin, sub, tipo: tipoDeLocal(r), abreMin: h.abierto === true ? null : aperturaDeHoy(r, p.dateIso, p.ahoraMin) })
+    salida.push({ nombre: r.name, coordinates: r.coordinates, metros, minutos, modo: p.enCoche ? 'coche' : 'pie', precio: r.price_range ?? null, cocina: cocinaCorta(r.what_to_order), direccion: r.address ?? null, cierraMin: h.cierraMin, sub, tipo: tipoDeLocal(r), abreMin: h.abierto === true ? null : aperturaDeHoy(r, p.dateIso, p.ahoraMin), ...(h.abierto === null ? { revisaHorario: true } : {}) })
   }
   // Primero los que abren hoy más tarde (con hora), luego el resto; cada grupo, por cercanía.
   salida.sort((a, b) => Number(b.abreMin != null) - Number(a.abreMin != null) || a.metros - b.metros || a.nombre.localeCompare(b.nombre))

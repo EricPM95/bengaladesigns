@@ -60,8 +60,25 @@ for (const llegada of VUELOS) {
   const errores = []
   // 1. Nada quitado.
   const hoy = new Set(final.flatMap((d) => [...d.stops, ...(d.spareStops ?? [])].filter((s) => !s.isArrival && !s.isBreak).map(clave)))
-  const perdidos = base.days.flatMap((d) => d.stops.filter((s) => !s.isArrival && !s.isBreak && !hoy.has(clave(s))).map((s) => `${s.name} (día ${d.dayNumber})`))
+  // (V74) Un «de camino» (`passThrough`: una calle, una fuente de paso) no es una visita: si sale de un día, sale sin aviso y no va a pendientes.
+  const perdidos = base.days.flatMap((d) => d.stops.filter((s) => !s.isArrival && !s.isBreak && !s.passThrough && !hoy.has(clave(s))).map((s) => `${s.name} (día ${d.dayNumber})`))
   if (perdidos.length) errores.push(`sitios que desaparecen del viaje: ${perdidos.join(', ')}`)
+  // (V74) Un imprescindible (los Museos Vaticanos) o el Free Tour que no cabe el día de llegada entra en el mejor día siguiente: no se queda en pendientes mientras otro día tenga algo menos importante (Roma: sí lo tiene).
+  if (destino === 'Roma') {
+    for (const nombre of [/Museos Vaticanos/, /Free Tour/]) {
+      const estaba = base.days.some((d) => d.stops.some((s) => nombre.test(s.name)))
+      const enDia = final.some((d) => d.stops.some((s) => nombre.test(s.name)))
+      if (estaba && !enDia) errores.push()
+    }
+  }
+  // (V74) Un imprescindible (los Museos Vaticanos) o el Free Tour que no cabe el día de llegada entra en el mejor día siguiente: no se queda en pendientes mientras otro día tenga algo menos importante (Roma: sí lo tiene).
+  if (destino === 'Roma') {
+    for (const nombre of [/Museos Vaticanos/, /Free Tour/]) {
+      const estaba = base.days.some((d) => d.stops.some((s) => nombre.test(s.name)))
+      const enDia = final.some((d) => d.stops.some((s) => nombre.test(s.name)))
+      if (estaba && !enDia) errores.push(`${nombre.source} acaba en Lugares pendientes: debería entrar en el mejor día siguiente`)
+    }
+  }
   const rep = new Map()
   for (const d of final) for (const s of d.stops.filter((x) => !x.isArrival && !x.isBreak)) rep.set(clave(s), [...(rep.get(clave(s)) ?? []), d.dayNumber])
   // Solo cuentan los repetidos NUEVOS (los que ya traía el viaje, como el mismo sitio de día y «(noche)», no se miran).
@@ -91,6 +108,7 @@ for (const llegada of VUELOS) {
   if (errores.length) fallos++
   console.log(`\n=== ${destino}, vuelo ${llegada}: ${errores.length ? 'FALLA' : 'OK'}`)
   console.log(`  Días que cambian: ${cambiosDias.length} (${cambiosDias.map((d) => d.dayNumber).join(', ') || '—'}) de ${base.days.length}`)
+  if (process.env.DETALLE) for (const g of hoja.grupos) for (const x of g.tarjetas) console.log(`    · ${x.nombre} — ${x.cuando}${x.aPendientes ? " [pendientes]" : ""}`)
   console.log(`  Tarjetas de la hoja: ${tarjetas.length}; a pendientes: ${tarjetas.filter((t) => t.aPendientes).length}; quitadas: ${quitar.length}`)
   console.log(`  Día 1 antes : ${r.antes.days[0].stops.map((s) => `${s.time ?? ''} ${s.name}`).join(' | ')}`)
   console.log(`  Día 1 después: ${d1.stops.map((s) => `${s.time ?? ''} ${s.name}`).join(' | ')}`)

@@ -23,13 +23,10 @@ const COMIDA_A_PARADA = [
 ]
 
 /**
- * (V58 §6) ¿Abre ese día de la semana (0 = domingo)? `dias_sin_confirmar: true` = no se sabe de ningún día (no sale); `dias_sin_confirmar: [1]` = solo ese día de la semana está sin confirmar (Liken: la web da todos los
- * días de 12:00 a 23:00 y solo el lunes está en duda): sale el resto de los días y no sale ese. Antes un `true` sin más apagaba a Liken y la «Hora de comer» de Marina Rubicón / Playa Blanca salía sin restaurantes.
+ * ¿Abre ese día de la semana (0 = domingo)? Solo mira `cierra_dias`. (V74, 44) Un restaurante sin horario seguro (`revisa_horario`) YA NO se esconde: sale como los demás y su caja dice «Revisa el horario»
+ * (lo pone HOY, `hoyComer.ts`); el antiguo `dias_sin_confirmar` ya no existe en los datos.
  */
 export function abreEseDia(x, semana) {
-  const sc = x.dias_sin_confirmar
-  if (sc === true) return false
-  if (Array.isArray(sc) && (semana == null || sc.includes(semana))) return false
   return semana == null || !(x.cierra_dias ?? []).includes(semana)
 }
 
@@ -301,8 +298,10 @@ function medirDia({ pasos: pasosIn, zona, coche, domingo, sol, margenTurno, sali
     let fin = entra + st.m
     if (st.sol && sol != null) { if (llegada > sol) problemas.push({ tipo: 'sol', paso: st, texto: `llegarías a las ${fh(llegada)}, después del atardecer (${fh(sol)})` }); fin = Math.max(fin, sol + 5) }
     // (V58 §6) NINGUNA visita acaba después de que cierre el sitio: si por la hora (o por «hasta el atardecer») acabaría más tarde, se recorta hasta el cierre (y se apunta cuántos minutos se han quitado). Si ya entra con el sitio cerrado, es un problema del día.
+    // (V74, 42) Si la visita se queda con MÁS de la mitad de su tiempo, se acorta hasta el cierre; si se queda con la mitad o menos, no se acorta: el paso sale del día (problema 'cierre_corto') y va a otro día, o a «Lugares pendientes».
     if (st.cierre != null && !st.comida && fin > st.cierre) {
       if (entra >= st.cierre) problemas.push({ tipo: 'cierre', paso: st, texto: `entrarías a las ${fh(entra)} y el sitio cierra a las ${fh(st.cierre)}` })
+      else if (st.fijo == null && (st.cierre - entra) * 2 <= st.m) { problemas.push({ tipo: 'cierre_corto', paso: st, texto: `entrarías a las ${fh(entra)} y el sitio cierra a las ${fh(st.cierre)}: te quedaría la mitad de la visita o menos` }); st.recortada_por_cierre_min = fin - st.cierre; fin = st.cierre }
       else { st.recortada_por_cierre_min = fin - st.cierre; fin = st.cierre }
     }
     if (st.comida && entra + 0 > 15 * 60) problemas.push({ tipo: 'comida', paso: st, texto: `la comida empezaría a las ${fh(entra)}, pasadas las 15:00` })
@@ -421,13 +420,25 @@ export function planCocheDia({ destData, datos, dayId, dayNumber, contentDays, d
     }
   }
 
+  // (V74, 42) Una visita que se quedaría con la mitad de su tiempo o menos antes de que cierre el sitio (o que ya llegaría con el sitio cerrado) no se hace hoy: sale del día y va a «Lugares pendientes» (`spare_stops`)
+  // para hacerla otro día. (Los turnos con hora fija y la comida no.) El reparto a otro día concreto lo hace la app al adaptar el viaje; aquí el motor solo la saca del día.
+  const aOtroDia = []
+  for (let guard = 0; guard < 6; guard++) {
+    const sale = r.problemas.find((p) => (p.tipo === 'cierre_corto' || (p.tipo === 'cierre' && p.paso.fijo == null)) && p.paso && !p.paso.comida && pasos.some((x) => x.lugar === p.paso.lugar && x.p === p.paso.p && x.titulo === p.paso.titulo))
+    if (!sale || pasos.filter((x) => !x.comida).length <= 1) break
+    const fuera = pasos.find((x) => x.lugar === sale.paso.lugar && x.p === sale.paso.p && x.titulo === sale.paso.titulo)
+    pasos = pasos.filter((x) => x !== fuera)
+    aOtroDia.push({ paso: fuera, texto: sale.texto })
+    zonaUsada = zonaDe(pasos)
+    r = medir(pasos, zonaUsada)
+  }
+
   // ── Sin coche: la misma ruta, sin trayectos ni tope ──
   const lineas = r.lineas
   const stops = []
   const p0 = coche.punto(r.primeraParada)
-  for (const l of lineas) {
+  const crearParada = (l) => {
     const st = l.paso
-    if (st.comida) continue
     const place = st.place
     const parking = coche.punto(st.p)
     const trayecto = l.tramo?.modo === 'walk'
@@ -441,7 +452,7 @@ export function planCocheDia({ destData, datos, dayId, dayNumber, contentDays, d
       : null
     const online = Boolean(place?.reserva_solo_online || st.llegadaAntes)
     const llegadaTxt = datos.destino?.llegadas?.por_lugar?.[st.lugar] ?? datos.destino?.llegadas?.por_lugar?.[place?.name] ?? null
-    stops.push({
+    return {
       name: st.titulo ?? st.lugar,
       place_name: st.lugar,
       suggested_time: fh(l.entra),
@@ -463,11 +474,19 @@ export function planCocheDia({ destData, datos, dayId, dayNumber, contentDays, d
       muestra: place?.id ? [place.id] : undefined,
       orientative_time: !st.fijo,
       optional: st.opc || undefined,
+      // (V74) Un «de camino» (el Mirador de los Helechos, saliendo hacia Teguise): sin número ni tarjeta, y el primero en salir de un día.
+      ...(place?.passThrough ? { pass_through: true } : {}),
       trayecto_previo: trayecto,
       ...(online ? { entrada_solo_online: true, llegada_antes_min: st.llegadaAntes ?? margenTurno, llegada_texto: llegadaTxt ?? datos.destino?.llegadas?.turno?.texto ?? null } : {}),
       ...(st.nocheDeJameos ? { noche_de_jameos: true } : {}),
-    })
+    }
   }
+  for (const l of lineas) {
+    if (l.paso.comida) continue
+    stops.push(crearParada(l))
+  }
+  // «Lugares pendientes» del día: lo que no cabe antes de que cierre (V74, 42), sin hora y con su motivo.
+  const spare_stops = aOtroDia.map(({ paso, texto }) => ({ ...crearParada({ paso, entra: paso.abre ?? 10 * 60, dur: paso.m, tramo: null }), suggested_time: '', trayecto_previo: null, spare_reason: `No cabe hoy: ${texto}. Lo tienes en Lugares pendientes para otro día.` }))
 
   // ── la comida del día (LL: solo restaurantes que abren ese día de la semana; si no se sabe de ninguno abierto, sin nombre) ──
   const abre = (x) => abreEseDia(x, semana)
@@ -553,7 +572,7 @@ export function planCocheDia({ destData, datos, dayId, dayNumber, contentDays, d
   } : null
   const titulo = esLL ? 'Tu llegada a Lanzarote' : esV ? 'Vuelta desde Lanzarote' : null
   return {
-    ...base, ...(titulo ? { title: titulo } : {}), stops, meals, coche: cocheDia, coche_zonas, cena_cerca, opcionales_quitados: quitados, avisos, sin_coche, aeropuerto,
+    ...base, ...(titulo ? { title: titulo } : {}), stops, ...(spare_stops.length ? { spare_stops } : {}), meals, coche: cocheDia, coche_zonas, cena_cerca, opcionales_quitados: quitados, avisos, sin_coche, aeropuerto,
     llegada_aeropuerto: llegadaMin != null ? { aterriza: fh(llegadaMin - recogerMin), recoger_coche_min: recogerMin, coche_listo: fh(llegadaMin), primer_turno_movido: r.pasosMedidos.some((x) => x.turnoMovido) } : null,
     ...(llegada_ll ? { llegada_ll } : {}), ...(return_day ? { return_day, is_return_leg: true } : {}),
     temporada: temporadaDe(destData, dateIso), sunset_min: sol,
