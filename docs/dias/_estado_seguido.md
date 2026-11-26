@@ -1,13 +1,13 @@
 # Estado de la tanda seguido
 
-**Última actualización: 26/11/26, 16:59**
+**Última actualización: 26/11/26, 17:40**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-V69 subida (4dc05aeb). Voy por la V70 (vuelta y respuestas)
+V68, V69 y V70 subidas (V70 acab7c41); peso de arranque 260,8 KB; produccion carga. Voy por la V71 (emblema y logros)
 
 ## Qué falta
-V70, V71, CHECKLIST y REPASO V68-V71
+V71, CHECKLIST y REPASO V68-V71, git restore docs
 
 ## Procesos abiertos ahora mismo
 - node: 2
