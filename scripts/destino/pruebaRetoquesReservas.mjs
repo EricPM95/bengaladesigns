@@ -86,7 +86,7 @@ try {
   await irAReservas(a)
   const f1 = await fichas(a)
   console.log('  Lanzarote (Eric):', (await cuenta(a)) + ' ·', f1.map((f) => f.nombre.replace(/\s+/g, ' ')).join(' | '))
-  debe((await cuenta(a)) === '0 de 6 listo', '3a', `(V22) el viaje de Eric dice «0 de 6 listo» (dice ${await cuenta(a)})`)
+  debe((await cuenta(a)) === '0 de 12 reservas listas', '3a', `(V22, V58) el viaje de Eric dice «0 de 12 reservas listas» (dice ${await cuenta(a)})`)
   debe(f1.length === 6 && f1[f1.length - 1].id === 'util-seguro' && /Seguro de viaje/.test(f1[f1.length - 1].nombre) && f1.some((f) => f.id === 'coche' && /Alquiler coche/.test(f.nombre)) && f1.some((f) => f.id === 'excursion-la_graciosa' && /Isla La Graciosa/.test(f.nombre)), '3b', `(V22) las fichas: Llegada y vuelta, Alojamiento, Alquiler coche, Entradas, Isla La Graciosa y Seguro de viaje (salen: ${f1.map((f) => f.nombre).join(' | ')})`)
   debe(f1.every((f) => !f.hecha), '3c', 'ninguna ficha hecha todavía')
   // El coche: cerrado al entrar, con su etiqueta y de los mismos colores que los demás bloques
@@ -105,7 +105,7 @@ try {
   const propio = await fichas(a)
   const fCoche = propio.find((f) => f.id === 'coche')
   debe(fCoche?.hecha === true && (await ev(a, "!document.querySelector('[data-coche-super-recomendado]')")), '3i', `con «Mi coche» la ficha del coche sale hecha y sin etiqueta (${JSON.stringify(fCoche)})`)
-  debe((await cuenta(a)) === '1 de 6 listo', '3j', `(V22) con «Mi coche» pasa a «1 de 6 listo» (dice ${await cuenta(a)})`)
+  debe((await cuenta(a)) === '1 de 12 reservas listas', '3j', `(V22) con «Mi coche» pasa a «1 de 12 reservas listas» (dice ${await cuenta(a)})`)
   // De vuelta a alquiler y con la reserva puesta: «Listo», sin etiqueta
   await ev(a, "window.__ruta.getState().setCocheDeViaje('alquiler'); window.__ruta.getState().setRentalVehicleBooking({ provider: 'Cicar', startDate: '2026-11-08', endDate: '2026-11-13', precio: null, coche: 'Fiat 500' }); true")
   await a.esp(900)
@@ -125,7 +125,7 @@ try {
   const tras = await fichas(a)
   debe(tras.find((f) => f.id === 'excursion-la_graciosa')?.hecha === true, '3n', 'con la excursión reservada, su ficha sale hecha')
   debe(/Listo/.test(await ev(a, "(document.querySelector('[data-blk=\"excursiones\"]')?.innerText || '')")), '3o', 'y el bloque «Excursiones» dice «Listo»')
-  debe(/de 6 listo/.test((await cuenta(a)) ?? ''), '3p', '(V22) el total sigue en N = 6')
+  debe(/de 12 reservas listas/.test((await cuenta(a)) ?? ''), '3p', '(V22) el total sigue en N = 12 (V58: cuenta cada entrada)')
   await ev(a, "window.__ruta.setState({ reservations: window.__ruta.getState().reservations.filter((x) => x.id !== 'res-lg') }); true")
 } finally {
   a.cerrar()

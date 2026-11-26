@@ -9,7 +9,19 @@ import { normalizaNombre } from './horarioDeParada'
 export type Puntualidad = { tipo: 'estricta' | 'margen' | 'libre'; margenMin: number }
 
 interface Ficha { tipo?: string; margen_min?: number }
-const ARCHIVOS = import.meta.glob('../../data/dias/*/_puntualidad.json', { eager: true, import: 'default' }) as Record<string, { sitios?: Record<string, Ficha> }>
+type Archivos = Record<string, { sitios?: Record<string, Ficha> }>
+// (V68) En la app, Vite resuelve el glob al compilar (sin cambio de peso). Fuera de Vite (las pruebas que empaquetan con esbuild para Node) `import.meta.glob` no existe: se leen los mismos JSON con `fs`.
+let ARCHIVOS: Archivos = {}
+try {
+  ARCHIVOS = import.meta.glob('../../data/dias/*/_puntualidad.json', { eager: true, import: 'default' }) as Archivos
+} catch {
+  try {
+    const nodo = (globalThis as { process?: { getBuiltinModule?: (n: string) => any; cwd?: () => string } }).process
+    const fs = nodo?.getBuiltinModule?.('node:fs')
+    const raiz = `${nodo?.cwd?.()}/data/dias`
+    if (fs) for (const d of fs.readdirSync(raiz)) { const f = `${raiz}/${d}/_puntualidad.json`; if (fs.existsSync(f)) ARCHIVOS[f] = JSON.parse(fs.readFileSync(f, 'utf8')) }
+  } catch { /* sin archivos: todo con margen de 15 min */ }
+}
 
 const TABLA: { clave: string; f: Ficha }[] = []
 for (const a of Object.values(ARCHIVOS)) for (const [k, f] of Object.entries(a.sitios ?? {})) TABLA.push({ clave: normalizaNombre(k), f })

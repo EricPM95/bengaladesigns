@@ -50,6 +50,8 @@ async function abrir(version) {
   await a.evaluar('window.__rutaPrueba().then(() => true)')
   for (let i = 0; i < 90 && !(await a.evaluar(s('return Boolean(st().route)'))); i++) await a.esp(1000)
   await a.esp(3000)
+  // (V68) Reorganizar no toca los días que ya pasaron: el viaje de pruebas trae fechas de octubre de 2026 (ya pasadas), así que se le ponen unas FUTURAS (mismas noches, empezando en sábado como las de octubre) para que adaptar los vuelos tenga qué cambiar.
+  await a.evaluar(s("const r = st().route; const n = r.days.length; const d = new Date(Date.UTC(2027, 2, 6)); const f = (k) => new Date(d.getTime() + k * 86400000).toISOString().slice(0, 10); R.setState({ route: { ...r, answers: { ...r.answers, dateRange: { ...(r.answers?.dateRange ?? {}), start: f(0), end: f(n - 1) } } } }); return true"))
   await a.evaluar(s("st().setMode('days'); st().setActiveDayId(st().route.days[0].id); return true"))
   await a.esp(2000)
   for (let i = 0; i < 6; i++) {

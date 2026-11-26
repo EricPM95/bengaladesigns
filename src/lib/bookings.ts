@@ -10,6 +10,7 @@ import type { DayPlan, Excursion, Route, Stop } from './types'
 import { addDaysToIso } from './dateRange'
 import { isEmptyDay, placeExcursionIn, withExcursionOnSwitchDay } from './freeDays'
 import { isManualRoute } from './manualPlan'
+import { claveDeSitio } from './sinSitiosRepetidos'
 
 /** Lo que el viajero ha reservado. Fijado: tiene fecha y hora, y nada del motor ni del viajero lo mueve (se quita y se vuelve a crear). */
 export interface Reservation {
@@ -325,52 +326,116 @@ export function conSuEntradaReservada(route: Route, reservations: readonly Reser
   return { ...stop, reservedId: reserva.id }
 }
 
+const minDeHora = (hora: string | null | undefined): number | null => {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(String(hora ?? '').trim())
+  return m ? Number(m[1]) * 60 + Number(m[2]) : null
+}
+const aHora = (min: number): string => `${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`
+
+/**
+ * (V68, apartado 1) Pone una entrada reservada en el día de su fecha con TODOS los sitios que cubre y a SU HORA. Función pura; la usa `placeReservedEntranceUna` (ruta nuestra, no a mano).
+ *   · Una entrada que cubre varios sitios (`placeNames`: «Coliseo, Foro y Palatino») mueve TODOS al día de la reserva, no solo el primero de la lista. El PRIMERO de `placeNames` es el de la entrada (el Coliseo: su turno es estricto)
+ *     y coge la hora y la marca; los demás (el Foro y Palatino, que vale el resto del día) van DETRÁS, uno tras otro, sin marca.
+ *   · Cada parada va a su hora, nunca «la primera»: la que viaja se coloca delante de la primera parada del día que es más tardía que su hora (los Museos de las 15:00 por la tarde; el Free Tour de las 10:00 antes del Coliseo).
+ *     Lo que cae después y se pisaría se empuja lo justo (lo que tiene hora fija —otra reserva, el Free Tour— no se empuja). Así el orden de la lista y el de las horas (y por tanto los números) son el mismo.
+ *   · Si el primero ya está en el día de la reserva (el motor movió el día entero), no cambia de sitio: solo coge la hora y la marca; los demás sitios de la entrada que estén en otros días vienen detrás de él.
+ *   · Ninguna parada queda atrás: los sitios que viajan salen de su día de antes. Las visitas nocturnas (`isNightExperience`, «Coliseo (noche)») son otra visita y no se tocan.
+ * `noMueve`: solo se marcan las paradas que ya están en su día (nunca trae nada de otro).
+ */
+export function colocarEntradaConSusSitios(route: Route, reservation: Reservation, target: DayPlan): Route {
+  const esVisita = (stop: Stop) => claveDeSitio(stop) != null && !stop.passThrough
+  const partes: Stop[] = []
+  for (const name of reservation.placeNames) {
+    let stop: Stop | undefined = target.stops.find((candidate) => candidate.name === name && esVisita(candidate) && candidate.visitMode !== 'fuera')
+    if (!stop && !reservation.noMueve) {
+      for (const day of route.days) {
+        stop = day.stops.find((candidate) => candidate.name === name && esVisita(candidate) && candidate.visitMode !== 'fuera')
+        if (stop) break
+      }
+    }
+    if (stop && !partes.some((parte) => parte.id === stop!.id)) partes.push(stop)
+  }
+  if (partes.length === 0) return route
+  const primario = partes[0]
+  const posicionDelPrimario = target.stops.findIndex((candidate) => candidate.id === primario.id)
+  const primarioEnSuDia = posicionDelPrimario >= 0
+  // Las que se mueven: todas, o (con el primero ya en su día) solo los demás que no estén en el día o estén delante del primero.
+  const seMueven = partes.filter((parte, i) => {
+    if (!primarioEnSuDia) return true
+    if (i === 0) return false
+    const at = target.stops.findIndex((candidate) => candidate.id === parte.id)
+    return at < 0 || at < posicionDelPrimario
+  })
+  const idsQueSeMueven = new Set(seMueven.map((parte) => parte.id))
+  const duracion = (stop: Stop) => (stop.durationMinutes && stop.durationMinutes > 0 ? stop.durationMinutes : 60)
+  const horaDeLaReserva = minDeHora(reservation.time)
+  const sin = target.stops.filter((candidate) => !idsQueSeMueven.has(candidate.id))
+  // Dónde entra el bloque: detrás del primero (si ya está en su día) o delante de la primera parada más tardía que la hora de la reserva.
+  let indice: number
+  if (primarioEnSuDia) indice = sin.findIndex((candidate) => candidate.id === primario.id) + 1
+  else {
+    indice = sin.findIndex((candidate) => {
+      const t = minDeHora(candidate.time)
+      // (La que empieza antes pero aún seguiría cuando empieza la reserva —el Coliseo de las 09:15 con el Free Tour a las 10:00— también va DESPUÉS: la reserva tiene hora fija y no se pisa con ella.)
+      return t != null && horaDeLaReserva != null && (t > horaDeLaReserva || (!candidate.reservedId && t + duracion(candidate) > horaDeLaReserva + 10))
+    })
+    if (indice < 0) indice = sin.length
+  }
+  const vecina = sin[Math.max(0, indice - 1)]
+  const conFranja = (stop: Stop): Stop => {
+    const { franja: _vieja, ...resto } = stop
+    void _vieja
+    const franja = vecina?.franja ?? target.stops[0]?.franja
+    return franja ? { ...resto, franja } : resto
+  }
+  let reloj = primarioEnSuDia ? (horaDeLaReserva != null ? horaDeLaReserva + duracion(primario) + 10 : null) : horaDeLaReserva
+  const bloque: Stop[] = []
+  for (const parte of seMueven) {
+    const esElDeLaEntrada = parte.id === primario.id
+    let hecha: Stop = conFranja(parte)
+    if (esElDeLaEntrada) hecha = { ...hecha, time: reservation.time, reservedId: reservation.id }
+    else if (reloj != null) hecha = { ...hecha, time: aHora(reloj) }
+    if (reloj != null) reloj += duracion(parte) + 10
+    bloque.push(hecha)
+  }
+  // Con el primero ya en su día: solo coge la hora y la marca, donde está.
+  const base = primarioEnSuDia ? sin.map((candidate) => (candidate.id === primario.id ? { ...candidate, time: reservation.time, reservedId: reservation.id } : candidate)) : sin
+  const unidas = [...base.slice(0, indice), ...bloque, ...base.slice(indice)]
+  // Lo que cae detrás del bloque y se pisaría se empuja lo justo; lo de hora fija no.
+  let fin = reloj
+  const desde = indice + bloque.length
+  const empujadas = unidas.map((candidate, at) => {
+    if (at < desde || fin == null) return candidate
+    const t = minDeHora(candidate.time)
+    if (t == null) return candidate
+    const fija = Boolean(candidate.reservedId || candidate.isFreeTour || candidate.reservationTime)
+    if (fija || t >= fin) {
+      fin = Math.max(fin, t + duracion(candidate))
+      return candidate
+    }
+    const nueva = { ...candidate, time: aHora(fin) }
+    fin += duracion(candidate)
+    return nueva
+  })
+  return {
+    ...route,
+    days: route.days.map((day) => {
+      if (day.id === target.id) return { ...day, stops: empujadas }
+      if (!day.stops.some((candidate) => idsQueSeMueven.has(candidate.id))) return day
+      return { ...day, stops: day.stops.filter((candidate) => !idsQueSeMueven.has(candidate.id)) }
+    }),
+  }
+}
+
 function placeReservedEntranceUna(route: Route, reservation: Reservation): Route {
   if (reservation.fueraDeRuta) return route
   // Ruta a mano (Tanda 6y): la reserva no trae la parada de otro día ni ordena el día por hora; la parada se queda donde la puso el viajero (manualPlan.ts).
   if (isManualRoute(route)) return reservedEntranceInPlace(route, reservation)
   const target = dayOfReservation(route, reservation)
   if (!target || reservation.kind !== 'entrada') return route
-  // (Tanda 10N10 §3d) Si el día de la fecha de la reserva YA lleva el sitio, la parada NO se mueve de franja ni de sitio: se queda donde está, con la marca y la hora de su entrada. Solo cambia de día
-  // cuando la fecha de la reserva es de otro día (entonces sí viaja a él).
-  if (target.stops.some((candidate) => reservation.placeNames.includes(candidate.name))) return reservedEntranceInPlace(route, reservation)
-  let found: { day: DayPlan; stop: Stop } | null = null
-  // (Si el día de la reserva ya lleva el sitio —porque el motor movió el día entero—, esa parada es la que se fija: no se trae otra de otro día.)
-  for (const name of reservation.placeNames) {
-    const stop = target.stops.find((candidate) => candidate.name === name)
-    if (stop) {
-      found = { day: target, stop }
-      break
-    }
-  }
-  // (Una reserva que no mueve nada —su día no se pudo cambiar— solo marca la parada si ya está en su día: nunca la trae de otro.)
-  if (!found && reservation.noMueve) return route
-  for (const name of found ? [] : reservation.placeNames) {
-    for (const day of route.days) {
-      const stop = day.stops.find((candidate) => candidate.name === name)
-      if (stop) {
-        found = { day, stop }
-        break
-      }
-    }
-    if (found) break
-  }
-  if (!found) return route
-  // (10S7) La parada que viaja a su día (otro distinto del suyo, por ejemplo el Free Tour reservado el viernes cuando estaba el jueves) llega de PRIMERA, como cualquier parada nueva; ningún otro día se toca.
-  // Sin su franja de otro día: entra en la del día (la de la que era primera).
-  const { franja: _franjaVieja, ...sinFranja } = found.stop
-  void _franjaVieja
-  const franjaDelDia = target.stops[0]?.franja
-  const placed: Stop = { ...sinFranja, ...(found.stop.isFreeTour ? { franja: 'manana' as const } : franjaDelDia ? { franja: franjaDelDia } : {}), time: reservation.time, reservedId: reservation.id }
-  const { day: from } = found
-  return {
-    ...route,
-    days: route.days.map((day) => {
-      if (day.id === target.id) return { ...day, stops: [placed, ...day.stops.filter((stop) => stop.id !== placed.id)] }
-      if (day.id === from.id) return { ...day, stops: day.stops.filter((stop) => stop.id !== placed.id) }
-      return day
-    }),
-  }
+  // (V68) Todos los sitios que cubre la entrada, a su hora y en su día (ver `colocarEntradaConSusSitios`). Antes la parada de otro día llegaba «de PRIMERA» (10S7) y solo viajaba la primera de la lista:
+  // «Coliseo, Foro y Palatino» dejaba el Coliseo y el Foro en su día y se llevaba el Foro (con el 4 encima del 1). (10N10 §3d: si el día de la reserva ya lleva el sitio, no cambia de sitio.)
+  return colocarEntradaConSusSitios(route, reservation, target)
 }
 
 /**

@@ -1,0 +1,160 @@
+{
+ "base": [
+  {
+   "id": "day-1",
+   "n": 1,
+   "titulo": "Día del Vaticano y Trastevere",
+   "leg": false,
+   "paradas": [
+    "09:15 Museos Vaticanos y Capilla Sixtina",
+    "12:25 Plaza de San Pedro",
+    "13:00 Basílica de San Pedro",
+    "15:25 Via della Conciliazione",
+    "15:45 Castillo de Sant'Angelo (fuera)",
+    "16:20 Puente Sant'Angelo",
+    "16:50 Isla Tiberina",
+    "17:15 Iglesia de Santa Maria in Trastevere",
+    "17:50 San Pietro in Montorio y Tempietto de Bramante (fuera)",
+    "18:05 Fontana dell'Acqua Paola",
+    "18:30 Mirador del Janículo",
+    "19:20 Trastevere",
+    "21:40 Coliseo (noche)",
+    "22:15 Foro Romano desde el Campidoglio (noche)"
+   ]
+  },
+  {
+   "id": "day-2",
+   "n": 2,
+   "titulo": "Día de la Roma antigua",
+   "leg": false,
+   "paradas": [
+    "09:15 Coliseo",
+    "10:35 Arco de Constantino",
+    "10:45 Foro Romano y Palatino",
+    "12:15 Plaza del Campidoglio",
+    "12:50 Plaza Venecia",
+    "13:05 Altar de la Patria",
+    "15:00 Barrio Judío",
+    "15:30 Fuente de las Tortugas",
+    "15:40 Largo di Torre Argentina",
+    "16:00 Elefantino de Bernini",
+    "16:05 Iglesia de Santa Maria sopra Minerva",
+    "16:20 Iglesia de San Luigi dei Francesi",
+    "16:45 Panteón",
+    "17:40 Iglesia del Gesù",
+    "18:10 Piazza Navona",
+    "21:40 Fontana de Trevi (noche)",
+    "22:10 Plaza de España (noche)"
+   ]
+  },
+  {
+   "id": "day-2-return",
+   "n": 3,
+   "titulo": "Vuelta desde Roma",
+   "leg": true,
+   "paradas": []
+  }
+ ],
+ "freetour_base": [
+  {
+   "id": "day-1",
+   "n": 1,
+   "titulo": "Día del Free Tour y el Vaticano por la tarde",
+   "leg": false,
+   "paradas": [
+    "07:30 Fontana de Trevi",
+    "08:20 Desayuno romano",
+    "09:00 Panteón",
+    "10:00 Free Tour por Roma [FT]",
+    "14:00 Museos Vaticanos y Capilla Sixtina",
+    "16:40 Plaza de San Pedro",
+    "17:15 Basílica de San Pedro",
+    "18:20 Via della Conciliazione",
+    "18:40 Castillo de Sant'Angelo (fuera)",
+    "19:10 Puente Sant'Angelo",
+    "21:50 Fontana de Trevi (noche)",
+    "22:20 Plaza de España (noche)"
+   ]
+  },
+  {
+   "id": "day-2",
+   "n": 2,
+   "titulo": "Día de la Roma antigua, el Gueto y Trastevere",
+   "leg": false,
+   "paradas": [
+    "09:15 Coliseo",
+    "10:35 Arco de Constantino",
+    "10:45 Foro Romano y Palatino",
+    "12:15 Plaza del Campidoglio",
+    "12:50 Plaza Venecia",
+    "13:05 Altar de la Patria",
+    "15:00 Barrio Judío",
+    "15:25 Fuente de las Tortugas",
+    "15:40 Teatro de Marcelo",
+    "16:00 Isla Tiberina",
+    "16:30 Iglesia de Santa Maria in Trastevere",
+    "16:55 San Pietro in Montorio y Tempietto de Bramante",
+    "17:15 Trastevere",
+    "21:40 Mirador del Janículo (noche)"
+   ]
+  },
+  {
+   "id": "day-2-return",
+   "n": 3,
+   "titulo": "Vuelta desde Roma",
+   "leg": true,
+   "paradas": []
+  }
+ ],
+ "freetour": [
+  {
+   "id": "day-1",
+   "n": 1,
+   "titulo": "Día del Free Tour y el Vaticano por la tarde",
+   "leg": false,
+   "paradas": [
+    "07:30 Fontana de Trevi",
+    "08:20 Desayuno romano",
+    "09:00 Panteón",
+    "14:00 Museos Vaticanos y Capilla Sixtina",
+    "16:40 Plaza de San Pedro",
+    "17:15 Basílica de San Pedro",
+    "18:20 Via della Conciliazione",
+    "18:40 Castillo de Sant'Angelo (fuera)",
+    "19:10 Puente Sant'Angelo",
+    "21:50 Fontana de Trevi (noche)",
+    "22:20 Plaza de España (noche)"
+   ]
+  },
+  {
+   "id": "day-2",
+   "n": 2,
+   "titulo": "Día de la Roma antigua, el Gueto y Trastevere",
+   "leg": false,
+   "paradas": [
+    "09:15 Coliseo",
+    "10:35 Arco de Constantino",
+    "10:45 Foro Romano y Palatino",
+    "12:15 Plaza del Campidoglio",
+    "12:50 Plaza Venecia",
+    "13:05 Altar de la Patria",
+    "15:00 Free Tour por Roma [R] [FT]",
+    "17:40 Barrio Judío",
+    "18:05 Fuente de las Tortugas",
+    "18:10 Teatro de Marcelo",
+    "18:20 Isla Tiberina",
+    "18:40 Iglesia de Santa Maria in Trastevere",
+    "19:00 San Pietro in Montorio y Tempietto de Bramante",
+    "19:10 Trastevere",
+    "21:40 Mirador del Janículo (noche)"
+   ]
+  },
+  {
+   "id": "day-2-return",
+   "n": 3,
+   "titulo": "Vuelta desde Roma",
+   "leg": true,
+   "paradas": []
+  }
+ ]
+}

@@ -1,4 +1,6 @@
 import { movimientoDeExcursion, rutaConElMovimiento } from '../lib/excursionMove'
+import { guardianDeSitios } from '../lib/sinSitiosRepetidos'
+import { recuperarDiaCompleto } from '../lib/recuperarDia'
 import { create } from 'zustand'
 import { diaPasado, ordenRespetaLosPasados } from '../lib/diasPasados'
 import { dayCountryCode } from '../lib/flagColors'
@@ -947,11 +949,14 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       // Una excursión reservada es el día entero: no hay nada que recuperar (lo reservado se queda).
       const target = state.route.days.find((day) => day.id === dayId)
       if (target && isDayPinned(state.route, state.reservations, target)) return state
-      // (Con su número y su color de ahora: si el día se movió, se queda donde está.)
-      const days = state.route.days.map((day) => (day.id === dayId && day.originalSnapshot ? { ...day.originalSnapshot, id: day.id, dayNumber: day.dayNumber, colorIndex: day.colorIndex, originalSnapshot: null } : day))
+      // (V68) Recuperar el día de verdad: el día vuelve a su copia Y lo que le tocó se deshace (lo que salió a otros días vuelve y se quita de allí; lo que entró de otro día vuelve a su día). Con su número y su color de ahora.
+      const days = recuperarDiaCompleto(state.route, dayId).days
       // (Lo reservado se queda en su sitio y a su hora aunque se recupere el día.)
       // (10N5) El aviso de los demás: «Eric ha recuperado el sábado 14 como estaba.»
       const recuperado = reapplyReservations({ ...state.route, days, editedManually: days.some((day) => Boolean(day.originalSnapshot)) }, state.reservations)
+      // (V68, apartado 2) Nunca un sitio dos veces: si recuperar dejara uno repetido, no se guarda y se dice en el registro.
+      const guardado = guardianDeSitios(state.route, recuperado, 'recuperar el día')
+      if (!guardado.ok) return state
       return { route: target?.originalSnapshot ? conUltimoCambio(state.route, recuperado, { tipo: 'recuperar_dia', dia_n: target.dayNumber, fecha: fechaDelDia(state.route, target.dayNumber) }) : recuperado }
     }),
   setDayUntimed: (dayId, untimed) =>
@@ -1026,6 +1031,12 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     // (V50) Cómo estaba todo antes de guardarla: para el [Deshacer] que sale cuando el motor termina de recolocar los días (deshace la reserva y el movimiento, todo).
     const rutaAntesDeGuardar = get().route
     const reservasAntesDeGuardar = get().reservations
+    // (V68, apartado 2) Nunca un sitio dos veces en el viaje: si la ruta que sale de este cambio repite un sitio, NO se guarda (queda la de antes) y se dice en el registro.
+    const guardar = (nueva: Route): boolean => {
+      const g = guardianDeSitios(get().route, nueva, 'guardar la reserva')
+      if (g.ok) set({ route: nueva })
+      return g.ok
+    }
     set((state) => ({ reservations: [...state.reservations.filter((other) => !(other.kind === reservation.kind && other.refId === reservation.refId)), reservation] }))
     const route = get().route
     if (!route) return
@@ -1037,7 +1048,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       // Ruta a mano (Tanda 6y): ni el motor rehace el día ni la reserva grande mueve días; la parada se queda donde la puso el viajero, con la hora de la reserva.
       if (isManualRoute(route)) {
         // (El Free Tour a mano, Tanda 6y2: la reserva crea su parada en el día de su fecha —o trae la que ya hay si el viajero cambió la fecha— y luego coge la hora y la marca.)
-        set({ route: placeReservedEntrance(withManualFreeTour(unpinned, reservation, freeTour ?? null), reservation) })
+        guardar(placeReservedEntrance(withManualFreeTour(unpinned, reservation, freeTour ?? null), reservation))
         // (La foto real del punto de encuentro del Free Tour, Tanda 6y3: solo si la parada acaba de crearse y no tiene foto.)
         if (reservation.refId === FREE_TOUR_REF) void pedirFotoDelFreeTour()
         return
@@ -1046,7 +1057,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       {
         const dia = dayOfReservation(unpinned, reservation)
         if (dia && dia.stops.some((parada) => reservation.placeNames.includes(parada.name))) {
-          set({ route: placeReservedEntrance(unpinned, reservation) })
+          guardar(placeReservedEntrance(unpinned, reservation))
           return
         }
       }
@@ -1054,7 +1065,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       // y solo si llegan todos se cambian (todo o nada). Nada se arranca antes: una parada sola que se va de su día dejaba el día a medias (Tanda 6k, punto 2).
       // (Tanda 10S3, apartado 5) El Free Tour es una parada más y no mueve días ni rehace el motor: va a su fecha como cualquier parada, con su hora, y nada más.
       if (reservation.refId === FREE_TOUR_REF) {
-        set({ route: placeReservedEntrance(unpinned, reservation) })
+        guardar(placeReservedEntrance(unpinned, reservation))
         return
       }
       if (isBigReservation(reservation, sitiosGrandesDelViaje(route)) && !reservation.noMueve) {
@@ -1068,18 +1079,23 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
               useNoticesStore.getState().push({ id: `reserva-no-mueve-${reservation.id}`, kind: 'info', title: 'Tu reserva está guardada', text: `No hemos podido mover el día de ${reservation.name} a la fecha de tu reserva. La reserva está guardada en Reservas y la ruta se queda como estaba.` })
               set((state) => ({ reservations: state.reservations.map((other) => (other.id === reservation.id ? { ...other, noMueve: true } : other)) }))
             }
-            set((state) => (state.route ? { route: reapplyReservations(state.route, state.reservations) } : state))
+            { const actual = get().route; if (actual) guardar(reapplyReservations(actual, get().reservations)) }
             // (V50) Entrada grande en otro día: cuando el motor ha recolocado los días, el aviso de abajo con [Deshacer], que lo deshace todo (los días y la reserva).
             if (ok && rutaAntesDeGuardar && !isManualRoute(route)) {
               const { useAddFlowStore } = await import('./useAddFlowStore')
               const { fechaCorta } = await import('../lib/excursionMove')
-              useAddFlowStore.setState({ toast: { message: `Tu ${reservation.placeNames[0] ?? reservation.name}, el ${fechaCorta(reservation.dateIso ?? null, Number(reservation.dayNumber ?? 0))}`, previous: rutaAntesDeGuardar, previousReservations: reservasAntesDeGuardar, id: Date.now() } })
+              // (V68) El aviso dice EXACTAMENTE lo que ha hecho la app: el día entero que se ha pasado, o solo los sitios que se han movido (`loQueHizoLaReserva.ts`).
+              const { resumenDeLoMovido } = await import('../lib/loQueHizoLaReserva')
+              const { tituloSimpleDelDia } = await import('../lib/tituloDelDia')
+              const ahora = get().route
+              const hecho = ahora ? resumenDeLoMovido(rutaAntesDeGuardar, ahora, (day) => tituloSimpleDelDia(rutaAntesDeGuardar, day)).texto : ''
+              useAddFlowStore.setState({ toast: { message: `Tu ${reservation.name}, el ${fechaCorta(reservation.dateIso ?? null, Number(reservation.dayNumber ?? 0))}. ${hecho}`.trim(), previous: rutaAntesDeGuardar, previousReservations: reservasAntesDeGuardar, id: Date.now() } })
             }
           })
           .catch(() => {})
         return
       }
-      set({ route: placeReservedEntrance(unpinned, reservation) })
+      guardar(placeReservedEntrance(unpinned, reservation))
       // El motor rehace ese día corriendo las horas alrededor de la hora de la reserva. Y el día que llevaba el sitio (el Altar de la Patria en el día del Coliseo): el sitio sale de él y va al de
       // la reserva, así que se rehacen los dos (Tanda 6y4, punto 7); si no, el sitio se quedaba sin día. Los días no cambian de orden con una reserva así.
       const reservedDay = dayOfReservation(route, reservation)
@@ -2187,6 +2203,24 @@ for (const name of DIA_PASADO_PRIMER_ARGUMENTO) {
       const estado = useRouteStore.getState()
       if (estado.route && Array.isArray(args[0]) && !ordenRespetaLosPasados(estado.route, args[0] as string[], estado.dev_simulated_today_iso)) return undefined
       return original(...args)
+    },
+  } as Partial<RouteStoreState>)
+}
+
+// (V68, apartado 2) NUNCA UN SITIO DOS VECES EN EL VIAJE: tras mover una parada a otro día o recuperar la ruta, si el cambio ha creado un sitio repetido NO se guarda (queda la ruta de antes) y se dice en el registro
+// (consola de desarrollo y `window.__sitiosRepetidosLog`). Las nocturnas no cuentan (ver `sinSitiosRepetidos.ts`). Guardar una reserva, rehacer días y recuperar un día llevan su propio guardián (más arriba y en rebuildDay.ts).
+for (const name of ['moveStopToDay', 'restoreOriginalRoute'] as const) {
+  const original = useRouteStore.getState()[name] as (...args: unknown[]) => unknown
+  useRouteStore.setState({
+    [name]: (...args: unknown[]) => {
+      const antes = useRouteStore.getState().route
+      const resultado = original(...args)
+      const despues = useRouteStore.getState().route
+      if (antes && despues && despues !== antes) {
+        const guardado = guardianDeSitios(antes, despues, name === 'moveStopToDay' ? 'mover la parada' : 'recuperar la ruta')
+        if (!guardado.ok) useRouteStore.setState({ route: antes })
+      }
+      return resultado
     },
   } as Partial<RouteStoreState>)
 }

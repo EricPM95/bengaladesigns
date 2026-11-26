@@ -5,7 +5,19 @@ import { normalizaNombre, type HorarioDeParada } from './horarioDeParada'
  * Pasada la puesta de sol, HOY no los propone como siguiente parada (salen como lo que ya no cabe hoy, con [Pasar a otro día] y [Guardar en pendientes]) y su caja HORARIO dice «De día» y debajo «Se ve hasta las 18:26»: NUNCA «Cerrado».
  * Lo que se ve de noche (la Fontana de Trevi iluminada, un castillo, una plaza) no va en esos archivos y sigue igual. Se lee del archivo en el propio móvil: no pregunta a Supabase.
  */
-const ARCHIVOS = import.meta.glob('../../data/dias/*/_de_dia.json', { eager: true, import: 'default' }) as Record<string, { sitios?: string[] }>
+type Archivos = Record<string, { sitios?: string[] }>
+// (V68) En la app, Vite resuelve el glob al compilar. Fuera de Vite (las pruebas que empaquetan con esbuild para Node) `import.meta.glob` no existe: se leen los mismos JSON con `fs`.
+let ARCHIVOS: Archivos = {}
+try {
+  ARCHIVOS = import.meta.glob('../../data/dias/*/_de_dia.json', { eager: true, import: 'default' }) as Archivos
+} catch {
+  try {
+    const nodo = (globalThis as { process?: { getBuiltinModule?: (n: string) => any; cwd?: () => string } }).process
+    const fs = nodo?.getBuiltinModule?.('node:fs')
+    const raiz = `${nodo?.cwd?.()}/data/dias`
+    if (fs) for (const d of fs.readdirSync(raiz)) { const f = `${raiz}/${d}/_de_dia.json`; if (fs.existsSync(f)) ARCHIVOS[f] = JSON.parse(fs.readFileSync(f, 'utf8')) }
+  } catch { /* sin archivos: ningún sitio es «solo de día» */ }
+}
 const SITIOS = new Set<string>()
 for (const a of Object.values(ARCHIVOS)) for (const n of a.sitios ?? []) SITIOS.add(normalizaNombre(n))
 

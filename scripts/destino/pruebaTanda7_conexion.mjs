@@ -601,7 +601,7 @@ console.log('8. Lo viejo, fuera')
   // (10S7c, 31-oct) ANTES → AHORA → DECISIÓN DE ERIC. ANTES: el primer y el último día se adaptaban al vuelo RECORTANDO en el cliente (recortarAlVuelo). AHORA: los pide al modo nuevo del motor (/api/adaptar-dia-vuelo: mismas paradas reordenadas y con horas nuevas, lo que no cabe a «Si te sobra tiempo», los imprescindibles con aviso) y el recorte queda solo de respaldo; reorganizarDia.ts sigue sin leer las horas del vuelo. DECISIÓN DE ERIC (10S7c, 31-oct): «Añade al motor adaptar solo el primer día (y lo mismo para el último). Nada pasa a otro día.»
   const cuerpoReorganizar = reorganizar.slice(reorganizar.indexOf("fetch('/api/reorganizar-dia'"), reorganizar.indexOf('if (!response.ok) return null'))
   debe(cuerpoReorganizar.length > 50 && !/llegada|vuelta|arrivalFlightTime|departureFlightTime/.test(cuerpoReorganizar), '5 reorganizar', 'la petición de «Reorganizar este día» al servidor lleva el vuelo')
-  debe(!/arrivalFlightTime|departureFlightTime/.test(reorganizar) && /diaAdaptadoAlVuelo/.test(reorganizar), '5 reorganizar mira el vuelo', 'Reorganizar no mira el vuelo por diaAdaptadoAlVuelo (o lee las horas del vuelo directamente)')
+  debe(!/arrivalFlightTime|departureFlightTime/.test(reorganizar) && /diaAdaptadoAlVuelo|adaptacionAlVuelo/.test(reorganizar), '5 reorganizar mira el vuelo', 'Reorganizar no mira el vuelo por diaAdaptadoAlVuelo (o lee las horas del vuelo directamente)')
 }
 
 // ── 9. Los textos nuevos ──

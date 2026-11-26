@@ -2629,7 +2629,10 @@ function engineExtrasFromRequest(body, answers, dayNumber, destData) {
     const esDeEsteDia = reserva.dateIso ? reserva.dateIso === dayIso : Number(reserva.dayNumber) === Number(dayNumber)
     if (!esDeEsteDia) continue
     const time = String(reserva.time).length === 4 ? `0${reserva.time}` : String(reserva.time)
-    for (const name of Array.isArray(reserva.placeNames) ? reserva.placeNames : []) if (typeof name === 'string') entradas[name] = time
+    // (V68) Una entrada que cubre varios sitios (Coliseo, Foro y Palatino) lleva la HORA solo en el primero de su lista (el Coliseo: su turno es estricto); los demás (el Foro y Palatino, que vale el resto del día)
+    // van detrás, sin hora propia. Antes los dos llevaban las 13:00 y el motor ponía el Foro a esa hora y el Coliseo después.
+    const nombresDeLaEntrada = (Array.isArray(reserva.placeNames) ? reserva.placeNames : []).filter((name) => typeof name === 'string')
+    for (const name of nombresDeLaEntrada.slice(0, 1)) entradas[name] = time
   }
   // Las reservas grandes de TODO el viaje (Tanda 6j): fijan en su fecha el día escrito que lleva el sitio (el Coliseo → el día de la Roma antigua…).
   const reservasGrandes = []

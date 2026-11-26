@@ -3,6 +3,7 @@ import { enrichRoutePhotos } from './placePhoto'
 import { reservasParaMotor } from './engineReservas'
 import { isManualRoute } from './manualPlan'
 import { llegadaVueltaDe } from './llegadaVuelta'
+import { guardianDeSitios } from './sinSitiosRepetidos'
 import type { PlanLlegada, PlanVuelta } from './planLlegadaVuelta'
 
 /**
@@ -74,6 +75,14 @@ export async function rehacerDiasSinTocar(except: string | string[] | null, opci
     }
   }
   if (!ok) return false
+  // (V68, apartado 2) Nunca un sitio dos veces en el viaje: si los días que ha devuelto el motor repetirían un sitio, no se cambia ninguno (todo o nada) y se dice en el registro.
+  {
+    const ahora = useRouteStore.getState().route
+    if (ahora) {
+      const compuesta = { ...ahora, days: ahora.days.map((other) => { const hecho = rehechos.find((item) => item.id === other.id); return hecho ? { ...hecho.next, id: other.id, dayNumber: other.dayNumber } : other }) }
+      if (!guardianDeSitios(ahora, compuesta, 'rehacer los días').ok) return false
+    }
+  }
   // (El viajero pudo tocar un día mientras llegaban las respuestas: ese no se pisa.)
   for (const { id, next } of rehechos) {
     const actual = useRouteStore.getState().route?.days.find((other) => other.id === id)

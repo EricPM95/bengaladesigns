@@ -102,7 +102,8 @@ try {
       // 21:19, entrada de las 10:00 ya pasada
       const props = m.proponerRetraso({ route, day: D1, paradaId: 'Coliseo', minutos: 60, ctx, ahoraMin: 21 * 60 + 19 })
       out.retraso = props.map((x) => ({ boton: x.boton, mantiene: x.mantiene.titulo, pasadas: x.entradasPasadas, quitadas: x.quitadas.map((q) => q.nombre + ':' + q.destino + ':' + (q.aDia ?? '')), otra: x.etiquetaOtra ?? null, resumen: (x.resumen ?? []).map((l) => l.texto) }))
-      out.yaNo = m.yaNoDaTiempo({ day: D1, ahoraMin: 21 * 60 + 19, ctx, vistas: 0 })
+      // (V59) «Hoy ya no da tiempo a todo» (H1) nunca sale desde las 20:00 (a esa hora es «Por hoy ya está», H2): se prueba por la tarde, a las 16:00.
+      out.yaNo = m.yaNoDaTiempo({ day: D1, ahoraMin: 16 * 60, ctx, vistas: 0 })
       out.yaNoTemprano = m.yaNoDaTiempo({ day: D1, ahoraMin: 9 * 60 + 30, ctx, vistas: 0 })
       out.pasarFalta = (() => { const x = m.proponerPasarLoQueFalta({ route, day: D1, ctx, ahoraMin: 21 * 60 + 19 }); return x ? { boton: x.boton, quitadas: x.quitadas.map((q) => q.nombre + ':' + q.destino) } : null })()
       // pasar a otro día: solo la mejor forma (sin «Ver otra opción»)
@@ -137,7 +138,7 @@ try {
     debe(/domingo/.test(r.retraso[0]?.boton ?? '') && r.retraso[0].quitadas.some((q) => /:manana:domingo 18$/.test(q)), 'retraso', `primero, pasarlo al mejor día con su nombre (${r.retraso[0]?.boton} · ${r.retraso[0]?.quitadas})`)
     debe(r.retraso.some((x) => /^Mejor pasarlo al domingo/.test(x.otra ?? '')) , 'retraso', 'con [Ver otra opción], quitarlo, y ahí el botón de ver otra dice «Mejor pasarlo al domingo»')
     debe(r.retraso.every((x) => x.resumen.length > 0), 'hojas', 'cada propuesta trae su bloque de resumen')
-    debe(r.yaNo && r.yaNo.entrada?.hora === '10:00', 'ya_no', 'a las 21:19, con una entrada de las 10:00 pasada, sale «Hoy ya no da tiempo a todo» con «Tu entrada de las 10:00…»')
+    debe(r.yaNo && r.yaNo.entrada?.hora === '10:00', 'ya_no', 'a las 16:00, con una entrada de las 10:00 pasada, sale «Hoy ya no da tiempo a todo» con «Tu entrada de las 10:00…»')
     debe(r.yaNoTemprano == null, 'ya_no', 'a las 9:30 no sale')
     debe(r.pasarFalta && /Pasar lo que falta/.test(r.pasarFalta.boton) && r.pasarFalta.quitadas.length > 0, 'ya_no', '«Pasar lo que falta a otro día» hace una propuesta')
     debe(r.pasarADia.n === 1 && /^Pasarlo al domingo/.test(r.pasarADia.boton ?? ''), 'pasar_dia', `pasar a otro día: una sola forma, la mejor, con su botón (${JSON.stringify(r.pasarADia)})`)
@@ -189,7 +190,9 @@ try {
     await esp(900)
     const h = (await hoja()) ?? ''
     debe(h.length > 0 && !/Propuesta|Cambia:|Aplicar|Volver a mi ruta original/.test(h), 'hojas', `la hoja de retraso no lleva «Propuesta», «Cambia:», [Aplicar] ni «Volver a mi ruta original» (${h.slice(0, 160)})`)
-    debe(await hay('[data-propuesta-resumen]') && (await hay('[data-propuesta-dejar]')) || (await hay('[data-propuesta-vacia]')), 'hojas', 'la hoja trae un bloque de resumen y [Dejarlo como está] (o dice que no hay nada)')
+    // (V55) La hoja de propuesta ya no lleva «bloque de resumen»: una tarjeta por sitio (`data-propuesta-tarjetas`) y [Dejarlo como está].
+    // (V59) «Voy con retraso» es la hoja de cierre (H4: franja verde y un solo [Entendido]; H5: como H1): vale cualquiera de las dos formas.
+    debe(((await hay('[data-propuesta-tarjetas]')) || (await hay('[data-hoja-cierre]'))) && ((await hay('[data-propuesta-dejar]')) || (await hay('[data-cierre-dejar]')) || (await hay('[data-cierre-entendido]'))) || (await hay('[data-propuesta-vacia]')), 'hojas', 'la hoja trae sus tarjetas por sitio y [Dejarlo como está] (o dice que no hay nada)')
     await a.captura(png('v43_retraso'))
     await clic('[data-propuesta-dejar]')
     await esp(500)
@@ -217,33 +220,37 @@ try {
 
   await sec(async () => {
     // «Hoy ya no da tiempo a todo»: 21:19 con la mañana pasada y nada hecho, una sola vez
-    await montarHoy(21 * 60 + 19)
+    // (V59) La hoja única de cierre (`HojaDelDia`): H1 «Hoy ya no da tiempo a todo» (nunca desde las 20:00, por eso a las 16:00), con [Pasarlos a otros días], [Guardarlos en pendientes] y [Dejarlo como está]; sin [Ver lo que queda hoy].
+    await montarHoy(16 * 60)
     const t1 = await hoja()
-    debe(/Hoy ya no da tiempo a todo/.test(t1 ?? '') && /Lo que tenías por la mañana ya ha pasado\. ¿Qué hacemos\?/.test(t1 ?? ''), 'ya_no', `al abrir HOY a las 21:19 sale «Hoy ya no da tiempo a todo» (${(t1 ?? '').slice(0, 140)})`)
-    debe(/Ver lo que queda hoy/.test(t1 ?? '') && /Pasar lo que falta a otro día/.test(t1 ?? '') && /Dejarlo como está/.test(t1 ?? ''), 'ya_no', 'con sus tres botones')
+    debe(/Hoy ya no da tiempo a todo/.test(t1 ?? '') && (await hay('[data-hoja-cierre="h1"]')), 'ya_no', `al abrir HOY a las 16:00 con la mañana pasada sale «Hoy ya no da tiempo a todo» (${(t1 ?? '').slice(0, 140)})`)
+    // (V59) Con días con sitio se ofrece [Pasarlos a otros días] + [Guardarlos en pendientes]; si no cabe en ningún otro día, solo [Guardarlos en pendientes] (dorado).
+    debe((/Pasar(?:los a otros días|lo a otro día)/.test(t1 ?? '') || /Guardar(?:los|lo) en pendientes/.test(t1 ?? '')) && /Guardar(?:los|lo) en pendientes/.test(t1 ?? '') && /Dejarlo como está/.test(t1 ?? '') && !/Ver lo que queda hoy/.test(t1 ?? ''), 'ya_no', `con sus tres botones (dorado, claro y enlace), sin [Ver lo que queda hoy] (${(t1 ?? '').slice(0, 400)})`)
     await a.captura(png('v43_ya_no_da_tiempo'))
-    await clic('[data-ya-no-dejar]')
+    await clic('[data-cierre-dejar]')
     await esp(500)
     await ev(`${R}.getState().setMode('days')`)
     await esp(1200)
     await ev(`${R}.getState().setMode('today')`)
     await esp(2200)
-    debe(!(await hay('[data-hoy-ya-no-da-tiempo]')), 'ya_no', 'tras HOY → DÍAS → HOY la hoja no vuelve a salir (una vez al día)')
+    debe(!(await hay('[data-hoja-cierre="h1"]')), 'ya_no', 'tras HOY → DÍAS → HOY la hoja no vuelve a salir (una vez al día)')
   })
 
   await sec(async () => {
     // el aviso de «ya ha cerrado»: una vez tras HOY → DÍAS → HOY → RUTA → HOY
     await montarHoy(22 * 60 + 40)
-    await clic('[data-ya-no-dejar]')
+    await clic('[data-cierre-dejar]')
     const cuenta = () => a.evaluar(`Array.from(document.querySelectorAll('[data-aviso-de-abajo]')).filter((e) => /cerrado/.test(e.innerText)).length`)
     let vistos = 0
     for (let i = 0; i < 8; i++) {
       vistos = Math.max(vistos, await cuenta())
       await esp(500)
     }
-    debe(vistos === 1, 'avisos', `a las 22:40 sale el aviso de «ya ha cerrado» (juntos en UNO) (${vistos})`)
+    // (V52/V54) Lo cerrado ya NO sale como aviso suelto (ni de abajo ni juntos en uno): la parada que ya ha cerrado lleva su propia tarjeta «YA HA CERRADO» (o «YA ES DE NOCHE»).
+    const tarjetaCerrada = await a.evaluar(`/YA HA CERRADO|YA ES DE NOCHE/.test(document.body.innerText)`)
+    debe(vistos === 0, 'avisos', `a las 22:40 no sale ningún aviso suelto de «ya ha cerrado» (${vistos})`)
+    debe(tarjetaCerrada === true, 'avisos', 'a las 22:40 la parada cerrada sale con su tarjeta «YA HA CERRADO» / «YA ES DE NOCHE»')
     await a.captura(png('v43_aviso_cerrado'))
-    debe(vistos <= 1, 'avisos', `nunca más de un aviso de «ya ha cerrado» a la vez (${vistos})`)
     await esp(6500)
     await ev(`${R}.getState().setMode('days')`)
     await esp(900)

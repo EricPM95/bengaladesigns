@@ -206,7 +206,7 @@ for (const fechas of [true, false]) {
   }
   for (const dir of ['src', 'server', 'shared', 'scripts']) recorre(dir)
   // (al día, 19-nov) La 10S7c añadió a propósito [Pasarlo a otro día] (el aviso de un imprescindible que no cabe en el día adaptado al vuelo): esos ficheros salen de la regla.
-  const DE_LA_10S7C = /AvisoNoCabe|adaptarVuelos|imprescindiblesGrandes|pasarImprescindible|useReorganizarStore|pruebaTanda10S7c|hoy[\\/]piezas|CambiarPlan|HorarioHoy|hoyCambiarPlan|generarRepasoV\d+|pruebaTandaHOY2_B|pruebaV4\d/ // (V43 §1, 24-nov) las hojas de propuesta de HOY tienen su botón dorado que dice lo que hace («Pasarlo al viernes 27», «Añadirlo a tu día»): no son los avisos de RESERVAS de esta regla
+  const DE_LA_10S7C = /AvisoNoCabe|adaptarVuelos|imprescindiblesGrandes|pasarImprescindible|useReorganizarStore|pruebaTanda10S7c|hoy[\\/]piezas|CambiarPlan|HorarioHoy|hoyCambiarPlan|generarRepasoV\d+|pruebaTandaHOY2_B|pruebaV4\d|HojaDelDia|hoyPeligro|capturasV\d+|catalogoV\d+/ // (V68: las hojas de HOY de la V54-V67 y sus capturas también tienen [Pasarlo a otro día]) (V43 §1, 24-nov) las hojas de propuesta de HOY tienen su botón dorado que dice lo que hace («Pasarlo al viernes 27», «Añadirlo a tu día»): no son los avisos de RESERVAS de esta regla
   const sucios = visitados.filter((f) => !DE_LA_10S7C.test(f) && textoViejo.test(fs.readFileSync(f, 'utf8')))
   debe(visitados.length > 100 && sucios.length === 0, '3 textos', `quedan ${palabras.join('/')} en: ${sucios.join(', ')}`)
 

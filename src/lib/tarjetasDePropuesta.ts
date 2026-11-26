@@ -280,8 +280,9 @@ export function cambiosDeReorganizar(cambios: DiaDespues[], route: Route): Cambi
         cambiados.add(`sitio:${k}`)
         ponerTarjeta(antes, { ...base(s, nombre, antes, antes.city), cuando: 'A Lugares pendientes', aPendientes: true }, true)
       } else {
+        // (V68) Reorganizar NUNCA quita nada del viaje: un sitio que no está en ningún día va a «Lugares pendientes» (la red de seguridad de `reorganizarMinimo` ya lo deja ahí; esto es por si acaso).
         cambiados.add(`sitio:${k}`)
-        ponerTarjeta(antes, { ...base(s, nombre, antes, antes.city), cuando: 'Se quita de tu viaje', quitar: true }, true)
+        ponerTarjeta(antes, { ...base(s, nombre, antes, antes.city), cuando: 'A Lugares pendientes', aPendientes: true }, true)
       }
     }
     // Solo el orden: lo que se ha movido de sitio dentro del día, «Después de …» (nunca el número de parada).
@@ -306,14 +307,7 @@ export function cambiosDeReorganizar(cambios: DiaDespues[], route: Route): Cambi
       const cu = cuandoEs(s, nuevos)
       ponerTarjeta(nuevos, { ...base(s, nombreDe(s), nuevos, nuevos.city), cuando: `Entra ${cu.conHora ? cu.texto : cu.texto}`, ...cuadradoDelDia(route, nuevos) }, true)
     }
-    // Las comidas que se van (el desayuno, una comida sin restaurante elegido).
-    for (const m of antes.meals) {
-      if (m.chosenRestaurant) continue
-      if (nuevos.meals.some((x) => x.mealTime === m.mealTime)) continue
-      cambiados.add(`comida:${antes.id}:${m.mealTime}`)
-      const nombre = m.mealTime === 'dinner' ? 'Cena' : m.mealTime === 'lunch' ? 'Comida' : 'Desayuno'
-      ponerTarjeta(antes, { ...base(null, nombre, antes, antes.city), cuando: 'Se quita de tu día', quitar: true }, true)
-    }
+    // (V68) La comida o la cena que ya no entra en el día (aterrizas a las 17:30: sin comida) NO sale como tarjeta de «quitar»: nada se quita del viaje, y la comida no es un sitio. Lo dice el texto de arriba.
     // La comida o la cena que se corre más de 15 min.
     for (const m of antes.meals) {
       const nueva = nuevos.meals.find((x) => x.mealTime === m.mealTime)

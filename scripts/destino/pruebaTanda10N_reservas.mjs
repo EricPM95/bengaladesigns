@@ -226,8 +226,8 @@ try {
   await irAReservas(a)
   await a.esp(1000)
   const lineaDueno = await a.evaluar(`document.querySelector('[data-entrada-fila*="Coliseo"]')?.textContent ?? null`)
-  // antes → ahora → decisión de Eric (10S8, 31-oct): la línea «Para Eric, Ana» → las iniciales con «Tú · Ana» (para quién, en redondo, E1); «Cambiar» → la tarjeta propia con sus lápices y [Añadir tu entrada]. Misma información, otra forma.
-  debe(lineaDueno && /Tú · Ana/.test(lineaDueno), 'para_quien', `el dueño ve en su línea «Para Eric, Ana» (${lineaDueno})`)
+  // (V65, 25-nov) La tarjeta de la entrada lleva cajas (PRECIO / LOCALIZADOR / PERSONAS / ACCESO): «PERSONAS 2 · Eric y Ana» para el dueño y «Tú y Eric · La compró Eric» para Ana. Antes → ahora → decisión de Eric (10S8, 31-oct): la línea «Para Eric, Ana» → las iniciales con «Tú · Ana» (para quién, en redondo, E1); «Cambiar» → la tarjeta propia con sus lápices y [Añadir tu entrada]. Misma información, otra forma.
+  debe(lineaDueno && /PERSONAS\s*2\s*Eric y Ana/.test(lineaDueno), 'para_quien', `el dueño ve en su línea «Para Eric, Ana» (${lineaDueno})`)
   await a.captura(path.join(SALIDA, '10n_reservas_dueno_entradas.jpg'))
 
   /* — Ana (incluida): la misma pantalla, en gris, y «Reservada ✓» — */
@@ -248,7 +248,7 @@ try {
   await abrirBloque(a, 'entradas')
   await a.esp(1000)
   const filaAna = await a.evaluar(`(() => { const f = document.querySelector('[data-entrada-fila*="Coliseo"]'); return f ? { texto: f.textContent, cambiar: Array.from(f.querySelectorAll('button')).some((b) => /Cambiar/.test(b.textContent)) } : null })()`)
-  debe(filaAna && /Eric la ha reservado para ti/.test(filaAna.texto) && !filaAna.cambiar, 'incluida', `Ana (incluida) ve el Coliseo reservado, «Eric la ha reservado para ti», sin Cambiar (${filaAna?.texto})`)
+  debe(filaAna && /Tú y Eric · La compró Eric/.test(filaAna.texto) && !filaAna.cambiar, 'incluida', `Ana (incluida) ve el Coliseo reservado, «Eric la ha reservado para ti», sin Cambiar (${filaAna?.texto})`)
   await a.captura(path.join(SALIDA, '10n_reservas_invitada_incluida.jpg'))
   // DÍAS: «Reservada ✓»
   await irA(a, 'days')
@@ -375,7 +375,7 @@ try {
   const mismasDueno = await a.evaluar(`window.__ruta.getState().reservations.length`)
   debe(mismasDueno === nReservasDueno, 'suya', 'lo que compra el invitado es suyo: las reservas del dueño siguen siendo las mismas')
   const lineaDueno2 = await a.evaluar(`document.querySelector('[data-entrada-fila*="Coliseo"]')?.textContent ?? null`)
-  debe(lineaDueno2 && !/Cambiar.*Cambiar/.test(lineaDueno2) && /Tú · Ana/.test(lineaDueno2), 'suya', 'y su RESERVAS sigue diciendo «Para Eric, Ana», sin rastro de la entrada de Luis')
+  debe(lineaDueno2 && !/Cambiar.*Cambiar/.test(lineaDueno2) && /Eric y Ana/.test(lineaDueno2), 'suya', 'y su RESERVAS sigue diciendo «Para Eric, Ana», sin rastro de la entrada de Luis')
 } catch (e) {
   console.log('ERRS', await a.evaluar('JSON.stringify(window.__errs)').catch(() => '?'))
   throw e

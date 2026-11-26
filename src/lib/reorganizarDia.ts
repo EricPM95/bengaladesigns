@@ -10,7 +10,7 @@ import { useReorganizarStore, alDeshacerOcultaLaHoja } from '../store/useReorgan
 import { isFreeDay } from './freeDays'
 import { useRouteStore } from '../store/useRouteStore'
 import { useAddFlowStore, withUndo } from '../store/useAddFlowStore'
-import { adaptacionAlVuelo, type NoCabe } from './adaptarVuelos'
+import { adaptacionAlVuelo, type DiaAdaptado, type NoCabe } from './adaptarVuelos'
 
 export interface OrdenDelDia {
   /** Los mismos ids de las paradas del día, en el orden nuevo. */
@@ -101,6 +101,7 @@ export function sePuedeReorganizar(day: DayPlan): boolean {
 
 export { marcarDiaReorganizado, esDiaRecienReorganizado } from './diaReorganizado'
 import { marcarDiaReorganizado } from './diaReorganizado'
+import { guardianDeSitios } from './sinSitiosRepetidos'
 
 export interface CambioDeUnDia {
   dayId: string
@@ -171,7 +172,8 @@ export function detalleDelCambio(antes: DayPlan, despues: DayPlan, otros: DayPla
       continue
     }
     const pend = enPendientes.get(clave)
-    lista.push({ ...base, accion: pend ? 'pendientes' : 'quitado', aHora: null, aDiaNumero: null, franja: null, motivo: pend?.spareReason ?? null })
+    // (V68) Nunca «quitado»: un sitio que no está en ningún día va a «Lugares pendientes».
+    lista.push({ ...base, accion: 'pendientes', aHora: null, aDiaNumero: null, franja: null, motivo: pend?.spareReason ?? null })
   }
   return lista
 }
@@ -189,11 +191,15 @@ export async function diasQueCambian(dayIds: string[]): Promise<CambioDeUnDia[]>
     if (!day || !sePuedeReorganizar(day)) continue
     // (10S7b) El primer y el último día miran el vuelo: si hay vuelo y el motor lo rehace distinto, ese es el cambio.
     // (V61) Con vuelo, el motor de los vuelos es quien decide el día: si no cambia nada, el día ya está bien (el orden suelto no sabe de vuelos ni de la hora del Free Tour: no puede proponer otra cosa).
-    const { manda, adaptado } = await adaptacionAlVuelo(route, reservations, dayId).catch(() => ({ manda: false, adaptado: null }))
-    if (adaptado) {
-      cambian.push({ dayId, dayNumber: day.dayNumber, order: day.stops.map((stop) => stop.id), mealAfter: {}, movidas: adaptado.movidas, reconstruido: adaptado.next, noCaben: adaptado.noCaben, detalle: [] })
-      continue
+    const { manda, adaptado, todos } = await adaptacionAlVuelo(route, reservations, dayId).catch(() => ({ manda: false, adaptado: null, todos: [] as DiaAdaptado[] }))
+    // (V68) El cambio mínimo se calcula de una vez para todo el viaje: con él entran también los días que reciben lo que no cabe el día de la llegada (aunque no se hayan pedido), una sola vez.
+    for (const otro of todos) {
+      if (cambian.some((cambio) => cambio.dayId === otro.dayId)) continue
+      const diaDeOtro = route.days.find((d) => d.id === otro.dayId)
+      if (!diaDeOtro) continue
+      cambian.push({ dayId: otro.dayId, dayNumber: diaDeOtro.dayNumber, order: diaDeOtro.stops.map((stop) => stop.id), mealAfter: {}, movidas: otro.movidas, reconstruido: otro.next, noCaben: otro.noCaben, detalle: [] })
     }
+    if (adaptado) continue
     if (manda) continue
     const orden = await pedirOrdenDelDia(route, day, reservations)
     if (!orden || !orden.changed) continue
@@ -227,6 +233,12 @@ export async function reorganizarDias(dayIds: string[], { avisar = false }: { av
     for (const cambio of cambian) {
       if (cambio.reconstruido) useRouteStore.getState().replaceDayRebuilt(cambio.dayId, cambio.reconstruido)
       else useRouteStore.getState().reorganizeDay(cambio.dayId, cambio.order, cambio.mealAfter)
+    }
+    // (V68) Nunca un sitio dos veces: se mira el resultado COMPLETO; si repite uno nuevo, no se guarda.
+    const resultado = useRouteStore.getState().route
+    if (antes && resultado) {
+      const guardado = guardianDeSitios(antes, resultado, 'reorganizar')
+      if (!guardado.ok) useRouteStore.setState({ route: guardado.route })
     }
     const despues = useRouteStore.getState().route
     if (despues) useRouteStore.setState({ route: conUltimoCambio(antes, despues, { tipo: 'reorganizar', dia_n: primero.dayNumber, fecha: fechaDelDia(despues, primero.dayNumber), n: cambian.length }) })

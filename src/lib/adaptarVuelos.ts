@@ -28,6 +28,7 @@ import { parseTimeToMinutes } from './time'
 import { isManualRoute } from './manualPlan'
 import { isFreeDay } from './freeDays'
 import { pagoActivo } from './pago'
+import { guardianDeSitios } from './sinSitiosRepetidos'
 import { conUltimoCambio } from './accionDeCambio'
 import { fechaDelDia } from './nombreDeDia'
 import { useRouteStore } from '../store/useRouteStore'
@@ -35,6 +36,7 @@ import { esDestinoDeCoche } from './experienceCategoryBank'
 import { withUndo } from '../store/useAddFlowStore'
 import { useReorganizarStore, alDeshacerOcultaLaHoja } from '../store/useReorganizarStore'
 import { marcarDiaReorganizado } from './diaReorganizado'
+import { cambioMinimo, diaBloqueado } from './reorganizarMinimo'
 
 export interface DiaAdaptado {
   dayId: string
@@ -349,7 +351,7 @@ function diasDeVuelo(route: Route): DayPlan[] {
  * Pide al motor lo que cambia con los vuelos de ahora: los planes (siempre) y los días que cambiarían (primero, último y vuelta; solo los que se pueden adaptar). No toca la ruta.
  * Devuelve null si la ruta no es de las que rehace el motor.
  */
-export async function propuestaDeVuelos(route: Route, reservations: Reservation[], opciones: { /** (V57, probador del panel) Forzar con o sin pase en vez de leerlo de la cuenta. */ pase?: boolean; coche?: CocheReservado } = {}): Promise<PropuestaDeVuelos | null> {
+export async function propuestaDeVuelos(route: Route, reservations: Reservation[], opciones: { /** (V57, probador del panel) Forzar con o sin pase en vez de leerlo de la cuenta. */ pase?: boolean; coche?: CocheReservado; /** (V68, SOLO para las capturas de «antes») Lo que proponía el motor día por día, sin el cambio mínimo. */ sinMinimo?: boolean } = {}): Promise<PropuestaDeVuelos | null> {
   if (!esRutaDelMotor(route)) return null
   const conPase = opciones.pase ?? pagoActivo()
   const { vuelo, info } = await datosDelVuelo(route, reservations, opciones.coche)
@@ -373,8 +375,16 @@ export async function propuestaDeVuelos(route: Route, reservations: Reservation[
   if (conPase) {
     // (LL) Lanzarote: el reparto entero depende del día de llegada y del de vuelta, así que se miran todos los días.
     for (const day of esDestinoDeCoche(route.destination) || vuelo.llegada || vuelo.vuelta ? route.days : diasDeVuelo(route)) {
+      // (V68) Los días que ya pasaron y lo ya hecho de hoy están bloqueados: Reorganizar no los toca.
+      if (diaBloqueado(route, day)) continue
       const adaptado = await adaptarUnDia(route, day, vuelo, info, generadoDeVuelta, reservations)
       if (adaptado) dias.push(adaptado)
+    }
+    // (V68) El cambio MÍNIMO y nada se quita: con el vuelo de llegada solo cambia el día de la llegada; lo que no cabe va al día donde mejor quepa o a «Lugares pendientes» (src/lib/reorganizarMinimo.ts).
+    if (dias.length > 0 && !opciones.sinMinimo) {
+      const minimo = await cambioMinimo(route, dias, { hayLlegada: Boolean(vuelo.llegada), hayVuelta: Boolean(vuelo.vuelta), enCoche: esDestinoDeCoche(route.destination) })
+      dias.length = 0
+      dias.push(...minimo)
     }
   }
   // (LL parte 2) El día de vuelta depende de lo que ya se ve en los demás días (la Roma antigua pasa al día 2, el día que se cae…): se pide otra vez con el orden y los días YA adaptados, para que adaptar dos veces dé lo mismo.
@@ -402,14 +412,29 @@ export async function diaAdaptadoAlVuelo(route: Route, reservations: Reservation
  * (V61) Lo mismo con una respuesta más: `manda` = el motor de los vuelos es quien decide ESTE día (hay vuelo y el día es de los que rehace el motor). Entonces el orden suelto de
  * `/api/reorganizar-dia` (que no sabe de vuelos ni de la hora del Free Tour) NO puede volver a tocarlo: si el motor no cambia nada, el día ya está bien y Reorganizar no propone nada (dos veces seguidas = lo mismo).
  */
-export async function adaptacionAlVuelo(route: Route, reservations: Reservation[], dayId: string): Promise<{ manda: boolean; adaptado: DiaAdaptado | null }> {
-  if (!pagoActivo() || !esRutaDelMotor(route)) return { manda: false, adaptado: null }
-  const { vuelo, info } = await datosDelVuelo(route, reservations)
+export async function adaptacionAlVuelo(route: Route, reservations: Reservation[], dayId: string): Promise<{ manda: boolean; adaptado: DiaAdaptado | null; /** (V68) TODOS los días que cambian con el vuelo (el de la llegada y los que reciben lo que no cabe): el cambio mínimo se calcula de una vez. */ todos: DiaAdaptado[] }> {
+  const ninguno = { manda: false, adaptado: null, todos: [] as DiaAdaptado[] }
+  if (!pagoActivo() || !esRutaDelMotor(route)) return ninguno
+  const { vuelo } = await datosDelVuelo(route, reservations)
   const day = (esDestinoDeCoche(route.destination) || vuelo.llegada || vuelo.vuelta ? route.days : diasDeVuelo(route)).find((other) => other.id === dayId)
-  if (!day || !sePuedeRehacer(day)) return { manda: false, adaptado: null }
-  if (!vuelo.llegada && !vuelo.vuelta) return { manda: false, adaptado: null }
-  const generado = day.isReturnLeg && vuelo.vuelta ? await pedirDiaAlMotor(route, reservations, vuelo, day.dayNumber, true) : null
-  return { manda: true, adaptado: await adaptarUnDia(route, day, vuelo, info, generado) }
+  if (!day || !sePuedeRehacer(day) || diaBloqueado(route, day)) return ninguno
+  if (!vuelo.llegada && !vuelo.vuelta) return ninguno
+  // (V68) Una sola propuesta para todo el viaje (guardada 30 s: el botón la pide día por día): el motor rehace el día de la llegada y el cambio mínimo reparte lo que no cabe.
+  const propuesta = await propuestaDeVuelosGuardada(route, reservations)
+  const todos = propuesta?.dias ?? []
+  return { manda: true, adaptado: todos.find((dia) => dia.dayId === dayId) ?? null, todos }
+}
+
+const propuestasGuardadas = new Map<string, { cuando: number; promesa: Promise<PropuestaDeVuelos | null> }>()
+function propuestaDeVuelosGuardada(route: Route, reservations: Reservation[]): Promise<PropuestaDeVuelos | null> {
+  const clave = JSON.stringify([route.id, route.arrivalFlightTime, route.departureFlightTime, route.arrivalPointId, route.days.map((day) => firmaDelDia(day)), reservasParaMotor(reservations)])
+  const ahora = Date.now()
+  for (const [k, v] of propuestasGuardadas) if (ahora - v.cuando > VIDA_MS) propuestasGuardadas.delete(k)
+  const ya = propuestasGuardadas.get(clave)
+  if (ya) return ya.promesa
+  const promesa = propuestaDeVuelos(route, reservations)
+  propuestasGuardadas.set(clave, { cuando: ahora, promesa })
+  return promesa
 }
 
 /** Pone los días adaptados (UNA franja con [Deshacer], UN solo aviso para los demás) y los ilumina. Un día que el viajero cambió mientras tanto no se pisa. */
@@ -422,6 +447,12 @@ export function ponerDiasAdaptados(dias: DiaAdaptado[], mensaje = 'Hemos adaptad
   const antes = useRouteStore.getState().route
   withUndo(mensaje, () => {
     for (const dia of vigentes) useRouteStore.getState().replaceDayRebuilt(dia.dayId, dia.next)
+    // (V68) Nunca un sitio dos veces: se mira el resultado COMPLETO (a mitad hay repetidos transitorios); si repite uno nuevo, no se guarda.
+    const resultado = useRouteStore.getState().route
+    if (antes && resultado) {
+      const guardado = guardianDeSitios(antes, resultado, 'reorganizar')
+      if (!guardado.ok) useRouteStore.setState({ route: guardado.route })
+    }
     const despues = useRouteStore.getState().route
     if (despues) useRouteStore.setState({ route: conUltimoCambio(antes, despues, { tipo: 'reorganizar', dia_n: vigentes[0].dayNumber, fecha: fechaDelDia(despues, vigentes[0].dayNumber), n: vigentes.length }) })
   })
@@ -482,6 +513,7 @@ export function adaptarLosDias(): number {
 /** Solo para las pruebas: vacía la memoria de respuestas del motor. */
 export function olvidarRespuestasDelMotor(): void {
   guardadas.clear()
+  propuestasGuardadas.clear()
 }
 
 // ── (LZ2a) Lanzarote: cada día desde la zona del viajero ─────────────────────────────────────────────────────────

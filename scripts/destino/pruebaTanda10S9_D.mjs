@@ -26,10 +26,11 @@ console.log('A. El código')
   debe(/pagoActivo\(\) && dias\.length > 0/.test(enganche) && /proponerVuelos/.test(enganche), 'apartado 3', 'la pregunta de adaptar sigue siendo solo con pase')
   debe(/withUndo\(mensaje/.test(lib) && /Hemos adaptado tus días a tus vuelos/.test(lib), 'apartado 3', 'tras «Sí, adaptarlos» sale la franja con [Deshacer]')
   const aloj = leer('src/components/route/reservas/AlojamientoReservas.tsx')
-  debe(/onLapiz=\{esAdmin && hotel && \(reserva \|\| localizador\) \? abrirDatos : undefined\}/.test(aloj), 'apartado 4', 'alojamiento: el lápiz de «Datos de la reserva» solo con documento')
-  debe(/onLapiz=\{!soloVer && \(conCodigo \|\| localizador\) \? onLapizDatos : undefined\}/.test(leer('src/components/route/reservas/EntradaConBillete.tsx')), 'apartado 4', 'entradas: el lápiz de «Datos de la entrada» solo con documento')
+  // (V45/V64) En el alojamiento, «Datos de la reserva» ya no es un segundo lápiz: es el icono del documento (dorado si hay reserva, gris con «+» si falta) junto al lápiz de arriba.
+  debe(/esAdmin && hotel && <IconoDeDocumento hay=\{Boolean\(reserva\)\} tipo="reserva" onAbrir=\{abrirDatos\}/.test(aloj), 'apartado 4', 'alojamiento: el icono del documento (reserva) abre «Datos de la reserva»')
+  debe(/!soloVer && \(conCodigo \|\| localizador\) && onLapizDatos/.test(leer('src/components/route/reservas/EntradaConBillete.tsx')), 'apartado 4', 'entradas: el lápiz de «Datos de la entrada» solo con documento')
   // antes → ahora → decisión de Eric (10S9b, 1-nov): `conCodigo || localizador` → `conCodigo || localizador || personasEscritas` (las personas escritas a mano en «Datos de la excursión» cuentan como datos: salen en su fila y abren el bloque con su lápiz). Sin nada guardado sigue sin lápiz.
-  debe(/onLapiz=\{conCodigo \|\| localizador \|\| personasEscritas \? onLapizDatos : undefined\}/.test(leer('src/components/route/reservas/ExcursionConBillete.tsx')), 'apartado 4', 'excursiones: el lápiz de «Datos de la excursión» solo con datos (documento o escritos a mano)')
+  debe(/\(conCodigo \|\| localizador \|\| personasEscritas\) && onLapizDatos/.test(leer('src/components/route/reservas/ExcursionConBillete.tsx')), 'apartado 4', 'excursiones: el lápiz de «Datos de la excursión» solo con datos (documento o escritos a mano)')
 }
 if (process.env.SOLO_SECO) {
   console.log(`\n${comprobaciones} comprobaciones, ${fallos.length} fallos`)
@@ -51,6 +52,8 @@ async function abrir(version) {
   await a.evaluar('window.__rutaPrueba().then(() => true)')
   for (let i = 0; i < 90 && !(await a.evaluar(s('return Boolean(st().route)'))); i++) await a.esp(1000)
   await a.esp(3000)
+  // (V68) Reorganizar no toca los días que ya pasaron: el viaje de pruebas trae fechas de octubre de 2026 (ya pasadas), así que se le ponen unas FUTURAS (mismas noches, empezando en sábado como las de octubre).
+  await a.evaluar(s("const r = st().route; const n = r.days.length; const d = new Date(Date.UTC(2027, 2, 6)); const f = (k) => new Date(d.getTime() + k * 86400000).toISOString().slice(0, 10); R.setState({ route: { ...r, answers: { ...r.answers, dateRange: { ...(r.answers?.dateRange ?? {}), start: f(0), end: f(n - 1) } } } }); return true"))
   await a.evaluar(s("st().setMode('days'); st().setActiveDayId(st().route.days[1].id); return true"))
   await a.esp(2000)
   for (let i = 0; i < 6; i++) {
@@ -156,7 +159,9 @@ async function lapices(version) {
     await a.esp(1500)
     await abre('aloj')
     const conDoc = await lapizDe('aloj')
-    debe(conDoc.split(',').sort().join(',') === 'aloj-arriba,aloj-datos', 'apartado 4', `alojamiento con documento: los dos lápices, arriba y «Datos de la reserva» (${conDoc})`)
+    // (V45/V64) Con la reserva guardada: el lápiz de arriba y, junto a él, el icono DORADO del documento (ya no hay un segundo lápiz «Datos de la reserva»).
+    const iconoDoc = await ev(`document.querySelector('[data-blk="aloj"] [data-icono-documento="si"]') ? 'si' : 'no'`)
+    debe(conDoc === 'aloj-arriba' && iconoDoc === 'si', 'apartado 4', `alojamiento con documento: el lápiz de arriba y el icono dorado del documento (${conDoc}, icono ${iconoDoc})`)
     await a.captura(path.join(SALIDA, `10s9_d_aloj_con_documento_${version}_1.jpg`)).catch(() => {})
     /* — Entrada — */
     const base = await R(`const r = route(); const d = r.days.filter((x) => !x.isReturnLeg && B.dateOfDay(r, x))[1] ?? r.days[0]; const s = d.stops.find((p) => !p.isFreeTour && !p.isNightExperience && !p.passThrough && !p.isBreak && p.name); return { dateIso: B.dateOfDay(r, d), nombre: s.name }`)

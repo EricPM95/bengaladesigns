@@ -1,4 +1,5 @@
 import { PendienteDeParada } from '../../logros/visto/PendienteDeParada'
+import { franjaMinimaPorHora, masTardia } from '../../../lib/franjaDelDia'
 import { LineaReservaFueraDeFranja } from '../reservas/LineaReservaFueraDeFranja'
 import { createPortal } from 'react-dom'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
@@ -1033,6 +1034,8 @@ export function DayDetailPanel({
       // (Sin comida en el día, la tarde empieza a las 14:00.)
       if (!hasLunch && phase === 'manana' && start >= AFTERNOON_FROM) phase = 'tarde'
       if (!hasDinner && flags.night && phase !== 'manana') phase = 'noche'
+      // (V68, 4) La hora a la que el motor pone la parada manda como suelo: desde las 14:00 nunca es MAÑANA y desde las 20:00 es NOCHE (aterrizas a las 17:30: sin comida, con cena; la primera parada no es de «Mañana»).
+      phase = masTardia(phase, franjaMinimaPorHora(start))
       period = phase
       if (!hasDinner && realStops[item.index]?.franja) {
         const delMotor = realStops[item.index].franja as DayPeriod

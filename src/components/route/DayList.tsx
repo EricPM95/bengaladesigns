@@ -7,6 +7,7 @@ import { addDaysToIso } from '../../lib/dateRange'
 import { dayColorIndex } from '../../lib/dayColors'
 import { closedWeekdaysFromSchedule, weekdayNameEs } from '../../lib/stopHoursTag'
 import { SortableDay } from './SortableDay'
+import { recuperarElDia } from '../../lib/recuperarElDia'
 import { computeDayTravelInfo } from '../../lib/dayTravelInfo'
 import { buildDestinationSegments } from '../../lib/destinationSegments'
 import { seedStopsFromTemplate } from '../../lib/mockDayDetail'
@@ -92,7 +93,6 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
   const renameDay = useRouteStore((state) => state.renameDay)
   const moveFreeDay = useRouteStore((state) => state.moveFreeDay)
   const deleteDay = useRouteStore((state) => state.deleteDay)
-  const restoreOriginalDay = useRouteStore((state) => state.restoreOriginalDay)
   const openAddFlow = useAddFlowStore((state) => state.openAddFlow)
   // Tanda 10N §6b: quien solo recomienda no tiene los tres puntitos del día ni las rayitas para arrastrar días (no mueve días enteros; sí propone mover paradas).
   const { soloRecomienda } = usePermisosDelViaje()
@@ -373,7 +373,7 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
           onConfirm={() => {
             const ask = askRestore
             setAskRestore(null)
-            withUndo('Día recuperado', () => restoreOriginalDay(ask.dayId))
+            withUndo('Día recuperado', () => void recuperarElDia(ask.dayId))
           }}
         />
       )}

@@ -1,0 +1,120 @@
+{
+ "base": [
+  {
+   "n": 1,
+   "titulo": "Fuego y mar: el sur volcánico",
+   "paradas": [
+    "09:00 Montañas del Fuego (Timanfaya)",
+    "10:58 La Geria y sus bodegas",
+    "14:11 Salinas de Janubio",
+    "14:50 Playa de Montaña Bermeja",
+    "15:12 Los Hervideros",
+    "15:50 El Golfo y el Charco de los Clicos"
+   ]
+  },
+  {
+   "n": 2,
+   "titulo": "El norte de Manrique",
+   "paradas": [
+    "10:00 Jameos del Agua",
+    "11:30 Cueva de los Verdes",
+    "12:44 Mirador del Río",
+    "15:09 Haría y el Valle de las Mil Palmeras",
+    "16:14 Casa-Museo César Manrique (Haría)",
+    "17:30 Mirador de los Helechos"
+   ]
+  },
+  {
+   "n": 3,
+   "titulo": "Manrique en casa: Tahíche, Teguise y Arrecife",
+   "paradas": [
+    "10:00 Fundación César Manrique",
+    "11:47 Jardín de Cactus",
+    "14:22 Teguise (villa)",
+    "15:33 Castillo de Santa Bárbara",
+    "16:22 Casa-Museo del Campesino",
+    "17:28 Las Grietas (Montaña Blanca)",
+    "18:32 Arrecife: Charco de San Ginés y el paseo"
+   ]
+  },
+  {
+   "n": 4,
+   "titulo": "La Graciosa (excursión)",
+   "paradas": []
+  },
+  {
+   "n": 5,
+   "titulo": "Papagayo y Playa Blanca",
+   "paradas": [
+    "10:00 Playas de Papagayo",
+    "16:02 El paseo marítimo de Playa Blanca",
+    "17:04 Faro de Pechiguera"
+   ]
+  },
+  {
+   "n": 6,
+   "titulo": "Vuelta desde Lanzarote",
+   "paradas": []
+  }
+ ],
+ "lanza": [
+  {
+   "n": 1,
+   "titulo": "Fuego y mar: el sur volcánico",
+   "paradas": [
+    "10:58 La Geria y sus bodegas",
+    "14:11 Salinas de Janubio",
+    "14:50 Playa de Montaña Bermeja",
+    "15:12 Los Hervideros",
+    "15:50 El Golfo y el Charco de los Clicos"
+   ]
+  },
+  {
+   "n": 2,
+   "titulo": "El norte de Manrique",
+   "paradas": [
+    "10:00 Jameos del Agua",
+    "11:30 Cueva de los Verdes",
+    "12:44 Mirador del Río",
+    "15:00 Montañas del Fuego (Timanfaya) [R]",
+    "16:40 Haría y el Valle de las Mil Palmeras",
+    "17:40 Casa-Museo César Manrique (Haría)",
+    "18:40 Mirador de los Helechos"
+   ]
+  },
+  {
+   "n": 3,
+   "titulo": "Manrique en casa: Tahíche, Teguise y Arrecife",
+   "paradas": [
+    "10:00 Fundación César Manrique",
+    "11:47 Jardín de Cactus",
+    "14:22 Teguise (villa)",
+    "15:33 Castillo de Santa Bárbara",
+    "16:22 Casa-Museo del Campesino",
+    "17:28 Las Grietas (Montaña Blanca)",
+    "18:32 Arrecife: Charco de San Ginés y el paseo"
+   ]
+  },
+  {
+   "n": 4,
+   "titulo": "La Graciosa (excursión)",
+   "paradas": []
+  },
+  {
+   "n": 5,
+   "titulo": "Papagayo y Playa Blanca",
+   "paradas": [
+    "10:00 Playas de Papagayo",
+    "16:02 El paseo marítimo de Playa Blanca",
+    "17:04 Faro de Pechiguera"
+   ]
+  },
+  {
+   "n": 6,
+   "titulo": "Vuelta desde Lanzarote",
+   "paradas": []
+  }
+ ],
+ "lanza_sitio": "{\"s\":\"Montañas del Fuego (Timanfaya)\",\"d1\":1,\"d2\":2}",
+ "lanza_repetidos": []
+}

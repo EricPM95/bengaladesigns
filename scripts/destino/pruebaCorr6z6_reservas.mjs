@@ -132,13 +132,13 @@ for (const [clave, route] of Object.entries(rutas)) {
         const clara = html.slice(iResumen, html.indexOf('data-blk="', iResumen + 12))
         const claraTexto = aTexto(clara)
         const { enRuta } = buildEntradasBloque(route, info.entradasOrden, info.entradas, [], Object.keys(info.entradasPorSitio ?? {}))
-        debe(new RegExp(`0 de ${total} listo`).test(claraTexto.replace(/\n/g, ' ')) && !/Tu viaje a/.test(claraTexto), '1b clara', `${nombre}: no dice solo «0 de ${total} listo», sin «Tu viaje a…» delante (${plano(claraTexto)})`)
+        debe(/0 de \d+ reservas listas/.test(claraTexto.replace(/\n/g, ' ')) && !/Tu viaje a/.test(claraTexto), '1b clara', `${nombre}: no dice «0 de N reservas listas» (V58), sin «Tu viaje a…» delante (${plano(claraTexto)})`)
         const fichas = [...clara.matchAll(/data-ficha="(\w+)"/g)].map((x) => x[1])
         const esperadas = ['llegada', 'aloj', 'entradas', 'util'] // (V22: termina en el seguro)
         debe(fichas.join() === esperadas.join(), '1b clara', `${nombre}: las fichas son ${fichas.join()} y deberían ser ${esperadas.join()}`)
         debe(new RegExp(`Entradas 0/${enRuta.length}`).test(claraTexto) && /Llegada y vuelta/.test(claraTexto), '1b clara', `${nombre}: fichas con textos mal (${plano(claraTexto)})`)
         debe((clara.match(/class="h-1 flex-1 rounded/g) ?? []).length === total, '1b clara', `${nombre}: la barra no tiene ${total} tramos`)
-        debe((html.match(/data-blk="resumen"/g) ?? []).length === 1 && (texto.match(/\d+ de \d+ listo/g) ?? []).length === 1, '1b clara', `${nombre}: hay más de un resumen`)
+        debe((html.match(/data-blk="resumen"/g) ?? []).length === 1 && (texto.match(/\d+ de \d+ reservas listas/g) ?? []).length === 1, '1b clara', `${nombre}: hay más de un resumen`)
       } else {
         debe(iResumen < 0, '1b clara', `${nombre}: la clara sale después del viaje`)
       }
@@ -182,7 +182,7 @@ for (const [clave, route] of Object.entries(rutas)) {
     const html = pintaHtml(ReservasPanel, { route: listo, onClose() {} }, listo, { version, hoy: clave === 'con' ? '2027-03-01' : null, reservas, hoteles, extra: { insuranceBooking: { provider: 'Seguro de viaje', startDate: '', endDate: '', precio: null } } }) // (V22: el escenario pone también el seguro)
     const clara = html.slice(html.indexOf('data-blk="resumen"'), html.indexOf('data-blk="', html.indexOf('data-blk="resumen"') + 12))
     const nombre = `todo listo · ${clave} fechas · ${version}`
-    debe(new RegExp(`${total} de ${total} listo`).test(aTexto(clara)), '1b clara', `${nombre}: no dice «${total} de ${total} listo»`)
+    debe((() => { const m = /(\d+) de (\d+) reservas listas/.exec(aTexto(clara)); return Boolean(m) && m[1] === m[2] })(), '1b clara', `${nombre}: no dice «N de N reservas listas» (V58)`)
     debe((clara.match(/✓/g) ?? []).length === total && (clara.match(/data-ficha/g) ?? []).length === total, '1b clara', `${nombre}: no todas las fichas van con ✓`)
     debe(!/Te faltan|Lo tienes todo listo/.test(aTexto(html)), '1a oscura', `${nombre}: sale «Lo tienes todo listo» o «Te faltan»`)
   }

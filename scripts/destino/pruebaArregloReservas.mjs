@@ -90,9 +90,9 @@ debe(/tipo\?: 'entrada' \| 'alojamiento' \| 'excursion' \| 'coche'/.test(leer('s
 const C = await importar('shared/routeEngine/cocheLlegada.js')
 const coche15 = { tiene: () => true, min: () => 15 }
 const util2 = (recogida, alquiler = true) => C.planDeLlegadaLL({ aterriza: '08:25', alquiler, coche: coche15, zona: 'z', zonas: ['z'], sol: 1100, recogida })?.horaUtil
-debe(util2(null) === 685 && util2('08:30') === 685, '6a', 'sin reserva con hora (o con una hora anterior a salir del aeropuerto), la hora útil es la de siempre (aterrizaje + 45 + 60 + trayecto + 60)')
-debe(util2('12:00') === 855, '6b', 'la hora de recogida de la reserva (12:00) cuenta en el día de llegada: recoger a las 12:00 + 60 + trayecto + 60 = 14:15')
-debe(util2('12:00', false) === 625 && util2(null, false) === 625, '6c', '«Mi coche»: no hay recogida, quita los 60 minutos y la hora de la reserva no cuenta')
+debe(util2(null) === 645 && util2('08:30') === 645, '6a', 'sin reserva con hora (o con una hora anterior a salir del aeropuerto), la hora útil es la de siempre (aterrizaje + 45 + 60 + trayecto + 20: «instalarse» V67)')
+debe(util2('12:00') === 815, '6b', 'la hora de recogida de la reserva (12:00) cuenta en el día de llegada: recoger a las 12:00 + 60 + trayecto + 20 = 13:35')
+debe(util2('12:00', false) === 585 && util2(null, false) === 585, '6c', '«Mi coche»: no hay recogida, quita los 60 minutos de recoger y la hora de la reserva no cuenta')
 const lim = (devolucion) => C.planDeVueltaLL({ vuelo: '19:40', coche: coche15, zona: 'z', zonas: ['z'], devolucion }).limiteT1
 debe(lim(null) === 1030 && lim('18:00') === 1030, '6d', 'sin devolución (o más tarde de lo que deja el vuelo), la hora límite en la T1 es la de siempre (17:10)')
 debe(lim('13:00') === 780, '6e', 'la hora de devolución de la reserva (13:00) manda en el último día cuando es más temprana')
@@ -100,7 +100,7 @@ const dia = leer('server/engine/cocheDay.js')
 debe(/recogida: options\.llegada\?\.recogida/.test(dia) && /devolucion: options\.vuelta\?\.devolucion/.test(dia), '6f', 'el día de coche pasa las dos horas al motor')
 const llv = leer('src/lib/llegadaVuelta.ts')
 debe(/recogida: opciones\.coche\?\.horaRecogida/.test(llv) && /devolucion: opciones\.coche\?\.horaDevolucion/.test(llv), '6g', 'el cliente manda las dos horas (dentro de `llegada` y `vuelta`)')
-debe(/coche: useRouteStore\.getState\(\)\.rentalVehicleBooking/.test(leer('src/lib/adaptarVuelos.ts')), '6h', 'al rehacer los días de coche se manda la reserva puesta')
+debe(/coche: (?:CocheReservado = )?useRouteStore\.getState\(\)\.rentalVehicleBooking/.test(leer('src/lib/adaptarVuelos.ts')), '6h', 'al rehacer los días de coche se manda la reserva puesta')
 
 console.log(`\nLa prueba del arreglo de RESERVAS: ${total} comprobaciones · ${fallos} fallos`)
 process.exit(fallos === 0 ? 0 : 1)

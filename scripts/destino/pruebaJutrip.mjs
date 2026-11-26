@@ -491,7 +491,7 @@ for (const f of ['src/lib/tagColors.ts', 'src/lib/dayColors.ts']) {
 // HOY: la tarjeta de la siguiente parada, clara (Marca JUTRIP 02 · 09), con [Visto] en verde y [Cómo llegar] en oro.
 {
   const piezas = leer('src/components/route/hoy/piezas.tsx')
-  debe(!/useClaro/.test(piezas) && /botonChampan\(\)/.test(piezas) && /#FBF3E2 0%,#EBD9AE 100%/.test(leer('src/lib/marcaBoton.ts')) && /color: '#6F4E37'/.test(leer('src/lib/marcaBoton.ts')), 'hoy', 'la tarjeta de HOY: [Cómo llegar] en el degradado de marfil con letra de oro profundo (botonChampan), sin gancho de modo noche')
+  debe(!/useClaro/.test(piezas) && /botonChampan\(\)/.test(piezas) && /\.\.\.BOTON_ORO/.test(leer('src/lib/marcaBoton.ts')), 'hoy', 'la tarjeta de HOY: [Cómo llegar] en el dorado único (V53: `botonChampan()` devuelve `BOTON_ORO`; el champán ya no existe), sin gancho de modo noche')
   // (HOY1, 4-nov) ANTES: en la HOY nueva (v2) la tarjeta de la siguiente parada era clara (#FFFDF8) con [Cómo llegar] en botonOro() → AHORA: la HOY v2 pinta la tarjeta OSCURA de «Hoy Estados» (apartado 04 de Design:
   // tinta #1C2230, marfil, botón de oro) en `ParadaHoy.tsx`; la vieja (HoyDurante, hoy2=off) sigue clara → DECISIÓN DE ERIC (4-nov): el diseño, exactamente igual.
   {

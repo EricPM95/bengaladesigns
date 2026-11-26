@@ -116,10 +116,13 @@ for (const conPase of [false, true]) {
   const r0 = ruta()
   const reserva = { id: 'res-ft', kind: 'entrada', refId: 'Free Tour', name: 'Free Tour por Roma', placeNames: ['Free Tour por Roma'], dateIso: sumaDias(INICIO, 2), dayNumber: null, time: '10:30' }
   const r = placeReservedEntrance(copia(r0), reserva)
-  debe(dia(r, 'd3').stops[0].id === 'ft' && dia(r, 'd3').stops[0].reservedId === 'res-ft' && dia(r, 'd3').stops[0].time === '10:30', '5 free tour', `el Free Tour no pasa de primero al día 3 con su reserva (${ids(dia(r, 'd3')).join(',')})`)
+  // (V68) El Free Tour reservado ya no va «de primero»: entra A SU HORA (10:30), con las horas en orden; si lo de antes acaba después de su hora, queda detrás.
+  const horaDe = (s) => Number(s.time.split(':')[0]) * 60 + Number(s.time.split(':')[1])
+  const ordenado = (d) => d.stops.every((s, i) => i === 0 || horaDe(s) >= horaDe(d.stops[i - 1]))
+  debe(dia(r, 'd3').stops.find((s) => s.id === 'ft')?.reservedId === 'res-ft' && dia(r, 'd3').stops.find((s) => s.id === 'ft').time === '10:30' && ordenado(dia(r, 'd3')), '5 free tour', `el Free Tour no pasa al día 3 a su hora con su reserva (${ids(dia(r, 'd3')).join(',')})`)
   debe(!ids(dia(r, 'd2')).includes('ft') && dia(r, 'd2').stops.length === 3, '5 free tour', 'el día 2 sigue con el Free Tour o pierde otra parada')
   debe(JSON.stringify(dia(r, 'd1')) === JSON.stringify(dia(r0, 'd1')), '5 free tour', 'se ha tocado el día 1')
-  debe(dia(r, 'd3').stops.length === 4 && ids(dia(r, 'd3')).slice(1).join(',') === ids(dia(r0, 'd3')).join(','), '5 free tour', 'las paradas del día 3 cambian de orden o faltan')
+  debe(dia(r, 'd3').stops.length === 4 && ids(dia(r, 'd3')).filter((x) => x !== 'ft').join(',') === ids(dia(r0, 'd3')).join(','), '5 free tour', 'las paradas del día 3 cambian de orden o faltan')
   // Una reserva cuyo sitio YA está en su día no mueve la parada (regla de la 10N10).
   const r1 = ruta()
   const reserva2 = { id: 'res-b', kind: 'entrada', refId: 'Sitio 1C', name: 'Sitio 1C', placeNames: ['Sitio 1C'], dateIso: INICIO, dayNumber: null, time: '14:00' }
@@ -128,7 +131,8 @@ for (const conPase of [false, true]) {
   // Un sitio de otro día (una entrada normal) viaja a su día de primero.
   const reserva3 = { id: 'res-c', kind: 'entrada', refId: 'Sitio 1C', name: 'Sitio 1C', placeNames: ['Sitio 1C'], dateIso: sumaDias(INICIO, 2), dayNumber: null, time: '16:00' }
   const r3 = placeReservedEntrance(copia(r1), reserva3)
-  debe(dia(r3, 'd3').stops[0].id === 's1-3' && !ids(dia(r3, 'd1')).includes('s1-3'), '5 viaja', `la entrada de otro día no llega de primera (${ids(dia(r3, 'd3')).join(',')})`)
+  // (V68) Un sitio de otro día (una entrada normal) viaja a su día y a SU HORA (16:00), no de primero.
+  debe(dia(r3, 'd3').stops.find((s) => s.id === 's1-3')?.time === '16:00' && ordenado(dia(r3, 'd3')) && !ids(dia(r3, 'd1')).includes('s1-3'), '5 viaja', `la entrada de otro día no llega a su hora (${ids(dia(r3, 'd3')).join(',')})`)
 }
 
 // ── 6. Código: quién usa la regla ─────────────────────────────────────────────────────────────────────────────────────────────────────────────
