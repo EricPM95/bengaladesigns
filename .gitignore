@@ -35,3 +35,10 @@ scripts/destino/_rutasRevisionViajes.json
 
 # Documentos de proveedores (Eric, 29-oct): nunca se suben
 docs/civitatis/*.pdf
+
+# Lo que generan las pruebas y las baterias y no se sube (Eric, V70): salidas temporales de docs/dias (las que empiezan por guion bajo)
+docs/dias/_bateria*.json
+docs/dias/_bateria*.md
+docs/dias/_catalogo*_tmp/
+docs/dias/_viajero_lanza_*.json
+docs/dias/_pasadaFinal_*.json
