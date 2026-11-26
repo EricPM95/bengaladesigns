@@ -34,6 +34,8 @@ import { abrirHistorial, aplicarPropuesta, cerrarAviso, deshacerUltimo, useCambi
 import { useSyncStore } from '../../../../store/useSyncStore'
 import { useRouteStore } from '../../../../store/useRouteStore'
 import { Icono } from '../../../ui/Icono'
+import { ImagenComida } from '../../../ui/ImagenComida'
+import { getPoolPhoto } from '../../../../lib/placePhoto'
 import { ListaDeDias } from '../../dayDetail/ListaDeDias'
 import { useDatosDeImportancia } from '../masVisitas'
 import { useCercaDeAqui } from '../useCercaDeAqui'
@@ -144,11 +146,22 @@ export function FranjaVerde({ texto }: { texto: string }) {
 
 export function TarjetaDelSitio({ t, sinFranja = false }: { t: NonNullable<Propuesta['tarjetaDia']>; sinFranja?: boolean }) {
   // (V55) La foto real de su parada (la misma de su parada: si no la trae, se pide al servidor por su nombre); el degradado solo si no hay ninguna.
-  const foto = useFotoDeParada(t.parada ?? null, t.ciudad ?? '', null) || t.fotoUrl
+  // (V69) Y si la parada no la trae ni el servidor la da: la de ese mismo sitio en otro día o en pendientes, y el nombre de foto de los datos del destino (un sitio nuevo que entra en el día, como los miradores del plan del tiempo).
+  const route = useRouteStore((s) => s.route)
+  const parada = useMemo(() => {
+    const p = t.parada
+    if (!p || p.photoUrl || p.photoName || t.comida) return p ?? null
+    const norm = (x: string) => x.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim()
+    const mismo = route?.days.flatMap((d) => [...d.stops, ...(d.spareStops ?? []), ...(d.rainBackup?.stops ?? [])]).find((s) => s.id !== p.id && norm(s.name) === norm(p.name) && (s.photoUrl || s.fixedPhotoUrl))
+    if (mismo) return { ...p, photoUrl: mismo.photoUrl || mismo.fixedPhotoUrl || '' }
+    const lugar = route ? catalogoEnMemoria(route.destination)?.places.find((x) => norm(x.name) === norm(p.name)) : null
+    return lugar?.photo_name ? { ...p, photoName: lugar.photo_name } : p
+  }, [t.parada, t.comida, route])
+  const foto = useFotoDeParada(parada, t.ciudad ?? '', null) || t.fotoUrl || (route && parada ? getPoolPhoto(route.destination, parada.name) ?? '' : '')
   return (
     <>
-      <div data-tarjeta-del-sitio className="flex items-center gap-3 rounded-[20px] bg-[#FFFDF8] p-3" style={{ border: '1px solid rgba(181,138,46,.45)', boxShadow: '0 10px 18px -14px rgba(60,40,10,.4)' }}>
-        <ParadaFoto nombre={t.nombre} photoUrl={foto} vista size={52} marca={false} carga="eager" />
+      <div data-tarjeta-del-sitio data-tarjeta-comida={t.comida ?? undefined} data-tarjeta-dia-entero={t.diaEntero ? '1' : undefined} className="flex items-center gap-3 rounded-[20px] bg-[#FFFDF8] p-3" style={{ border: '1px solid rgba(181,138,46,.45)', boxShadow: '0 10px 18px -14px rgba(60,40,10,.4)' }}>
+        {t.comida ? <ImagenComida tipo={t.comida} tam={52} redondeo={14} /> : <ParadaFoto nombre={t.nombre} photoUrl={foto} vista size={52} marca={false} carga="eager" />}
         <span className="flex min-w-0 flex-1 flex-col gap-0.5">
           <span className="line-clamp-2" style={{ font: "400 20px/1.1 'Instrument Serif',serif" }}>{t.nombre}</span>
           <span className="text-[12.5px] font-medium leading-[1.25] text-[#1C2230]/60">{t.cuando}</span>
@@ -202,7 +215,7 @@ export function HojaPropuesta({ titulo, propuestas, indice, onOtra, onAplicar, o
                 {p.entradasPasadas.map((e) => (e.freeTour ? `Tu ${e.nombre} de las ${e.hora} ya ha pasado.` : `Tu entrada de las ${e.hora} ${lugarCon('en', e.nombre)} ya ha pasado.`)).join(' ')}
               </span>
             )}
-            {p.tarjetaDia && !(p.tarjetasDia && p.tarjetasDia.length > 0) ? <TarjetaDelSitio t={p.tarjetaDia} /> : <TarjetasDeCambios tarjetas={tarjetas} franja={franjaDePropuesta(p)} />}
+            <TarjetasDeCambios tarjetas={tarjetas} franja={franjaDePropuesta(p, route)} />
             {children}
             {extra}
             {(() => {

@@ -11,6 +11,7 @@ import type { SinEntrada } from '../../../lib/destinationExcursions'
 import { notaDeLlegadaSinHora } from '../../../lib/notaDeLlegada'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { AddReservationSheet } from './AddReservationSheet'
+import { useVerEntrada } from './useVerEntrada'
 import { EntradaDeLaFicha } from './EntradaDeLaFicha'
 import { openTicketShop } from './EntradaCard'
 import { ReservedDetails } from './ReservedMarks'
@@ -53,6 +54,8 @@ export function StopEntradasTab({ stop, sinEntrada = null }: { stop: { id: strin
   const found = useRouteStop(stop.id)
   const data = useStopEntradas(stop)
   const [sheet, setSheet] = useState(false)
+  // (V69, apartado 6) [Ver entrada]: abre el código (a pantalla completa, o el bloque que se desliza con varias personas); sin documento, «+ Subir tu entrada» (la hoja de la V64). Nunca un botón que no hace nada.
+  const verEntrada = useVerEntrada({ route, reservation: data?.reservation ?? null, target: data?.target ?? null, cubiertaPorElDueno: data?.cubiertaPorElDueno ?? false })
   // Tanda 10N §8: la entrada del dueño vista por quien quiere ir con él: [Reservar la mía a la misma hora] (compra con su día y su hora) o [Ya la tengo].
   const [igualModo, setIgualModo] = useState<'comprar' | 'tengo' | null>(null)
   // La hora recomendada (API de consulta, solo encendida): se pide el calendario de los días del viaje al abrir la pestaña (sin la caché: las plazas, al día). Con la entrada ya reservada, no sale.
@@ -101,9 +104,10 @@ export function StopEntradasTab({ stop, sinEntrada = null }: { stop: { id: strin
             hora={horaCorta(reservation.time)}
             sitio={[displayStopName(stop.name), diaDeLaReservaEnPalabras(route, reservation)].filter(Boolean).join(' · ')}
             onCambiarHora={cubiertaPorElDueno ? null : () => setSheet(true)}
-            // [Ver entrada]: queda puesto; lo que abre (la entrada guardada) es de la Tanda 10T (`Piezas/Ver Entrada`).
-            onVerEntrada={() => undefined}
+            onVerEntrada={verEntrada.texto ? verEntrada.alPulsar : null}
+            textoVerEntrada={verEntrada.texto ?? undefined}
           >
+            {verEntrada.nodos}
             {(() => {
               const nota = stop.isFreeTour || reservation.placeNames[0] === stop.name ? notaDeLlegadaSinHora(found?.stop.arrivalNote, found?.stop.arrivalMinutes) : null
               return nota ? <p className="relative text-[12.5px] leading-[1.45]" style={{ color: 'rgba(28,34,48,.7)' }}>{nota}</p> : null

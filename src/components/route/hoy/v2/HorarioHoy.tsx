@@ -144,7 +144,7 @@ export function AvisoDeHorarioEnDirecto({ route, day, dateIso, ubicacion, enCoch
             <Titulo texto="Pasar a otro día" onCerrar={() => setAbierta(false)} />
             <span className="text-[14.5px] font-medium leading-[1.4]">Hoy ya no llegas {conA(tarde.v.nombre)}, y no {tarde.v.plural ? 'caben' : 'cabe'} en ningún otro día de tu viaje.</span>
             {/* (V53 §6; Design «Icono Pendientes» I3) La tarjeta del sitio, con el pin con reloj a la derecha en lugar de la fecha. */}
-            <TarjetaDelSitio t={{ nombre: displayStopName(tarde.v.stop.name), fotoUrl: tarde.v.stop.photoUrl || tarde.v.stop.fixedPhotoUrl || '', cuando: 'A Lugares pendientes', semanaCorta: '', numero: '', destino: '', diaDeHoy: '', aPendientes: true }} />
+            <TarjetaDelSitio t={{ nombre: displayStopName(tarde.v.stop.name), fotoUrl: tarde.v.stop.photoUrl || tarde.v.stop.fixedPhotoUrl || '', cuando: 'A Lugares pendientes', semanaCorta: '', numero: '', destino: '', diaDeHoy: '', aPendientes: true, parada: tarde.v.stop, ciudad: day.city }} />
             <button
               type="button"
               data-no-cabe-guardar

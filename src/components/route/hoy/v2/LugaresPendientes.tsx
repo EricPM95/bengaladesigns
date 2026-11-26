@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { IconoPendientes } from './IconoPendientes'
+import { CuadradoPendientes, IconoPendientes } from './IconoPendientes'
 import type { DayPlan, Route } from '../../../../lib/types'
 import { displayStopName } from '../../../../lib/format'
 import { esDestinoDeCoche } from '../../../../lib/experienceCategoryBank'
@@ -23,11 +23,15 @@ import { BOTON_AZUL, EnlaceDejarlo } from '../piezas'
  * «LUGARES PENDIENTES» (V2 y V43 §7): lo SALTADO y lo que no dio tiempo o ya ha cerrado, aparte de «Si te sobra tiempo». Va al final de HOY, cerrado con su número o abierto, y la lista se ve ENTERA (se baja con la página).
  * Filas COMPACTAS: la foto pequeña, el nombre, la pastilla del motivo, [Otro día] y «···». El «···» abre: Recuperar hoy (solo si sigue abierto), Ya lo visité y Quitar (en rojo, con [Deshacer]).
  * [Pasar todos a otros días] va en azul oscuro con dorado, a propósito: así destaca sobre los botones de cada fila. Antes enseña el resumen (L4): cada uno a su mejor día; los que no caben se quedan en pendientes.
+ *
+ * (V69; Design «Lugares Pendientes» L5) UNA SOLA LISTA PARA TODO EL VIAJE: la misma pieza sale también en DÍAS (`modo="dias"`), al final de la lista de días, justo encima de «Añadir día», ya abierta y con el motivo
+ * de cada sitio en gris. Si está vacía, no sale. `day` = el día de hoy (null antes del viaje: entonces nada se «recupera hoy» y solo cuentan los días que quedan por delante de ninguno). Lo que viene de «Si te sobra
+ * tiempo» (`origen: 'sobra'`: lo que Reorganizar no pudo colocar) vive en las `spareStops` de su día: pasarlo a otro día lo mete en ese día y lo saca de ahí, con [Deshacer].
  */
 const TINTA = '#1C2230'
 
-export function LugaresPendientes({ route, day, dateIso, pendientes }: { route: Route; day: DayPlan; dateIso: string; pendientes: Pendiente[] }) {
-  const [abierta, setAbierta] = useState(false)
+export function LugaresPendientes({ route, day, dateIso, pendientes, modo = 'hoy' }: { route: Route; day: DayPlan | null; dateIso: string | null; pendientes: Pendiente[]; modo?: 'hoy' | 'dias' }) {
+  const [abierta, setAbierta] = useState(modo === 'dias')
   const [pasando, setPasando] = useState<Pendiente | null>(null)
   const [menu, setMenu] = useState<Pendiente | null>(null)
   const [resumen, setResumen] = useState(false)
@@ -37,17 +41,36 @@ export function LugaresPendientes({ route, day, dateIso, pendientes }: { route: 
   const removeStop = useRouteStore((s) => s.removeStop)
   const insertStopAt = useRouteStore((s) => s.insertStopAt)
   const ctx = useContexto(route, esDestinoDeCoche(route.destination))
+  // El día «de referencia» para contar los días posteriores: hoy, o (antes del viaje) uno que no existe, así que se cuentan todos.
+  const hoyNum = day?.dayNumber ?? 0
+  const referencia: DayPlan = day ?? { ...route.days[0], id: '__antes_del_viaje__' }
+  const ciudadDe = (p: Pendiente) => route.days.find((d) => d.id === p.dayId)?.city ?? day?.city ?? ''
   // L4: el mejor día de cada pendiente (abierto, cerca, sin llenarlo). Se calcula al abrir el resumen, no en cada pintado.
   const reparto = useMemo(
-    () => (resumen ? pendientes.filter((p) => !p.stop.reservedId).map((p) => ({ p, mejor: mejorDiaPara({ route, day, stop: p.stop, ctx }) })) : []),
-    [resumen, pendientes, route, day, ctx],
+    () =>
+      resumen
+        ? pendientes.filter((p) => !p.stop.reservedId).map((p) => ({ p, mejor: mejorDiaPara({ route, day: referencia, stop: p.stop, ctx, dias: route.days.filter((d) => d.id !== p.dayId && d.dayNumber > hoyNum) }) }))
+        : [],
+    [resumen, pendientes, route, referencia, ctx, hoyNum],
   )
   if (pendientes.length === 0) return null
   // (V43) Solo días de DESPUÉS de hoy: lo de un día pasado no se toca (la app no deja mover a ni desde un día pasado).
-  const diasPara = (p: Pendiente) => route.days.filter((d) => !d.isReturnLeg && d.dayType !== 'excursion' && d.interruptor?.mode !== 'excursion' && d.id !== p.dayId && d.dayNumber > day.dayNumber).map((d) => ({ id: d.id, dayNumber: d.dayNumber, city: d.city }))
+  const diasPara = (p: Pendiente) => route.days.filter((d) => !d.isReturnLeg && d.dayType !== 'excursion' && d.interruptor?.mode !== 'excursion' && d.id !== p.dayId && d.dayNumber > hoyNum).map((d) => ({ id: d.id, dayNumber: d.dayNumber, city: d.city }))
   // (V44 §3) TODO lo que cambia la ruta lleva [Deshacer] y va ABAJO (sobre el menú): recuperar hoy, ya lo visité, quitar, pasar a otro día y pasar todos.
   const conDeshacer = (id: string, texto: string, deshacer: () => void) => avisarAbajo({ id, texto, accion: { etiqueta: 'Deshacer', alTocar: deshacer } })
+  // Lo de «Si te sobra tiempo» (spareStops) cambia de sitio con estas dos (la inversa es la otra): sale de ahí y entra en el día, o al revés.
+  const sobraADia = (p: Pendiente, aDayId: string) => {
+    const { spareReason: _motivo, ...limpia } = p.stop
+    void _motivo
+    useRouteStore.getState().addStop(aDayId, { ...limpia, addedByUser: true, saltada: false })
+    useRouteStore.setState((actual) => (actual.route ? { route: { ...actual.route, days: actual.route.days.map((d) => (d.id === p.dayId ? { ...d, spareStops: (d.spareStops ?? []).filter((x) => x.id !== p.stop.id) } : d)) } } : actual))
+  }
+  const diaASobra = (p: Pendiente, deDayId: string) => {
+    removeStop(deDayId, p.stop.id)
+    useRouteStore.setState((actual) => (actual.route ? { route: { ...actual.route, days: actual.route.days.map((d) => (d.id === p.dayId ? { ...d, spareStops: [...(d.spareStops ?? []).filter((x) => x.id !== p.stop.id), p.stop] } : d)) } } : actual))
+  }
   const recuperar = (p: Pendiente) => {
+    if (!day) return
     const deOtroDia = p.dayId !== day.id
     const estabaSaltada = Boolean(p.stop.saltada)
     if (deOtroDia) moveStopToDay(p.stop.id, p.dayId, day.id)
@@ -67,15 +90,28 @@ export function LugaresPendientes({ route, day, dateIso, pendientes }: { route: 
   const pasar = (p: Pendiente, aDayId: string) => {
     const estabaSaltada = Boolean(p.stop.saltada)
     const aDia = route.days.find((d) => d.id === aDayId)
-    moveStopToDay(p.stop.id, p.dayId, aDayId)
-    setStopSaltada(aDayId, p.stop.id, false)
+    if (p.origen === 'sobra') sobraADia(p, aDayId)
+    else {
+      moveStopToDay(p.stop.id, p.dayId, aDayId)
+      setStopSaltada(aDayId, p.stop.id, false)
+    }
     setPasando(null)
     conDeshacer(`pasar:${p.stop.id}`, `${displayStopName(p.stop.name)}, pasada al ${aDia ? etiquetaConNumero(ctx, aDia) : 'otro día'}`, () => {
-      moveStopToDay(p.stop.id, aDayId, p.dayId)
-      setStopSaltada(p.dayId, p.stop.id, estabaSaltada)
+      if (p.origen === 'sobra') diaASobra(p, aDayId)
+      else {
+        moveStopToDay(p.stop.id, aDayId, p.dayId)
+        setStopSaltada(p.dayId, p.stop.id, estabaSaltada)
+      }
     })
   }
   const quitar = (p: Pendiente) => {
+    if (p.origen === 'sobra') {
+      useRouteStore.setState((actual) => (actual.route ? { route: { ...actual.route, days: actual.route.days.map((d) => (d.id === p.dayId ? { ...d, spareStops: (d.spareStops ?? []).filter((x) => x.id !== p.stop.id) } : d)) } } : actual))
+      conDeshacer(`quitar:${p.stop.id}`, `${displayStopName(p.stop.name)}, quitada de tu ruta`, () =>
+        useRouteStore.setState((actual) => (actual.route ? { route: { ...actual.route, days: actual.route.days.map((d) => (d.id === p.dayId ? { ...d, spareStops: [...(d.spareStops ?? []), p.stop] } : d)) } } : actual)),
+      )
+      return
+    }
     const d = route.days.find((x) => x.id === p.dayId)
     const indice = d ? d.stops.findIndex((s) => s.id === p.stop.id) : -1
     removeStop(p.dayId, p.stop.id)
@@ -84,22 +120,28 @@ export function LugaresPendientes({ route, day, dateIso, pendientes }: { route: 
   const pasarTodos = () => {
     const hechos = reparto.filter((x) => x.mejor).map(({ p, mejor }) => ({ p, aDayId: (mejor as NonNullable<typeof mejor>).dia.id, estabaSaltada: Boolean(p.stop.saltada) }))
     for (const h of hechos) {
-      moveStopToDay(h.p.stop.id, h.p.dayId, h.aDayId)
-      setStopSaltada(h.aDayId, h.p.stop.id, false)
+      if (h.p.origen === 'sobra') sobraADia(h.p, h.aDayId)
+      else {
+        moveStopToDay(h.p.stop.id, h.p.dayId, h.aDayId)
+        setStopSaltada(h.aDayId, h.p.stop.id, false)
+      }
     }
     setResumen(false)
     if (hechos.length > 0)
       conDeshacer('pasar-todos', hechos.length === 1 ? `${displayStopName(hechos[0].p.stop.name)}, pasada a otro día` : `${hechos.length} lugares pasados a otros días`, () => {
         for (const h of hechos) {
-          moveStopToDay(h.p.stop.id, h.aDayId, h.p.dayId)
-          setStopSaltada(h.p.dayId, h.p.stop.id, h.estabaSaltada)
+          if (h.p.origen === 'sobra') diaASobra(h.p, h.aDayId)
+          else {
+            moveStopToDay(h.p.stop.id, h.aDayId, h.p.dayId)
+            setStopSaltada(h.p.dayId, h.p.stop.id, h.estabaSaltada)
+          }
         }
       })
   }
   const caben = reparto.filter((x) => x.mejor)
   const noCaben = reparto.filter((x) => !x.mejor)
   return (
-    <div data-hoy-pendientes={pendientes.length} data-hoy-pendientes-estado={abierta ? 'abierta' : 'cerrada'} className="flex flex-none flex-col rounded-[22px]" style={{ background: '#FFFDF8', border: '1px solid rgba(181,138,46,.4)' }}>
+    <div data-hoy-pendientes={pendientes.length} data-pendientes-modo={modo} data-hoy-pendientes-estado={abierta ? 'abierta' : 'cerrada'} className="flex flex-none flex-col rounded-[22px]" style={{ background: '#FFFDF8', border: '1px solid rgba(181,138,46,.4)' }}>
       <button type="button" onClick={() => setAbierta((v) => !v)} aria-expanded={abierta} data-hoy-pendientes-cabecera className="flex min-h-12 items-center gap-2.5 px-4 py-3.5 text-left">
         <IconoPendientes />
         <span style={{ font: "600 11.5px 'Geist Mono',monospace", letterSpacing: '.14em', color: '#6F4E37', textTransform: 'uppercase' }}>Lugares pendientes</span>
@@ -121,7 +163,7 @@ export function LugaresPendientes({ route, day, dateIso, pendientes }: { route: 
             {pendientes.map((p) => (
               <li key={`${p.dayId}-${p.stop.id}`} data-hoy-pendiente={p.motivo} data-hoy-pendiente-id={p.stop.id} className="flex items-center gap-2 py-2">
                 <span data-hoy-pendiente-foto className="flex flex-none">
-                  <ParadaFotoDeParada parada={p.stop} ciudad={day.city} dateIso={dateIso} vista marca={false} size={38} carga="eager" />
+                  <ParadaFotoDeParada parada={p.stop} ciudad={ciudadDe(p)} dateIso={dateIso} vista marca={false} size={38} carga="eager" />
                 </span>
                 <div className="flex min-w-0 flex-1 flex-col items-start gap-[3px]">
                   <p className="m-0 w-full text-[13.5px] font-bold leading-[1.15] text-[#1C2230]" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{displayStopName(p.stop.name)}</p>
@@ -146,10 +188,12 @@ export function LugaresPendientes({ route, day, dateIso, pendientes }: { route: 
       {menu && (
         <span data-hoy-pendiente-menu>
           <HojaDelMenu etiqueta="Parada" titulo={displayStopName(menu.stop.name)} onCerrar={() => setMenu(null)} z={95}>
-            {menu.motivo !== 'cerrada' && (
+            {menu.motivo !== 'cerrada' && menu.origen !== 'sobra' && day && (
               <OpcionTarjeta tono="salvia" icono={ICONOS_OPCION.volver} titulo="Recuperar hoy" linea="Vuelve a ser una parada normal del día" datos="pendiente-recuperar" atributos={{ 'data-hoy-pendiente-recuperar': '1' }} onClick={() => { recuperar(menu); setMenu(null) }} />
             )}
-            <OpcionTarjeta tono="arena" icono={ICONOS_OPCION.check} titulo="Ya lo visité" linea="Márcala como vista y quítala de pendientes" atributos={{ 'data-hoy-pendiente-visitado': '1' }} onClick={() => { visitado(menu); setMenu(null) }} />
+            {menu.origen !== 'sobra' && (
+              <OpcionTarjeta tono="arena" icono={ICONOS_OPCION.check} titulo="Ya lo visité" linea="Márcala como vista y quítala de pendientes" atributos={{ 'data-hoy-pendiente-visitado': '1' }} onClick={() => { visitado(menu); setMenu(null) }} />
+            )}
             <OpcionTarjeta peligro icono={ICONOS_OPCION.papelera} titulo="Quitar" linea="Sale de tu lista. Puedes deshacerlo" atributos={{ 'data-hoy-pendiente-quitar': '1' }} onClick={() => { quitar(menu); setMenu(null) }} />
           </HojaDelMenu>
         </span>
@@ -160,30 +204,32 @@ export function LugaresPendientes({ route, day, dateIso, pendientes }: { route: 
             <Titulo texto="Pasar todos a otros días" onCerrar={() => setResumen(false)} />
             <span className="text-[14.5px] font-medium leading-[1.4]" style={{ color: 'rgba(28,34,48,.7)' }}>Ponemos cada sitio en el mejor día donde quepa.</span>
             {caben.length > 0 && <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.16em', color: '#6F4E37', textTransform: 'uppercase' }}>Pasan a otro día · {caben.length}</span>}
-            <div className="flex flex-col gap-1.5">
+            {/* (V63 §17) Una fila por sitio, como las tarjetas de las demás hojas: la foto, el nombre, a dónde va en gris y, a la derecha, su cuadrado azul de la fecha. Sin flecha. */}
+            <div className="flex flex-col gap-2">
               {caben.map(({ p, mejor }) => {
                 const iso = mejor ? ctx.fechaDe?.(mejor.dia) ?? null : null
                 return (
-                  <div key={p.stop.id} data-resumen-pasa className="flex items-center gap-2.5 rounded-2xl py-1.5 pl-1.5 pr-2" style={{ background: '#FFFDF8', border: '1px solid rgba(181,138,46,.35)' }}>
-                    <ParadaFotoDeParada parada={p.stop} ciudad={day.city} dateIso={dateIso} vista marca={false} size={34} carga="eager" />
-                    <span className="min-w-0 flex-1 text-[13.5px] font-semibold leading-[1.2]">{displayStopName(p.stop.name)}</span>
-                    <Icono nombre="adelante" size={14} grosor={2.2} style={{ color: '#B58A2E', flex: 'none' }} />
-                    {iso ? <CuadradoFecha tam="pequeno" semana={formatWeekdayAbbrEs(iso)} numero={Number(iso.slice(8, 10))} /> : <span className="flex-none text-[12.5px] font-semibold" style={{ color: '#6E5018' }}>{mejor?.etiqueta}</span>}
+                  <div key={p.stop.id} data-resumen-pasa className="flex items-center gap-3 rounded-[20px] bg-[#FFFDF8] p-3" style={{ border: '1px solid rgba(181,138,46,.45)' }}>
+                    <ParadaFotoDeParada parada={p.stop} ciudad={ciudadDe(p)} dateIso={dateIso} vista marca={false} size={46} carga="eager" />
+                    <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                      <span className="line-clamp-2" style={{ font: "400 19px/1.1 'Instrument Serif',serif" }}>{displayStopName(p.stop.name)}</span>
+                      <span className="text-[12.5px] font-medium leading-[1.25] text-[#1C2230]/60">{mejor ? `Al ${mejor.etiqueta}` : ''}</span>
+                    </span>
+                    {iso ? <CuadradoFecha semana={formatWeekdayAbbrEs(iso)} numero={Number(iso.slice(8, 10))} /> : <span className="flex-none text-[12.5px] font-semibold" style={{ color: '#6E5018' }}>{mejor?.etiqueta}</span>}
                   </div>
                 )
               })}
             </div>
             {noCaben.length > 0 && <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.16em', color: '#8A6A2C', textTransform: 'uppercase' }}>No caben · se quedan en pendientes · {noCaben.length}</span>}
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               {noCaben.map(({ p }) => (
-                <div key={p.stop.id} data-resumen-no-cabe className="flex items-center gap-2.5 rounded-2xl py-1.5 pl-1.5 pr-2.5" style={{ background: 'rgba(28,34,48,.05)' }}>
-                  <span className="flex flex-none" style={{ filter: 'grayscale(1)', opacity: 0.7 }}>
-                    <ParadaFotoDeParada parada={p.stop} ciudad={day.city} dateIso={dateIso} vista marca={false} size={34} carga="eager" />
+                <div key={p.stop.id} data-resumen-no-cabe className="flex items-center gap-3 rounded-[20px] bg-[#FFFDF8] p-3" style={{ border: '1px solid rgba(28,34,48,.12)' }}>
+                  <ParadaFotoDeParada parada={p.stop} ciudad={ciudadDe(p)} dateIso={dateIso} vista marca={false} size={46} carga="eager" />
+                  <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                    <span className="line-clamp-2" style={{ font: "400 19px/1.1 'Instrument Serif',serif" }}>{displayStopName(p.stop.name)}</span>
+                    <span className="text-[12.5px] font-medium leading-[1.25] text-[#1C2230]/60">Se queda en Lugares pendientes</span>
                   </span>
-                  <span className="min-w-0 flex-1 text-[13.5px] font-semibold leading-[1.2]" style={{ color: 'rgba(28,34,48,.7)' }}>{displayStopName(p.stop.name)}</span>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A6A2C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-none" aria-hidden="true">
-                    <path d="M12 8v5M12 16.5h.01M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
-                  </svg>
+                  <CuadradoPendientes />
                 </div>
               ))}
             </div>
@@ -198,7 +244,7 @@ export function LugaresPendientes({ route, day, dateIso, pendientes }: { route: 
           </div>
         </HojaV2>
       )}
-      {pasando && <HojaPasarAOtroDia dias={diasPara(pasando)} ahora={day.dayNumber} onElegir={(id) => pasar(pasando, id)} onCerrar={() => setPasando(null)} />}
+      {pasando && <HojaPasarAOtroDia dias={diasPara(pasando)} ahora={hoyNum} onElegir={(id) => pasar(pasando, id)} onCerrar={() => setPasando(null)} />}
     </div>
   )
 }

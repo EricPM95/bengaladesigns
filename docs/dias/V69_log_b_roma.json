@@ -1,0 +1,7 @@
+{
+  "E1": "Tu entrada del Coliseo, el martes 13 Para que disfrutes de tu viaje a Roma, te recomendamos cambiar los días enteros: así cada zona se ve junta y no vas de un lado a otro. Roma antigua y Centro histórico Pasa al martes 13 MAR 13 Vaticano y Trastevere Pasa al miércoles 14 MIÉ 14 Cambiar los días Recomendado Solo mover la entrada",
+  "E1_despues": "[[1,\"D1\",[\"13:00 Coliseo\",\"14:25 Foro Romano y Palatino\"]],[2,\"D2\",[\"09:15 Museos Vaticanos y Capilla Sixtina\",\"21:40 Coliseo (noche)\"]],[3,null,[]]]",
+  "E1_aviso": "JUTRI P Reservas Tu viaje a Roma empieza en 12 días 1 de 7 reservas listas Llegada y vuelta Alojamiento Entradas 1/4 Seguro de viaje Llegada y vuelta Falta Alojamiento Falta Entradas y Free Tour 1 de 4 reservadas RESERVADAS · 1 En tu ruta Coliseo, Foro y Palatino + MARTES 13 de julio HORA 13:00 DATO",
+  "E1_solo": "[[1,\"D2\",16,[\"13:00 Coliseo\",\"14:25 Foro Romano y Palatino\",\"21:40 Coliseo (noche)\"]],[2,\"D1\",15,[]],[3,null,0,[]]]",
+  "E1_solo_antes": "[[1,\"D2\",14],[2,\"D1\",17],[3,null,0]]"
+}

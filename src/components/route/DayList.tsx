@@ -43,6 +43,9 @@ import { VehicleBlock } from './dayDetail/VehicleBlock'
 import { diasPasados, ordenRespetaLosPasados } from '../../lib/diasPasados'
 import { useFotosPorDia } from '../../hooks/useFotosPorDia'
 import { useReservasFocusStore } from '../../store/useReservasFocusStore'
+import { LugaresPendientes } from './hoy/v2/LugaresPendientes'
+import { pendientesDelViaje } from '../../lib/hoyPendientes'
+import { semanaDelDia } from '../../lib/tarjetasDePropuesta'
 
 interface DayListProps {
   route: Route
@@ -109,6 +112,8 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
   const simuladaIso = useRouteStore((state) => state.dev_simulated_today_iso)
   // Durante el viaje, DÍAS se abre sola en el día de hoy y lo marca con «HOY» (Tanda 6z6). Solo al entrar (o si cambia el día de hoy): si el viajero lo cierra, se queda cerrado.
   const hoyId = diaDeHoy(route, simuladaIso)?.id ?? null
+  // (V69) Lo pendiente de todo el viaje (antes del viaje: solo lo que no cupo, «No cabía el viernes»). Barato: recorre los días una vez por pintado.
+  const listaDePendientes = pendientesDelViaje({ route, hoy: diaDeHoy(route, simuladaIso), semana: (d) => semanaDelDia(route, d) })
   // (V24) Los días que ya pasaron: «Hecho», sin cambios (ver src/lib/diasPasados.ts).
   const pasados = diasPasados(route, simuladaIso)
   const fotosPorDia = useFotosPorDia(pasados.size > 0)
@@ -327,6 +332,12 @@ export function DayList({ route, activeDayId, onSelectDay, onDayMapChange, onDay
 
       {/* Un día fuera: al final de la lista, solo si el viaje no lleva ya una excursión (PROMPT_UI, Parte 2). */}
       {/* "+ Añadir día" (decisión del usuario, 2026-09-28): debajo del último día; hasta 14 días por viaje. */}
+      {/* (V69; Design «Lugares Pendientes» L5) UNA SOLA lista de pendientes para todo el viaje: la de HOY, también aquí, al final de la lista de días y justo encima de «Añadir día». Vacía, no sale. */}
+      {listaDePendientes.length > 0 && (
+        <div data-dias-pendientes className="mb-3">
+          <LugaresPendientes route={route} day={diaDeHoy(route, simuladaIso)} dateIso={null} pendientes={listaDePendientes} modo="dias" />
+        </div>
+      )}
       <AddDayButton onClick={() => (excursionInfo.excursions.length > 0 ? setChooserOpen(true) : setNameSheet({ dayId: null }))} disabled={!canAddDay(route)} />
       <EspacioParaElLapiz />
       {/* El aviso de «más días que fechas» ahora sale en la campana de la cabecera (useAppNotices.ts). */}

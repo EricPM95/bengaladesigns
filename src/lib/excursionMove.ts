@@ -76,3 +76,27 @@ export function fechaCorta(iso: string | null, dayNumber: number): string {
   return `${SEMANA[d.getUTCDay()]} ${d.getUTCDate()}`
 }
 export const conMayuscula = (t: string): string => t.charAt(0).toUpperCase() + t.slice(1)
+
+/**
+ * (V69, apartado 2) [Solo mover la excursión]: el día de excursión y el día que está en el puesto elegido SE INTERCAMBIAN; los demás días se quedan donde están (con «Cambiar los días» pasaría cada día un puesto).
+ * Misma forma que `movimientoDeExcursion` (la usa el almacén con `rutaConElMovimiento`); null si no hay día de excursión en otro puesto, o si el día que cambiaría de sitio tiene otra excursión reservada.
+ */
+export function intercambioDeExcursion(route: Route, diaElegidoId: string, pinned: (day: DayPlan) => boolean = () => false): MovimientoDeExcursion | null {
+  const ciudad = route.days.filter((day) => !day.isReturnLeg)
+  const elegido = ciudad.find((day) => day.id === diaElegidoId)
+  const exc = ciudad.find((day) => esDiaDeExcursion(day) && day.id !== diaElegidoId)
+  if (!elegido || !exc || esDiaDeExcursion(elegido) || pinned(elegido)) return null
+  const nuevo = [...ciudad]
+  const a = ciudad.indexOf(exc)
+  const b = ciudad.indexOf(elegido)
+  nuevo[a] = elegido
+  nuevo[b] = exc
+  const fechaDelPuesto = (i: number) => dateOfDay(route, { ...ciudad[i], dayNumber: i + 1 })
+  const filas: FilaDeCambio[] = [b, a].map((i) => {
+    const day = nuevo[i]
+    const principal = day.id === exc.id
+    const antes = ciudad.indexOf(day)
+    return { dayNumber: i + 1, fechaIso: fechaDelPuesto(i), nombre: tituloSimpleDelDia(route, day), antesIso: principal ? null : fechaDelPuesto(antes), antesNumero: principal ? null : antes + 1, principal }
+  })
+  return { orden: [...nuevo.map((day) => day.id), ...route.days.filter((day) => day.isReturnLeg).map((day) => day.id)], filas, diaDeExcursionId: exc.id }
+}

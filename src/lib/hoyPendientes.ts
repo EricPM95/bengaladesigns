@@ -20,6 +20,8 @@ export interface Pendiente {
   motivo: MotivoPendiente
   /** «Saltada hoy», «Ya ha cerrado», «Saltada el día 2», «No dio tiempo el día 2». */
   texto: string
+  /** (V69) 'sobra' = viene de «Si te sobra tiempo» de ese día (lo que Reorganizar o el motor no pudo colocar): vive en `spareStops`, no entre las paradas. */
+  origen?: 'sobra'
 }
 
 /** Lo que hace falta de un horario (el `HorarioDeParada` de `horarioDeParada.ts`, sin depender de él). */
@@ -92,3 +94,21 @@ export function lugaresPendientes(p: { route: Route; day: DayPlan; cerradas: Set
 }
 
 export const AVISO_SALTADA = 'Parada saltada · la tienes en Lugares pendientes'
+
+/**
+ * (V69; Design «Lugares Pendientes» L5) LA LISTA DE «LUGARES PENDIENTES» DE TODO EL VIAJE, la de DÍAS: una sola lista para todo el viaje.
+ *  · Durante el viaje, la de HOY (saltado, no dio tiempo en días anteriores) más lo que no cupo en ningún día (`spareStops`: lo que Reorganizar no pudo colocar).
+ *  · Antes del viaje solo lo que no cupo («No cabía el viernes»): nunca «Ya había cerrado» ni «Saltada hoy».
+ * `hoy` = el día de hoy (null antes del viaje); `semana(d)` = «viernes» (o «día 3» sin fechas).
+ */
+export function pendientesDelViaje(p: { route: Route; hoy: DayPlan | null; semana: (d: DayPlan) => string }): Pendiente[] {
+  const { route, hoy, semana } = p
+  const salida: Pendiente[] = hoy ? lugaresPendientes({ route, day: hoy, cerradas: new Set<string>() }) : []
+  for (const d of route.days) {
+    for (const s of d.spareStops ?? []) {
+      if (s.checkedInAt) continue
+      salida.push({ stop: s, dayId: d.id, dayNumber: d.dayNumber, motivo: 'sin_tiempo', texto: `No cabía el ${semana(d)}`, origen: 'sobra' })
+    }
+  }
+  return salida
+}

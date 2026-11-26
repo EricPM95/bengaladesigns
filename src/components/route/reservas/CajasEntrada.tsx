@@ -46,6 +46,7 @@ export function TuEntrada({
   sitio,
   onCambiarHora,
   onVerEntrada,
+  textoVerEntrada = 'Ver entrada',
   children,
 }: {
   hora: string
@@ -53,7 +54,10 @@ export function TuEntrada({
   sitio: string
   /** Sin esto (te cubre la entrada del dueño y no es tuya para cambiarla), [Cambiar hora] no sale. */
   onCambiarHora: (() => void) | null
-  onVerEntrada: () => void
+  /** (V69) Sin función (null), el botón no sale: nunca un botón que no hace nada. */
+  onVerEntrada: (() => void) | null
+  /** (V69) «+ Subir tu entrada» si aún no hay documento. */
+  textoVerEntrada?: string
   children?: ReactNode
 }) {
   return (
@@ -94,10 +98,12 @@ export function TuEntrada({
             Cambiar hora
           </button>
         )}
-        <button type="button" data-ver-entrada onClick={onVerEntrada} className="zona-toque flex h-[42px] flex-1 items-center justify-center gap-[7px] rounded-[13px] text-[14px] font-semibold active:scale-[.98]" style={{ background: '#1C2230', color: '#F3D88F' }}>
-          <TicketDesign size={16} color="#F3D88F" grosor={2} />
-          Ver entrada
-        </button>
+        {onVerEntrada && (
+          <button type="button" data-ver-entrada onClick={onVerEntrada} className="zona-toque flex h-[42px] flex-1 items-center justify-center gap-[7px] rounded-[13px] text-[14px] font-semibold active:scale-[.98]" style={{ background: '#1C2230', color: '#F3D88F' }}>
+            {textoVerEntrada === 'Ver entrada' && <TicketDesign size={16} color="#F3D88F" grosor={2} />}
+            {textoVerEntrada}
+          </button>
+        )}
       </div>
       {children}
     </div>

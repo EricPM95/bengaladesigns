@@ -61,7 +61,7 @@ function esDeEseDia(route: Route, reserva: Reservation, dayNumber: number): bool
 
 /** La excursión reservada para el día 1 (el motor avisa si sale antes de estar libre). */
 function excursionDeLaLlegada(route: Route, reservas: Reservation[]): LlegadaParaMotor['excursionReservada'] | undefined {
-  const reserva = reservas.find((candidata) => candidata.kind === 'excursion' && !candidata.noMueve && esHora(candidata.time) && esDeEseDia(route, candidata, 1))
+  const reserva = reservas.find((candidata) => candidata.kind === 'excursion' && !candidata.noMueve && !candidata.revisarHoras && esHora(candidata.time) && esDeEseDia(route, candidata, 1))
   if (!reserva) return undefined
   return { dateIso: reserva.dateIso, dayNumber: reserva.dateIso ? null : reserva.dayNumber, salida: reserva.time, vuelta: esHora(reserva.returnTime) ? reserva.returnTime! : null, nombre: nombreDeLaExcursion(reserva) }
 }
@@ -70,7 +70,7 @@ function excursionDeLaLlegada(route: Route, reservas: Reservation[]): LlegadaPar
 function excursionDeLaVuelta(route: Route, reservas: Reservation[]): VueltaParaMotor['excursion'] | undefined {
   const rutas = route.days.filter((day) => !day.isReturnLeg)
   const ultimo = rutas.at(-1)?.dayNumber ?? route.days.length
-  const candidatas = reservas.filter((candidata) => candidata.kind === 'excursion' && !candidata.noMueve && esHora(candidata.time) && (esDeEseDia(route, candidata, ultimo + 1) || esDeEseDia(route, candidata, ultimo)))
+  const candidatas = reservas.filter((candidata) => candidata.kind === 'excursion' && !candidata.noMueve && !candidata.revisarHoras && esHora(candidata.time) && (esDeEseDia(route, candidata, ultimo + 1) || esDeEseDia(route, candidata, ultimo)))
   const reserva = candidatas.find((candidata) => esDeEseDia(route, candidata, ultimo + 1)) ?? candidatas[0]
   if (!reserva) return undefined
   return {

@@ -39,6 +39,8 @@ export interface Reservation {
   precio?: Importe | null
   /** Tanda 6j: una reserva que cae en un día de excursión: se guarda en Reservas con este aviso y la ruta no cambia (el sitio no se pone en ese día). */
   noMueve?: boolean
+  /** (V69, «Revisa las horas») Se guardó igualmente aunque sus horas no cuadran (antes de aterrizar, o a la vez que otra reserva): queda en RESERVAS con su línea naranja y NO se mete en el día como si cupiera. */
+  revisarHoras?: boolean
   aviso?: string | null
   /** Tanda 10N §8: en un viaje compartido, a quién cubre la entrada (ids de `Persona`; el dueño siempre dentro). Sin él (las de antes de compartir): «solo para mí», solo el dueño. */
   paraQuien?: string[] | null
@@ -428,7 +430,7 @@ export function colocarEntradaConSusSitios(route: Route, reservation: Reservatio
 }
 
 function placeReservedEntranceUna(route: Route, reservation: Reservation): Route {
-  if (reservation.fueraDeRuta) return route
+  if (reservation.fueraDeRuta || reservation.revisarHoras) return route
   // Ruta a mano (Tanda 6y): la reserva no trae la parada de otro día ni ordena el día por hora; la parada se queda donde la puso el viajero (manualPlan.ts).
   if (isManualRoute(route)) return reservedEntranceInPlace(route, reservation)
   const target = dayOfReservation(route, reservation)
@@ -496,7 +498,7 @@ export function reapplyReservations(route: Route, reservations: Reservation[]): 
       continue
     }
     // (Tanda 7: una excursión que el viajero dejó sin día con «Pasar este día a Roma» sigue en sus reservas, pero no vuelve a ocupar el día.)
-    if (reservation.noMueve) continue
+    if (reservation.noMueve || reservation.revisarHoras) continue
     const day = dayOfReservation(next, reservation)
     // (El día 4 lleva su interruptor: la excursión reservada se queda elegida en su página; el día no se cambia por otro.)
     if (day?.interruptor) {

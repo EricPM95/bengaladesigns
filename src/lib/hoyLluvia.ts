@@ -47,6 +47,8 @@ export function proponerAlternativaDelTiempo(p: { day: DayPlan; aviso: AvisoTiem
     salida.push({
       id: `tiempo-${aviso.tipo}`,
       tipo: 'lluvia',
+      // (V69) El botón dice lo que hace en cada caso: lluvia, el plan de lluvia; viento, cambiar de sitio; nubes, cambiar de mirador.
+      boton: aviso.tipo === 'viento' ? 'Cambiar de sitio' : aviso.tipo === 'nubes' ? 'Cambiar de mirador' : 'Usar el plan de lluvia',
       intro: aviso.tipo === 'lluvia' ? `Va a llover ${aviso.cuando}. Te proponemos un plan a cubierto.` : aviso.texto,
       cambia: {
         titulo: `${cap(listaDeNombres(salen))} ${salen.length > 1 ? 'salen' : 'sale'}; ${entran.length > 1 ? 'entran' : 'entra'} ${listaDeNombres(entran)}`,

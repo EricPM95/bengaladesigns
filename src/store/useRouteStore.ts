@@ -1,4 +1,4 @@
-import { movimientoDeExcursion, rutaConElMovimiento } from '../lib/excursionMove'
+import { intercambioDeExcursion, movimientoDeExcursion, rutaConElMovimiento } from '../lib/excursionMove'
 import { guardianDeSitios } from '../lib/sinSitiosRepetidos'
 import { recuperarDiaCompleto } from '../lib/recuperarDia'
 import { create } from 'zustand'
@@ -429,7 +429,7 @@ interface RouteStoreState {
    * Guarda una reserva (entrada o excursión) y la FIJA en la ruta: el día lo pone su fecha (la pasa a ese día si estaba en otro) y la entrada
    * se coloca a su hora. Con una del mismo sitio, la sustituye. `excursion`: los datos de la excursión, para ponerla en su día.
    */
-  addReservation: (reservation: Reservation, excursion?: Excursion | null, freeTour?: DestinationPlace | null) => void
+  addReservation: (reservation: Reservation, excursion?: Excursion | null, freeTour?: DestinationPlace | null, opciones?: { solo?: boolean }) => void
   /** Quita la reserva del viaje (no cancela nada fuera: la ventana lo avisa): la entrada o excursión vuelve a ser una más. */
   removeReservation: (id: string) => void
   /** Una venta del afiliado con el código de este viaje (o su cancelación). */
@@ -1027,7 +1027,7 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     )
     get().addBlankDayExcursion(dayId, excursion)
   },
-  addReservation: (reservation, excursion, freeTour) => {
+  addReservation: (reservation, excursion, freeTour, opciones) => {
     // (V50) Cómo estaba todo antes de guardarla: para el [Deshacer] que sale cuando el motor termina de recolocar los días (deshace la reserva y el movimiento, todo).
     const rutaAntesDeGuardar = get().route
     const reservasAntesDeGuardar = get().reservations
@@ -1040,6 +1040,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     set((state) => ({ reservations: [...state.reservations.filter((other) => !(other.kind === reservation.kind && other.refId === reservation.refId)), reservation] }))
     const route = get().route
     if (!route) return
+    // (V69, «Revisa las horas») Guardada igualmente con las horas que no cuadran: queda en RESERVAS y NO se mete en el día como si cupiera.
+    if (reservation.revisarHoras) return
     if (reservation.kind === 'entrada') {
       // (10S4) La escrita a mano en [Añadir otra reserva] (refId `otra:…`) solo vive en RESERVAS: no toca la ruta ni pide nada al motor.
       if (reservation.refId.startsWith('otra:')) return
@@ -1066,6 +1068,18 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       // (Tanda 10S3, apartado 5) El Free Tour es una parada más y no mueve días ni rehace el motor: va a su fecha como cualquier parada, con su hora, y nada más.
       if (reservation.refId === FREE_TOUR_REF) {
         guardar(placeReservedEntrance(unpinned, reservation))
+        return
+      }
+      // (V69, apartado 2) [Solo mover la entrada]: se mueven SOLO los sitios de esta reserva, cada uno a su hora (V68: todos juntos, nada repetido), sin pedir nada al motor y sin tocar los demás días. Con [Deshacer] abajo.
+      if (opciones?.solo && !reservation.noMueve) {
+        guardar(placeReservedEntrance(unpinned, reservation))
+        const ahora = get().route
+        if (ahora && rutaAntesDeGuardar && ahora !== rutaAntesDeGuardar) {
+          void Promise.all([import('./useAddFlowStore'), import('../lib/excursionMove'), import('../lib/loQueHizoLaReserva')]).then(([{ useAddFlowStore }, { fechaCorta }, { resumenDeLoMovido }]) => {
+            const hecho = resumenDeLoMovido(rutaAntesDeGuardar, ahora).texto
+            useAddFlowStore.setState({ toast: { message: `Tu ${reservation.name}, el ${fechaCorta(reservation.dateIso ?? null, Number(reservation.dayNumber ?? 0))}. ${hecho}`.trim(), previous: rutaAntesDeGuardar, previousReservations: reservasAntesDeGuardar, id: Date.now() } })
+          })
+        }
         return
       }
       if (isBigReservation(reservation, sitiosGrandesDelViaje(route)) && !reservation.noMueve) {
@@ -1111,7 +1125,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     // (En una ruta a mano, la excursión reservada solo entra en un día en blanco: nunca borra las paradas del viajero.)
     else if (day && excursion && !(isManualRoute(route) && !isEmptyDay(day))) {
       // (V49) La excursión de la ruta guardada en OTRO día: el día de excursión se MUEVE a ese día y los demás se recolocan (como una entrada grande en otra fecha); nunca quedan dos días de excursión.
-      const mov = movimientoDeExcursion(route, day.id, (otro) => isDayPinned(route, get().reservations.filter((r) => r.id !== reservation.id), otro))
+      // (V69) [Solo mover la excursión]: el día de excursión y el del puesto elegido se intercambian; los demás días no se tocan.
+      const mov = opciones?.solo ? intercambioDeExcursion(route, day.id, (otro) => isDayPinned(route, get().reservations.filter((r) => r.id !== reservation.id), otro)) : movimientoDeExcursion(route, day.id, (otro) => isDayPinned(route, get().reservations.filter((r) => r.id !== reservation.id), otro))
       if (mov) {
         const movida = reapplyReservations(rutaConElMovimiento(route, mov), get().reservations)
         const dia = movida.days.find((d) => d.id === mov.diaDeExcursionId)

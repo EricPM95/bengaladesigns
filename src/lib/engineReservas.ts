@@ -12,7 +12,7 @@ const esFreeTour = (reservation: Reservation): boolean => reservation.refId === 
  */
 export function reservasParaMotor(reservations: Reservation[], opciones: { conFreeTour?: boolean } = {}): { placeNames: string[]; dateIso: string | null; dayNumber: number | null; time: string }[] {
   return reservations
-    .filter((reservation) => reservation.kind === 'entrada' && (opciones.conFreeTour || !esFreeTour(reservation)) && !reservation.noMueve && !reservation.fueraDeRuta && /^\d{1,2}:\d{2}$/.test(reservation.time))
+    .filter((reservation) => reservation.kind === 'entrada' && (opciones.conFreeTour || !esFreeTour(reservation)) && !reservation.noMueve && !reservation.revisarHoras && !reservation.fueraDeRuta && /^\d{1,2}:\d{2}$/.test(reservation.time))
     .map((reservation) => ({ placeNames: reservation.placeNames, dateIso: reservation.dateIso, dayNumber: reservation.dayNumber, time: reservation.time }))
 }
 

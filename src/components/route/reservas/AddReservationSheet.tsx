@@ -1,7 +1,7 @@
 import { Component, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { conDe, sitioConArticulo } from '../../../../shared/avisos/textos.js'
-import type { Excursion, Route } from '../../../lib/types'
+import type { Excursion, Route, Stop } from '../../../lib/types'
 import { repartirEnFilas } from '../../../lib/repartirEnFilas'
 import type { DayPlan } from '../../../lib/types'
 import { dateOfDay, dayLineOf, dayOnDate, fechaDeLista, isDayPinned, shortDateEs, type Reservation } from '../../../lib/bookings'
@@ -10,7 +10,8 @@ import { reservasParaMotor } from '../../../lib/engineReservas'
 import { excursionTargetDays } from '../../../lib/excursionOffer'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { removeReservationWithUndo, withUndo } from '../../../store/useAddFlowStore'
-import { conMayuscula, fechaCorta, movimientoDeExcursion, type FilaDeCambio } from '../../../lib/excursionMove'
+import { fechaCorta, movimientoDeExcursion, type FilaDeCambio } from '../../../lib/excursionMove'
+import { tituloSimpleDelDia } from '../../../lib/tituloDelDia'
 import { useNoticesStore } from '../../../store/useNoticesStore'
 import { DateField } from '../../ui/DateField'
 import { TimeField } from '../../ui/TimeField'
@@ -18,13 +19,22 @@ import { CampoDeHora } from '../../ui/HojaDeHora'
 import { PersonasCuadradas, ESTILO_PREGUNTA } from '../../ui/PersonasCuadradas'
 import { usePermisosDelViaje } from '../../../hooks/usePermisosDelViaje'
 import { usePrecioEditable } from '../../../lib/useMoneda'
-import { Icono } from '../../ui/Icono'
 import { isManualRoute } from '../../../lib/manualPlan'
 import { useDestinationPool } from '../../../lib/useDestinationPool'
 import { useDestinationExcursions } from '../../../lib/destinationExcursions'
 import { AVISO_DISPONIBILIDAD, AVISO_DISPONIBILIDAD_RESERVAR, horasDeLaRueda, useHorarioDeEntrada } from '../../../lib/horarioDeEntrada'
 import { FREE_TOUR_RUEDA } from '../../../lib/freeTourHoras'
-import { avisoDeLaHora, civitatisActiva, ruedaConHorasLibres, useHorasLibres } from '../../../lib/civitatis'
+import { avisoDeLaHora, civitatisActiva, recomendarHora, ruedaConHorasLibres, useHorasEnRango, useHorasLibres } from '../../../lib/civitatis'
+import { HojaMoverDias, tarjetasDeLosDias } from './HojaMoverDias'
+import { HojaRevisaLasHoras } from './HojaRevisaLasHoras'
+import { revisarLasHoras, type RevisionDeHoras } from '../../../lib/revisarLasHoras'
+import { HorasDeInicio } from './HorasDeInicio'
+import { horasDeInicio, sePuedeElegir } from '../../../lib/horasDeInicio'
+import { useLlegadaUtil } from '../../../lib/horaUtilDeLlegada'
+import { lugarCon } from '../../../lib/articulos'
+import { ponerAvisoDeDocumento } from '../../../lib/avisoDeDocumento'
+import { useSyncStore } from '../../../store/useSyncStore'
+import { useReservasFocusStore } from '../../../store/useReservasFocusStore'
 import { llegadaVueltaDe } from '../../../lib/llegadaVuelta'
 import { useEntradasDelGrupo } from '../../../hooks/useEntradasDelGrupo'
 import { useMisReservas } from '../../../store/useMisReservas'
@@ -179,6 +189,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const addReservation = useRouteStore((state) => state.addReservation)
   const reservations = useRouteStore((state) => state.reservations)
   const [confirming, setConfirming] = useState(false)
+  // (V69, apartado 3) «Revisa las horas»: lo que no cuadra al guardar (null = nada).
+  const [revision, setRevision] = useState<RevisionDeHoras | null>(null)
   const [tab, setTab] = useState<Tab>('email')
   const [text, setText] = useState('')
   const [fileName, setFileName] = useState<string | null>(null)
@@ -338,6 +350,46 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   const claveDeLasHoras = view === 'hora' && hasDates && fields.dateIso && resolvedDay && aperturas > 0 ? `${lugarDeLasHoras}|${fields.dateIso}|${aperturas}` : null
   const horasApi = useHorasLibres(lugarDeLasHoras, hasDates ? fields.dateIso : null, route.destination, claveDeLasHoras)
   const horasDelDia = horasApi.estado === 'ok' ? horasApi.datos : null
+  // (V69, apartado 4; Design «Free Tour Hora» H1-H3) LAS HORAS EN BOTONES. Una consulta al abrir la hoja (`/api/civitatis/horas-rango`, una sola vez por apertura, solo con Civitatis encendida): las horas libres de TODOS los días del viaje de ese sitio,
+  // unos 2-4 KB (≈10 días × ≈5 horas). Con ellas se marcan los días «Agotado» y se tachan las horas agotadas de cada día; sin datos, las seis horas de siempre del Free Tour. La rueda libre se queda para lo que no tiene horas fijas.
+  const rangoDeHoras = useHorasEnRango(lugarDeLasHoras, tripIsos[0] ?? null, tripIsos[tripIsos.length - 1] ?? null, route.destination, view === 'hora' && hasDates && aperturas > 0 && lugarDeLasHoras && tripIsos.length > 0 ? `${lugarDeLasHoras}|${aperturas}` : null)
+  const llegadaUtil = useLlegadaUtil(route)
+  const usaRango = Boolean(rangoDeHoras?.conHorasFijas)
+  const diaDelRango = usaRango && hasDates && fields.dateIso ? (rangoDeHoras?.dias[fields.dateIso] ?? null) : null
+  // Botones: siempre en el Free Tour; en una entrada, solo si Civitatis da horas fijas para ese día y se está reservando (con «Añádela»/«Cambiar» el viajero pone la hora que ya tiene).
+  const conBotones = !isExcursion && !esLibre && hasDates && (isFreeTour || (modoReservar && diaDelRango != null))
+  const diaSinHoras = (iso: string | null) => {
+    const dia = usaRango && iso ? rangoDeHoras?.dias[iso] : null
+    return Boolean(dia && (dia.sinPlazas || dia.horas.length === 0))
+  }
+  const diaAgotado = conBotones && diaSinHoras(fields.dateIso)
+  const esDiaDeLaLlegada = Boolean(fields.dateIso) && llegadaUtil.fechaLlegada === fields.dateIso
+  const horasBotones = useMemo(() => {
+    if (!conBotones || diaAgotado) return []
+    const dia = diaDelRango
+    const delViaje = usaRango ? [...new Set(Object.values(rangoDeHoras?.dias ?? {}).flatMap((d) => d.horas.map((h) => h.hora)))] : []
+    // La recomendada de la V60 (la primera libre que cabe después de cuando puede estar allí), solo si cae en ESTE día.
+    // (En otro día que el de la ruta, la hora a la que la ruta lleva a ese sitio donde está ahora.)
+    const laParada = (stop: Stop) => (isFreeTour ? stop.isFreeTour : !stop.isNightExperience && target.placeNames.includes(stop.name))
+    const horaRuta = (resolvedDay?.stops.find(laParada) ?? route.days.flatMap((day) => day.stops).find(laParada))?.time ?? null
+    const rec = usaRango && fields.dateIso ? recomendarHora(rangoDeHoras, fields.dateIso, horaRuta, tripIsos, { fechaLlegada: llegadaUtil.fechaLlegada, horaUtilMin: llegadaUtil.utilMin, aterrizaHHMM: llegadaUtil.aterriza }) : null
+    return horasDeInicio({
+      libres: dia ? dia.horas : null,
+      delViaje,
+      recomendada: rec && rec.tipo === 'hora' && rec.dia === fields.dateIso ? rec.hora : null,
+      utilMin: esDiaDeLaLlegada ? llegadaUtil.utilMin : null,
+      propia: existing?.time ?? horaLeida ?? null,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conBotones, diaAgotado, diaDelRango, usaRango, rangoDeHoras, fields.dateIso, resolvedDay?.id, esDiaDeLaLlegada, llegadaUtil.utilMin, existing?.time, horaLeida])
+  // Si la hora puesta ya no se puede elegir en este día (otro día, agotada, antes de llegar): se quita; la hora no se pone sola.
+  useEffect(() => {
+    if (!conBotones || !fields.time) return
+    const hora = fields.time.length === 4 ? `0${fields.time}` : fields.time
+    if (diaAgotado || (horasBotones.length > 0 && !horasBotones.some((h) => h.hora === hora && sePuedeElegir(h)))) setFields((previous) => ({ ...previous, time: '' }))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conBotones, diaAgotado, horasBotones])
+  const listo = ready && !diaAgotado
   const filtrando = horasDelDia != null && horasDelDia.horas.length > 0 && modoReservar
   const wheelItems = useMemo(() => {
     const horaDePartida = horaLeida ?? existing?.time ?? igual?.reserva.time ?? null
@@ -526,8 +578,9 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
   // (V49) La excursión guardada en otro día MUEVE el día de excursión a ese día (aviso E1 con los días que cambian).
   const movExc = isExcursion && resolvedDay && !esInvitado ? movimientoDeExcursion(route, resolvedDay.id, (otro) => isDayPinned(route, reservations.filter((item) => item.id !== existing?.id && item.refId !== target.refId), otro)) : null
   const nombreDeLaExcursion = (target.excursion?.title ?? target.name).replace(/^Excursión (a la|a los|a las|al|a)\s+/i, 'excursión a ').replace(/^(?!excursión)/i, 'excursión: ')
-  const save = (stage: 'inicio' | 'mover' = 'inicio') => {
-    if (!resolvedDay || !ready) return
+  // (V69) `stage`: 'inicio' (el botón de guardar), 'mover' ([Cambiar los días]) o 'solo' ([Solo mover la entrada/la excursión]). `forzada`: «Guardarla igualmente» de «Revisa las horas»: se guarda sin meterla en el día.
+  const save = (stage: 'inicio' | 'mover' | 'solo' = 'inicio', forzada: RevisionDeHoras | null = null) => {
+    if (!resolvedDay || !listo) return
     // Tanda 10N §8: la entrada de quien está en el viaje de otra persona es SUYA: va a su lista, no toca la ruta del dueño ni sus reservas.
     if (esInvitado) {
       const propia = draftReservation()
@@ -537,17 +590,32 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
       onClose()
       return
     }
-    if (movExc && stage !== 'mover') {
+    // (V69, apartado 3) «Revisa las horas»: una reserva imposible (antes de aterrizar, después de salir el vuelo de vuelta, a la vez que otra) avisa ANTES de meterla en la ruta.
+    if (stage === 'inicio' && !forzada) {
+      const borrador = draftReservation()
+      const revision = borrador ? revisarLasHoras(route, borrador, reservations) : null
+      if (revision) {
+        setRevision(revision)
+        return
+      }
+    }
+    // (V69, apartado 2) Antes de mover días por una entrada o una excursión, la hoja con lo que cambia (E1/E2): se aplica al elegir [Cambiar los días] o [Solo mover …].
+    if (!forzada && movExc && stage === 'inicio') {
       setConfirming(true)
       return
     }
-    const blocked = plan?.cambia ? blockedDay() : null
-    if (plan?.cambia && blocked == null && stage !== 'mover') {
+    const blocked = plan?.cambia && stage !== 'solo' ? blockedDay() : null
+    if (!forzada && plan?.cambia && blocked == null && stage === 'inicio') {
       setConfirming(true)
       return
     }
     const reservation = draftReservation()
     if (!reservation) return
+    if (forzada) {
+      // Guardada igualmente: queda en RESERVAS con su línea naranja (la misma frase) y NO entra en el día como si cupiera.
+      reservation.revisarHoras = true
+      ponerAvisoDeDocumento(useSyncStore.getState().activeTripId, reservation.id, forzada.texto)
+    }
     let aviso: string | null = null
     const sitio = fichasSitiosGrandes.find((s) => s.nombre === bigPlace)?.el ?? 'el sitio'
     if (plan?.sinMover?.motivo === 'excursion') {
@@ -564,7 +632,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     }
     // (10S4) [Añadir otra reserva] con una sugerencia: el sitio entra en la ruta, en el día elegido, de primera, ANTES de guardar la reserva (así la reserva lo encuentra ya en su día y no pide nada al motor: el día no cambia).
     let llevarA: { dayId: string; stopId: string } | null = null
-    if (target.sugerencia && !esLibre) {
+    if (target.sugerencia && !esLibre && !forzada) {
       try {
         llevarA = anadirComoPrimeraParada(resolvedDay.id, target.sugerencia, reservation)
       } catch (error) {
@@ -576,8 +644,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
     const diaAntes = !llevarA && reservation.kind === 'entrada' && !esLibre ? (useRouteStore.getState().route?.days.find((day) => day.stops.some(sitioDeLaParada))?.id ?? null) : null
     try {
       // (V49) Con el día de excursión movido, el aviso de abajo con [Deshacer].
-      if (movExc) withUndo(`Tu ${nombreDeLaExcursion}, el ${fechaCorta(dateOfDay(route, resolvedDay), resolvedDay.dayNumber)}`, () => addReservation(reservation, target.excursion ?? null, freeTourEntry))
-      else addReservation(reservation, target.excursion ?? null, freeTourEntry)
+      if (movExc && !forzada) withUndo(`Tu ${nombreDeLaExcursion}, el ${fechaCorta(dateOfDay(route, resolvedDay), resolvedDay.dayNumber)}`, () => addReservation(reservation, target.excursion ?? null, freeTourEntry, stage === 'solo' ? { solo: true } : undefined))
+      else addReservation(reservation, target.excursion ?? null, freeTourEntry, stage === 'solo' ? { solo: true } : undefined)
     } catch (error) {
       // Si algo falla al moverla, la reserva se guarda en su día, sale un aviso y la app sigue.
       console.error('[AddReservationSheet] no se pudo mover', error)
@@ -713,6 +781,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                 {fila.map((day) => {
                   const selected = resolvedDay?.id === day.id
                   const closed = isClosedDay(day)
+                  const agotado = !closed && conBotones && diaSinHoras(hasDates ? dateOfDay(route, day) : null)
                   const inRoute = day.id === target.currentDayId
                   return (
                     <button
@@ -727,8 +796,8 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                       className="relative flex h-[62px] min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl px-1.5 transition-colors"
                       style={{
                         border: `1px solid ${selected ? '#1C2230' : 'rgba(28,34,48,.14)'}`,
-                        background: selected ? '#1C2230' : closed ? '#F1EADC' : '#FFFDF8',
-                        color: selected ? '#FBF3E2' : '#1C2230',
+                        background: selected ? '#1C2230' : closed ? '#F1EADC' : agotado ? '#EFEAE0' : '#FFFDF8',
+                        color: selected ? '#FBF3E2' : agotado ? 'rgba(28,34,48,.4)' : '#1C2230',
                         opacity: closed ? 0.5 : 1,
                         cursor: closed ? 'not-allowed' : 'pointer',
                       }}
@@ -741,7 +810,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                       <span className="text-[14px] font-semibold" style={{ textDecoration: closed ? 'line-through' : 'none' }}>
                         {chipText(day)}
                       </span>
-                      {(closed || inRoute) && <span className="text-[10.5px] font-medium opacity-70">{closed ? 'Cerrado' : 'En tu ruta'}</span>}
+                      {agotado ? <span data-dia-agotado-marca className="text-[10.5px] font-semibold" style={{ color: selected ? '#F0B48A' : '#A04A2A' }}>Agotado</span> : (closed || inRoute) && <span className="text-[10.5px] font-medium opacity-70">{closed ? 'Cerrado' : 'En tu ruta'}</span>}
                     </button>
                   )
                 })}
@@ -752,6 +821,21 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                 {isExcursion ? 'Hora de recogida' : isFreeTour ? 'Hora de inicio' : 'Hora de entrada'}
               </p>
 
+              {conBotones && (
+                diaAgotado ? (
+                  <div data-dia-agotado className="mt-3.5 flex items-center gap-2.5 rounded-2xl p-3.5" style={{ background: '#FDF1DC', border: '1px solid rgba(200,100,30,.4)' }}>
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#C8641E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-none" aria-hidden="true">
+                      <path d="M12 9v4M12 17h.01M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
+                    </svg>
+                    <span className="text-[14px] font-semibold leading-[1.35]" style={{ color: '#7A3E0E' }}>Este día no quedan plazas. Elige otro día.</span>
+                  </div>
+                ) : (
+                  <div className="mt-3.5" data-hora-de-la-hoja="botones">
+                    <HorasDeInicio horas={horasBotones} elegida={validTime ? (fields.time.length === 4 ? `0${fields.time}` : fields.time) : null} onElegir={(hhmm) => set({ time: hhmm })} />
+                  </div>
+                )
+              )}
+              {!conBotones && (
               <div className="mt-3.5" data-hora-de-la-hoja>
                 <CampoDeHora
                   valor={validTime ? fields.time : null}
@@ -763,8 +847,9 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                   datos="anadir"
                 />
               </div>
+              )}
 
-              {civitatisActiva() && modoReservar && !isExcursion && horasApi.estado !== 'apagado' && (
+              {!conBotones && civitatisActiva() && modoReservar && !isExcursion && horasApi.estado !== 'apagado' && (
                 <div className="mt-3 space-y-1.5" data-civitatis-horas>
                   {horasApi.estado === 'cargando' && <p className="text-center text-[12.5px] text-text-soft">Mirando las horas libres…</p>}
                   {horasDelDia?.sinPlazas && (
@@ -789,7 +874,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                 </div>
               )}
 
-              {!isExcursion && !(civitatisActiva() && horasApi.estado === 'ok') && (
+              {!conBotones && !isExcursion && !(civitatisActiva() && horasApi.estado === 'ok') && (
                 <p className="mt-3 text-center text-[12.5px] leading-snug text-text-soft" data-aviso="disponibilidad">
                   {esLibre ? AVISO_DISPONIBILIDAD_RESERVAR : AVISO_DISPONIBILIDAD}
                 </p>
@@ -887,13 +972,13 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                       </p>
                     )}
                     {enDosPasos && pasoGrupo === 1 && !comprando ? (
-                      <button type="button" disabled={!ready} data-siguiente-paso onClick={() => setPasoGrupo(2)} className="mt-7 h-[54px] w-full rounded-2xl text-[16px] font-bold transition-transform active:scale-[.98] disabled:opacity-40" style={{ ...BOTON_ORO, border: 'none' }}>
+                      <button type="button" disabled={!listo} data-siguiente-paso onClick={() => setPasoGrupo(2)} className="mt-7 h-[54px] w-full rounded-2xl text-[16px] font-bold transition-transform active:scale-[.98] disabled:opacity-40" style={{ ...BOTON_ORO, border: 'none' }}>
                         Siguiente
                       </button>
                     ) : (
                     <button
                       type="button"
-                      disabled={!ready || planPending}
+                      disabled={!listo || planPending}
                       data-guardar-reserva={comprando ? 'comprar' : 'guardar'}
                       onClick={() => {
                         if (comprando) {
@@ -908,7 +993,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
                     </button>
                     )}
                     {comprando && (
-                      <button type="button" disabled={!ready || planPending} data-ya-la-tengo-guardarla onClick={() => save()} className="mt-3 w-full py-2 text-center text-[14px] font-semibold text-text underline underline-offset-2 disabled:opacity-40">
+                      <button type="button" disabled={!listo || planPending} data-ya-la-tengo-guardarla onClick={() => save()} className="mt-3 w-full py-2 text-center text-[14px] font-semibold text-text underline underline-offset-2 disabled:opacity-40">
                         Ya la tengo · Guardarla
                       </button>
                     )}
@@ -1084,64 +1169,76 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
 
         {view === 'form' && (
           <div className="px-6 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4">
-            <button type="button" disabled={!ready || planPending} onClick={() => save()} className="h-[54px] w-full rounded-2xl text-[16px] font-bold transition-transform active:scale-[.98] disabled:opacity-40" style={{ ...BOTON_ORO, border: 'none' }}>
+            <button type="button" disabled={!listo || planPending} onClick={() => save()} className="h-[54px] w-full rounded-2xl text-[16px] font-bold transition-transform active:scale-[.98] disabled:opacity-40" style={{ ...BOTON_ORO, border: 'none' }}>
               {resolvedDay ? `Guardar y ponerla en ${elDia(route, resolvedDay.dayNumber)}` : 'Guardar y ponerla en su día'}
             </button>
           </div>
         )}
       </div>
       {confirming && (movExc || plan?.cambia) && (() => {
-        // (V49; Design «Entrada Cambio Dias», E1) «Tu Coliseo, el jueves 26. Para que encaje, cambiamos estos días:» y una fila por día (sin pulsar): el elegido arriba con borde dorado; los demás con «Antes, el …». Siempre fechas, nunca «día 3».
-        const filas: FilaDeCambio[] = movExc
-          ? movExc.filas
-          : (() => {
-              const antes = plan?.antes ?? []
-              const despues = plan?.despues ?? []
-              const fechaDe = (n: number) => dateOfDay(route, { dayNumber: n } as DayPlan)
-              return despues
-                .map((entry, i) => ({ entry, i }))
-                .filter(({ entry, i }) => entry.curatedId !== antes[i]?.curatedId)
-                .map(({ entry }) => {
-                  const principal = entry.dayNumber === plan?.principal?.dayNumber
-                  const previo = antes.find((a) => a.curatedId === entry.curatedId)?.dayNumber ?? null
-                  return { dayNumber: entry.dayNumber, fechaIso: fechaDe(entry.dayNumber), nombre: String(entry.name ?? '').replace(/^D[ií]a /i, '') || `Día ${entry.dayNumber}`, antesIso: principal || previo == null ? null : fechaDe(previo), antesNumero: principal ? null : previo, principal }
-                })
-                .sort((a, b) => Number(b.principal) - Number(a.principal) || a.dayNumber - b.dayNumber)
-            })()
+        // (V69, apartado 2; Design «Entrada Mueve Dias» E1/E2) La hoja de mover días por una entrada o una excursión: sale ANTES de aplicar; una tarjeta por cada día que cambia, [Cambiar los días] (recomendado) y [Solo mover la entrada/la excursión].
+        // La entrada: el servidor da los cambios por día (`cambios`: en el puesto `dayNumber` entra ahora el día `a`, que estaba en otro puesto); de ahí, una fila por cada día que cambia, con su día de la ruta (su foto y su sitio principal).
+        const fechaDe = (n: number) => dateOfDay(route, { dayNumber: n } as DayPlan)
+        const delPlan = (plan?.cambios ?? [])
+          .filter((cambio) => cambio.a)
+          .map((cambio) => {
+            const dia = route.days.find((d) => d.curatedId === cambio.a) ?? null
+            const principal = cambio.dayNumber === plan?.principal?.dayNumber
+            const antesNumero = dia?.dayNumber ?? null
+            return { dia, fila: { dayNumber: cambio.dayNumber, fechaIso: fechaDe(cambio.dayNumber), nombre: dia ? tituloSimpleDelDia(route, dia) : String(cambio.a), antesIso: principal || antesNumero == null ? null : fechaDe(antesNumero), antesNumero: principal ? null : antesNumero, principal } as FilaDeCambio }
+          })
+          .sort((x, y) => Number(y.fila.principal) - Number(x.fila.principal) || x.fila.dayNumber - y.fila.dayNumber)
+        const filas: FilaDeCambio[] = movExc ? movExc.filas : delPlan.map((x) => x.fila)
         const principal = filas.find((fila) => fila.principal)
         const dondeCae = principal ? fechaCorta(principal.fechaIso, principal.dayNumber) : fechaCorta(dateOfDay(route, resolvedDay ?? ({ dayNumber: 1 } as DayPlan)), resolvedDay?.dayNumber ?? 1)
-        const titulo = movExc ? `Tu ${nombreDeLaExcursion}, el ${dondeCae}.` : `Tu ${plan?.principal?.sitio ?? target.name}, el ${dondeCae}.`
+        const titulo = movExc ? `Tu ${nombreDeLaExcursion}, el ${dondeCae}` : `Tu entrada ${lugarCon('de', plan?.principal?.sitio ?? target.placeNames[0] ?? target.name)}, el ${dondeCae}`
+        // El día de la ruta de AHORA al que corresponde cada fila (su foto y su sitio principal): el de la excursión, o el que lleva ese sitio escrito (`curatedId`), o el que está en el puesto de antes.
+        const diaDe = (fila: FilaDeCambio): DayPlan | null => {
+          if (movExc) return fila.principal ? (route.days.find((d) => d.id === movExc.diaDeExcursionId) ?? null) : (route.days.find((d) => !d.isReturnLeg && d.dayNumber === fila.antesNumero) ?? null)
+          return delPlan.find((x) => x.fila === fila)?.dia ?? null
+        }
+        const ciudad = (resolvedDay?.city ?? route.destination).split(',')[0]
         return (
-          <div className="absolute inset-0 z-[5] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-labelledby="move-day-heading">
-            <div className="absolute inset-0" style={{ background: 'rgba(20,16,10,.45)' }} onClick={() => setConfirming(false)} />
-            {/* (Noche 24-25 nov, Design «Entrada Cambio Dias» E1) Panel #FFFDF8 de 32 px, título de 28 px, filas de 18 px con la fecha en negrita y [De acuerdo] dorado de 54 px. */}
-            <div data-aviso-dias-cambian className="trazo-notice-panel relative flex w-full flex-col gap-4 rounded-t-[32px] px-5 pb-[max(1.9rem,env(safe-area-inset-bottom))] pt-[26px] md:w-[440px] md:rounded-[28px]" style={{ background: '#FFFDF8', boxShadow: '0 -20px 40px rgba(0,0,0,.25)' }}>
-              <h2 id="move-day-heading" className="font-display text-[28px] leading-[1.12] text-text [text-wrap:balance]">
-                {titulo} Para que encaje, cambiamos estos días:
-              </h2>
-              <div className="flex flex-col gap-2.5">
-                {filas.map((fila) => (
-                  <div key={fila.dayNumber} data-dia-que-cambia={fila.principal ? 'elegido' : 'otro'} className="flex items-start gap-3 rounded-[18px] py-3 pl-3 pr-3.5" style={fila.principal ? { background: '#FBF3E2', border: '1px solid rgba(181,138,46,.55)' } : { background: '#F7F1E4', border: '1px solid rgba(28,34,48,.08)' }}>
-                    <span className="flex h-9 w-9 flex-none items-center justify-center rounded-[12px]" style={{ background: fila.principal ? '#F3E3B2' : '#FFFDF8', color: '#7A5A18' }}>
-                      <Icono nombre="dias" size={17} grosor={1.8} />
-                    </span>
-                    <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                      <span className="text-[14.5px] font-semibold leading-[1.3] text-text">
-                        <b className="font-extrabold">{conMayuscula(fechaCorta(fila.fechaIso, fila.dayNumber))}</b> · {fila.nombre}
-                      </span>
-                      {!fila.principal && fila.antesNumero != null && <span className="text-[12.5px] font-medium text-text/55">Antes, el {fechaCorta(fila.antesIso, fila.antesNumero)}</span>}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              {!movExc && plan && plan.motivos.length > 0 && <p className="text-[13px] leading-snug text-text-soft">{plan.motivos.join(' ')}</p>}
-              <button type="button" onClick={() => save('mover')} data-aviso-de-acuerdo className="h-[54px] w-full rounded-2xl text-[16px] font-bold transition-transform active:scale-[.98]" style={{ ...BOTON_ORO, border: 'none' }}>
-                De acuerdo
-              </button>
-            </div>
-          </div>
+          <HojaMoverDias
+            titulo={titulo}
+            ciudad={ciudad}
+            // (El día de la excursión no tiene paradas: su foto es la de la excursión.)
+            tarjetas={tarjetasDeLosDias(route, filas, diaDe).map((t, i) => (movExc && filas[i]?.principal && target.excursion?.photoUrl ? { ...t, fotoUrl: target.excursion.photoUrl } : t))}
+            solo={isExcursion ? 'la excursión' : 'la entrada'}
+            onCambiar={() => {
+              setConfirming(false)
+              save('mover')
+            }}
+            onSolo={() => {
+              setConfirming(false)
+              save('solo')
+            }}
+            onCerrar={() => setConfirming(false)}
+          />
         )
       })()}
+      {revision && (
+        <HojaRevisaLasHoras
+          revision={revision}
+          onCerrar={() => setRevision(null)}
+          // El botón de «lo otro»: el vuelo (RESERVAS › Llegada y vuelta, en su mitad) o la otra reserva (RESERVAS › Entradas); esta hoja se cierra.
+          onOtro={() => {
+            const otro = revision.otro
+            setRevision(null)
+            onClose()
+            useRouteStore.getState().setMode('bookings')
+            if (otro.tipo === 'vuelo') useReservasFocusStore.getState().pedir('llegada', otro.mitad)
+            else useReservasFocusStore.getState().pedir(otro.reserva.kind === 'excursion' ? 'excursiones' : 'entradas')
+          }}
+          // El botón de «esta»: se vuelve a esta hoja para cambiar el día o la hora.
+          onEsta={() => setRevision(null)}
+          onGuardarIgualmente={() => {
+            const guardar = revision
+            setRevision(null)
+            save('inicio', guardar)
+          }}
+        />
+      )}
     </div>,
     document.body,
   )

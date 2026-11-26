@@ -44,6 +44,8 @@ export function HojaDeReorganizar({ id, titulo, texto, cambios, botonSi, trabaja
           <CruzDeHoja enLinea onCerrar={onNo} />
         </div>
         <span data-reorganizar-texto="1" style={{ font: "400 14.5px/1.45 'Geist',sans-serif", color: 'rgba(28,34,48,.7)' }}>{texto}</span>
+        {/* (V69) Si cambia el orden del mismo día, UNA frase que dice por qué (nunca una tarjeta «Después de…» por sitio). */}
+        {cambios.frase && <span data-reorganizar-frase="1" style={{ font: "500 14.5px/1.45 'Geist',sans-serif", color: '#1C2230' }}>{cambios.frase}</span>}
         <div data-propuesta-tarjetas={cambios.total} className="flex flex-col gap-3">
           {cambios.grupos.map((g, gi) => {
             const visibles = g.tarjetas.filter(() => pintadas++ < limite)
@@ -61,7 +63,7 @@ export function HojaDeReorganizar({ id, titulo, texto, cambios, botonSi, trabaja
             </button>
           )}
         </div>
-        <FranjaVerde texto={cambios.franja} />
+        {cambios.franja && <FranjaVerde texto={cambios.franja} />}
         <div data-dos-botones="1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
           <button type="button" data-reorganizar-si={esAdaptar ? undefined : '1'} data-adaptar-si={esAdaptar ? '1' : undefined} onClick={onSi} disabled={trabajando} style={{ ...BOTON_ORO, minHeight: 52, padding: '0 10px', lineHeight: 1.2, borderRadius: 16, border: 'none', cursor: 'pointer', font: "700 15px 'Geist',sans-serif", opacity: trabajando ? 0.7 : 1 }}>
             {botonSi}

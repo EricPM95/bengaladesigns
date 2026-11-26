@@ -71,7 +71,9 @@ const inFlight = new Map<string, Promise<DestinationExcursions>>()
 
 /** Lo que ya se sabe del destino, sin esperar nada (null si aún no ha llegado): para los textos que se calculan fuera de un componente (el título de un día en una hoja o en el PDF). */
 export function destinoYaCargado(destination: string | null | undefined): DestinationExcursions | null {
-  return destination ? (cache.get(destination.trim().toLowerCase()) ?? null) : null
+  // (V69) Con la API de consulta encendida los datos se guardan con la clave `…|civitatis` (ver `fetchDestinationExcursions`): también se buscan ahí, o con ella encendida los sitios grandes salían vacíos y una reserva del Coliseo no movía el día.
+  const clave = destination?.trim().toLowerCase()
+  return clave ? (cache.get(clave) ?? cache.get(`${clave}|civitatis`) ?? null) : null
 }
 
 export function fetchDestinationExcursions(destination: string): Promise<DestinationExcursions> {

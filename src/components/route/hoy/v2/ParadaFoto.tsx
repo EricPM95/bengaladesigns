@@ -21,7 +21,14 @@ export function ParadaFoto({ nombre, photoUrl, vista, size = 40, marca = vista, 
         className="absolute inset-0 overflow-hidden"
         style={{ borderRadius: Math.round(size * 0.28), background: mini ? '#E9DFCB' : fondo, filter: vista ? 'none' : 'grayscale(.75)', opacity: vista ? 1 : 0.5, boxShadow: 'inset 0 0 0 1px rgba(28,34,48,.08)' }}
       >
-        {mini && <img src={mini} alt="" loading={carga} className="h-full w-full object-cover" onError={(e) => ((e.currentTarget as HTMLImageElement).style.display = 'none')} />}
+        {mini && <img src={mini} alt="" loading={carga} className="h-full w-full object-cover" onError={(e) => {
+          // (V69) Si la miniatura no existe (Lanzarote no las tenía), se prueba con la foto de verdad antes de dejar el hueco beige; solo si tampoco carga, se esconde.
+          const img = e.currentTarget as HTMLImageElement
+          if (photoUrl && img.getAttribute('src') !== photoUrl && !img.dataset.sinMini) {
+            img.dataset.sinMini = '1'
+            img.src = photoUrl
+          } else img.style.display = 'none'
+        }} />}
       </span>
       {marca && (
         <span className="absolute flex items-center justify-center rounded-full" style={{ right: -4, bottom: -4, width: ck, height: ck, background: 'oklch(0.55 0.11 150)', boxShadow: '0 0 0 2px #FFFDF8' }}>

@@ -1,0 +1,53 @@
+# DECISIONES V69 (partes 1, 1b y 5: hoja de Reorganizar, hojas de propuesta y Lugares pendientes en DÍAS)
+
+Cosas que he tenido que decidir sin dibujo o con el dibujo ambiguo. Todas se pueden cambiar; dime cuál.
+
+## 1. Hoja de Reorganizar
+- **Un día NO entero con 4 o más sitios que van al mismo sitio** (por ejemplo, 12 sitios de un martes a «Lugares pendientes» porque aterrizas a las 17:00): UNA tarjeta «12 sitios de tu martes · A Lugares pendientes» (foto del sitio que más dura). El dibujo E1 solo dice «un día entero = una tarjeta»; con 12 tarjetas la hoja volvía a ser la de los 50 cambios. Si prefieres que cada sitio tenga la suya, se quita el umbral (`grupoDeVarios` en `tarjetasDePropuesta.ts`).
+- **La comida y la cena ya no salen como tarjeta en Reorganizar** (no son un sitio y sus minutos no cuentan). La imagen de los cubiertos (`ImagenComida`) sí se usa en las demás hojas de propuesta de HOY (retraso, comer…) y quedó lista para cualquier tarjeta de comida.
+- **La frase de «orden del mismo día»** tiene dos formas: «Damos la vuelta a tu miércoles…» (si el orden queda exactamente al revés) y «Cambiamos el orden de tu miércoles…» (cualquier otro reorden). Si hay una reserva de por medio dice «para llegar a tu entrada del Coliseo de las 16:30» y la reserva sale como tarjeta («A las 16:30, tu entrada»); si no, «para que cada sitio esté abierto cuando llegues». Salen como mucho 2 frases (una por día).
+- **«Esto es lo que cambia:»** se quita si no hay ninguna tarjeta (solo cambia el orden).
+- **La franja verde de Reorganizar** nombra lo que sigue igual (cena o comida elegida que no se corre, reservas que no cambian, o los sitios que se quedan donde estaban: «Sigue igual: la Fuente del Tritón, la Via Veneto y 24 más») y NO sale si no queda nada igual.
+- **Un «de camino»** = una parada marcada `passThrough` o `isFreeWalk`. Si algún «de camino» de Roma (Fuente de las Tortugas, Elefantino) no lleva ninguna de las dos marcas en los datos, saldría como tarjeta: lo vería en la captura; si hace falta, hay que marcarlo en los datos del destino.
+
+## 1b. Hojas de propuesta (`HojaPropuesta`)
+- **El hueco beige de las fotos tenía una causa real:** Lanzarote NO tenía miniaturas (`public/fotos/lanzarote/mini/` no existía), así que todas las tarjetas pequeñas pedían un `.webp` que no estaba y, al fallar, se escondía la imagen. Arreglado de dos formas: (a) he generado las 46 miniaturas de Lanzarote (`node scripts/generarMiniaturas.mjs lanzarote`, 166 KB en total; **son archivos nuevos en `public/fotos/lanzarote/mini/`, hay que subirlos**), y (b) `ParadaFoto` ahora, si la miniatura falla, prueba con la foto de verdad antes de esconderla (vale para cualquier destino futuro al que se le olvide generar las miniaturas).
+- Además, la tarjeta del sitio busca su foto en este orden: la de su parada; la que le dé el servidor por su nombre; la de ese mismo sitio en otro día, en pendientes o en la copia del plan de lluvia; el nombre de foto de los datos del destino (`photo_name`); y la de la tira de fotos del destino ya traída. Hueco solo si no hay ninguna. Las hojas de «Hoy ya no da tiempo a todo» y de «Entrada en peligro» no pasaban la parada a la tarjeta (por eso no pedían foto): ahora sí.
+- **«Sale de hoy» + cuadrado de pendientes** → el texto gris ahora dice «A Lugares pendientes» (lo mismo que el cuadrado). **OJO, pregunta para Eric:** en el aviso del tiempo (viento, nubes, lluvia) el sitio que sale NO va de verdad a «Lugares pendientes»: se guarda en la copia del plan y vuelve con [Deshacer] o «¿Volvemos al plan?». Con el texto y el cuadrado que me pides dice «A Lugares pendientes», que no es exacto. Si prefieres, para el tiempo se puede poner «Se queda para luego» con otro cuadrado, pero eso sería una pieza nueva y no la he inventado.
+- **Sin horas salvo las reservas:** «Hoy a las 15:12» desaparece. Un sitio que entra por otro: «Hoy, en lugar de Los Hervideros»; uno que se corre: «Hoy, un poco más tarde» / «un poco antes» / «a otra hora»; solo una reserva o el Free Tour lleva «Hoy a las 17:30».
+- **Botón por caso:** lluvia «Usar el plan de lluvia», viento «Cambiar de sitio», nubes «Cambiar de mirador» (`hoyLluvia.ts`).
+- **Franja verde con nombres:** «Sigue igual: Timanfaya, los Jameos del Agua y 2 más», contando las paradas del día que ninguna operación toca; sin franja si no queda ninguna.
+
+## 5. Lugares pendientes en DÍAS
+- **¿Qué es «la lista del viaje»?** Hay tres cosas en el código: lo saltado (`saltada`), lo que no dio tiempo de días ya pasados, y «Si te sobra tiempo» de cada día (`spareStops`: donde Reorganizar deja lo que no cabe). En DÍAS el bloque junta: durante el viaje, lo de HOY + los `spareStops` de todos los días; antes del viaje, solo los `spareStops` («No cabía el viernes»). HOY sigue enseñando su lista de siempre más su bloque «Si te sobra tiempo»: **no he tocado HOY** (nada que funcione se quita). Si quieres que HOY y DÍAS enseñen exactamente la MISMA lista (y quitar «Si te sobra tiempo» de HOY y del detalle del día), es un cambio mayor: dímelo.
+- El motivo de lo que no cupo es siempre «No cabía el {día}» (también cuando el motor lo dejó fuera por otra razón, como «para meter otra parada»): no hay un motivo distinto guardado y no lo he inventado.
+- En DÍAS el bloque sale abierto (como L5); en HOY sigue plegado.
+- De un pendiente que viene de «Si te sobra tiempo» el menú «···» solo ofrece «Quitar» (no «Recuperar hoy» ni «Ya lo visité»: no es una parada del día).
+- La hoja «Pasar todos a otros días» (V63 §17): tarjeta por sitio con foto, nombre, «Al jueves 26» en gris y el cuadrado azul de la fecha, sin flecha; los que no caben con «Se queda en Lugares pendientes» y el cuadrado del pin con reloj (antes ⚠). No encontré el texto de la V63 §17: lo hice como describe el prompt.
+- En DÍAS ya se marca la pestaña «Días» (no hay nada que cambiar en la app; el dibujo es el que tiene «Hoy»).
+
+---
+## Apartados 2, 3, 4 y 6 (hoja de mover días, «Revisa las horas», horas en botones, [Ver entrada]) — agente B
+
+### 2 · Mover días por una entrada o excursión
+- **La hoja vieja nunca enseñaba los días:** el código leía `antes`/`despues` de `/api/reservation-plan`, pero el servidor NO los manda (solo `cambios: [{ dayNumber, de, a }]` con los ids de los días escritos). Por eso «Para que encaje, cambiamos estos días:» salía sin filas. Ahora las tarjetas salen de `cambios` (el día `a` que entra en el puesto `dayNumber`, y su día de ahora por `curatedId`).
+- La hoja nueva es `HojaMoverDias.tsx` sobre `HojaV2` + `Titulo` + `TarjetasDeCambios` (las piezas de las hojas de propuesta; no toqué `HojaPropuesta` porque lo edita el otro agente). Lo único nuevo es la etiqueta verde «Recomendado» del dibujo (píldora #2B7F45, como la del dibujo).
+- Una tarjeta por cada día que cambia, **incluido el del Coliseo** (el dibujo E1 solo enseña los días desplazados; el principal también cambia de día y callarlo era raro). Con más de 3: «y N más».
+- **[Solo mover la entrada]** = `addReservation(..., { solo: true })`: se mueven SOLO los sitios de esa entrada (V68: todos juntos, a su hora, nada repetido), sin pedir nada al motor ni tocar los demás días; aviso de abajo con [Deshacer]. **[Solo mover la excursión]** = el día de excursión y el día del puesto elegido se INTERCAMBIAN (`intercambioDeExcursion`, `excursionMove.ts`); los demás días no se tocan. (Dejar la excursión en un día suelto sin intercambiar dejaba dos días de excursión o borraba un día: no lo hice.)
+- Pregunta: el título de un día de llegada sale como «Madrid → Roma» (es su título en DÍAS); en el dibujo salen nombres de zona. No lo he cambiado.
+
+### 3 · «Revisa las horas»
+- Detecta: reserva el día de la llegada antes de la hora de aterrizar; el día de la vuelta después de la hora de salida; y (entradas) coincidir con otra reserva (las mismas que ya avisa la campana, `reservationOverlaps`; la excursión no entra en el A1b). Sale solo al guardar, nunca desde Reorganizar. Código: `src/lib/revisarLasHoras.ts` (puro).
+- «Guardarla igualmente»: la reserva queda guardada con `revisarHoras: true` (campo nuevo de `Reservation`): **no entra en la ruta, no va al motor y no se re-coloca** al rehacer días (`placeReservedEntranceUna`, `reapplyReservations`, `engineReservas`, `llegadaVuelta`). La línea naranja es la pieza de siempre (`LineaNaranjaDeDocumento`, guardada con `avisoDeDocumento`) con la misma frase; sus botones son los suyos ([Es correcta] / [Cambiar], que abre «añadir documento»): no he inventado otros. [Es correcta] quita la línea pero la reserva sigue fuera del día (hay que cambiarla para que entre).
+- [Revisar el vuelo] cierra la hoja y lleva a RESERVAS › Llegada y vuelta (la mitad que toca); [Revisar el Free Tour/la otra entrada] lleva a RESERVAS › Entradas; [Revisar la entrada] vuelve a la hoja de elegir día y hora.
+- Con la hora útil del vuelo (aterrizas + salir + trayecto) la rueda no bloquea nada; el A1a solo salta si la hora es ANTES de aterrizar. Las horas entre aterrizar y quedar libre no se avisan aquí (en el Free Tour, con botones, salen «No llegas»).
+
+### 4 · Horas en botones
+- Siempre en el Free Tour; en una entrada, solo si Civitatis da horas fijas para ese día y se está RESERVANDO (con «Añádela»/«Cambiar» el viajero pone la hora que ya tiene en la rueda de siempre). Excursiones y reservas libres: rueda.
+- **Las horas «Agotado» salen de comparar:** la API solo devuelve las libres, así que una hora que la actividad ofrece otro día del viaje y ese día no está se pinta tachada con «Agotado». Si Civitatis devolviera también las agotadas (cuota 0) sería exacto: pedirlo al servidor es un cambio pequeño en `horasParaLaApp`; no lo he hecho.
+- Una consulta nueva: `/api/civitatis/horas-rango` al abrir la hoja (una vez por apertura, solo con Civitatis encendida: apagada en producción), unos 2-4 KB (≈10 días × ≈5 horas). Sin Civitatis: las 6 horas de siempre y nada más.
+- La hora que el viajero ya tenía en una reserva siempre sale como botón (cambiar una reserva no pierde su hora).
+- Con el Free Tour, una hora anterior a quedar libre no se puede elegir: para guardar un Free Tour imposible hay que escribirlo como entrada o editarlo; el aviso A1a se ve con entradas (rueda).
+
+### 6 · [Ver entrada]
+- Con documento: un código a pantalla completa; varios, el bloque que se desliza de la V65 en una hoja y de ahí cada uno a pantalla completa. Sin documento: «+ Subir tu entrada» → hoja de la V64. Entrada de varias personas sin documento: «Las entradas de cada uno». Si la entrada es de otra persona y no hay documento para ti, el botón NO sale (regla nueva de CLAUDE.md: nunca un botón que no hace nada).

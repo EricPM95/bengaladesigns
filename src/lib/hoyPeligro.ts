@@ -218,11 +218,11 @@ export function proponerSolucion(p: {
         const mitad = Math.max(1, Math.ceil(delDia(destino).length / 2))
         const cuando = col.caso === 'c' ? `Al final del ${etiqueta.replace(/ \d+$/, '')} · «Si te sobra tiempo»` : iDespues >= mitad ? 'Por la tarde' : 'Por la mañana'
         quitadas.push({ id, nombre: nombre(it.stop), clase: it.clase, destino: 'manana', aDia: etiqueta })
-        tarjetas.push({ nombre: nombre(it.stop), fotoUrl, cuando, semanaCorta: semanaCorta(iso), numero: iso ? String(Number(iso.slice(8, 10))) : String(destino.dayNumber), destino: etiqueta, diaDeHoy: ctx.etiquetaDia(day) })
+        tarjetas.push({ nombre: nombre(it.stop), fotoUrl, cuando, semanaCorta: semanaCorta(iso), numero: iso ? String(Number(iso.slice(8, 10))) : String(destino.dayNumber), destino: etiqueta, diaDeHoy: ctx.etiquetaDia(day), parada: it.stop, ciudad: day.city })
       } else {
         ops.push({ t: 'campo', dia: day.id, id, antes: { time: it.stop.time, saltada: Boolean(it.stop.saltada) }, despues: { time: it.stop.time, saltada: true } })
         quitadas.push({ id, nombre: nombre(it.stop), clase: it.clase, destino: 'sobra' })
-        tarjetas.push({ nombre: nombre(it.stop), fotoUrl, cuando: 'A Lugares pendientes', semanaCorta: '', numero: '', destino: '', diaDeHoy: ctx.etiquetaDia(day), aPendientes: true })
+        tarjetas.push({ nombre: nombre(it.stop), fotoUrl, cuando: 'A Lugares pendientes', semanaCorta: '', numero: '', destino: '', diaDeHoy: ctx.etiquetaDia(day), aPendientes: true, parada: it.stop, ciudad: day.city })
       }
     }
     for (const [id, min] of sim.nuevas) {
