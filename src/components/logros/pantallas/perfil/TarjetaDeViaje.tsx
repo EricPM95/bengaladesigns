@@ -3,6 +3,7 @@ import { usePortadaDeViaje } from '../../../../hooks/usePortadaDeViaje'
 import { HojaPortada } from '../../../perfil/HojaPortada'
 import { plural, type ResumenViaje } from '../../../../lib/viajesPerfil'
 import { Icono } from '../../../ui/Icono'
+import { CREDITO_DE_FOTO_ENTRA, ImagenConFundido } from '../../../ui/ImagenConFundido'
 import { todayIso } from '../../../../lib/dateRange'
 import { diasDelViaje, textoDeDias } from '../../../../lib/duracionViaje'
 
@@ -13,6 +14,9 @@ import { diasDelViaje, textoDeDias } from '../../../../lib/duracionViaje'
  * izquierda y, debajo, el botón «Abrir este viaje» bien visible. Sin foto del destino, el degradado de Design (uno por destino, siempre el mismo). Fuera la pastilla de las fotos.
  * Tocar la portada abre el viaje por dentro (su álbum / su ficha); [Abrir este viaje] lo abre en la app. En el modo [Editar] la cámara pasa a ser la papelera (o «salir», si el viaje es de otra persona).
  */
+/** El color del hueco mientras llega la foto (el fondo de la tarjeta y de la página, sin degradado). */
+const FONDO_DE_FOTO = '#EADFC8'
+
 export type EtiquetaDeViaje = 'en_curso' | 'proximo' | 'hecho'
 
 export const TEXTO_DE_ETIQUETA: Record<EtiquetaDeViaje, string> = { en_curso: 'En curso', proximo: 'Próximo', hecho: 'Ya hecho' }
@@ -56,6 +60,7 @@ export function TarjetaDeViaje({ viaje, etiqueta, onAbrirViaje, onRecuerdos, edi
   // La portada: la que eligió; si no, la primera foto suya al acabar el viaje; y si no, la del destino (o el degradado de siempre).
   const portada = usePortadaDeViaje(viaje.id, viaje.destino, viaje.fase === 'hecho', viaje.route)
   const [cambiandoPortada, setCambiandoPortada] = useState(false)
+  const [estadoFoto, setEstadoFoto] = useState<'cargando' | 'lista' | 'fallo'>('cargando')
   const hecho = etiqueta === 'hecho'
   // (10S) La línea de fechas lleva SOLO las fechas («26 – 29 nov 2026»); los días ya van en los chips de debajo.
   const fechas = viaje.cuando
@@ -64,10 +69,11 @@ export function TarjetaDeViaje({ viaje, etiqueta, onAbrirViaje, onRecuerdos, edi
   return (
     <div data-tarjeta-de-viaje={viaje.id} data-etiqueta-de-viaje={etiqueta} data-portada-origen={portada.url ? portada.origen : 'degradado'} style={{ flex: 'none', width: ancho, scrollSnapAlign: 'start', borderRadius: 26, overflow: 'hidden', background: '#FFFDF8', boxShadow: '0 12px 24px -14px rgba(28,34,48,.5)' }}>
       <div style={{ position: 'relative' }}>
-        <div style={{ width: '100%', height: 150, background: degradadoDeViaje(viaje.destino), position: 'relative', overflow: 'hidden' }}>
+        {/* (V67, P3) Con foto: mientras llega, un hueco del color de fondo (sin degradado ni autor) y la foto entra con un fundido, con el autor. Sin foto: el degradado de siempre. */}
+        <div style={{ width: '100%', height: 150, background: portada.url || portada.cargando ? FONDO_DE_FOTO : degradadoDeViaje(viaje.destino), position: 'relative', overflow: 'hidden' }}>
           {portada.url ? (
-            <img src={portada.url} alt="" aria-hidden="true" loading="lazy" decoding="async" draggable={false} data-portada-foto-url={portada.url.slice(0, 80)} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-          ) : (
+            <ImagenConFundido src={portada.url} fondo={FONDO_DE_FOTO} loading="lazy" decoding="async" data-portada-foto-url={portada.url.slice(0, 80)} alEstado={setEstadoFoto} />
+          ) : portada.cargando ? null : (
             <span aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(135deg,rgba(255,255,255,.1) 0 2px,transparent 2px 12px)' }} />
           )}
         </div>
@@ -95,8 +101,8 @@ export function TarjetaDeViaje({ viaje, etiqueta, onAbrirViaje, onRecuerdos, edi
             </svg>
           </button>
         )}
-        {portada.credito && (
-          <span data-credito-portada style={{ position: 'absolute', left: 14, top: hecho ? 16 : 44, maxWidth: 'calc(100% - 70px)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', font: "400 8.5px 'Geist Mono',monospace", letterSpacing: '.04em', color: 'rgba(255,253,248,.65)', pointerEvents: 'none' }}>
+        {portada.credito && !portada.cargando && (!portada.url || estadoFoto === 'lista') && (
+          <span data-credito-portada style={{ ...(portada.url ? CREDITO_DE_FOTO_ENTRA : null), position: 'absolute', left: 14, top: hecho ? 16 : 44, maxWidth: 'calc(100% - 70px)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', font: "400 8.5px 'Geist Mono',monospace", letterSpacing: '.04em', color: 'rgba(255,253,248,.65)', pointerEvents: 'none' }}>
             {portada.credito}
           </span>
         )}

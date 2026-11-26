@@ -38,7 +38,7 @@ function TipsButton({ city, onOpen }: { city: string; onOpen: () => void }) {
   const data = useDestinationTips(city, true)
   // (Tanda 10C: la bombilla sale siempre; sin tips de ese destino, apagada.)
   return (
-    <button type="button" onClick={onOpen} disabled={!data} title={data ? `Tips de ${city}` : `Aún no hay tips de ${city}`} aria-label={`Tips de ${city}`} className="zona-toque group flex h-9 w-9 shrink-0 items-center justify-center disabled:cursor-not-allowed">
+    <button type="button" onClick={onOpen} disabled={!data} title={data ? `Tips de ${city}` : `Aún no hay tips de ${city}`} aria-label={`Tips de ${city}`} className="zona-toque group flex h-8 w-8 shrink-0 items-center justify-center disabled:cursor-not-allowed">
       <span className="flex h-[32px] w-[32px] items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-text/60 hover:bg-bg-hover group-disabled:opacity-40 group-disabled:hover:bg-bg-card">
         <Icono nombre="tips" className="h-[16px] w-[16px]" />
       </span>
@@ -132,11 +132,12 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
             </button>
             {/* (Tanda 10G, el diseño P0c y P0d: una línea fina y, debajo, la pastilla del pase a la izquierda y los tres iconos a la derecha.) */}
             <div aria-hidden="true" className="my-3 h-px bg-text/10" />
-            <div className="flex items-center gap-2">
+            {/* (V67, P2) La fila nunca se corta por la derecha: lo que no cabe baja a otra línea (los dos iconos, juntos y a la derecha), y los iconos miden 32 (la zona de toque sigue en 44). */}
+            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-2">
               <PastillaPase destino={segment.city} />
             {/* (Tanda 10N §4a) Junto a la pastilla del pase: [Compartir] o, ya compartido, las caras con el número. Bombilla y flecha, juntas a la derecha. */}
             {index === 0 && <BotonCompartirViaje />}
-              <span className="flex-1" />
+              <span className="ml-auto flex shrink-0 items-center gap-1">
             <TipsButton city={segment.city} onOpen={() => setTipsCity(segment.city)} />
             {/* La flecha de volver a la ruta de antes SIEMPRE a la vista (Tanda 10C): apagada si no hay una ruta anterior que recuperar o si no hay nada cambiado. */}
             <button
@@ -146,12 +147,13 @@ export function RouteOverview({ route, onDetailOpenChange }: RouteOverviewProps)
               title={!canRestoreRoute ? 'Todavía no hay una ruta anterior que recuperar' : cityChanged ? 'Recuperar mi ruta' : 'Tu ruta está tal como te la preparamos'}
               data-edit-tool="1"
               aria-label="Recuperar mi ruta"
-              className="zona-toque group flex h-9 w-9 shrink-0 items-center justify-center disabled:cursor-not-allowed"
+              className="zona-toque group flex h-8 w-8 shrink-0 items-center justify-center disabled:cursor-not-allowed"
             >
               <span className="flex h-[32px] w-[32px] items-center justify-center rounded-full border border-text/[.14] bg-bg-card text-text/60 hover:bg-bg-hover group-disabled:opacity-40 group-disabled:hover:bg-bg-card">
                 <Icono nombre="recuperar" className="h-[16px] w-[16px]" />
               </span>
             </button>
+              </span>
             </div>
             </div>
           </div>

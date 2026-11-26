@@ -419,3 +419,18 @@ html[data-aviso-abajo] [role='dialog'][aria-modal='true'] {
   from { transform: scaleX(1); }
   to { transform: scaleX(0); }
 }
+
+/* (V67, P3) La foto que llega con un fundido y el autor con ella (ImagenConFundido). */
+@keyframes imagenConFundidoEntra {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-imagen-hueco] ~ img {
+    transition: none !important;
+  }
+}

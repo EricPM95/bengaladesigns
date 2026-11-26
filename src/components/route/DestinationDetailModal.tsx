@@ -14,6 +14,7 @@ import { LoQueTePuedesLlevar, useLoQueTePuedesLlevar } from '../primeraVez/LoQue
 import { desdeTexto, enlaceDeHotel, notaTexto, opinionesTexto, paginaEnMemoria, pedirPaginaDeDestino, type ActividadDeDestino, type HotelDeDestino, type PaginaDeDestino } from '../../lib/paginaDestino'
 import { BOTON_ORO } from '../ui/botonesOro'
 import { useMonedaViajero } from '../../lib/moneda'
+import { ImagenConFundido } from '../ui/ImagenConFundido'
 
 interface DestinationDetailModalProps {
   city: string | null
@@ -63,7 +64,7 @@ function Foto({ url, alto, prioridad = false, children }: { url: string | null; 
   return (
     <div className="relative" style={{ height: alto }}>
       <div className="absolute inset-0 overflow-hidden" style={{ clipPath: CORTE, background: FONDO_SUAVE }}>
-        {url && <img src={url} alt="" width={236} height={alto} loading={prioridad ? 'eager' : 'lazy'} decoding="async" {...(prioridad ? { fetchPriority: 'high' as const } : {})} className="h-full w-full object-cover" />}
+        {url && <ImagenConFundido src={url} fondo={FONDO_SUAVE} width={236} height={alto} loading={prioridad ? 'eager' : 'lazy'} decoding="async" {...(prioridad ? { fetchPriority: 'high' as const } : {})} />}
       </div>
       <div className="absolute inset-0" style={{ clipPath: CORTE, background: 'linear-gradient(180deg,rgba(20,30,50,.05),rgba(20,30,50,.38))' }} />
       {children}

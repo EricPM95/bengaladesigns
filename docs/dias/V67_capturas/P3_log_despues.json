@@ -1,0 +1,5 @@
+{
+  "P3_1_abre": "{\"hueco\":\"cargando\",\"opacidadFoto\":\"0\",\"credito\":false,\"origen\":\"destino\"}",
+  "P3_2_cargando": "{\"hueco\":\"cargando\",\"opacidadFoto\":\"0\",\"credito\":false,\"origen\":\"destino\"}",
+  "P3_3_foto": "{\"hueco\":\"lista\",\"opacidadFoto\":\"1\",\"credito\":true,\"origen\":\"destino\"}"
+}

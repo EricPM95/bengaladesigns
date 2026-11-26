@@ -26,6 +26,7 @@ import { useAudioDeHistoria } from '../../../../lib/escucharAudio'
 import { accesoHistoria, textoHistoria, useFichaDeSitio } from '../../../../lib/historia'
 import { useHistoriaDePrueba } from '../../../../lib/historiaDePrueba'
 import { atardecerDelDestino, fraseDeAtardecer, horaDelSol } from '../../../../lib/puestaDeSolYManana'
+import { esSoloDeDia, horarioDeLuz, minutosDeLaHora } from '../../../../lib/sitiosDeDia'
 import { useGastarHistoriaAl3s } from '../../../../lib/useGastarHistoria'
 import { useExploreAperturaStore } from '../../../../store/useExploreAperturaStore'
 import type { EstadoPase } from '../../../../lib/paseEstado'
@@ -235,7 +236,10 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const pedirExplorar = useExploreAperturaStore((s) => s.pedir)
   const info = useDestinationExcursions(route.destination)
   const infoLlegada = useArrivalInfo(route.destination, day.city, route.origin)
-  const horarioDe = useHorarioDeParadas(day.city, dateIso)
+  const horarioBase = useHorarioDeParadas(day.city, dateIso)
+  // (V67, L6) Un mirador, una playa o la naturaleza sin horario solo se ven de día: pasada la puesta de sol no se proponen como siguiente parada y su caja dice «De día · Se ve hasta las 18:26» (nunca «Cerrado»). Con la hora del sol del día o la del destino y la fecha.
+  const finDeLaLuz = minutosDeLaHora(horaDelSol(day) ?? atardecerDelDestino(route.destination, dateIso)?.hora)
+  const horarioDe: typeof horarioBase = (parada) => horarioBase(parada) ?? (finDeLaLuz != null && !parada.passThrough && esSoloDeDia(parada.name) ? horarioDeLuz(finDeLaLuz) : null)
   // (V47) Cuándo vuelve a abrir la parada si ya cerró (los mismos horarios del destino, en memoria: 0 KB de red).
   const proximaAperturaDe = useProximaApertura(day.city, dateIso)
   const fichas = useFichasDeHoy(route, day, dateIso)

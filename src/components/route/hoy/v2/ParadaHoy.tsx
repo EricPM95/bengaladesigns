@@ -163,13 +163,13 @@ const BOTON_BLANCO_A = { background: '#FFFDF8', border: '1px solid rgba(28,34,48
 
 /** «9:30–16:45»: del primer tramo que abre al último que cierra (null si no hay horario o ese día no abre). */
 export function rangoDeHorario(h: HorarioDeParada | null): string | null {
-  if (!h || h.cerrado || h.tramos.length === 0) return null
+  if (!h || h.luz || h.cerrado || h.tramos.length === 0) return null
   return `${h.tramos[0].abre}–${h.tramos[h.tramos.length - 1].cierra}`
 }
 
 /** (V43 §8) «Cerrado ahora · abre a las 8:30» si ahora está cerrado (fuera de todos los tramos del día); null si está abierto o no hay horario. */
 export function cerradoAhora(h: HorarioDeParada | null, ahoraMin: number): string | null {
-  if (!h || h.cerrado || h.tramos.length === 0) return null
+  if (!h || h.luz || h.cerrado || h.tramos.length === 0) return null
   const aMin = (t: string) => {
     const m = /^(\d{1,2}):(\d{2})$/.exec(t)
     return m ? Number(m[1]) * 60 + Number(m[2]) : null
@@ -185,7 +185,7 @@ export function cerradoAhora(h: HorarioDeParada | null, ahoraMin: number): strin
 
 /** Minutos que faltan para que cierre (el cierre del tramo en el que estamos, o la última entrada si ya solo queda esa); null si no se sabe o ya cerró. */
 export function minutosParaCerrar(h: HorarioDeParada | null, ahoraMin: number): number | null {
-  if (!h || h.cerrado || h.tramos.length === 0) return null
+  if (!h || h.luz || h.cerrado || h.tramos.length === 0) return null
   const aMin = (t: string) => {
     const m = /^(\d{1,2}):(\d{2})$/.exec(t)
     return m ? Number(m[1]) * 60 + Number(m[2]) : null
@@ -433,7 +433,7 @@ export function TarjetaParada(p: PropsParada) {
   // (V47) Las tres cajas (HORARIO, A PIE / EN COCHE, VISITA): lo que dice cada una según la hora real y el sitio de salida.
   const estadoBase = estadoDelHorario(p.horario, ahoraMin, p.proximaApertura ?? null)
   // (V52 §1) Si la parada ya ha cerrado (también por la última entrada o por el trayecto), la caja lo dice en rojo: «Cerrado · Abre mañana a las 9:00».
-  const estadoH: typeof estadoBase = p.cerrada && estadoBase.caso !== 'despues' && estadoBase.caso !== 'cerrado_hoy' ? { grande: 'Cerrado', tono: 'rojo', sub: p.proximaApertura ? `Abre ${p.proximaApertura}` : 'Cerrado ahora', subTono: 'rojo', caso: 'despues' } : estadoBase
+  const estadoH: typeof estadoBase = p.cerrada && !p.horario?.luz && estadoBase.caso !== 'despues' && estadoBase.caso !== 'cerrado_hoy' ? { grande: 'Cerrado', tono: 'rojo', sub: p.proximaApertura ? `Abre ${p.proximaApertura}` : 'Cerrado ahora', subTono: 'rojo', caso: 'despues' } : estadoBase
   const modoCaja = trayecto?.modo ?? (enCoche ? 'coche' : 'pie')
   const minutosVisita = siguiente.durationMinutes > 0 ? `${Math.round(siguiente.durationMinutes)} min` : '—'
   const dialogos = (
@@ -516,7 +516,7 @@ export function TarjetaParada(p: PropsParada) {
     )
   }
 
-  const etiqueta = p.cerrada ? 'YA HA CERRADO' : anterior ? 'SIGUIENTE PARADA' : 'PRIMERA PARADA'
+  const etiqueta = p.cerrada ? (p.horario?.luz ? 'YA ES DE NOCHE' : 'YA HA CERRADO') : anterior ? 'SIGUIENTE PARADA' : 'PRIMERA PARADA'
   // (V44 §1) La caja de minutos: en la ruta, «12 min · Desde ti»; en el destino pero lejos de la ruta (el aeropuerto) o sin ubicación, el tiempo del plan («Del alojamiento al Coliseo», «Del Panteón a la Fontana de Trevi»); fuera del destino, «—» y «Estás lejos».
   const zona: ZonaUbicacion = p.zonaUbicacion ?? (ubicacion ? 'ruta' : 'sin')
   const origenDelPlan = anterior && !anterior.isBreak ? displayStopName(anterior.name) : null

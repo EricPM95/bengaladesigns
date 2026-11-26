@@ -212,7 +212,8 @@
      "tarde": [
       {
        "tipo": "parada",
-       "lugar": "Haría y la Casa-Museo César Manrique",
+       "lugar": "Haría",
+       "parada": "haria_y_la_casa_museo_cesar_manrique",
        "modo": null,
        "doc": "Haría y el Valle de las Mil Palmeras: el pueblo y su plaza",
        "min": 60,
@@ -220,7 +221,8 @@
       },
       {
        "tipo": "parada",
-       "lugar": "Haría y la Casa-Museo César Manrique",
+       "lugar": "Casa-Museo César Manrique",
+       "parada": "haria_y_la_casa_museo_cesar_manrique",
        "modo": "dentro",
        "doc": "Casa-Museo César Manrique (Haría), taquilla hasta las 17:00 (para quien no tenga Arte, opcional) ~1 h",
        "min": 60,

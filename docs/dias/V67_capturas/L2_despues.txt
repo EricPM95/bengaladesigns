@@ -1,0 +1,20 @@
+DIA 1  Tu llegada a Lanzarote
+  12:23 Teguise (villa) (75)
+  15:13 Jardín de Cactus (60)
+  16:31 Fundación César Manrique (59)
+  17:49 Arrecife: Charco de San Ginés y el paseo (60)
+  comidas: [["13:38",null,null],["19:30",null,null]]
+  llegada_ll: null
+  llegada_aeropuerto: null
+  avisos: null
+DIA 2  Fuego y mar: el sur volcánico
+  09:00 Montañas del Fuego (Timanfaya) (90)
+  10:58 La Geria y sus bodegas (60)
+  14:11 Salinas de Janubio (20)
+  14:50 Playa de Montaña Bermeja (15)
+  15:12 Los Hervideros (30)
+  15:50 El Golfo y el Charco de los Clicos (139)
+  comidas: [["12:30",null,null],["19:30",null,null]]
+  llegada_ll: null
+  llegada_aeropuerto: null
+  avisos: null

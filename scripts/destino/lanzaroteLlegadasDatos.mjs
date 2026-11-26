@@ -119,7 +119,7 @@ for (const z of Object.values(vuelta)) { z.V0 = sinRuta(); z.V1 = sinRuta() }
 
 const salida = {
   _nota: 'LL (4-nov): el día de llegada (filas A a F) y el de vuelta (V0 a V5) de Lanzarote, por zona. Generado por scripts/destino/lanzaroteLlegadasDatos.mjs desde docs/llegadas/LANZAROTE_LLEGADAS_PROPUESTA.md. No editar a mano.',
-  constantes: { salir_aeropuerto_min: 45, recoger_coche_min: 60, instalarse_min: 60, devolver_coche_min: 30, aeropuerto_min: 120 },
+  constantes: { salir_aeropuerto_min: 45, recoger_coche_min: 60, instalarse_min: 20, devolver_coche_min: 30, aeropuerto_min: 120 },
   llegada, verano, vuelta, d3_corto: D3_CORTO,
 }
 fs.writeFileSync('data/dias/lanzarote/_ll.json', JSON.stringify(salida, null, 1) + '\n')

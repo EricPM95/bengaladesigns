@@ -12,6 +12,8 @@ export interface PortadaResuelta {
   origen: 'destino' | 'viaje' | 'galeria' | 'auto'
   /** La línea de crédito (solo las del destino). */
   credito: string | null
+  /** (V67, P3) Aún se está buscando la foto (ni la de siempre ni una nueva): la tarjeta enseña un hueco del color de fondo, no el degradado (que es de «este destino no tiene foto»). */
+  cargando?: boolean
 }
 
 /**
@@ -70,7 +72,7 @@ export function usePortadaDeViaje(tripId: string, destino: string, hecho: boolea
     }
   }, [tripId, base.resuelta, base.portada.url, base.portada.origen, base.portada.credito])
   if (!resuelta && vista) return { url: vista.url, origen: vista.origen, credito: vista.credito }
-  return base.portada
+  return !resuelta && !base.portada.url ? { ...base.portada, cargando: true } : base.portada
 }
 
 function usePortadaCalculada(tripId: string, destino: string, hecho: boolean, ruta: Route | null | undefined, sitios: { nombre: string; visto: boolean }[]): { portada: PortadaResuelta; resuelta: boolean } {

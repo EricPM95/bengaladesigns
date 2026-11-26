@@ -3,7 +3,7 @@
  "constantes": {
   "salir_aeropuerto_min": 45,
   "recoger_coche_min": 60,
-  "instalarse_min": 60,
+  "instalarse_min": 20,
   "devolver_coche_min": 30,
   "aeropuerto_min": 120
  },

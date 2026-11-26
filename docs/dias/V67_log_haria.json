@@ -1,0 +1,43 @@
+{
+  "paradas": [
+    {
+      "dia": 2,
+      "id": "day-2",
+      "name": "Haría y el Valle de las Mil Palmeras",
+      "time": "15:09",
+      "min": 60,
+      "hours": null,
+      "scheduleText": null,
+      "freeAccess": null,
+      "outsideKind": null,
+      "closedThisDay": null,
+      "trayecto": null
+    },
+    {
+      "dia": 2,
+      "id": "day-2",
+      "name": "Casa-Museo César Manrique (Haría)",
+      "time": "16:14",
+      "min": 60,
+      "hours": "10:00-17:30",
+      "scheduleText": "10:00-17:30",
+      "freeAccess": null,
+      "outsideKind": null,
+      "closedThisDay": null,
+      "trayecto": "A pie · 5 min"
+    },
+    {
+      "dia": 3,
+      "id": "day-3",
+      "name": "Casa-Museo del Campesino",
+      "time": "16:22",
+      "min": 50,
+      "hours": "10:00-18:00",
+      "scheduleText": "10:00-18:00",
+      "freeAccess": null,
+      "outsideKind": null,
+      "closedThisDay": null,
+      "trayecto": "En coche · 14 min · 10 km"
+    }
+  ]
+}

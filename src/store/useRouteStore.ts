@@ -100,6 +100,7 @@ import { camposDelViajero, sellarVueltaAlAbrir } from '../lib/datosDelViajero'
 import { avisosDeFechaLeidos, dateNoticesKey } from '../lib/dateNotices'
 import { cardSeasonOfNote } from '../lib/seasonCard'
 import { conLasFotosNuevas, fotosNuevasDelViaje } from '../lib/refrescarFotosViaje'
+import { conHariaEnDosParadas } from '../lib/migrarHariaPartida'
 
 /** hotel salvo que el vehículo elegido sea camper/autocaravana, que bloquea hoteles por completo. */
 function deriveAccommodationMode(vehicleType: VehicleType | null): AccommodationMode {
@@ -1257,6 +1258,12 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     // (Tanda 10N) Ha llegado un viaje: la propuesta de quien solo recomienda se ajusta a la ruta nueva del administrador.
     alHidratarViaje.fn?.()
     // (6-nov, ARREGLO_FOTOS_VIAJE) Las fotos de cada parada se toman de NUESTROS datos al abrir el viaje: un viaje creado antes de que cambiaran las fotos las enseña nuevas.
+    // (V67) Haría en dos paradas: un viaje ya creado se corrige al abrirlo (en el móvil, sin red), sin perder nada de lo visto.
+    const sinCorregir = get().route
+    if (sinCorregir) {
+      const corregido = conHariaEnDosParadas(sinCorregir)
+      if (corregido !== sinCorregir) set({ route: corregido })
+    }
     const abierto = get().route
     if (abierto) {
       void fotosNuevasDelViaje(abierto).then((cambios) => {

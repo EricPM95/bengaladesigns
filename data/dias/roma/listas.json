@@ -2035,31 +2035,6 @@
     }
    ],
    "experiencias": {
-    "mercadillos_navidenos": {
-     "clave": "presepi",
-     "doc": "Mercadillos (8 dic – 6 ene): «Plaza de San Pedro y los 100 Presepi» y «Piazza Navona y su mercadillo navideño».",
-     "cuando": {
-      "fechas": "12-08..01-06"
-     },
-     "ops": {
-      "manana": {
-       "ajustar": {
-        "Plaza de San Pedro": {
-         "titulo": "Plaza de San Pedro y los 100 Presepi",
-         "texto": "Bajo la columnata de Bernini se reúnen en Navidad más de cien belenes llegados de todo el mundo, de todos los materiales y tamaños. La muestra nació en 1976 junto a Piazza del Popolo y desde hace unos años se hace aquí, en el Vaticano."
-        }
-       }
-      },
-      "tarde": {
-       "ajustar": {
-        "Plaza de San Pedro": {
-         "titulo": "Plaza de San Pedro y los 100 Presepi",
-         "texto": "Bajo la columnata de Bernini se reúnen en Navidad más de cien belenes llegados de todo el mundo, de todos los materiales y tamaños. La muestra nació en 1976 junto a Piazza del Popolo y desde hace unos años se hace aquí, en el Vaticano."
-        }
-       }
-      }
-     }
-    }
    }
   },
   "D1": {
@@ -5081,23 +5056,6 @@
          "cubre": [
           "Basílica de San Pedro"
          ]
-        }
-       }
-      }
-     }
-    },
-    "mercadillos_navidenos": {
-     "clave": "presepi",
-     "doc": "Mercadillos:** «Plaza de San Pedro y los 100 Presepi».",
-     "cuando": {
-      "fechas": "12-08..01-06"
-     },
-     "ops": {
-      "manana": {
-       "ajustar": {
-        "Plaza de San Pedro": {
-         "titulo": "Plaza de San Pedro y los 100 Presepi",
-         "texto": "Bajo la columnata de Bernini se reúnen en Navidad más de cien belenes llegados de todo el mundo, de todos los materiales y tamaños. La muestra nació en 1976 junto a Piazza del Popolo y desde hace unos años se hace aquí, en el Vaticano."
         }
        }
       }
@@ -9232,31 +9190,6 @@
     }
    ],
    "experiencias": {
-    "mercadillos_navidenos": {
-     "clave": "presepi",
-     "doc": "Mercadillos:** «Plaza de San Pedro y los 100 Presepi».",
-     "cuando": {
-      "fechas": "12-08..01-06"
-     },
-     "ops": {
-      "manana": {
-       "ajustar": {
-        "Plaza de San Pedro": {
-         "titulo": "Plaza de San Pedro y los 100 Presepi",
-         "texto": "Bajo la columnata de Bernini se reúnen en Navidad más de cien belenes llegados de todo el mundo, de todos los materiales y tamaños. La muestra nació en 1976 junto a Piazza del Popolo y desde hace unos años se hace aquí, en el Vaticano."
-        }
-       }
-      },
-      "tarde": {
-       "ajustar": {
-        "Plaza de San Pedro": {
-         "titulo": "Plaza de San Pedro y los 100 Presepi",
-         "texto": "Bajo la columnata de Bernini se reúnen en Navidad más de cien belenes llegados de todo el mundo, de todos los materiales y tamaños. La muestra nació en 1976 junto a Piazza del Popolo y desde hace unos años se hace aquí, en el Vaticano."
-        }
-       }
-      }
-     }
-    }
    },
    "reservas": {
     "Museos Vaticanos y Capilla Sixtina": {

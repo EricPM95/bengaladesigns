@@ -1,0 +1,83 @@
+{
+  "reparto": {
+    "tresConNombre": {
+      "porPersona": {
+        "p2": "q2",
+        "p1": "q1",
+        "p3": "q3"
+      },
+      "comun": null,
+      "sinColocar": []
+    },
+    "dosDeTres": {
+      "porPersona": {
+        "p1": "q1",
+        "p2": "q2"
+      },
+      "comun": null,
+      "sinColocar": []
+    },
+    "unoSinNombreVarios": {
+      "porPersona": {},
+      "comun": "q1",
+      "sinColocar": []
+    },
+    "unoConNombreDeAlicia": {
+      "porPersona": {
+        "p2": "q2"
+      },
+      "comun": null,
+      "sinColocar": []
+    },
+    "sinNombres": {
+      "porPersona": {},
+      "comun": null,
+      "sinColocar": [
+        "q1",
+        "q2"
+      ]
+    },
+    "nombreRepetido": {
+      "porPersona": {
+        "p1": "q1"
+      },
+      "comun": null,
+      "sinColocar": [
+        "q9"
+      ]
+    },
+    "nombreDesconocido": {
+      "porPersona": {
+        "p1": "q2"
+      },
+      "comun": null,
+      "sinColocar": [
+        "q1"
+      ]
+    },
+    "permisos": {
+      "reco_de_la_entrada": true,
+      "reco_ajena_sin_ser_de_ella": false,
+      "editar_ajena": true,
+      "suyo_siempre": true,
+      "comun_recomendar": "proponer",
+      "comun_editar": "cambiar"
+    }
+  },
+  "lectura": {
+    "n": 2,
+    "textos": [
+      "ENTRADA-ERIC-001",
+      "ENTRADA-ALICIA-002"
+    ],
+    "nombres": [
+      null,
+      null
+    ],
+    "conDibujo": [
+      true,
+      true
+    ],
+    "aviso": "Entra en tu cuenta para leer documentos. Puedes añadir los datos a mano."
+  }
+}

@@ -82,7 +82,7 @@ function IconoCompartir({ cuenta, activo, tripId = null }: { cuenta: 'cuenta' | 
   return (
     <>
       {/* (Tanda 10N §4a) Sin compartir: el botón [Compartir] en champán, con su texto, junto a la pastilla del pase (fuera el icono suelto). */}
-      <button type="button" data-compartir-viaje disabled={ocupado} onClick={() => void compartir()} title="Compartir viaje" aria-label="Compartir viaje" className="zona-toque flex h-[34px] shrink-0 items-center gap-1.5 rounded-full px-3.5 disabled:opacity-60" style={{ ...botonChampan(), border: 'none', font: "700 13px 'Geist'" }}>
+      <button type="button" data-compartir-viaje disabled={ocupado} onClick={() => void compartir()} title="Compartir viaje" aria-label="Compartir viaje" className="zona-toque flex h-[34px] shrink-0 items-center gap-1.5 rounded-full px-3 disabled:opacity-60" style={{ ...botonChampan(), border: 'none', font: "700 13px 'Geist'" }}>
         <Icono nombre="compartirViaje" size={14} grosor={2} />
         Compartir
       </button>

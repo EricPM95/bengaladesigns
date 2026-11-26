@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import fotos from '../../../data/entrada/fotos.json'
+import { ImagenConFundido } from '../ui/ImagenConFundido'
 
 /**
  * (V39C, Design «Pase y cuenta» › A1) EL MOSAICO DE LA PANTALLA DE ENTRAR: tres columnas de tarjetas de destinos, inclinadas, que suben y bajan DESPACIO sin parar (un desplazamiento continuo y suave, sin saltos) y se difuminan hacia abajo.
@@ -44,7 +45,7 @@ function TarjetaDeDestino({ t, copia }: { t: Tarjeta; copia: boolean }): ReactNo
   if (!f) return null
   return (
     <div data-tarjeta-mosaico={t.clave} data-copia={copia ? '1' : undefined} style={{ position: 'relative', height: t.h, flex: 'none', borderRadius: 20, overflow: 'hidden', background: t.bg, boxShadow: '0 14px 22px -14px rgba(60,40,20,.55),inset 0 0 0 1px rgba(255,255,255,.35)' }}>
-      <img src={f.archivo} alt="" width={240} height={300} loading="lazy" decoding="async" draggable={false} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+      <ImagenConFundido src={f.archivo} fondo={t.bg} width={240} height={300} loading="lazy" decoding="async" style={{ display: 'block' }} />
       <span style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: '62%', background: 'linear-gradient(180deg,transparent,rgba(20,14,8,.62))' }} />
       <span style={{ position: 'absolute', left: 10, right: 8, bottom: 9, display: 'flex', flexDirection: 'column', gap: 1, textAlign: 'left' }}>
         <span style={{ font: "700 14px/1.1 'Geist'", color: '#FFFFFF' }}>{f.nombre}</span>

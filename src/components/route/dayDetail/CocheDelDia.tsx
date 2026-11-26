@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { AeropuertoDelDia, CenaCerca, DayPlan, TrayectoCoche } from '../../../lib/types'
 import { Icono } from '../../ui/Icono'
 import { TransportModeIcon } from './TransportModeIcons'
@@ -20,16 +20,39 @@ const min1 = (m: number) => (m >= 60 ? `${Math.floor(m / 60)} h ${String(m % 60)
  */
 export function FilaCoche({ texto, desde, hasta, ciudad }: { texto: string; /** Ya no se enseña (los minutos de aparcar cuentan por dentro). */ aparcar?: number; /** Los nombres de los dos sitios: con ellos sale [Rutas]. */ desde?: string | null; hasta?: string | null; ciudad?: string | null }) {
   const [ruta, setRuta] = useState<{ origen: string; destino: string } | null>(null)
+  // (V67, T2) SIEMPRE EN UNA LÍNEA: primero «En coche · 3 min · 1 km»; si no cabe, el icono del coche (o del pie) + «3 min · 1 km», sin «En coche»; si aún no cabe, la letra un poco más pequeña. Nunca dos líneas.
+  const [forma, setForma] = useState<0 | 1 | 2>(0)
+  const fila = useRef<HTMLSpanElement>(null)
+  useLayoutEffect(() => {
+    const el = fila.current
+    // Se mide con el último elemento de la fila (el texto o [Rutas]), no con scrollWidth (la zona de toque de [Rutas] sobresale a propósito).
+    const ultimo = el?.lastElementChild
+    if (el && ultimo && forma < 2 && ultimo.getBoundingClientRect().right > el.getBoundingClientRect().right + 1) setForma(forma === 0 ? 1 : 2)
+  }, [forma, texto, desde, hasta])
+  useEffect(() => {
+    const el = fila.current?.parentElement
+    if (!el || typeof ResizeObserver === 'undefined') return undefined
+    let ancho = el.clientWidth
+    const o = new ResizeObserver(() => {
+      if (Math.abs(el.clientWidth - ancho) > 1) {
+        ancho = el.clientWidth
+        setForma(0)
+      }
+    })
+    o.observe(el)
+    return () => o.disconnect()
+  }, [])
+  const textoCorto = texto.replace(/^(En coche|A pie)\s*·\s*/i, '')
   const abrir = async () => {
     if (!desde || !hasta) return
     const catalogo = ciudad ? await fetchDestinationPlaces(ciudad).catch(() => null) : null
     setRuta({ origen: mapsConsultaDe(catalogo, desde) ?? desde, destino: mapsConsultaDe(catalogo, hasta) ?? hasta })
   }
   return (
-    <span className="flex min-w-0 items-center gap-1.5 py-1 text-text/60" data-trayecto-coche>
+    <span ref={fila} className="flex min-w-0 items-center gap-1.5 whitespace-nowrap py-1 text-text/60" data-trayecto-coche data-trayecto-forma={forma}>
       {/* (6-nov) «A pie · 5 min» lleva el icono de andar; el del coche, solo con «En coche». */}
       {/^A pie/i.test(texto) ? <TransportModeIcon mode="walking" className="h-[15px] w-[15px] shrink-0" /> : <Icono nombre="coche" className="h-[15px] w-[15px] shrink-0" />}
-      <span className="font-mono text-[12px] font-medium">{texto}</span>
+      <span className={`font-mono font-medium ${forma === 2 ? 'text-[10.5px]' : 'text-[12px]'}`}>{forma === 0 ? texto : textoCorto}</span>
       {desde && hasta && (
         <button type="button" onClick={() => void abrir()} data-rutas-coche className="zona-toque ml-1 text-[12.5px] font-medium text-accent underline underline-offset-[3px] hover:text-accent-hover">
           Rutas

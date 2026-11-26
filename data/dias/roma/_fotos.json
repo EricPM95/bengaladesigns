@@ -414,8 +414,7 @@
     {
       "archivo": "navidad_noche_plaza_san_pedro.jpg",
       "lugares": [
-        "Plaza de San Pedro",
-        "Plaza de San Pedro y los 100 Presepi"
+        "Plaza de San Pedro"
       ],
       "cuando": "dia",
       "ancho": 1500,
@@ -423,7 +422,7 @@
         "desde": "12-08",
         "hasta": "01-06"
       },
-      "verificar_fechas": "La misma ventana que los 100 Presepi (8 dic–6 ene): el árbol y el belén de la plaza. Revisar cada diciembre en turismoroma.it. Aunque la parada sea de día, en Navidad va esta (como en Plaza de España).",
+      "verificar_fechas": "Ventana de Navidad (8 dic–6 ene): el árbol y el belén de la plaza. Revisar cada diciembre en turismoroma.it. Aunque la parada sea de día, en Navidad va esta (como en Plaza de España).",
       "nota": "Mide 1.500 px: tal cual, sin ampliarla.",
       "fuente": "",
       "autor": "",
@@ -437,8 +436,7 @@
     {
       "archivo": "dia_plaza_san_pedro.jpg",
       "lugares": [
-        "Plaza de San Pedro",
-        "Plaza de San Pedro y los 100 Presepi"
+        "Plaza de San Pedro"
       ],
       "cuando": "dia",
       "ancho": 1600,
@@ -650,23 +648,6 @@
       "autor": "",
       "enlace": "",
       "nota": "La del usuario (3-oct-2026). Es la foto de la parada de noche única del Puente y el Castillo de Sant'Angelo; la usan también el paseo «El Castillo y el Tíber» y el mirador que llega de noche (night_view_overrides).",
-      "credito": {
-        "autor": "",
-        "licencia": "",
-        "enlace": ""
-      }
-    },
-    {
-      "archivo": "dia_100_presepi_vaticano.jpg",
-      "lugares": [
-        "100 Presepi in Vaticano"
-      ],
-      "cuando": "dia",
-      "ancho": 1600,
-      "fuente": "Wikimedia Commons · CC BY 3.0",
-      "autor": "Dguendel",
-      "enlace": "https://commons.wikimedia.org/wiki/File%3AVatikan%2C_Petersdom%2C_die_Weihnachtskrippe.JPG",
-      "nota": "Elegida por el usuario el 3-oct-2026 (candidata 2 de «100 Presepi in Vaticano»): Wikimedia Commons, File:Vatikan, Petersdom, die Weihnachtskrippe.JPG, CC BY 3.0, pide crédito.",
       "credito": {
         "autor": "",
         "licencia": "",
@@ -1461,7 +1442,6 @@
     "Domus Aurea": "Es un mapa de la Domus Aurea, no una foto.",
     "Pasear por el Esquilino": "Es un mapa antiguo de Roma.",
     "Luces de Navidad del Tridente": "Es la bandera de un municipio español: no es el sitio.",
-    "100 Presepi in Vaticano": "Es un techo dorado (otra iglesia). La parada «Plaza de San Pedro y los 100 Presepi» usa la foto de la plaza.",
     "Galería Nacional de Arte Moderno": "La imagen sale negra.",
     "Barrio Judío": "En blanco y negro, de un café.",
     "Quartiere Coppedè": "En blanco y negro.",

@@ -6,6 +6,7 @@ import { plural, type ResumenViaje } from '../../../../lib/viajesPerfil'
 import { Icono } from '../../../ui/Icono'
 import { degradadoDeViaje, TEXTO_DE_ETIQUETA, type EtiquetaDeViaje } from './TarjetaDeViaje'
 import type { GrupoDeViajes } from '../../../perfil/agruparViajes'
+import { ImagenConFundido } from '../../../ui/ImagenConFundido'
 
 /**
  * «VER TODOS» (Tanda 10N5, apartado 4, `Piezas/Perfil Orden` 05, exactamente igual): la lista de todos los viajes, por grupos —EN CURSO, PRÓXIMOS, YA HECHOS y ANTES DE LA APP—, cada uno una fila con su miniatura (72 px),
@@ -22,8 +23,8 @@ const FILA = { display: 'flex', gap: 12, alignItems: 'center', padding: 10, bord
 
 function Miniatura({ destino, url }: { destino: string; url: string | null }): ReactNode {
   return (
-    <div style={{ width: 72, height: 72, background: degradadoDeViaje(destino), position: 'relative', overflow: 'hidden', borderRadius: 16, flex: 'none' }}>
-      {url ? <img src={url} alt="" aria-hidden="true" loading="lazy" decoding="async" draggable={false} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} /> : <span aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(135deg,rgba(255,255,255,.1) 0 2px,transparent 2px 12px)' }} />}
+    <div style={{ width: 72, height: 72, background: url ? '#EADFC8' : degradadoDeViaje(destino), position: 'relative', overflow: 'hidden', borderRadius: 16, flex: 'none' }}>
+      {url ? <ImagenConFundido src={url} loading="lazy" decoding="async" /> : <span aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(135deg,rgba(255,255,255,.1) 0 2px,transparent 2px 12px)' }} />}
     </div>
   )
 }

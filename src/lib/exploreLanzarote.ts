@@ -33,7 +33,7 @@ export const CATEGORIAS_EXPLORAR_LANZAROTE: CategoriaExplorarLanzarote[] = [
     estilo: 'entradas',
     icono: 'arte',
     foto: 'Jameos del Agua',
-    nombres: ['Fundación César Manrique', 'Jameos del Agua', 'Mirador del Río', 'Jardín de Cactus', 'Haría y la Casa-Museo César Manrique', 'Casa-Museo del Campesino', 'Castillo de San José (MIAC)', 'LagOmar'],
+    nombres: ['Fundación César Manrique', 'Jameos del Agua', 'Mirador del Río', 'Jardín de Cactus', 'Casa-Museo César Manrique', 'Casa-Museo del Campesino', 'Castillo de San José (MIAC)', 'LagOmar'],
   },
   {
     id: 'playas_y_charcos',
@@ -69,7 +69,7 @@ export const CATEGORIAS_EXPLORAR_LANZAROTE: CategoriaExplorarLanzarote[] = [
     foto: 'Teguise (villa)',
     nombres: [
       'Teguise (villa)',
-      'Haría y la Casa-Museo César Manrique',
+      'Haría',
       'Caleta de Famara y Playa de Famara',
       'El Golfo y el Charco de los Clicos',
       'Punta Mujeres y Arrieta (La Garita)',

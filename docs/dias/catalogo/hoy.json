@@ -1,0 +1,371 @@
+[
+  {
+    "titulo": "Aviso rojo de arriba: «Si no sales ya, no llegas a tu entrada»",
+    "imagen": "hoy_aviso_rojo.jpg",
+    "cuando": "Es el aviso urgente. Sale en lo alto de HOY cuando tienes una entrada con hora ESTRICTA (comprobada en la web oficial del sitio) y, saliendo ya de donde estás, no llegas a tiempo. Botón [Ver solución].",
+    "veces": "Una vez por viaje, día y sitio. No se va solo: se va cuando ya no es verdad (llegas, o pasas la entrada a otro día) o si lo deslizas hacia arriba.",
+    "suena": "No suena (la campanita «aviso» es solo para los avisos de la cuenta, no para los de HOY)."
+  },
+  {
+    "titulo": "Aviso amarillo de arriba: «Vas con retraso»",
+    "imagen": "hoy_aviso_amarillo.jpg",
+    "cuando": "Informativo. Sale cuando vas con retraso a una entrada que NO es estricta (libre o con margen, como el Foro Romano) y, con ese retraso, el día ya no cabe entero. Botón [Ver cómo queda el día]. (El mismo color se usa para «Tu entrada de las 9:15 ya ha pasado» y «Hoy ya no llegas a N sitios».)",
+    "veces": "Una vez por viaje, día y sitio. No se va solo: se va cuando ya no es verdad o deslizándolo hacia arriba.",
+    "suena": "No suena (la campanita «aviso» es solo para los avisos de la cuenta, no para los de HOY)."
+  },
+  {
+    "titulo": "Aviso azul de arriba: «Va a llover hoy» (el tiempo)",
+    "imagen": "hoy_aviso_azul.jpg",
+    "cuando": "Sale cuando la previsión del día dice lluvia y hay un plan a cubierto: «Va a llover esta mañana / esta tarde / esta noche» (mañana hasta las 13:00, tarde hasta las 20:00, noche después; si llueve a caballo de dos franjas dice «hoy»). Botón [Ver plan]. Con el plan puesto cambia a «Estás usando el plan de lluvia» y, si para, a «Ha parado de llover».",
+    "veces": "Mientras la previsión diga lluvia para esa franja y no haya pasado. Se va cuando ya no es verdad o deslizándolo.",
+    "suena": "No suena (la campanita «aviso» es solo para los avisos de la cuenta, no para los de HOY).",
+    "nota": "La lluvia se provoca con el gancho de desarrollo «trazo:lluvia-de-prueba» (no hay previsión real en el móvil de pruebas)."
+  },
+  {
+    "titulo": "Aviso verde de arriba: «Tranquilo, tienes margen»",
+    "imagen": "hoy_aviso_verde.jpg",
+    "cuando": "Es el único que se va solo. Sale cuando vas con retraso a una entrada libre o con margen (Foro Romano) y el retraso CABE en el día: «Al Foro Romano puedes entrar más tarde y tu día sigue igual».",
+    "veces": "Una vez por viaje, día y sitio. Se va solo a los 5 segundos.",
+    "suena": "No suena (la campanita «aviso» es solo para los avisos de la cuenta, no para los de HOY)."
+  },
+  {
+    "titulo": "Avisos del mismo tipo, juntos en una frase: «Hoy ya no llegas a 3 sitios»",
+    "imagen": "hoy_avisos_juntos_mismo_tipo.jpg",
+    "cuando": "Cuando varios sitios sufren lo mismo a la vez (por ejemplo, tres que ya han cerrado), el aviso sale UNA sola vez con todos los nombres («A, B y C») y su botón [Ver], que abre la hoja de Pasar a otro día.",
+    "veces": "Una vez por viaje y día para ese grupo. Se va cuando ya no es verdad o deslizándolo.",
+    "suena": "No suena (la campanita «aviso» es solo para los avisos de la cuenta, no para los de HOY)."
+  },
+  {
+    "titulo": "Avisos de tipos distintos: el más importante con la insignia «+x»",
+    "imagen": "hoy_avisos_mas_x.jpg",
+    "cuando": "Cuando hay a la vez avisos de tipos distintos se ve UNA fila (la del más importante: rojo, luego lluvia, luego lo demás) con una insignia «+2» (los que faltan).",
+    "veces": "Mientras haya varios; al resolverse el de arriba sube el siguiente.",
+    "suena": "No suena (la campanita «aviso» es solo para los avisos de la cuenta, no para los de HOY)."
+  },
+  {
+    "titulo": "La lista de avisos desplegada (al tocar «+x») y «Ocultar avisos»",
+    "imagen": "hoy_avisos_lista_desplegada.jpg",
+    "cuando": "Al tocar la insignia «+x» se ven todos, cada uno con su color y su botón, y abajo «Ocultar avisos ⌃».",
+    "veces": "Las veces que quieras; la lista se pliega con «Ocultar avisos».",
+    "suena": "No suena (la campanita «aviso» es solo para los avisos de la cuenta, no para los de HOY)."
+  },
+  {
+    "titulo": "Aviso corto de arriba (solo informa): «Foto guardada»",
+    "imagen": "hoy_aviso_arriba_informa.jpg",
+    "cuando": "Sale arriba, sin [Deshacer], cuando pasa algo que solo hay que saber («Foto guardada», «Enlace copiado»).",
+    "veces": "Cada vez que ocurre; se va solo a los 5 segundos y de uno en uno.",
+    "suena": "No suena (la campanita «aviso» es solo para los avisos de la cuenta, no para los de HOY)."
+  },
+  {
+    "titulo": "Aviso de abajo con [Deshacer] y su línea dorada",
+    "imagen": "hoy_aviso_abajo_deshacer.jpg",
+    "cuando": "Sale abajo, tapando el menú, cada vez que algo CAMBIA la ruta (saltar una parada, quitarla, pasarla a otro día, recuperarla…): «Parada saltada · la tienes en Lugares pendientes · [Deshacer]». La línea dorada de arriba del aviso se va vaciando y marca lo que queda para poder deshacer.",
+    "veces": "Cada vez que cambia la ruta. Dura unos 12 segundos desde que sale (no se reinicia al cambiar de pestaña). Nunca se junta con otro aviso.",
+    "suena": "No suena."
+  },
+  {
+    "titulo": "«Voy con retraso» cuando aún da tiempo a todo (H4)",
+    "imagen": "hoy_retraso_h4.jpg",
+    "cuando": "Lo abres tú: [Cambiar plan] › [Voy con retraso]. Si con ese retraso hoy aún cabe todo, sale «Vas 40 minutos tarde, pero hoy te da tiempo a todo.» con la franja verde y un solo [Entendido], que guarda el retraso (corre un poco las horas de lo que sigue, con aviso y [Deshacer]).",
+    "veces": "Cada vez que lo pulsas (no hay límite).",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "«Voy con retraso» cuando ya no da tiempo (H5)",
+    "imagen": "hoy_retraso_h5.jpg",
+    "cuando": "Lo abres tú: [Cambiar plan] › [Voy con retraso]. Si con ese retraso hoy ya no te da tiempo a todo, sale «Vas tarde: hoy no te da tiempo a ver N sitios», una tarjeta por sitio, la franja verde y el botón dorado con la acción («Pasarlo a otro día» / «Guardarlo en pendientes»).",
+    "veces": "Cada vez que lo pulsas.",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "«Hoy ya no da tiempo a todo» (H1)",
+    "imagen": "hoy_ya_no_da_tiempo_h1.jpg",
+    "cuando": "Sale sola durante el día, con el pase (o el día de prueba): cuando llevas más de 1 hora de retraso, o la mañana ha pasado sin nada hecho. Nunca desde las 20:00 ni el día de la vuelta.",
+    "veces": "Una vez al día (por viaje y día).",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "«Por hoy ya está» al acabar el día (H2)",
+    "imagen": "hoy_por_hoy_ya_esta_h2.jpg",
+    "cuando": "Sale sola al acabar el día: a las 22:00, o al pulsar [He terminado] en la última parada (lo que pase antes), si te han quedado sitios sin ver. Si quedan paradas nocturnas (Trevi de noche…) espera a que se hagan. Nunca el día de la vuelta.",
+    "veces": "Una vez por viaje y día (la comparte con H3).",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "«Ayer te quedaron N sitios sin ver» a la mañana siguiente (H3)",
+    "imagen": "hoy_por_hoy_ya_esta_h3.jpg",
+    "cuando": "Sale al abrir la app a la mañana siguiente, solo si la noche anterior no se abrió la hoja de cierre y quedaron sitios sin ver.",
+    "veces": "Una vez por viaje y día (si ya salió H2 de ese día, no sale).",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "El resumen del día con mucho que contar (R1)",
+    "imagen": "hoy_resumen_dia_r1.jpg",
+    "cuando": "Sale al acabar el día (con una cuenta con logros): al cerrar H2/H3, o directamente si viste todo; también al marcar o saltar la última parada. Aquí, con datos de ejemplo.",
+    "veces": "Una vez al final de cada día (por viaje y día).",
+    "suena": "Suena: los números que suben llevan el «tic» (partitura «día completo» del estudio de sonidos); también suenan los premios que se enseñen dentro.",
+    "nota": "Los datos son de ejemplo (en este entorno no hay logros de una cuenta real)."
+  },
+  {
+    "titulo": "El resumen del día, a la mañana siguiente (R2)",
+    "imagen": "hoy_resumen_dia_r2.jpg",
+    "cuando": "Sale cuando abres la app y el resumen de anoche (o de ayer) quedó sin enseñar.",
+    "veces": "Una vez por día pendiente.",
+    "suena": "Suena igual que R1 (el tic de los números).",
+    "nota": "Los datos son de ejemplo."
+  },
+  {
+    "titulo": "La comida con restaurante (C1)",
+    "imagen": "hoy_comida_c1.jpg",
+    "cuando": "Sale como tarjeta de arriba cuando la siguiente parada va justo después de la comida y su franja ha empezado (10 minutos antes de su hora). Es la tarjeta de la parada con «Es hora de comer · {restaurante}» y [Cómo llegar] / [Elegir otro sitio].",
+    "veces": "Cada comida de cada día, hasta que pulses «Ya he comido · seguir con el plan» o pase la franja (entonces se va sola y sale la parada).",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "La cena con restaurante (C2)",
+    "imagen": "hoy_cena_c2.jpg",
+    "cuando": "Lo mismo que C1, pero a la hora de cenar (cena de 1 h 30).",
+    "veces": "Cada cena de cada día, hasta «Ya he cenado» o hasta que pase la franja.",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "La comida sin restaurante (C3)",
+    "imagen": "hoy_comida_c3.jpg",
+    "cuando": "Cuando a la hora de comer la comida no lleva restaurante: «Cerca de ti · N abiertos» con [Elegir sitio] y [Cambiar plan]. Al elegir uno pasa a C1.",
+    "veces": "Cada comida sin restaurante, hasta elegirlo, «Ya he comido» o que pase la franja.",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "La cena sin restaurante (C4)",
+    "imagen": "hoy_cena_c4.jpg",
+    "cuando": "Lo mismo que C3, a la hora de cenar. Al elegir sitio pasa a C2.",
+    "veces": "Cada cena sin restaurante, hasta elegirlo o que pase la franja.",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "Ya en el restaurante de la comida (C5)",
+    "imagen": "hoy_comida_c5.jpg",
+    "cuando": "Al pulsar [Ya he llegado] (o con el GPS a 150 m del restaurante): «Aquí · Ya has llegado» y solo [He terminado] verde, que pasa a la siguiente parada.",
+    "veces": "Una vez por comida.",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "Ya en el restaurante de la cena (C6)",
+    "imagen": "hoy_cena_c6.jpg",
+    "cuando": "Lo mismo que C5, en la cena.",
+    "veces": "Una vez por cena.",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "«Si te sobra tiempo», abierto",
+    "imagen": "hoy_si_te_sobra_tiempo.jpg",
+    "cuando": "Va abajo del todo de HOY, plegado, solo si hay algo (lo que el motor dejó fuera por falta de tiempo: la misma lista de DÍAS). Al abrirlo, cada sitio con [Recuperar] y [Pasar a otro día].",
+    "veces": "Cada día que tenga sitios opcionales; sigue ahí hasta que los recuperes o los pases a otro día.",
+    "suena": "No suena.",
+    "nota": "Se provoca moviendo dos paradas a la lista «Si te sobra tiempo» del viaje de prueba (en el móvil lo hace el motor al planificar)."
+  },
+  {
+    "titulo": "«Si te sobra tiempo», plegado",
+    "imagen": "hoy_si_te_sobra_tiempo_plegado.jpg",
+    "cuando": "La cabecera plegada: «Si te sobra tiempo · 2 opcionales».",
+    "veces": "Siempre visible mientras haya opcionales.",
+    "suena": "No suena."
+  },
+  {
+    "titulo": "[Sin fuerzas]: «¿Acabamos aquí el día y descansas?»",
+    "imagen": "hoy_sin_fuerzas_pregunta.jpg",
+    "cuando": "Al tocar [Sin fuerzas] en «¿Cómo vas?». Con [Sí, acabar el día] (dorado) y [Seguir] (blanco; sigue con «Vamos con calma» y consejos). Cerrarla con la X deja el día como está y la tarjeta ya no vuelve ese día.",
+    "veces": "Cada vez que pulsas [Sin fuerzas].",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "[Sin fuerzas] › [Sí, acabar el día]: «Por hoy ya está»",
+    "imagen": "hoy_sin_fuerzas_por_hoy_ya_esta.jpg",
+    "cuando": "Al contestar que sí: sale la hoja de cierre H2 ya, sin esperar a las 22:00.",
+    "veces": "Una vez por viaje y día (comparte la marca de H2/H3).",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "[Sin fuerzas] › cerrar «Por hoy ya está»: el resumen del día",
+    "imagen": "hoy_sin_fuerzas_resumen.jpg",
+    "cuando": "Al cerrar «Por hoy ya está» (de cualquier forma) sale el resumen del día de siempre, con una cuenta real.",
+    "veces": "Una vez al final de ese día.",
+    "suena": "Suena como R1 (el tic de los números).",
+    "nota": "La imagen es el resumen R1 con datos de ejemplo: el recorrido real de [Sin fuerzas] no abre el resumen sin una cuenta real con logros, así que no se pudo capturar el paso seguido; el resumen es el mismo."
+  },
+  {
+    "titulo": "La parada que ya ha cerrado («YA HA CERRADO»)",
+    "imagen": "hoy_parada_cerrada.jpg",
+    "cuando": "Cuando la siguiente parada ya ha cerrado (pasada su hora de cierre o su última entrada): etiqueta «YA HA CERRADO», «Cerrado · Abre mañana a las 8:00» en rojo y botones [Pasar a otro día] (dorado) y [Guardar en pendientes]. No se manda sola a pendientes y no sale aviso de arriba.",
+    "veces": "Cada vez que la parada de ahora ya ha cerrado. Al guardarla o pasarla sale abajo el aviso con [Deshacer].",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "Una entrada cuya hora ya ha pasado",
+    "imagen": "hoy_entrada_ya_pasada.jpg",
+    "cuando": "Aviso amarillo «Tu entrada de las 9:15 en el Coliseo ya ha pasado»: cuando sigues sin haber llegado y la hora de tu entrada ya pasó. Nunca se dice «peligro» ni se protege una entrada pasada. Botón [Ver].",
+    "veces": "Una vez por viaje, día y sitio; se va cuando ya no es verdad o deslizándolo.",
+    "suena": "No suena (la campanita «aviso» es solo para los avisos de la cuenta, no para los de HOY)."
+  },
+  {
+    "titulo": "El aviso verde de la entrada, con su hora",
+    "imagen": "hoy_aviso_entrada_a_su_hora.jpg",
+    "cuando": "Aviso «Tu entrada a la Fontana de Trevi · 07:00 ✓» que acompaña a una entrada reservada mientras llega su hora; se quita solo cuando pasa.",
+    "veces": "Mientras llega la hora de la entrada.",
+    "suena": "No suena (la campanita «aviso» es solo para los avisos de la cuenta, no para los de HOY).",
+    "nota": "En la captura, a las 7:10 con una entrada de las 7:00."
+  },
+  {
+    "titulo": "La entrada en peligro: la hoja de la solución",
+    "imagen": "hoy_entrada_en_peligro_hoja.jpg",
+    "cuando": "Al pulsar [Ver solución] en el aviso rojo: la hoja «Pasar a otro día» con el sitio que se mueve (el que estorba), la franja con lo que llega a la entrada y [Pasarlo al domingo] / [Elegir otro día] / [Dejarlo como está]. Primero se propone pasarlo al mejor día; a pendientes solo si no cabe.",
+    "veces": "Cada vez que la abres.",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "El plan de lluvia",
+    "imagen": "hoy_plan_de_lluvia.jpg",
+    "cuando": "Al pulsar [Ver plan] en el aviso azul «Va a llover…»: la hoja «Plan de lluvia» con lo que entra y lo que sale hoy («Sale de hoy») y lo que se queda.",
+    "veces": "Cada vez que la abres con previsión de lluvia.",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "El atardecer con parada de atardecer (S1)",
+    "imagen": "hoy_atardecer_s1.jpg",
+    "cuando": "Desde 2 horas antes de la puesta de sol, si el día lleva una parada marcada de atardecer: «Hoy ves el atardecer en el Castillo de Sant’Angelo» y [Ir al …].",
+    "veces": "Una tarjeta por día (se ve desde 2 h antes de la puesta hasta que acaba la luz).",
+    "suena": "No suena."
+  },
+  {
+    "titulo": "El atardecer sin parada: el sitio más cercano (S2)",
+    "imagen": "hoy_atardecer_s2.jpg",
+    "cuando": "Lo mismo, pero sin parada de atardecer: «Hoy el sol se pone a las 18:26» y solo el sitio más cercano desde donde estás.",
+    "veces": "Una tarjeta por día.",
+    "suena": "No suena."
+  },
+  {
+    "titulo": "El atardecer sin ningún sitio cerca (S3)",
+    "imagen": "hoy_atardecer_s3.jpg",
+    "cuando": "Lo mismo, con el viajero lejos de todo (sin coche): solo «Hoy el sol se pone a las 18:26».",
+    "veces": "Una tarjeta por día.",
+    "suena": "No suena."
+  },
+  {
+    "titulo": "El Emblema Oculto (E1)",
+    "imagen": "hoy_emblema_oculto_e1.jpg",
+    "cuando": "Al LLEGAR a un sitio con emblema oculto (con el GPS a menos de unos 100-150 m, o al pulsar [Ya he llegado]), antes de [He terminado]: hoja azul noche «¡Aquí se esconde un Emblema Oculto!» con [Hacer la foto] y [Elegir de la galería].",
+    "veces": "Una vez por sitio y día.",
+    "suena": "Suena: «Emblema oculto» (dos latidos y un brillo; es un sonido provisional que está en el estudio de sonidos).",
+    "nota": "Aquí con la respuesta del servidor simulada (gancho de desarrollo __hoy1Cerca)."
+  },
+  {
+    "titulo": "«Guarda un recuerdo de…»",
+    "imagen": "hoy_guarda_un_recuerdo.jpg",
+    "cuando": "Al marcar [Visto] un sitio IMPRESCINDIBLE o maravilla («Los imprescindibles» de la colección) que aún no tiene foto: la hoja «Guarda un recuerdo de la Plaza de San Pedro» con [Hacer foto] y [De la galería]. Sale al momento y solo en HOY; se cierra sola al cambiar de pestaña.",
+    "veces": "Una vez por sitio y viaje.",
+    "suena": "No suena la hoja (el [Visto] con el que se abre sí suena: el toque «visto»).",
+    "nota": "Se abre con el gancho de desarrollo __demo.abrirHojaDeVisto (el imprescindible real lo decide el servidor, que no está en este entorno)."
+  },
+  {
+    "titulo": "«Hoy ya no da tiempo a todo» en Lanzarote (en coche)",
+    "imagen": "hoy_lz_ya_no_da_tiempo_h1.jpg",
+    "cuando": "Igual que H1; en Lanzarote los minutos y el «desde» van en coche.",
+    "veces": "Una vez al día.",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "«Por hoy ya está» en Lanzarote",
+    "imagen": "hoy_lz_por_hoy_ya_esta_h2.jpg",
+    "cuando": "Igual que H2.",
+    "veces": "Una vez por viaje y día.",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "«Voy con retraso» (H4) en Lanzarote",
+    "imagen": "hoy_lz_retraso_h4.jpg",
+    "cuando": "Igual que H4.",
+    "veces": "Cada vez que lo pulsas.",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "«Voy con retraso» (H5) en Lanzarote",
+    "imagen": "",
+    "cuando": "Igual que H5.",
+    "veces": "Cada vez que lo pulsas.",
+    "suena": "No suena (las hojas de HOY no llevan sonido).",
+    "nota": "No se pudo capturar: el guion de captura de H5 (capturasV59_cierre.mjs) prepara el caso con la Galería Borghese de Roma y falla en Lanzarote; no se tocó la app y no hay guion de Lanzarote para H5. La hoja es la misma que la de Roma (H5), con minutos en coche. NO SE PUDO CAPTURAR: no salió el archivo V59_capturas/LH5_app.jpg."
+  },
+  {
+    "titulo": "El resumen del día en Lanzarote",
+    "imagen": "hoy_lz_resumen_dia_r1.jpg",
+    "cuando": "Igual que R1, con datos de ejemplo de Lanzarote.",
+    "veces": "Una vez al final de cada día.",
+    "suena": "Suena como R1.",
+    "nota": "Datos de ejemplo."
+  },
+  {
+    "titulo": "La comida en Lanzarote (en coche)",
+    "imagen": "hoy_lz_comida_c1.jpg",
+    "cuando": "Igual que C1; «EN COCHE» en vez de «A PIE».",
+    "veces": "Cada comida de cada día.",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "Ya en el restaurante en Lanzarote",
+    "imagen": "hoy_lz_comida_c5.jpg",
+    "cuando": "Igual que C5.",
+    "veces": "Una vez por comida.",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "La comida sin restaurante en Lanzarote",
+    "imagen": "hoy_lz_comida_c3.jpg",
+    "cuando": "Igual que C3.",
+    "veces": "Cada comida sin restaurante.",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "El Emblema Oculto en Lanzarote",
+    "imagen": "hoy_lz_emblema_oculto_e1.jpg",
+    "cuando": "Igual que E1.",
+    "veces": "Una vez por sitio y día.",
+    "suena": "Suena: «Emblema oculto».",
+    "nota": "Con la respuesta del servidor simulada."
+  },
+  {
+    "titulo": "El atardecer en Lanzarote",
+    "imagen": "hoy_lz_atardecer_s2.jpg",
+    "cuando": "Igual que S2; la hora del sol sale de la fecha y el sitio más cercano es El Golfo, Famara…",
+    "veces": "Una tarjeta por día.",
+    "suena": "No suena."
+  },
+  {
+    "titulo": "[Sin fuerzas] en Lanzarote: la pregunta",
+    "imagen": "hoy_lz_sin_fuerzas_pregunta.jpg",
+    "cuando": "Igual que en Roma.",
+    "veces": "Cada vez que pulsas [Sin fuerzas].",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "[Sin fuerzas] en Lanzarote: «Por hoy ya está»",
+    "imagen": "hoy_lz_sin_fuerzas_por_hoy_ya_esta.jpg",
+    "cuando": "Igual que en Roma.",
+    "veces": "Una vez por viaje y día.",
+    "suena": "No suena (las hojas de HOY no llevan sonido)."
+  },
+  {
+    "titulo": "La entrada en peligro en Lanzarote (Cueva de los Verdes)",
+    "imagen": "hoy_lz_entrada_en_peligro.jpg",
+    "cuando": "Igual que el aviso rojo: la Cueva de los Verdes tiene entrada ESTRICTA (comprobada en la web de los Centros de Arte). Los Jameos del Agua, que son libres, nunca dan «peligro».",
+    "veces": "Una vez por viaje, día y sitio.",
+    "suena": "No suena (la campanita «aviso» es solo para los avisos de la cuenta, no para los de HOY)."
+  },
+  {
+    "titulo": "Lanzarote: una parada «de día» pasada la puesta de sol («YA ES DE NOCHE»)",
+    "imagen": "hoy_lz_noche_dia_solo_l6.jpg",
+    "cuando": "Cuando la siguiente parada es un mirador o una playa que solo se disfruta de día y ya es de noche (pasada la puesta de sol): etiqueta «YA ES DE NOCHE», sin [Ya he llegado], con [Pasar a otro día] / [Guardar en pendientes].",
+    "veces": "Cada vez que la parada de ahora es de día y ya es de noche.",
+    "suena": "No suena (las hojas de HOY no llevan sonido).",
+    "nota": "A las 12:00 la misma parada sale con su tarjeta normal (queda como contraste en docs/dias/V67_capturas/L6_12h.jpg)."
+  }
+]

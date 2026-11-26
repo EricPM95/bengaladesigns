@@ -79,7 +79,8 @@
     "Jameos del Agua",
     "Cueva de los Verdes",
     "Mirador del Río",
-    "Haría y la Casa-Museo César Manrique",
+    "Haría",
+    "Casa-Museo César Manrique",
     "Mirador de Guinate",
     "Mirador del Bosquecillo (Risco de Famara)",
     "Mirador de Haría",
@@ -1135,26 +1136,69 @@
    "maps_consulta": "Villa de Teguise, Lanzarote"
   },
   {
-   "id": "haria_y_la_casa_museo_cesar_manrique",
-   "name": "Haría y la Casa-Museo César Manrique",
-   "nombres_en_ruta": ["Haría y el Valle de las Mil Palmeras","Casa-Museo César Manrique (Haría)"],
+   "id": "haria_pueblo",
+   "name": "Haría",
+   "nombres_en_ruta": [
+    "Haría y el Valle de las Mil Palmeras"
+   ],
+   "level": 2,
+   "zone": "norte",
+   "coordinates": [
+    29.1423,
+    -13.50293
+   ],
+   "coordinates_fuente": "DATOS_CENTROS_Y_MUSEOS.md §9 (el pueblo, a unos 100 m de la Casa-Museo: una sola parada de coche).",
+   "aparcar_min": 5,
+   "duration_minutes": 60,
+   "min_max": 60,
+   "type": "exterior",
+   "ver_por": null,
+   "tags": [
+    "pueblo",
+    "mercado"
+   ],
+   "is_free_access": true,
+   "horario_nota": "V56/V67: un pueblo no lleva horario ni cierra nunca. Lo que cierra es la Casa-Museo (su propia parada). Mercado artesanal los sábados 9:00–14:30 en la plaza León y Castillo.",
+   "mercado": {
+    "dia": "sábado",
+    "horario": "09:00-14:30",
+    "lugar": "plaza León y Castillo",
+    "fuente": "https://turismolanzarote.com/en/market/haria-artisanal-market/",
+    "duda": "Otras webs no oficiales dicen 10:00–14:30 o 9:00–14:00; manda turismolanzarote."
+   },
+   "reservation": "no",
+   "comprobado": "2026-11-26",
+   "por_que_recomendamos": "Es el pueblo del valle de las mil palmeras.",
+   "description": "Un pueblo tranquilo del norte entre palmeras y montañas.",
+   "aparcar": "Sin aparcamiento propio: se aparca en las calles del pueblo, junto a la Casa-Museo (calle Elvira Sánchez).",
+   "aparcar_verificar": false,
+   "search_aliases": [
+    "haria",
+    "haria y el valle de las mil palmeras"
+   ],
+   "maps_consulta": "Haría, Lanzarote"
+  },
+  {
+   "id": "casa_museo_cesar_manrique",
+   "name": "Casa-Museo César Manrique",
+   "nombres_en_ruta": [
+    "Casa-Museo César Manrique (Haría)"
+   ],
    "level": 2,
    "zone": "norte",
    "coordinates": [
     29.1418,
     -13.5037
    ],
-   "coordinates_fuente": "DATOS_CENTROS_Y_MUSEOS.md §9 (Casa-Museo; el pueblo, 29.1423,-13.50293, está a unos 300 m: una sola parada de coche)",
+   "coordinates_fuente": "DATOS_CENTROS_Y_MUSEOS.md §9 (Casa-Museo; el pueblo está a unos 100 m: se aparca una vez).",
    "aparcar_min": 5,
-   "duration_minutes": 90,
-   "min_max": 90,
+   "duration_minutes": 60,
+   "min_max": 60,
    "type": "interior",
    "ver_por": "dentro_y_fuera",
    "tags": [
-    "pueblo",
     "cesar_manrique",
-    "museo",
-    "mercado"
+    "museo"
    ],
    "schedule": "10:00-17:30",
    "windows": [
@@ -1172,14 +1216,7 @@
      "comprobado": "2026-11-02"
     }
    },
-   "horario_nota": "Es el horario de la Casa-Museo; el pueblo es libre. Mercado artesanal los sábados 9:00–14:30 en la plaza León y Castillo.",
-   "mercado": {
-    "dia": "sábado",
-    "horario": "09:00-14:30",
-    "lugar": "plaza León y Castillo",
-    "fuente": "https://turismolanzarote.com/en/market/haria-artisanal-market/",
-    "duda": "Otras webs no oficiales dicen 10:00–14:30 o 9:00–14:00; manda turismolanzarote."
-   },
+   "horario_nota": "Horario de la Casa-Museo (la parada del pueblo, «Haría», no lleva horario).",
    "hours_audit": {
     "confianza": "media",
     "fuente": "https://fcmanrique.org/en/casas-museo-visitas/",
@@ -1196,20 +1233,19 @@
     "comprobado": "2026-11-02"
    },
    "ticket_info": [
-    "De pago (la casa; el pueblo es libre).",
     "Entrada Casa-Museo: 10 € (7-12 años: 3 €).",
     "Entrada conjunta con la Fundación: 17 € (niño 4 €)."
    ],
-   "duracion_nota": "Casa-Museo ~1 h (opiniones de visitantes) más el pueblo.",
+   "duracion_nota": "Casa-Museo ~1 h (opiniones de visitantes).",
    "comprobado": "2026-11-02",
    "verificar": "Hora de apertura de la Casa-Museo: 10:00 (web oficial) o 10:30 (otra fuente). Accesibilidad, carrito y aparcamiento sin confirmar. Reserva sin confirmar en la web oficial.",
-   "por_que_recomendamos": "Es el pueblo del valle de las mil palmeras, y la casa donde César Manrique pasó sus últimos años.",
-   "description": "Un pueblo tranquilo del norte entre palmeras y montañas, con la última casa de Manrique, que se conserva como él la dejó.",
+   "por_que_recomendamos": "Es la casa donde César Manrique pasó sus últimos años.",
+   "description": "La última casa de Manrique, que se conserva como él la dejó.",
    "aparcar": "Sin aparcamiento propio: se aparca en las calles del pueblo, junto a la Casa-Museo (calle Elvira Sánchez).",
    "aparcar_verificar": false,
    "search_aliases": [
-    "haria y el valle de las mil palmeras",
-    "casa-museo cesar manrique (haria)"
+    "casa-museo cesar manrique (haria)",
+    "casa-museo cesar manrique"
    ],
    "maps_consulta": "Casa-Museo César Manrique, Haría"
   },

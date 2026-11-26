@@ -38,6 +38,8 @@ export interface HorarioDeParada {
   cerrado: boolean
   /** Los tramos del día, en orden: [{ abre: '9:00', cierra: '13:00' }, { abre: '15:00', cierra: '19:00' }]. */
   tramos: { abre: string; cierra: string }[]
+  /** (V67, L6) Es la «ventana de luz» de un sitio que solo se ve de día (hasta la puesta de sol), no un horario de verdad: HOY lo dice «De día · Se ve hasta las 18:26», nunca «Cerrado». */
+  luz?: boolean
   /** La línea lista para pintar. */
   texto: string
 }

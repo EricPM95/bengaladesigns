@@ -13,7 +13,14 @@ const UNA_HORA = 60 * 60 * 1000
 // Monedas que el BCE NO publica y que el viajero de habla hispana necesita (el pase en su moneda, Tanda 10P): se piden, una vez al día junto con lo del BCE, a un complemento gratuito sin clave
 // (@fawazahmed0/currency-api, servido por jsdelivr). Solo se completan las que faltan; si el complemento no responde, simplemente no salen (nunca se inventa un cambio).
 const URL_COMPLEMENTO = 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.json'
-const COMPLEMENTO = ['COP', 'CLP', 'ARS', 'PEN', 'UYU', 'BOB', 'PYG', 'CRC', 'DOP', 'GTQ']
+// (V67) TODAS las monedas del mundo que usa `monedaDelPais.ts` (también las de Latinoamérica: VES, HNL, NIO, PAB, CUP…): las del BCE vienen del BCE; el resto, de este complemento (una sola petición al día, sin clave).
+const COMPLEMENTO = [
+  'COP', 'CLP', 'ARS', 'PEN', 'UYU', 'BOB', 'PYG', 'CRC', 'DOP', 'GTQ',
+  // América Latina y Caribe
+  'VES', 'HNL', 'NIO', 'PAB', 'CUP', 'HTG', 'BZD', 'GYD', 'SRD', 'JMD', 'TTD', 'BSD', 'BBD',
+  // el resto
+  'AED', 'AFN', 'ALL', 'AMD', 'AOA', 'AZN', 'BAM', 'BDT', 'BHD', 'BIF', 'BND', 'BTN', 'BWP', 'BYN', 'CDF', 'CVE', 'DJF', 'DZD', 'EGP', 'ERN', 'ETB', 'FJD', 'GEL', 'GHS', 'GMD', 'GNF', 'IQD', 'IRR', 'JOD', 'KES', 'KGS', 'KHR', 'KMF', 'KPW', 'KWD', 'KZT', 'LAK', 'LBP', 'LKR', 'LRD', 'LSL', 'LYD', 'MAD', 'MDL', 'MGA', 'MKD', 'MMK', 'MNT', 'MRU', 'MUR', 'MVR', 'MWK', 'MZN', 'NAD', 'NGN', 'NPR', 'OMR', 'PGK', 'PKR', 'QAR', 'RSD', 'RUB', 'RWF', 'SAR', 'SBD', 'SCR', 'SDG', 'SLE', 'SOS', 'SSP', 'STN', 'SYP', 'SZL', 'TJS', 'TMT', 'TND', 'TOP', 'TWD', 'TZS', 'UAH', 'UGX', 'UZS', 'VND', 'VUV', 'WST', 'XAF', 'XCD', 'XOF', 'YER', 'ZMW',
+]
 
 let guardado = null
 let ultimoIntento = 0

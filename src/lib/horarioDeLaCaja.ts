@@ -17,8 +17,8 @@ export interface EstadoDelHorario {
   sub: string
   /** El color de la línea pequeña. */
   subTono: TonoDeCaja | 'gris'
-  /** Cuál de los casos es (para las pruebas): sin_horario · antes · abierto · despues · cerrado_hoy. */
-  caso: 'sin_horario' | 'antes' | 'abierto' | 'despues' | 'cerrado_hoy'
+  /** Cuál de los casos es (para las pruebas): sin_horario · antes · abierto · despues · cerrado_hoy · de_dia (V67: un sitio que solo se ve de día, de noche). */
+  caso: 'sin_horario' | 'antes' | 'abierto' | 'despues' | 'cerrado_hoy' | 'de_dia'
 }
 
 const aMin = (t: string | null | undefined): number | null => {
@@ -28,6 +28,13 @@ const aMin = (t: string | null | undefined): number | null => {
 
 export function estadoDelHorario(h: HorarioDeParada | null, ahoraMin: number, proxima: string | null = null): EstadoDelHorario {
   if (!h || (!h.cerrado && h.tramos.length === 0)) return { grande: 'Abierto', tono: 'verde', sub: 'Sin horario', subTono: 'gris', caso: 'sin_horario' }
+  // (V67, L6) Un sitio que solo se ve de día: de día «Abierto» y «Se ve hasta las 18:26»; de noche «De día» y la misma línea. NUNCA «Cerrado».
+  if (h.luz) {
+    const fin = h.tramos[0]?.cierra ?? ''
+    const finMin = aMin(fin)
+    const sub = `Se ve hasta las ${fin}`
+    return finMin != null && ahoraMin >= finMin ? { grande: 'De día', tono: 'negro', sub, subTono: 'gris', caso: 'de_dia' } : { grande: 'Abierto', tono: 'verde', sub, subTono: 'gris', caso: 'abierto' }
+  }
   if (h.cerrado) return { grande: 'Cerrado', tono: 'rojo', sub: proxima ? `Abre ${proxima}` : 'Cerrado hoy', subTono: 'rojo', caso: 'cerrado_hoy' }
   for (const t of h.tramos) {
     const a = aMin(t.abre)
