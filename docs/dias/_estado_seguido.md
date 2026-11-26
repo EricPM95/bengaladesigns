@@ -1,13 +1,13 @@
 # Estado de la tanda seguido
 
-**Última actualización: 26/11/26, 18:50**
+**Última actualización: 26/11/26, 20:07**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-V68 a V71 subidas (ultimo 6a865ab7). CHECKLIST y REPASO V68-V71 subidos. API reiniciada, Vite y Chrome de prueba cerrados. PC NO apagado
+Empiezo V72-V76. Dibujos descomprimidos. Voy por la V72
 
 ## Qué falta
-Nada
+V72 a V76, CHECKLIST y REPASO
 
 ## Procesos abiertos ahora mismo
 - node: 2
