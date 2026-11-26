@@ -1,4 +1,4 @@
-import { lugarCon } from '../../../../lib/articulos'
+import { contraer, lugarCon } from '../../../../lib/articulos'
 import { BOTON_ORO } from '../../../ui/botonesOro'
 import { useEffect, useMemo, useState } from 'react'
 import { usePrevisionDeHoy } from '../../../../hooks/usePrevisionDeHoy'
@@ -46,6 +46,7 @@ import { TarjetaDiaDePrueba, TarjetaP3 } from './TarjetasPase'
 import { TarjetaDeLlegada } from './TarjetaDeLlegada'
 import { CabeceraParada, LineaDelLogro, TarjetaParada, TuDia, ojoDeParada, useAhoraMin, useUltimaSuma } from './ParadaHoy'
 import { HoyVuelvesH14, datosDeLaSalida } from './VueltaH14'
+import { TarjetaDeVuelta } from './TarjetaDeVuelta'
 import { HoyDespuesV2 } from './HoyDespuesV2'
 import { FilaDeAviso, D_AVISO } from './AvisosHoy'
 import { esDiaRecienReorganizado } from '../../../../lib/reorganizarDia'
@@ -373,7 +374,9 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const vueloPuesto = Boolean(tarjetaVuelve || fichas.vuelta.hora || route.planVuelta?.hora)
   const pideVuelo = esVuelta && !vueloPuesto && (enCoche || fichas.vuelta.mode === 'avion')
   const anadirVuelo = () => { setMode('bookings'); useReservasFocusStore.getState().pedir('llegada', 'departure') }
-  const vuelveH14 = (conPase: boolean) => (vueloPuesto || pideVuelo ? <HoyVuelvesH14 route={route} day={day} tarjeta={tarjetaVuelve} mitad={fichas.vuelta} info={infoLlegada} conPase={conPase} onVerComoIr={() => fichas.abrir('vuelta')} onAnadirVuelo={pideVuelo && conPase ? anadirVuelo : undefined} /> : null)
+  // (V70) Con el pase y con la hora del vuelo, la tarjeta de la vuelta es la de la llegada (V62) en versión vuelta; sin pase o sin hora, la de siempre.
+  const usaTarjetaDeVuelta = vueloPuesto && !pideVuelo && Boolean(fichas.vuelta.hora)
+  const vuelveH14 = (conPase: boolean) => (conPase && usaTarjetaDeVuelta ? <TarjetaDeVuelta route={route} day={day} dateIso={dateIso} mitad={fichas.vuelta} info={infoLlegada} paradas={vigentes} ubicacionReal={ubicacionReal} desde={ubicacion ?? zonaCoords ?? origenCerca ?? route.destinationCoordinates ?? null} ahoraMin={ahoraMinHoy} onVerComoIr={() => fichas.abrir('vuelta')} onVerExplorar={() => explorar('atracciones', null, true)} /> : vueloPuesto || pideVuelo ? <HoyVuelvesH14 route={route} day={day} tarjeta={tarjetaVuelve} mitad={fichas.vuelta} info={infoLlegada} conPase={conPase} onVerComoIr={() => fichas.abrir('vuelta')} onAnadirVuelo={pideVuelo && conPase ? anadirVuelo : undefined} /> : null)
   // (V57) Cuándo hay que salir hacia el aeropuerto (la misma cuenta de la tarjeta) y el estado del vuelo: ¿ya ha salido? ¿las paradas que quedan caben antes de salir?
   const salidaVuelta = esVuelta && vueloPuesto ? datosDeLaSalida({ route, day, mitad: fichas.vuelta, info: infoLlegada }) : null
   const vueloMin = minutosDe(salidaVuelta?.hora ?? null)
@@ -579,7 +582,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {esVuelta && (
         <>
           {tarjetaDeVuelta ?? <TarjetaVueltaV2 route={route} mitad={fichas.vuelta} onVerComoIr={() => fichas.abrir('vuelta')} />}
-          {tarjetaDeVuelta && pagoActivo() && fichas.vuelta.billete && <BilleteDeVuelo billete={fichas.vuelta.billete} onOpen={() => fichas.abrir('vuelta')} />}
+          {tarjetaDeVuelta && !usaTarjetaDeVuelta && pagoActivo() && fichas.vuelta.billete && <BilleteDeVuelo billete={fichas.vuelta.billete} onOpen={() => fichas.abrir('vuelta')} />}
           {pagoActivo() && infoLlegada.maleta?.texto && (
             <div className="flex flex-none items-start gap-3 rounded-[18px] px-3.5 py-3" style={{ background: 'oklch(0.95 0.025 230)', border: '1px solid oklch(0.56 0.1 230 / .2)' }}>
               <span className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-[11px] text-white" style={{ background: AZUL }}>
@@ -645,7 +648,8 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M12 2v4M12 18v4M2 12h4M18 12h4M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" />
                 </svg>
-                Ir {lugarCon('a', destinoDelBoton.nombre)}
+                {/* (V70, V66-3) Botón corto: el nombre corto del sitio («Ir a El Golfo», «Ir al Pincio»), sin «y el Charco de los Clicos». */}
+                Ir {fraseAtardecer.botonCorto ? contraer(`a ${fraseAtardecer.botonCorto}`) : lugarCon('a', destinoDelBoton.nombre)}
               </a>
             )}
           </div>
@@ -760,7 +764,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {!sinParadasDeVuelta && paradas.length > 0 && !diaTerminado && <CercaDeTiFila route={route} origen={origenCerca} conPase={pagoActivo()} />}
 
       {/* 4: la tarde del último día */}
-      {esVuelta && !(salidaVuelta?.sinTiempo) && !pideVuelo && (
+      {esVuelta && !(salidaVuelta?.sinTiempo) && !pideVuelo && !(usaTarjetaDeVuelta && saleMin != null) && (
         <div className="flex flex-none items-center gap-3 rounded-[20px] py-3.5 pl-[18px] pr-3.5" style={{ border: '1px dashed rgba(28,34,48,.25)' }}>
           <span className="flex-1" style={{ font: "400 20px/1.1 'Instrument Serif',serif", textWrap: 'balance' as never }}>La tarde es tuya hasta que te vayas</span>
           <button type="button" onClick={() => explorar('atracciones', null, true)} className="flex h-11 flex-none items-center gap-1.5 rounded-full bg-[#1C2230] pl-[11px] pr-3.5 text-[13px] font-semibold text-[#FFFDF8]">

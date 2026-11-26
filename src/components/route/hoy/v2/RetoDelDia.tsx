@@ -1,4 +1,5 @@
 import { CruzDeHoja } from '../../../ui/CruzDeHoja'
+import { ImagenConFundido } from '../../../ui/ImagenConFundido'
 import { BOTON_AZUL } from '../piezas'
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
@@ -39,7 +40,7 @@ export function FotoDeSitio({ nombre, ciudad, alto, ancho = '100%', radio = 14 }
   const hu = ['30', '60', '150', '200', '250', '320'][h % 6]
   return (
     <span data-album-foto={foto ? '1' : '0'} className="relative block flex-none overflow-hidden" style={{ width: ancho, height: alto, borderRadius: radio, background: `linear-gradient(150deg,oklch(0.86 0.06 ${hu}),oklch(0.6 0.08 ${hu}) 60%,oklch(0.38 0.06 ${hu}))` }}>
-      {foto && <img src={foto} alt="" loading="lazy" className="h-full w-full object-cover" onError={(e) => ((e.currentTarget as HTMLImageElement).style.display = 'none')} />}
+      {foto && <ImagenConFundido src={foto} fondo="transparent" loading="lazy" />}
     </span>
   )
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ImagenConFundido } from '../../ui/ImagenConFundido'
 import type { ReactNode } from 'react'
 import { KIND_ICON, KIND_STYLE, PERIOD_STYLE, type DayPeriod, type StopKind } from '../../../lib/stopKind'
 import { Icono, IconoRuta } from '../../ui/Icono'
@@ -100,7 +101,7 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, t
         {/* (Tanda 6r: sin foto no hay recuadro, ni vacío ni de color: la tarjeta va solo con la franja de su color.) */}
         {hasPhoto && (
           <div className="absolute bottom-0 left-[30px] right-0 top-0 max-[430px]:left-[24px]" style={{ clipPath: 'polygon(26px 0, 100% 0, calc(100% - 20px) 100%, 0 100%)', background: photoBg }}>
-            <img src={photoUrl!} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
+            <ImagenConFundido src={photoUrl!} fondo="transparent" loading="lazy" />
           </div>
         )}
       </div>

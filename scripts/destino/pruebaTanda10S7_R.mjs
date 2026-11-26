@@ -26,8 +26,8 @@ const leer = (f) => fs.readFileSync(f, 'utf8')
 // ── 0. Lo que se ve en el código (textos de Eric, sitio del botón, nada de reorganizar solo) ─────────────────────────────────────────────────────
 {
   const host = leer('src/components/reorganizar/ReorganizarHost.tsx')
-  // (V61/V68) La alerta es `HojaDeReorganizar`: título «¿Reorganizamos tu día?» y el texto concreto de `textoDeReorganizar` («Hemos puesto tus reservas a su hora…»), ya no el texto fijo de la R2.
-  debe(host.includes('¿Reorganizamos tu día?') && host.includes('textoDeReorganizar') && leer('src/lib/tarjetasDePropuesta.ts').includes('Hemos puesto tus reservas a su hora'), 'la alerta no lleva los textos (título y texto de lo que cambia)')
+  // (V61/V68) La alerta es `HojaDeReorganizar`: título «¿Reorganizamos tu día?» y el texto concreto de `textoDeReorganizar` («Has cambiado…»), ya no el texto fijo de la R2.
+  debe(host.includes('¿Reorganizamos tu día?') && host.includes('textoDeReorganizar') && leer('src/lib/tarjetasDePropuesta.ts').includes('Has cambiado'), 'la alerta no lleva los textos (título y texto de lo que cambia)')
   debe(host.includes("'Reorganizar mi día'") && /Dejarlo como está/.test(leer('src/components/reorganizar/HojaDeReorganizar.tsx')), 'la alerta no lleva [Reorganizar mi día] y [Dejarlo como está]')
   const lib = leer('src/lib/reorganizarDia.ts')
   debe(lib.includes("'Hemos reorganizado tu día'"), 'la franja no dice «Hemos reorganizado tu día» (R3)')
@@ -103,7 +103,7 @@ try {
   await a.evaluar("document.querySelector('[data-boton-reorganizar]').click(); true")
   await a.esp(900)
   const alerta = await a.evaluar("(document.querySelector('[data-alerta-reorganizar]')?.innerText || '')")
-  debe(/¿Reorganizamos tu día\?/.test(alerta) && /Hemos puesto tus reservas a su hora/.test(alerta) && /Reorganizar mi día/.test(alerta) && /Dejarlo como está/.test(alerta), `la alerta no dice lo que debe: «${alerta}»`)
+  debe(/¿Reorganizamos tu día\?/.test(alerta) && /Has cambiado/.test(alerta) && /Reorganizar mi día/.test(alerta) && /Dejarlo como está/.test(alerta), `la alerta no dice lo que debe: «${alerta}»`)
   await a.captura(path.join(SALIDA, '10s7_reorganizar_R2_alerta.jpg'))
   await a.evaluar("document.querySelector('[data-reorganizar-no]').click(); true")
   await a.esp(800)

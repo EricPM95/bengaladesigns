@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { ImagenConFundido } from '../../ui/ImagenConFundido'
 import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { fotosDelSitio, limiteDeFotos, subirFoto, urlParaMostrar, type FotoViaje } from '../../../lib/fotosViaje'
 import { displayStopName } from '../../../lib/format'
@@ -88,8 +89,8 @@ export function TusRecuerdos({ stopName, dayNumber }: { stopName: string; dayNum
         ) : (
           <span aria-hidden="true" className="flex flex-none items-center pl-2">
             {miniaturas.map((foto, i) => (
-              <span key={foto.id} data-miniatura-recuerdo className="block h-8 w-8 flex-none overflow-hidden bg-bg-hover" style={{ borderRadius: 11, border: '2px solid #FFFDF8', marginLeft: i === 0 ? 0 : -9 }}>
-                {urlParaMostrar(foto) ? <img src={urlParaMostrar(foto)} alt="" className="h-full w-full object-cover" /> : null}
+              <span key={foto.id} data-miniatura-recuerdo className="relative block h-8 w-8 flex-none overflow-hidden bg-bg-hover" style={{ borderRadius: 11, border: '2px solid #FFFDF8', marginLeft: i === 0 ? 0 : -9 }}>
+                {urlParaMostrar(foto) ? <ImagenConFundido src={urlParaMostrar(foto)} fondo="transparent" /> : null}
               </span>
             ))}
           </span>
@@ -156,8 +157,8 @@ export function TusRecuerdos({ stopName, dayNumber }: { stopName: string; dayNum
               <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.16em', color: '#6F4E37', textTransform: 'uppercase' }}>Tus fotos · {n}</span>
               <div className="grid grid-cols-3 gap-2">
                 {delSitio.map((foto) => (
-                  <button key={foto.id} type="button" data-foto-recuerdo onClick={() => setGrande(foto)} aria-label="Ver la foto en grande" className="block aspect-square w-full overflow-hidden bg-bg-hover" style={{ borderRadius: 16 }}>
-                    {urlParaMostrar(foto) ? <img src={urlParaMostrar(foto)} alt={foto.stopName ?? 'Foto del viaje'} className="h-full w-full object-cover" loading="lazy" /> : null}
+                  <button key={foto.id} type="button" data-foto-recuerdo onClick={() => setGrande(foto)} aria-label="Ver la foto en grande" className="relative block aspect-square w-full overflow-hidden bg-bg-hover" style={{ borderRadius: 16 }}>
+                    {urlParaMostrar(foto) ? <ImagenConFundido src={urlParaMostrar(foto)} fondo="transparent" loading="lazy" /> : null}
                   </button>
                 ))}
               </div>

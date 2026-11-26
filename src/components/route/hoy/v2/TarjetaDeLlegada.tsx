@@ -115,11 +115,12 @@ export function TarjetaDeLlegada({ route, day, dateIso, mitad, paradas, llegadoP
   const guardarHora = (hora: string | null) => {
     if (!hora) return
     // La MISMA reserva que RESERVAS: la hora de llegada del vuelo (o del tren…) pasa a la nueva, y el billete guardado la sigue para no perder su QR.
-    useRouteStore.getState().retrasarLlegada(hora, { medio: MEDIO_DEL_BILLETE[modo], sinReserva: propio })
+    // (V70, V62-13) Con coche propio [He salido tarde] cuenta igual que [Vuelo retrasado]: la hora nueva pasa por la misma función (`retrasarLlegada`) y por «adaptar los días» de la V61.
+    useRouteStore.getState().retrasarLlegada(hora, { medio: propio ? 'coche' : MEDIO_DEL_BILLETE[modo] })
     const previo = useBilleteStore.getState().datos.arrival
     if (previo && !propio) useBilleteStore.getState().poner(tripId, 'arrival', { ...previo, horaRoma: hora })
     // Con la hora nueva, sale la hoja «¿Adaptamos tus días a tu vuelo?» (la de la V61) si adaptar cambiaría algo.
-    if (!propio) void alCambiarElVuelo({ que: 'hora', mitad: 'arrival' })
+    void alCambiarElVuelo({ que: 'hora', mitad: 'arrival' })
   }
 
   // ── La línea del billete ──
@@ -150,7 +151,12 @@ export function TarjetaDeLlegada({ route, day, dateIso, mitad, paradas, llegadoP
   const hotelSub = enCoche && minutosEnCoche != null ? `${minutosEnCoche} min en coche` : alojamiento.nombre ? (alojamiento.zonaNombre ?? alojamiento.ciudad) : ''
   const primera = paradas[0] ?? null
   const cajasDeAbajo: { dato: string; trazo: string; etiqueta: string; grande: string; sub: string; extra?: string }[] = []
-  if (hayCoche) cajasDeAbajo.push({ dato: 'coche', trazo: TRAZO.coche, etiqueta: 'COCHE', grande: coche?.provider?.trim() || 'Alquiler', sub: [segunGrupo('Recogedlo al llegar', 'Recógelo al llegar'), coche?.lugarRecogida?.trim()].filter(Boolean).join(' · ') })
+  // (V70, V62-16) Con la empresa: «Cicar» y debajo «Recógelo al llegar»; sin empresa: «COCHE · Recógelo al llegar» (lo grande es la frase, no un «Alquiler» inventado).
+  if (hayCoche) {
+    const empresa = coche?.provider?.trim() ?? ''
+    const recoger = segunGrupo('Recogedlo al llegar', 'Recógelo al llegar')
+    cajasDeAbajo.push({ dato: 'coche', trazo: TRAZO.coche, etiqueta: 'COCHE', grande: empresa || recoger, sub: [empresa ? recoger : '', coche?.lugarRecogida?.trim()].filter(Boolean).join(' · ') })
+  }
   else if (alCentro) cajasDeAbajo.push({ dato: 'al-centro', trazo: TRAZO.centro, etiqueta: 'AL CENTRO', ...alCentro })
   cajasDeAbajo.push({ dato: 'hotel', trazo: TRAZO.hotel, etiqueta: 'HOTEL', grande: hotelGrande, sub: hotelSub })
   cajasDeAbajo.push({ dato: 'tu-dia', trazo: TRAZO.dia, etiqueta: 'TU DÍA', grande: paradas.length === 0 ? 'Sin paradas' : paradas.length === 1 ? '1 parada' : `${paradas.length} paradas`, sub: primera ? `Empieza en ${displayStopName(primera.name)}` : 'Día de viaje' })
@@ -180,8 +186,8 @@ export function TarjetaDeLlegada({ route, day, dateIso, mitad, paradas, llegadoP
             {llegado ? segunGrupo('AQUÍ · YA HABÉIS LLEGADO', 'AQUÍ · YA HAS LLEGADO') : 'LLEGADA'}
           </span>
           {billete && (
-            <span className="absolute right-1 top-1">
-              <IconoDeDocumento hay={hayQr} tipo="qr" onAbrir={() => setAmpliado(true)} onAnadir={() => setVezAnadir((v) => v + 1)} etiqueta={hayQr ? 'Ver el código en grande' : `Añade tu ${modo === 'avion' ? 'tarjeta de embarque' : 'billete'}`} datos="billete-llegada" />
+            <span className="absolute right-3.5 top-3">
+              <IconoDeDocumento grande hay={hayQr} tipo="qr" onAbrir={() => setAmpliado(true)} onAnadir={() => setVezAnadir((v) => v + 1)} etiqueta={hayQr ? 'Ver el código en grande' : `Añade tu ${modo === 'avion' ? 'tarjeta de embarque' : 'billete'}`} datos="billete-llegada" />
             </span>
           )}
           <span data-hoy-llegada-titulo className="absolute inset-x-[18px] bottom-3.5 text-left" style={NOMBRE_SOBRE_FOTO}>

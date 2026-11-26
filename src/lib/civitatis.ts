@@ -255,7 +255,8 @@ export function recomendarHora(datos: HorasEnRango | null, fechaParada: string |
   const util = contexto.horaUtilMin ?? null
   const esLlegada = (f: string) => f === contexto.fechaLlegada && util != null
   // Desde cuándo puede estar allí ese día (null = no se sabe: sin hora de ruta y sin vuelo, no se recomienda).
-  const desdeEseDia = esLlegada(fechaParada) ? util : rutaMin
+  // V70 (V60-5): el día de llegada parte de LA MAYOR de las dos (hora útil del vuelo y hora a la que llega la ruta).
+  const desdeEseDia = esLlegada(fechaParada) ? Math.max(util as number, rutaMin ?? 0) : rutaMin
   if (desdeEseDia == null) return null
   const aterriza = contexto.aterrizaHHMM ?? null
   const cuando = (f: string, h: string) => `${cap(diaLargoEs(f))} · ${h}`

@@ -17,10 +17,12 @@ const con = (nombres: string[]) => nombres.map((x) => displayStopName(x))
 
 /** (V63 §8) El texto del plan de lluvia de los datos viene a media frase («el Foro, más corto; por la tarde…»): se le pone su principio y se cierra con punto. Si ya empieza como frase (mayúscula), se deja. */
 export function fraseDelPlanDeLluvia(texto: string | undefined | null): string {
-  const t = (texto ?? '').replace(/\*\*/g, '').replace(/^\s*🌧\s*/u, '').replace(/^Si llueve:?\s*/i, '').trim()
+  // (V70, V63-22) Los textos de Roma (`listas.json`) ya son frases completas escritas a mano («Si llueve, la Basílica y el Panteón ya van por dentro; …»): no se les pone nada delante.
+  // Solo se limpia por si llegara uno antiguo («**🌧 Si llueve:** …») y se pone la mayúscula y el punto.
+  const t = (texto ?? '').replace(/\*\*/g, '').replace(/^\s*🌧\s*/u, '').replace(/^Si llueve:\s*/i, '').trim()
   if (!t) return 'Va a llover. Te proponemos un plan a cubierto.'
   const cierre = /[.!?]$/.test(t) ? t : `${t}.`
-  return /^[a-záéíóúñü]/.test(cierre) ? `Si llueve, este es el plan: ${cierre}` : cierre
+  return cierre.charAt(0).toUpperCase() + cierre.slice(1)
 }
 
 const opParadas = (antes: DayPlan, despues: DayPlan): Op => ({

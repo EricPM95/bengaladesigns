@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react'
 import { lugarCon } from '../../../lib/articulos'
-import { corregirConElDocumento, diaDistintoDelDocumento } from '../../../lib/corregirConElDocumento'
+import { diaDistintoDelDocumento, marcarDocumentoFueraDelViaje } from '../../../lib/corregirConElDocumento'
 import { dayOnDate, type Reservation } from '../../../lib/bookings'
 import { displayStopName } from '../../../lib/format'
 import type { Propuesta } from '../../../lib/hoyCambiarPlan'
@@ -38,7 +38,11 @@ export function usePreguntaDeDia(): { preguntar: (reserva: Reservation, doc: Doc
 
   const preguntar = (reserva: Reservation, doc: Doc, nombre: 'entrada' | 'reserva', excursion: Excursion | null, continuar: Continuar) => {
     const otro = diaDistintoDelDocumento(reserva, doc.fecha)
-    if (!otro) return continuar(corregirConElDocumento(reserva, doc, nombre, excursion), true)
+    // (V70, V64-26) Al leer NO se corrige la reserva (ni la hora): «Revisa los datos» trae lo leído y solo [Guardar] la cambia.
+    if (!otro) {
+      marcarDocumentoFueraDelViaje(reserva, doc, nombre)
+      return continuar(reserva, true)
+    }
     setP({ reserva, doc, nombre, excursion, iso: otro.iso, dayNumber: otro.dayNumber, continuar })
   }
 
@@ -79,10 +83,10 @@ export function usePreguntaDeDia(): { preguntar: (reserva: Reservation, doc: Doc
         onOtra={() => undefined}
         etiquetaDejar={`Dejarla el ${semVieja}`}
         onAplicar={() => {
-          // Pasarla: se mueve (con el aviso de abajo y su [Deshacer]) y se sigue con la hoja de «Revisa los datos».
-          const nueva = corregirConElDocumento(p.reserva, p.doc, p.nombre, p.excursion, true)
+          // Pasarla: se sigue con la hoja de «Revisa los datos» con el día del documento ya puesto; la reserva se mueve al pulsar [Guardar] (V70, V64-26).
+          marcarDocumentoFueraDelViaje(p.reserva, p.doc, p.nombre)
           cerrar()
-          p.continuar(nueva, true)
+          p.continuar(p.reserva, true)
         }}
         onCerrar={() => {
           // Dejarla (el botón blanco, la X o tocar fuera): no cambia nada, y la hoja de «Revisa los datos» no trae la fecha ni la hora del documento.

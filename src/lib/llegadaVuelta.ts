@@ -101,13 +101,16 @@ export function datosParaMotor(
   const zona = route.accommodationZone ?? null
   const salida: DatosParaMotor = {}
 
-  if (modos.arrival !== 'coche' && esHora(route.arrivalFlightTime)) {
-    const { point } = puntoDeLaMitad(medioOf(datos, modos.arrival), route.arrivalPointId, true)
+  // (V70, V62-13) Coche propio: no hay billete, pero con [He salido tarde] el viajero dice a qué hora llega y eso cuenta igual que un vuelo retrasado (se manda como una llegada por carretera: sin punto de llegada).
+  const llegaEnCochePropio = modos.arrival === 'coche' && Boolean(route.arrivalRetraso) && route.arrivalRetraso?.para === route.arrivalFlightTime
+  if ((modos.arrival !== 'coche' || llegaEnCochePropio) && esHora(route.arrivalFlightTime)) {
+    const medioLlegada: Exclude<ArrivalMode, 'coche'> = modos.arrival === 'coche' ? 'tren' : modos.arrival
+    const { point } = puntoDeLaMitad(medioOf(datos, medioLlegada), llegaEnCochePropio ? null : route.arrivalPointId, !llegaEnCochePropio)
     const excursionReservada = excursionDeLaLlegada(route, reservas)
     salida.llegada = {
       hora: route.arrivalFlightTime,
-      medio: modos.arrival,
-      puntoId: info && point ? point.id : null,
+      medio: medioLlegada,
+      puntoId: info && point && !llegaEnCochePropio ? point.id : null,
       zona,
       ...(excursionReservada ? { excursionReservada } : {}),
       ...(esHora(opciones.coche?.horaRecogida) ? { recogida: opciones.coche?.horaRecogida } : {}),

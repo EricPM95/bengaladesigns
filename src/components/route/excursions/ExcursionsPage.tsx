@@ -1,5 +1,6 @@
 import { precioTiendaEnVista, useMonedaViajero } from '../../../lib/moneda'
 import { fotoGrande } from '../../../lib/fotoCivitatis'
+import { ImagenConFundido } from '../../ui/ImagenConFundido'
 import { useEffect, useState } from 'react'
 import { useHuecoAlFinal } from '../../propuesta/BotonDePropuesta'
 import { createPortal } from 'react-dom'
@@ -49,7 +50,7 @@ function ExcursionPhoto({ excursion, destination }: { excursion: Excursion; dest
   return (
     <div className="relative">
       <div className="relative h-40 w-full overflow-hidden bg-bg-hover" role="img" aria-label={excursion.title}>
-        {url && <img src={url} alt="" loading="lazy" decoding="async" data-foto-grande className="h-full w-full object-cover" />}
+        {url && <ImagenConFundido src={url} fondo="transparent" loading="lazy" decoding="async" data-foto-grande />}
       </div>
       {!excursion.photoUrl && hayCreditoDeFoto(photo) && (
         <FotoCredito

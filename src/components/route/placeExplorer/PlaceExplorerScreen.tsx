@@ -39,6 +39,7 @@ import { diaCorto } from '../../../lib/nombreDeDia'
 import { InterruptorElegir } from '../../ui/Elegir'
 import { puntuar } from '../../../lib/busqueda'
 import { AvisosExcursion } from '../excursions/AvisosExcursion'
+import { ImagenConFundido } from '../../ui/ImagenConFundido'
 
 
 /** Por encima de esta distancia el "a N min a pie" deja de tener sentido (el viajero todavía no está
@@ -237,9 +238,10 @@ function PlacePhotoPanel({ place, city, color, icon, fixedUrl = null }: { place:
         style={{
           borderRadius: '18px 0 0 18px',
           clipPath: 'polygon(0 0,100% 0,calc(100% - 22px) 100%,0 100%)',
-          background: photo ? `url("${photo}") center/cover, ${color}` : `linear-gradient(135deg,${color},rgba(28,34,48,.35))`,
+          background: photo ? color : `linear-gradient(135deg,${color},rgba(28,34,48,.35))`, // (V70, V67-15) con foto, entra con el fundido de siempre (ImagenConFundido)
         }}
       >
+        {photo && <ImagenConFundido src={photo} fondo={color} loading="lazy" />}
         {!photo && (
           <Icono nombre={EXPLORE_ICONOS[icon]} size={26} style={{ opacity: .9 }} />
         )}

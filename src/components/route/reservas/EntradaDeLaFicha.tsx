@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ImagenConFundido } from '../../ui/ImagenConFundido'
 import { enlaceAlPuntoDeEncuentro, type FranjaDeAviso, type HoraRecomendada } from '../../../lib/civitatis'
 import { limpiarImportes, precioConNumero } from '../../../lib/importesTexto'
 import { precioTiendaEnVista } from '../../../lib/moneda'
@@ -85,7 +86,6 @@ export function HoraQueTeRecomendamos({ recomendada }: { recomendada: HoraRecome
 
 export function EntradaDeLaFicha({ entrada, reservarTexto, recomendada, onReservar }: { entrada: StopEntrada; reservarTexto: string; recomendada: HoraRecomendada | null; /** null = sin botón (no hay página de ese sitio en ninguna tienda): nunca un botón que lleve a otra página. */ onReservar: (() => void) | null }) {
   const [abierta, setAbierta] = useState(false)
-  const [cargada, setCargada] = useState(false)
   const c = entrada.civitatis
   const foto = c?.fotos.principal?.url ?? null
   const precio = precioDeLaEntrada(entrada)
@@ -105,7 +105,7 @@ export function EntradaDeLaFicha({ entrada, reservarTexto, recomendada, onReserv
         {foto && (
           // El fondo suave ocupa el tamaño de la foto desde el principio: al llegar, no salta nada.
           <span data-entrada-foto style={{ position: 'relative', display: 'block', flex: 'none', width: 92, height: 92, borderRadius: 18, overflow: 'hidden', background: '#E9DFC8', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.3)' }}>
-            <img src={foto} alt="" loading="eager" decoding="async" onLoad={() => setCargada(true)} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: cargada ? 1 : 0, transition: 'opacity .2s' }} />
+            <ImagenConFundido src={foto} fondo="#E9DFC8" loading="eager" decoding="async" />
           </span>
         )}
         <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>

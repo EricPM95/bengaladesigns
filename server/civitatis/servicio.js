@@ -130,7 +130,30 @@ export function crearServicioCivitatis(opciones = {}) {
     const clave = `cerca:${Number(lat).toFixed(4)}:${Number(lng).toFixed(4)}:${distancia}:${limite}:${lang}`
     const r = await cache.obtener(clave, ttl('cerca'), () => cliente.pedir('/findByCoord', { metodo: 'POST', consulta: { lang, currency: moneda, limit: limite }, cuerpo: { lat: Number(lat), long: Number(lng), distance: distancia } }))
     if (!r.ok) return r
-    return { ok: true, datos: (Array.isArray(r.datos) ? r.datos : []).map((a) => fichaCorta(a, opcionesDePrecio)).filter(Boolean), viejo: r.viejo === true }
+    const cortas = (Array.isArray(r.datos) ? r.datos : []).map((a) => fichaCorta(a, opcionesDePrecio)).filter(Boolean)
+    return { ok: true, datos: await conNotaDeLaFicha(cortas), viejo: r.viejo === true }
+  }
+
+  /**
+   * (V70, V60-1d) La nota y el número de opiniones salen de la FICHA de la actividad (`GET /activities/{id}`, `actividad(id)`), NUNCA del listado (el listado no los da fiables).
+   * Si la ficha falla o no trae nota, la actividad se queda SIN nota (null): nunca una nota del listado. CADA CUÁNTO: cada vez que se pide una lista (cercaDe/buscarConNota; cada ficha, 1 h en la caché,
+   * ttl 'actividad'). CUÁNTO BAJA: hasta `max` fichas por lista (6 por defecto), ~3-10 KB cada una; nada en bucle.
+   */
+  async function conNotaDeLaFicha(lista, max = 6) {
+    return Promise.all(
+      lista.map(async (a, i) => {
+        if (i >= max || a?.id == null) return { ...a, valoracion: null, opiniones: null }
+        const f = await actividad(a.id)
+        return { ...a, valoracion: f.ok ? f.datos.valoracion : null, opiniones: f.ok ? f.datos.opiniones : null }
+      }),
+    )
+  }
+
+  /** (V70) La búsqueda de siempre, con la nota y las opiniones de la FICHA de cada resultado (hasta `max`). */
+  async function buscarConNota(texto, destinoId = null, max = 5) {
+    const r = await buscar(texto, destinoId)
+    if (!r.ok) return r
+    return { ok: true, datos: await conNotaDeLaFicha(r.datos, max), viejo: r.viejo }
   }
 
   /**
@@ -225,5 +248,5 @@ export function crearServicioCivitatis(opciones = {}) {
     return { opciones: opciones2, enriquecidas }
   }
 
-  return { activa, permitida, actividad, calendario, horasLibres, horasEnRango, freeTourHoras, cercaDe, buscar, traslados, resolver, enriquecerEntradas, enriquecerExcursiones, cliente, cache, ajustes, horasLibresDelDia }
+  return { activa, permitida, actividad, calendario, horasLibres, horasEnRango, freeTourHoras, cercaDe, buscar, buscarConNota, traslados, resolver, enriquecerEntradas, enriquecerExcursiones, cliente, cache, ajustes, horasLibresDelDia }
 }

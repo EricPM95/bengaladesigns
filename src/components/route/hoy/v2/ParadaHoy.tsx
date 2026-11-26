@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useState, type ReactNode } from 'react'
+import { ImagenConFundido } from '../../../ui/ImagenConFundido'
 import type { Coordinates, DayPlan, Route, Stop } from '../../../../lib/types'
 import type { Reservation } from '../../../../lib/bookings'
 import { displayStopName } from '../../../../lib/format'
@@ -147,7 +148,7 @@ function FotoDeLaParada({ parada, ciudad, dateIso, alto, children }: { parada: S
   const [fallo, setFallo] = useState(false)
   return (
     <div data-hoy-foto-parada className="relative overflow-hidden" style={{ height: alto, background: 'linear-gradient(150deg,#6B5A44,#2A3141)' }}>
-      {foto && !fallo && <img src={foto} alt="" className="h-full w-full object-cover" onError={() => setFallo(true)} />}
+      {foto && !fallo && <ImagenConFundido src={foto} fondo="transparent" onError={() => setFallo(true)} />}
       <span className="absolute inset-0" style={{ background: 'linear-gradient(180deg,rgba(20,16,10,.4) 0%,rgba(20,16,10,0) 38%,rgba(20,16,10,.78) 100%)' }} />
       {children}
     </div>

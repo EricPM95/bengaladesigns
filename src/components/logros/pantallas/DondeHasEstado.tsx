@@ -9,6 +9,7 @@ import { buscarPaises, usePaisesYTierra, type Pais } from './mundo/paises'
 import './mundo/mundo.css'
 import { useLogrosPantallas, type PantallaDe } from './useLogrosPantallas'
 import { BOTON_ORO } from '../../ui/botonesOro'
+import { CampoDeBusqueda } from '../../ui/CampoDeBusqueda'
 
 const VERDE = 'oklch(0.55 0.11 150)'
 const MARCADO = 'oklch(0.66 0.13 40)'
@@ -115,13 +116,7 @@ export default function DondeHasEstado({ pantalla: _pantalla }: { pantalla: Pant
           </div>
         )}
         <div style={{ flex: 'none', padding: '12px 16px 0' }}>
-          <label style={{ height: 48, display: 'flex', alignItems: 'center', gap: 10, padding: '0 14px', borderRadius: 16, background: '#FFFDF8', border: `1.5px solid ${q ? '#1C2230' : 'rgba(28,34,48,.12)'}` }}>
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.55)" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-              <circle cx="11" cy="11" r="7" />
-              <path d="M20 20l-4-4" />
-            </svg>
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Busca un país" aria-label="Busca un país" style={{ flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', font: "500 15px 'Geist'", color: '#1C2230' }} />
-          </label>
+          <CampoDeBusqueda valor={q} onCambio={setQ} placeholder="Busca un país" datos="donde-has-estado" />
         </div>
         <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', scrollbarWidth: 'none', padding: '8px 16px', display: 'flex', flexDirection: 'column' }}>
           <span style={{ padding: '6px 4px', font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(28,34,48,.5)' }}>{q ? (lista.length ? 'Resultados' : 'Ningún país con ese nombre') : 'Todos los países · A-Z'}</span>

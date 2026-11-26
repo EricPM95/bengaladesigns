@@ -40,6 +40,7 @@ import { Escuchar } from '../hoy/Escuchar'
 import { accesoHistoria, textoHistoria } from '../../../lib/historia'
 import { FichaComoLlegar, FichaDondeAparcar, FichaHorario, FichaPestanas, FichaPorElCamino, FichaQueVeras, FichaTip, type FilaHorario } from './FichaPiezas'
 import { TiradorDeHoja } from '../../ui/TiradorDeHoja'
+import { ImagenConFundido } from '../../ui/ImagenConFundido'
 
 // Mismos límites que el tirador de RouteView.tsx (mapa arriba + panel abajo) — ninguno de los dos
 // lados puede llegar a desaparecer del todo.
@@ -496,7 +497,7 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                 <div className="flex items-start gap-3.5 px-0.5" data-ficha-cabecera>
                   <div className="relative h-[118px] w-[118px] flex-none">
                     <span className="absolute inset-0 overflow-hidden rounded-[22px] bg-bg-hover" style={{ backgroundImage: 'repeating-linear-gradient(135deg, rgb(var(--bg-hover)) 0 8px, rgb(var(--border) / .55) 8px 16px)' }}>
-                      {(photo?.small ?? stop.photoUrl) && <img src={photo?.small ?? stop.photoUrl} alt="" className="h-full w-full object-cover" />}
+                      {(photo?.small ?? stop.photoUrl) && <ImagenConFundido src={(photo?.small ?? stop.photoUrl) as string} fondo="transparent" />}
                     </span>
                     {/* (6-nov, RETOQUES_TARJETAS §3) Tocar la foto la abre en grande a pantalla completa (se cierra con la X o deslizando hacia abajo; se amplía con los dedos). */}
                     {(photo?.regular ?? photo?.small ?? stop.photoUrl) && (
@@ -648,7 +649,8 @@ export function StopDetailSheet({ stop, initialTab = null, visitTime = null, cit
                           <span>
                             <span className="font-medium">Por fuera</span>
                             {/* (Lo escrito «por fuera» a propósito lleva su texto de la ficha, el mismo del «por qué» de abajo: no se repite.) */}
-                            {stop.outsideKind === 'a_proposito' && withoutLeadingEmoji(stop.why ?? '') === stop.outsideReason ? null : <> · {stop.outsideReason}</>}
+                            {/* (V70, V63-21) Fuera «A esta hora ya ha cerrado» / «A esta hora no abre» de la ficha (Eric): el aviso de horario ya lo dice con la hora a la vista. */}
+                            {(stop.outsideKind === 'a_proposito' && withoutLeadingEmoji(stop.why ?? '') === stop.outsideReason) || stop.outsideKind === 'ya_cerrado' || stop.outsideKind === 'no_abre' || /^a esta hora/i.test(stop.outsideReason) ? null : <> · {stop.outsideReason}</>}
                           </span>
                         </p>
                         {stop.outsideKind === 'no_cabe' && onWantInside && (

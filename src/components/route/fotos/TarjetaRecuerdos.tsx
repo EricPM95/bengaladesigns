@@ -1,4 +1,5 @@
 import { botonChampan } from '../../../lib/marcaBoton'
+import { ImagenConFundido } from '../../ui/ImagenConFundido'
 import { limiteDeFotos, urlParaMostrar, type FotoViaje } from '../../../lib/fotosViaje'
 import { pagoActivo } from '../../../lib/pago'
 import { getTodayTripStatus } from '../../../lib/todayMode'
@@ -57,11 +58,11 @@ export function TarjetaRecuerdos({ route, onSubir }: { route: Route; onSubir?: (
       <div className="grid gap-1.5" style={{ gridTemplateColumns: '1.4fr 1fr', gridTemplateRows: '64px 64px' }}>
         {cuadros.map((foto, i) => {
           const grande = i === 0
-          const forma = `${grande ? 'row-span-2 rounded-2xl' : 'rounded-[14px]'} overflow-hidden`
+          const forma = `${grande ? 'row-span-2 rounded-2xl' : 'rounded-[14px]'} relative overflow-hidden`
           if (foto) {
             return (
               <button key={foto.id} type="button" onClick={() => abrirAlbum(route.id)} aria-label="Ver mis recuerdos" className={forma}>
-                <img src={urlParaMostrar(foto)} alt="" loading="lazy" className="h-full w-full object-cover" />
+                <ImagenConFundido src={urlParaMostrar(foto)} fondo="transparent" loading="lazy" />
               </button>
             )
           }

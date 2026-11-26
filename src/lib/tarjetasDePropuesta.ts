@@ -3,6 +3,7 @@ import { aHora, minDe, type Op, type Propuesta } from './hoyCambiarPlan'
 import type { CambioDeUnDia } from './reorganizarDia'
 import { elSitio, lugarCon } from './articulos'
 import { tituloSimpleDelDia } from './tituloDelDia'
+import { diaProsa } from './nombreDeDia'
 import type { DayPlan, Route, Stop } from './types'
 
 /**
@@ -469,6 +470,13 @@ export function diasDespuesDeCambios(cambios: CambioDeUnDia[], route: Route): Di
   return lista
 }
 
+/** (V70) «tu sábado» (solo el día de la semana) / «tu día 2» sin fechas, para el día `dayId` de la ruta; null si no se encuentra. */
+export function cualDeTusDias(route: Route, dayId: string | undefined): string | null {
+  const dia = route.days.find((d) => d.id === dayId)
+  if (!dia) return null
+  return `tu ${diaProsa(route, dia.dayNumber).replace(/^(\S+) \d+$/, (todo, nombre: string) => (nombre === 'día' ? todo : nombre))}`
+}
+
 const HORA = (t: string | undefined | null): string | null => {
   const m = minDe(t)
   return m == null ? null : aHora(m, false)
@@ -478,12 +486,13 @@ const HORA = (t: string | undefined | null): string | null => {
  * El texto de arriba de la hoja, concreto. Con vuelo de llegada («Aterrizas a las 17:00 y quedas libre hacia las 19:50. Esto es lo que cambia:»), con vuelo de vuelta («Tu vuelo sale a las 10:30. …»); sin vuelo, lo que hace.
  * `libreMin` (los minutos desde las 0:00 a los que el viajero queda libre) sale del plan de la llegada del motor; si no se sabe, solo se dice la hora de llegada.
  */
-export function textoDeReorganizar(opciones: { llegada?: string | null; libreMin?: number | null; salida?: string | null; vuelo: boolean; dias: number; /** (V69) false = no hay tarjetas que enseñar (solo cambia el orden de un día): se quita «Esto es lo que cambia:». */ conTarjetas?: boolean }): string {
+export function textoDeReorganizar(opciones: { llegada?: string | null; libreMin?: number | null; salida?: string | null; vuelo: boolean; dias: number; /** (V70) «tu sábado» (de `cualDeTusDias`) para el texto genérico de un solo día. */ cual?: string | null; /** (V69) false = no hay tarjetas que enseñar (solo cambia el orden de un día): se quita «Esto es lo que cambia:». */ conTarjetas?: boolean }): string {
   const partes: string[] = []
   const lleg = HORA(opciones.llegada)
   const sal = HORA(opciones.salida)
   if (opciones.vuelo && lleg) partes.push(`Aterrizas a las ${lleg}${opciones.libreMin != null ? ` y quedas libre hacia las ${aHora(opciones.libreMin, false)}` : ''}.`)
   if (opciones.vuelo && sal) partes.push(`Tu vuelo de vuelta sale a las ${sal}.`)
-  if (partes.length === 0) partes.push(opciones.dias > 1 ? 'Hemos puesto tus reservas a su hora y cada sitio cuando está abierto.' : 'Hemos puesto tus reservas a su hora y cada sitio cuando está abierto.')
+  // (V70, V61-10) Sin vuelo, texto GENÉRICO que no depende de saber qué se añadió: «Has cambiado tu sábado.» (un día) o «Has cambiado tus días.» (varios).
+  if (partes.length === 0) partes.push(opciones.dias > 1 ? 'Has cambiado tus días.' : opciones.cual ? `Has cambiado ${opciones.cual}.` : 'Has cambiado tu día.')
   return opciones.conTarjetas === false ? partes.join(' ') : `${partes.join(' ')} Esto es lo que cambia:`
 }

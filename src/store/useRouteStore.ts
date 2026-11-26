@@ -628,6 +628,8 @@ interface RouteStoreState {
   /** (Tanda 10N9) «Guardar el vuelo» del administrador: la ida y la vuelta (hora y punto) de una vez, con UN solo `ultimoCambio` (un solo aviso para los demás). `medio`: «vuelo», «tren»… */
   /** (V62) «Vuelo retrasado» en HOY: pone la hora nueva de llegada en la MISMA reserva de RESERVAS (`guardarVueloDelAdmin`) y se acuerda de la de antes para tacharla. En coche propio (sin reserva), solo el recuerdo. */
   retrasarLlegada: (hora: string, opciones?: { medio?: string; sinReserva?: boolean }) => void
+  /** (V70) «Vuelo retrasado» en la tarjeta de la vuelta de HOY: la hora nueva de SALIDA en la misma reserva de RESERVAS (`guardarVueloDelAdmin`) y la de antes para tacharla. */
+  retrasarSalida: (hora: string, opciones?: { medio?: string }) => void
   guardarVueloDelAdmin: (cambios: { arrival?: { time: string; pointId?: string | null }; departure?: { time: string; pointId?: string | null }; medio?: string }) => void
   /** El punto de llegada o de salida elegido en la ficha (Fiumicino o Ciampino…): lo enseña la barra. */
   setArrivalPointId: (kind: 'arrival' | 'departure', pointId: string | null) => void
@@ -2102,6 +2104,13 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
     const previa = antes.arrivalRetraso && antes.arrivalRetraso.para === antes.arrivalFlightTime ? antes.arrivalRetraso.antes : (antes.arrivalFlightTime ?? null)
     if (!opciones?.sinReserva) get().guardarVueloDelAdmin({ arrival: { time: hora }, medio: opciones?.medio })
     set((state) => (state.route ? { route: { ...state.route, arrivalRetraso: { antes: opciones?.sinReserva ? (state.route.arrivalRetraso?.antes ?? null) : previa, para: hora } } } : state))
+  },
+  retrasarSalida: (hora, opciones) => {
+    const antes = get().route
+    if (!antes) return
+    const previa = antes.departureRetraso && antes.departureRetraso.para === antes.departureFlightTime ? antes.departureRetraso.antes : (antes.departureFlightTime ?? null)
+    get().guardarVueloDelAdmin({ departure: { time: hora }, medio: opciones?.medio })
+    set((state) => (state.route ? { route: { ...state.route, departureRetraso: { antes: previa, para: hora } } } : state))
   },
   guardarVueloDelAdmin: ({ arrival, departure, medio }) =>
     set((state) => {

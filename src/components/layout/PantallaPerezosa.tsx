@@ -1,4 +1,4 @@
-import { Component, lazy, useState, type ComponentType, type ReactNode } from 'react'
+import { Component, lazy, Suspense, useState, type ComponentType, type ReactNode } from 'react'
 import { useRouteStore } from '../../store/useRouteStore'
 
 /**
@@ -85,4 +85,16 @@ export function pantallaPerezosa<P extends object>(importador: () => Promise<{ d
     )
   }
   return Pantalla
+}
+
+// (V71) Las hojas y avisos que solo salen al pulsar algo o tras un evento se bajan aparte del arranque (peso de arranque < 340 KB). Sin fallback: no se ve nada mientras llegan (son hojas cerradas por defecto).
+export function hostPerezoso(cargar: () => Promise<Record<string, unknown>>, nombre: string) {
+  const Perezoso = lazy(() => cargar().then((m) => ({ default: m[nombre] as ComponentType })))
+  return function HostPerezoso() {
+    return (
+      <Suspense fallback={null}>
+        <Perezoso />
+      </Suspense>
+    )
+  }
 }

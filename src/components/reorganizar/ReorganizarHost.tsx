@@ -12,7 +12,7 @@ import { usePermisosDelViaje } from '../../hooks/usePermisosDelViaje'
 import { AvisoNoCabe } from './AvisoNoCabe'
 import { IconoReorganizar } from './IconoReorganizar'
 import { HojaDeReorganizar } from './HojaDeReorganizar'
-import { cambiosDeReorganizar, diasDespuesDeCambios, textoDeReorganizar } from '../../lib/tarjetasDePropuesta'
+import { cambiosDeReorganizar, cualDeTusDias, diasDespuesDeCambios, textoDeReorganizar } from '../../lib/tarjetasDePropuesta'
 import type { Route } from '../../lib/types'
 import type { PlanLlegada } from '../../lib/planLlegadaVuelta'
 
@@ -232,7 +232,7 @@ function AlertaReorganizar({ trabajando, onReorganizar }: { trabajando: boolean;
   const resumen = useMemo(() => (route ? cambiosDeReorganizar(diasDespuesDeCambios(mias, route), route) : null), [route, mias]) // eslint-disable-line react-hooks/exhaustive-deps
   if (!route || !resumen) return null
   const v = datosDeVuelo(route, dias)
-  const texto = textoDeReorganizar({ ...v, dias: dias.length, conTarjetas: resumen.total > 0 })
+  const texto = textoDeReorganizar({ ...v, dias: dias.length, cual: cualDeTusDias(route, dias[0]), conTarjetas: resumen.total > 0 })
   return <HojaDeReorganizar id="reorganizar" titulo={dias.length > 1 ? '¿Reorganizamos tus días?' : '¿Reorganizamos tu día?'} texto={texto} cambios={resumen} botonSi={dias.length > 1 ? 'Reorganizar mis días' : 'Reorganizar mi día'} trabajando={trabajando} onSi={onReorganizar} onNo={ahoraNo} />
 }
 
@@ -261,6 +261,6 @@ function AlertaAdaptarVuelos(): ReactNode {
   const resumen = useMemo(() => (route && propuesta ? cambiosDeReorganizar(propuesta.dias.map((d) => ({ dayId: d.dayId, despues: d.next })), route) : null), [route, propuesta])
   if (!route || !propuesta || !resumen) return null
   const ids = propuesta.dias.map((d) => d.dayId)
-  const texto = textoDeReorganizar({ ...datosDeVuelo(route, ids, propuesta.planes.llegada), dias: ids.length, conTarjetas: resumen.total > 0 })
+  const texto = textoDeReorganizar({ ...datosDeVuelo(route, ids, propuesta.planes.llegada), dias: ids.length, cual: cualDeTusDias(route, ids[0]), conTarjetas: resumen.total > 0 })
   return <HojaDeReorganizar id="adaptar-vuelos" titulo="¿Adaptamos tus días a tu vuelo?" texto={texto} cambios={resumen} botonSi={ids.length > 1 ? 'Reorganizar mis días' : 'Reorganizar mi día'} onSi={() => void adaptarLosDias()} onNo={ahoraNo} />
 }

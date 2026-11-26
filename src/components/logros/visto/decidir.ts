@@ -37,6 +37,8 @@ export interface HojaDecidida {
   /** El primer momento «suma» (el pedazo ganado), para V2. */
   pedazo: { tipo: string; [otro: string]: unknown } | null
   mensaje: string | null
+  /** (V70, V66-6) El sitio es imprescindible o maravilla: solo entonces la tira «Guarda un recuerdo» (también tras ganar un pedazo). */
+  esImportante?: boolean
 }
 
 /** El nombre de la parada tal como se enseña (sin el «(noche)» del final). */
@@ -47,7 +49,7 @@ export function hojaSegunRespuesta(r: RespuestaParaDecidir | null, nombreParada:
   // Sin respuesta (el servidor tarda o no hay cobertura) no se enseña nada: no se sabe todavía qué hay en el sitio.
   if (!r) return null
   const nombreSitio = nombreDeParada(nombreParada)
-  const base = { nombreSitio, fotoDentro: r.foto_dentro ?? null, pedazo: null, mensaje: null }
+  const base = { nombreSitio, fotoDentro: r.foto_dentro ?? null, pedazo: null, mensaje: null, esImportante: r.es_importante === true }
   if (r.motivo === 'pregunta_medio_dia' || r.repetido) return null
   if (r.motivo === 'lejos' && (r.hay_pedazo || r.hay_emblema)) return { ...base, tipo: 'lejos', mensaje: `¿Ya has estado hoy ${enSitio(nombreSitio)}? Sube una foto que hiciste allí y gana tu pedazo.` }
   // (V66, 2) «Guarda un recuerdo» solo en los sitios importantes (imprescindibles y maravillas); en el resto de paradas, nunca (Eric: «es muy pesado foto en todos los lugares»).
@@ -62,8 +64,9 @@ export function hojaSegunRespuesta(r: RespuestaParaDecidir | null, nombreParada:
 }
 
 /** Lo que le falta a la parada según la tarjeta (la tira V6): sale de la MISMA decisión, así el texto de la tira nunca contradice al de la hoja. */
-export function faltaDe(tipo: TipoDeHoja): QueFalta | null {
-  return { oculto: 'sorpresa', sin_ubicacion: 'pedazo', ganado: 'recuerdo', recuerdo: 'recuerdo', lejos: null }[tipo] as QueFalta | null
+export function faltaDe(tipo: TipoDeHoja, esImportante = true): QueFalta | null {
+  // (V70, V66-6) Tras ganar un pedazo, la tira «Guarda un recuerdo» solo en imprescindibles y maravillas (como la hoja).
+  return { oculto: 'sorpresa', sin_ubicacion: 'pedazo', ganado: esImportante ? 'recuerdo' : null, recuerdo: 'recuerdo', lejos: null }[tipo] as QueFalta | null
 }
 
 export const TEXTO_DE_FALTA: Record<QueFalta, string> = {

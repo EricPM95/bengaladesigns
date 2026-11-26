@@ -50,7 +50,7 @@ export function AvisosDeCerca({ route, day, dateIso }: { route: Route; day: DayP
   useEffect(() => alCambiarSugerencias(() => setSugerencias(sugerenciasDelCompanero())), [])
   const activo = pagoActivo() && sugerencias
   const sitiosHoy = numberedStopsOf(day).map((s) => s.name)
-  const datos = useCercaDeAqui({ tripId, sitiosHoy, activo, enCoche: esDestinoDeCoche(route.destination) })
+  const datos = useCercaDeAqui({ tripId, sitiosHoy, activo, enCoche: esDestinoDeCoche(route.destination), sitiosSaltados: day.stops.filter((s) => s.saltada).map((s) => s.name) })
   // (V63 §4) El emblema oculto de una parada SALTADA no sale: si el viajero salta el Foro y está ya en la siguiente, a dos pasos, el juego no le habla del Foro. Se compara por el nombre del sitio con las paradas saltadas de hoy.
   const saltadas = day.stops.filter((s) => s.saltada).map((s) => sinAcentos(s.name))
   const esDeSaltada = (nombre: string | undefined | null) => {

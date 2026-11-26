@@ -351,7 +351,7 @@ export function crearServicioLogros({ repo: repoBruto, datos, catalogos, ahora =
    * (HOY1) Lo que hay cerca de la ubicación del viajero (H8, H8b, C16, C17): sitios con algo por ganar, con la distancia al borde de su radio y qué enseñar.
    * `sitios_hoy` (nombres de las paradas de hoy, tal como las ve el móvil) manda sobre la ruta guardada, que puede ir por detrás. La ubicación no se guarda.
    */
-  async function cerca(userId, { trip_id, ubicacion = null, sitios_hoy = null, en_coche = false }) {
+  async function cerca(userId, { trip_id, ubicacion = null, sitios_hoy = null, en_coche = false, sitios_saltados = null }) {
     const c = await cargarLigero(userId)
     const viaje = c.viajes[trip_id]
     if (!viaje) return { ok: false, motivo: 'viaje_sin_fechas', cerca: [] }
@@ -360,7 +360,10 @@ export function crearServicioLogros({ repo: repoBruto, datos, catalogos, ahora =
     const delMovil = Array.isArray(sitios_hoy) ? sitios_hoy.map((n) => sitioDeParada({ name: String(n) }, catalogos[viaje.destino])).filter(Boolean).flatMap((s) => sitiosDeId(datos.destinos[viaje.destino], s)) : null
     const sitiosHoy = new Set(delMovil ?? deLaRuta)
     const items = aItems(c.logros)
-    const lista = sitiosCerca({ datos, catalogos, destino: viaje.destino, ubicacion, items, sitiosHoy })
+    // (V70, V63-19) El emblema de una parada SALTADA hoy no se anuncia nunca (ni «brilla», ni «más cerca», ni «llegada»): el móvil manda los nombres de las saltadas (`sitios_saltados`) y aquí se les quita el emblema.
+    // (Los pedazos de colección se quedan.) CADA CUÁNTO / CUÁNTO BAJA: igual que esta consulta (la pide el móvil con la pantalla visible); unos pocos nombres más en el cuerpo, nada más en la respuesta.
+    const saltados = new Set(Array.isArray(sitios_saltados) ? sitios_saltados.map((n) => sitioDeParada({ name: String(n) }, catalogos[viaje.destino])).filter(Boolean).flatMap((s) => sitiosDeId(datos.destinos[viaje.destino], s)) : [])
+    const lista = sitiosCerca({ datos, catalogos, destino: viaje.destino, ubicacion, items, sitiosHoy }).map((s) => (saltados.has(s.sitio) && s.hay_emblema ? { ...s, hay_emblema: false, emblema_nombre: null } : s))
     // (LG1) El radio de cada parada de hoy (por el nombre que mandó el móvil) para «Ya estás aquí»: el del sitio en los datos, o null (el móvil usa 150 m).
     const radios_hoy = {}
     if (Array.isArray(sitios_hoy)) {

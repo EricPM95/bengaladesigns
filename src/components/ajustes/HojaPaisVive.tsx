@@ -1,16 +1,22 @@
+import { useMemo, useState } from 'react'
 import { HojaOpciones, OpcionTarjeta } from '../ui/HojaOpciones'
+import { CampoDeBusqueda, coincideConBusqueda } from '../ui/CampoDeBusqueda'
 import { FlagIcon } from '../ui/FlagIcon'
 import { nombreDelPais, paisesOrdenados } from '../../lib/paisVive'
 
 /**
  * (V35B) LA HOJA PARA ELEGIR EL PAÍS DONDE VIVES, en Ajustes. La lista de países en español, cada uno con su bandera; el elegido, marcado; arriba «Prefiero no decirlo» (lo quita). Tocar uno lo pone y cierra.
  * Es opcional: sirve para saber desde dónde viaja la gente; nunca se enseña a nadie.
+ * (V70, 1b) Debajo del título, el buscador de «Dónde has estado» (`CampoDeBusqueda`): sin tildes ni mayúsculas, por el nombre del país; sin resultados, No encontramos nada con "…".
  */
 export function HojaPaisVive({ actual, onElegir, onCerrar, z = 90 }: { actual: string | null; onElegir: (iso: string | null) => void; onCerrar: () => void; z?: number }) {
+  const [q, setQ] = useState('')
+  const paises = useMemo(() => paisesOrdenados(null).filter((p) => coincideConBusqueda([nombreDelPais(p)], q)), [q])
   return (
-    <HojaOpciones etiqueta="País donde vives" titulo="¿En qué país vives?" onCerrar={onCerrar} z={z} datos="pais-vive">
-      <OpcionTarjeta tono="gris" titulo="Prefiero no decirlo" linea="Lo dejas sin contestar" elegida={actual === null} datos="pais-ninguno" onClick={() => onElegir(null)} />
-      {paisesOrdenados(null).map((p) => (
+    <HojaOpciones etiqueta="País donde vives" titulo="¿En qué país vives?" onCerrar={onCerrar} z={z} datos="pais-vive" cabecera={<CampoDeBusqueda valor={q} onCambio={setQ} placeholder="Busca un país" datos="pais-vive" />}>
+      {q.trim() === '' && <OpcionTarjeta tono="gris" titulo="Prefiero no decirlo" linea="Lo dejas sin contestar" elegida={actual === null} datos="pais-ninguno" onClick={() => onElegir(null)} />}
+      {paises.length === 0 && <span data-busqueda-vacia="1" className="px-1 py-3 text-[14.5px] font-medium leading-[1.4]">{`No encontramos nada con "${q.trim()}"`}</span>}
+      {paises.map((p) => (
         <OpcionTarjeta
           key={p}
           tono="arena"

@@ -34,11 +34,12 @@ if (!comprobar.ok) {
 }
 
 async function una(palabra, destinoId) {
-  const r = await servicio.buscar(palabra, destinoId)
+  // (V70, V60-1d) La nota y las opiniones salen de la FICHA de cada actividad (GET /activities/{id}), no del listado.
+  const r = await servicio.buscarConNota(palabra, destinoId, 3)
   const etiqueta = `«${palabra}»${destinoId != null ? ` (destinationId ${destinoId})` : ' (sin destino)'}`
   if (!r.ok) return console.log(`   ${etiqueta}: fallo ${r.motivo}${r.estado ? ` ${r.estado}` : ''}`)
   console.log(`   ${etiqueta}: ${r.datos.length} resultado(s)`)
-  for (const a of r.datos.slice(0, 8)) console.log(`      · ${a.id} · ${a.titulo}${a.destino ? ` · ${a.destino}` : ''}`)
+  for (const a of r.datos.slice(0, 8)) console.log(`      · ${a.id} · ${a.titulo}${a.destino ? ` · ${a.destino}` : ''} · nota ${a.valoracion ?? '—'} · ${a.opiniones ?? '—'} opiniones`)
 }
 
 for (const c of CINCO) {

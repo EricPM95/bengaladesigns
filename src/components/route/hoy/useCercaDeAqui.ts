@@ -111,9 +111,9 @@ async function ubicacionConPermiso(): Promise<Ubicacion | null> {
   })
 }
 
-export function useCercaDeAqui({ tripId, sitiosHoy, activo, enCoche = false }: { tripId: string | null; sitiosHoy: string[]; activo: boolean; /** (HOY2b, 4) Para contar «cerca de la zona de hoy»: 20 min en coche o 15 a pie. */ enCoche?: boolean }): RespuestaCerca | null {
+export function useCercaDeAqui({ tripId, sitiosHoy, activo, enCoche = false, sitiosSaltados = [] }: { tripId: string | null; sitiosHoy: string[]; activo: boolean; /** (HOY2b, 4) Para contar «cerca de la zona de hoy»: 20 min en coche o 15 a pie. */ enCoche?: boolean; /** (V70, V63-19) Los nombres de las paradas SALTADAS de hoy: el servidor no anuncia su emblema. */ sitiosSaltados?: string[] }): RespuestaCerca | null {
   const [datos, setDatos] = useState<RespuestaCerca | null>(null)
-  const clave = sitiosHoy.join('|')
+  const clave = `${sitiosHoy.join('|')}#${sitiosSaltados.join('|')}`
   const ultima = useRef(0)
   const ultimaPregunta = useRef<{ en: number; ubicacion: Ubicacion | null; clave: string } | null>(null)
   useEffect(() => {
@@ -137,7 +137,7 @@ export function useCercaDeAqui({ tripId, sitiosHoy, activo, enCoche = false }: {
       const previa = ultimaPregunta.current
       if (reloj && previa && Date.now() - previa.en < MAXIMO_SIN_PREGUNTAR_MS && previa.clave === `${tripId}|${clave}|${enCoche}` && (ubicacion === null ? previa.ubicacion === null : previa.ubicacion !== null && metrosEntre(previa.ubicacion, ubicacion) < QUIETO_METROS)) return
       ultima.current = Date.now()
-      const cuerpo = { trip_id: tripId, ubicacion, sitios_hoy: sitiosHoy, en_coche: enCoche }
+      const cuerpo = { trip_id: tripId, ubicacion, sitios_hoy: sitiosHoy, en_coche: enCoche, ...(sitiosSaltados.length > 0 ? { sitios_saltados: sitiosSaltados } : {}) }
       ultimaPregunta.current = { en: Date.now(), ubicacion, clave: `${tripId}|${clave}|${enCoche}` }
       const r = await unaSolaVez(`cerca:${JSON.stringify(cuerpo)}`, () => llamar<RespuestaCerca>('/api/logros/cerca', { cuerpo }), 20_000)
       if (vivo && r?.ok) setDatos(r)

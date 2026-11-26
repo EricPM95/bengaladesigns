@@ -88,7 +88,7 @@ export function HojaLlegadaOculta({ sitio, onCerrar, onDesmarcar }: { sitio: Sit
           <span key={i} aria-hidden="true" className="pointer-events-none absolute rounded-full" style={{ left: `${e.x}%`, top: `${e.y}%`, width: e.r, height: e.r, background: '#F3D88F', animation: `eoTw ${e.d}s ease-in-out ${e.b}s infinite` }} />
         ))}
         <TiradorDeHoja oscura />
-        <CruzDeHoja onCerrar={onCerrar} oscura />
+        <CruzDeHoja onCerrar={onCerrar} oscura datos={{ 'data-juego-boton': 'cerrar' }} />
         <div className="relative mt-1 flex h-[132px] w-[132px] flex-none items-center justify-center">
           <span aria-hidden="true" className="absolute rounded-full" style={{ inset: -14, background: 'radial-gradient(circle,rgba(243,216,143,.4),rgba(243,216,143,0) 66%)', animation: 'eoPulse 3s ease-in-out infinite' }} />
           <svg width="132" height="132" viewBox="0 0 132 132" fill="none" className="relative" aria-hidden="true">

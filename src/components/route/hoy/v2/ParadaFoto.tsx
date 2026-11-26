@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react'
 import { urlMiniatura } from '../../../../lib/miniatura'
+import { ImagenConFundido } from '../../../ui/ImagenConFundido'
 import type { Stop } from '../../../../lib/types'
 import { useFotoDeParada } from './useFotoDeParada'
 
@@ -11,7 +13,10 @@ function tono(nombre: string): string {
 
 /** La pieza «Parada con foto» (Piezas/Parada Foto): la miniatura del sitio; a color con ✓ si está vista, más apagada si está por ver. */
 export function ParadaFoto({ nombre, photoUrl, vista, size = 40, marca = vista, carga = 'lazy' }: { nombre: string; photoUrl?: string | null; vista: boolean; size?: number; marca?: boolean; /** (V2) «Tu día» las pide ya (son miniaturas de 4 KB): con `lazy`, dentro de la pantalla que se desplaza, a veces no llegaban a pintarse. */ carga?: 'lazy' | 'eager' }) {
-  const mini = urlMiniatura(photoUrl) ?? (photoUrl || null)
+  const mini0 = urlMiniatura(photoUrl) ?? (photoUrl || null)
+  // (V70, V67-15) La foto entra con el fundido de siempre (`ImagenConFundido`). Si la miniatura no existe (Lanzarote no las tenía) se prueba con la foto de verdad; solo si tampoco carga, se queda el hueco beige.
+  const [mini, setMini] = useState(mini0)
+  useEffect(() => setMini(mini0), [mini0])
   const hu = tono(nombre)
   const fondo = `linear-gradient(150deg,oklch(0.86 0.06 ${hu}),oklch(0.6 0.08 ${hu}) 60%,oklch(0.38 0.06 ${hu}))`
   const ck = Math.round(size * 0.42)
@@ -21,14 +26,7 @@ export function ParadaFoto({ nombre, photoUrl, vista, size = 40, marca = vista, 
         className="absolute inset-0 overflow-hidden"
         style={{ borderRadius: Math.round(size * 0.28), background: mini ? '#E9DFCB' : fondo, filter: vista ? 'none' : 'grayscale(.75)', opacity: vista ? 1 : 0.5, boxShadow: 'inset 0 0 0 1px rgba(28,34,48,.08)' }}
       >
-        {mini && <img src={mini} alt="" loading={carga} className="h-full w-full object-cover" onError={(e) => {
-          // (V69) Si la miniatura no existe (Lanzarote no las tenía), se prueba con la foto de verdad antes de dejar el hueco beige; solo si tampoco carga, se esconde.
-          const img = e.currentTarget as HTMLImageElement
-          if (photoUrl && img.getAttribute('src') !== photoUrl && !img.dataset.sinMini) {
-            img.dataset.sinMini = '1'
-            img.src = photoUrl
-          } else img.style.display = 'none'
-        }} />}
+        {mini && <ImagenConFundido src={mini} fondo="#E9DFCB" loading={carga} onError={() => { if (photoUrl && mini !== photoUrl) setMini(photoUrl) }} />}
       </span>
       {marca && (
         <span className="absolute flex items-center justify-center rounded-full" style={{ right: -4, bottom: -4, width: ck, height: ck, background: 'oklch(0.55 0.11 150)', boxShadow: '0 0 0 2px #FFFDF8' }}>

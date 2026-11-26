@@ -174,7 +174,7 @@
     }
    },
    "lluvia": {
-    "texto": "la Basílica y el Panteón ya van por dentro; el Foro desde la terraza, el Coliseo y Navona, más cortos.",
+    "texto": "Si llueve, la Basílica y el Panteón ya van por dentro; el Foro se ve desde la terraza y el Coliseo y Navona se hacen más cortos.",
     "doc": "**🌧 Si llueve:** la Basílica y el Panteón ya van por dentro; el Foro desde la terraza, el Coliseo y Navona, más cortos.",
     "ops": [
      {
@@ -1089,7 +1089,7 @@
     }
    },
    "lluvia": {
-    "texto": "el Panteón y Santa Maria in Trastevere ya van por dentro; la Isla Tiberina y el Ponte Sisto, de camino, y el Janículo sale.",
+    "texto": "Si llueve, el Panteón y Santa Maria in Trastevere ya van por dentro, la Isla Tiberina y el Ponte Sisto se ven de camino y el Janículo sale.",
     "doc": "**🌧 Si llueve:** el Panteón y Santa Maria in Trastevere ya van por dentro; la Isla Tiberina y el Ponte Sisto, de camino, y el Janículo sale.",
     "ops": [
      {
@@ -1737,7 +1737,7 @@
     }
    },
    "lluvia": {
-    "texto": "por la mañana, la Basílica por dentro (gratis, ~45) en vez de la fachada; por la tarde ya va por dentro. El Castillo, de camino.",
+    "texto": "Si llueve, por la mañana entras a la Basílica por dentro (gratis, unos 45 minutos) en vez de verla solo por fuera; por la tarde ya va por dentro, y el Castillo se ve de camino.",
     "doc": "**🌧 Si llueve:** por la mañana, la Basílica por dentro (gratis, ~45) en vez de la fachada; por la tarde ya va por dentro. El Castillo, de camino.",
     "ops": [
      {
@@ -2209,7 +2209,7 @@
     }
    },
    "lluvia": {
-    "texto": "el Foro y el Palatino son al aire libre: más cortos (~1 h). Si el viaje no lleva otro día con los Museos Capitolinos, van después del Campidoglio (~1 h). El Barrio Judío y Navona, más cortos.",
+    "texto": "Si llueve, el Foro y el Palatino, que son al aire libre, se hacen más cortos (1 hora); si tu viaje no lleva otro día con los Museos Capitolinos, van después del Campidoglio (1 hora), y el Barrio Judío y Navona también se hacen más cortos.",
     "doc": "**🌧 Si llueve:** el Foro y el Palatino son al aire libre: más cortos (~1 h). Si el viaje no lleva otro día con los Museos Capitolinos, van después del Campidoglio (~1 h). El Barrio Judío y Navona, más cortos.",
     "ops": [
      {
@@ -3309,7 +3309,7 @@
     }
    },
    "lluvia": {
-    "texto": "el Castillo de Sant'Angelo por dentro (~1 h 30) en vez de por fuera, si el viaje no lo lleva por dentro otro día. El Janículo y la Isla Tiberina salen; Santa Maria in Trastevere por dentro se queda.",
+    "texto": "Si llueve, entras al Castillo de Sant'Angelo por dentro (1 hora y media) en vez de verlo por fuera, si tu viaje no lo lleva por dentro otro día; el Janículo y la Isla Tiberina salen y Santa Maria in Trastevere se queda por dentro.",
     "doc": "**🌧 Si llueve:** el Castillo de Sant'Angelo por dentro (~1 h 30) en vez de por fuera, si el viaje no lo lleva por dentro otro día. El Janículo y la Isla Tiberina salen; Santa Maria in Trastevere por dentro se queda.",
     "ops": [
      {
@@ -5212,7 +5212,7 @@
     }
    },
    "lluvia": {
-    "texto": "el Free Tour se hace igual (aviso: lleva paraguas); el resto ya es por dentro.",
+    "texto": "Si llueve, el Free Tour se hace igual (lleva paraguas) y el resto del día ya es por dentro.",
     "doc": "**🌧 Si llueve:** el Free Tour se hace igual (aviso: lleva paraguas); el resto ya es por dentro."
    },
    "quedarme": null,
@@ -9314,7 +9314,7 @@
     }
    },
    "lluvia": {
-    "texto": "el Foro, más corto; por la tarde, Santa Maria in Trastevere y Santa Cecilia por dentro, en lugar del Janículo y la Isla Tiberina.",
+    "texto": "Si llueve, el Foro se hace más corto y por la tarde entran Santa Maria in Trastevere y Santa Cecilia por dentro, en lugar del Janículo y la Isla Tiberina.",
     "doc": "**🌧 Si llueve:** el Foro, más corto; por la tarde, Santa Maria in Trastevere y Santa Cecilia por dentro, en lugar del Janículo y la Isla Tiberina.",
     "ops": [
      {
@@ -10513,7 +10513,7 @@
     }
    },
    "lluvia": {
-    "texto": "el Pincio y sus jardines salen; Santa Maria del Popolo y Trinità por dentro, y el Ara Pacis (~45) entre el Popolo y la Plaza de España.",
+    "texto": "Si llueve, el Pincio y sus jardines salen; entran Santa Maria del Popolo y Trinità por dentro, y el Ara Pacis (unos 45 minutos) entre el Popolo y la Plaza de España.",
     "doc": "**🌧 Si llueve:** el Pincio y sus jardines salen; Santa Maria del Popolo y Trinità por dentro, y el Ara Pacis (~45) entre el Popolo y la Plaza de España.",
     "ops": [
      {
@@ -10729,7 +10729,7 @@
     }
    },
    "lluvia": {
-    "texto": "igual (casi todo es por dentro), con más rato en Santa Maria Maggiore.",
+    "texto": "Si llueve, el día sigue igual porque casi todo es por dentro, con más rato en Santa Maria Maggiore.",
     "doc": "**🌧 Si llueve:** igual (casi todo es por dentro), con más rato en Santa Maria Maggiore.",
     "ops": [
      {
@@ -10952,7 +10952,7 @@
     }
    },
    "lluvia": {
-    "texto": "el lago y el reloj de agua salen y el Pincio va de camino; la Galería se queda, y hay más rato en Santa Maria del Popolo y el Ara Pacis.",
+    "texto": "Si llueve, el lago y el reloj de agua salen y el Pincio se ve de camino; la Galería se queda y hay más rato en Santa Maria del Popolo y el Ara Pacis.",
     "doc": "**🌧 Si llueve:** el lago y el reloj de agua salen y el Pincio va de camino; la Galería se queda, y hay más rato en Santa Maria del Popolo y el Ara Pacis.",
     "ops": [
      {
@@ -11647,7 +11647,7 @@
     }
    },
    "lluvia": {
-    "texto": "Caracalla, el Jardín de los Naranjos y el Ojo, más cortos (son al aire libre); Santa Maria in Cosmedin (la iglesia de la Boca de la Verdad) por dentro; la comida en el Mercado de Testaccio, que está cubierto.",
+    "texto": "Si llueve, Caracalla, el Jardín de los Naranjos y el Ojo se hacen más cortos porque son al aire libre; Santa Maria in Cosmedin (la iglesia de la Boca de la Verdad) se visita por dentro y la comida es en el Mercado de Testaccio, que está cubierto.",
     "doc": "**🌧 Si llueve:** Caracalla, el Jardín de los Naranjos y el Ojo, más cortos (son al aire libre); Santa Maria in Cosmedin (la iglesia de la Boca de la Verdad) por dentro; la comida en el Mercado de Testaccio, que está cubierto.",
     "ops": [
      {
@@ -11844,7 +11844,7 @@
     }
    },
    "lluvia": {
-    "texto": "la mañana igual (todo por dentro); por la tarde, Caracalla, el Jardín de los Naranjos y el Ojo, más cortos, y Santa Maria in Cosmedin por dentro.",
+    "texto": "Si llueve, la mañana sigue igual porque todo es por dentro; por la tarde, Caracalla, el Jardín de los Naranjos y el Ojo se hacen más cortos y Santa Maria in Cosmedin va por dentro.",
     "doc": "**🌧 Si llueve:** la mañana igual (todo por dentro); por la tarde, Caracalla, el Jardín de los Naranjos y el Ojo, más cortos, y Santa Maria in Cosmedin por dentro.",
     "ops": [
      {
@@ -12139,7 +12139,7 @@
     }
    },
    "lluvia": {
-    "texto": "la Cúpula sale (con lluvia no hay vista y la subida final es por fuera) y el Castillo empieza la mañana; más rato en los Capitolinos; la terraza del Altar, solo si escampa.",
+    "texto": "Si llueve, la Cúpula sale porque con lluvia no hay vista y la subida final es por fuera; el Castillo empieza la mañana, hay más rato en los Capitolinos y la terraza del Altar solo si escampa.",
     "doc": "**🌧 Si llueve:** la Cúpula sale (con lluvia no hay vista y la subida final es por fuera) y el Castillo empieza la mañana; más rato en los Capitolinos; la terraza del Altar, solo si escampa.",
     "ops": [
      {
@@ -12434,7 +12434,7 @@
     }
    },
    "lluvia": {
-    "texto": "sin bici: la Vía Appia se ve en taxi hasta la tumba de Cecilia Metela (~30), y más rato en las Catacumbas, que son bajo tierra.",
+    "texto": "Si llueve, sin bici: la Vía Appia se ve en taxi hasta la tumba de Cecilia Metela (unos 30 minutos) y hay más rato en las Catacumbas, que son bajo tierra.",
     "doc": "**🌧 Si llueve:** sin bici: la Vía Appia se ve en taxi hasta la tumba de Cecilia Metela (~30), y más rato en las Catacumbas, que son bajo tierra.",
     "ops": [
      {

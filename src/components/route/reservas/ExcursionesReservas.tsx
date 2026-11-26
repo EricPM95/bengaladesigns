@@ -1,4 +1,5 @@
 import { useMonedaViajero } from '../../../lib/moneda'
+import { ImagenConFundido } from '../../ui/ImagenConFundido'
 import { useEffect, useState } from 'react'
 import type { Excursion, Route } from '../../../lib/types'
 import type { DestinationExcursions } from '../../../lib/destinationExcursions'
@@ -40,7 +41,7 @@ function FilaExcursion({ excursion, onPick }: { excursion: Excursion; onPick: ()
   return (
     <button type="button" onClick={onPick} className="flex min-h-[60px] items-center gap-3 rounded-2xl border border-text/[.08] bg-white py-2 pl-2 pr-3 text-left transition-colors hover:border-text/25">
       <span className="relative flex h-11 w-11 flex-none items-center justify-center overflow-hidden rounded-xl text-white" style={{ background: excursion.page?.color ?? 'oklch(0.58 0.12 60)' }}>
-        {foto ? <img src={foto} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" /> : <Icono nombre={ICONOS.excursion} size={20} />}
+        {foto ? <ImagenConFundido src={foto} fondo="transparent" loading="lazy" /> : <Icono nombre={ICONOS.excursion} size={20} />}
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="font-display text-[17px] leading-[1.1] text-text">{excursion.title}</span>

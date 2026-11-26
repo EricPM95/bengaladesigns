@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import { ImagenConFundido } from '../../ui/ImagenConFundido'
 import { Icono } from '../../ui/Icono'
 import { BotonCodigoDeEntrada } from './EntradaConBillete'
 import type { Stop } from '../../../lib/types'
@@ -43,7 +44,7 @@ function Miniatura({ nombre, lado, parada, ciudad = '', freeTour = false, childr
         className="relative block flex-none overflow-hidden"
         style={{ width: lado ?? 82, height: lado ?? '100%', minHeight: lado ?? 96, borderRadius: 16, background: `linear-gradient(150deg,oklch(0.72 0.07 ${h}),oklch(0.46 0.06 ${(h + 25) % 360}))` }}
       >
-        {foto ? <img src={foto} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" /> : <span className="absolute inset-0" style={{ background: 'repeating-linear-gradient(135deg,rgba(255,255,255,.1) 0 2px,transparent 2px 12px)' }} />}
+        {foto ? <ImagenConFundido src={foto} fondo="transparent" loading="lazy" /> : <span className="absolute inset-0" style={{ background: 'repeating-linear-gradient(135deg,rgba(255,255,255,.1) 0 2px,transparent 2px 12px)' }} />}
       </span>
       {children}
     </span>

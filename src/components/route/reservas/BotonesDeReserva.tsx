@@ -6,7 +6,7 @@ import { abrirAvisoPase } from '../../../lib/avisoPase'
 import { Icono } from '../../ui/Icono'
 import { CandadoRedondo } from '../../pase/Candado'
 import { useRouteStore } from '../../../store/useRouteStore'
-import { BOTON_ORO, DORADO } from '../../ui/botonesOro'
+import { BOTON_CLARO, BOTON_ORO, DORADO } from '../../ui/botonesOro'
 import { quitarAvisoDeDocumento, useAvisoDeDocumento } from '../../../lib/avisoDeDocumento'
 import { useSyncStore } from '../../../store/useSyncStore'
 
@@ -56,7 +56,7 @@ export function BotonAnadirDocumento({
         data-anadir-doc={datos}
         data-con-candado={cerrado ? '1' : '0'}
         className={estilo === 'borde' ? 'flex h-[46px] w-full items-center justify-center gap-1.5 whitespace-nowrap rounded-[15px] px-2 text-[13.5px] font-bold' : 'flex h-[50px] w-full items-center justify-center gap-2 rounded-[15px] text-[15.5px] font-bold'}
-        style={estilo === 'borde' ? { background: '#FFF8E4', border: '1px solid rgba(181,138,46,.7)', color: '#4A3510' } : BOTON_ORO}
+        style={estilo === 'borde' ? BOTON_CLARO /* (V70, V64-27) el botón claro de siempre, el mismo en alojamiento, vuelo, entradas y excursiones */ : BOTON_ORO}
       >
         {estilo === 'borde' ? (
           <svg className="flex-none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
@@ -102,7 +102,7 @@ const D_RESERVA = 'M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h7'
  * Dorado: al tocarlo se abre en grande (`onAbrir`: `CodigoPantallaCompleta`). Gris: hace lo mismo que el botón de borde «+ Añade/Sube…» de la misma tarjeta (con su aviso del pase si no hay pase): busca ese botón en la tarjeta y lo toca.
  * Regla de la V45: solo se AÑADE; el documento se sube DESPUÉS de guardar, nunca en la hoja.
  */
-export function IconoDeDocumento({ hay, tipo = 'qr', onAbrir, onAnadir, etiqueta, datos = 'documento' }: { hay: boolean; tipo?: 'qr' | 'reserva'; onAbrir?: () => void; onAnadir?: () => void; etiqueta?: string; datos?: string }) {
+export function IconoDeDocumento({ hay, tipo = 'qr', onAbrir, onAnadir, etiqueta, datos = 'documento', grande = false }: { hay: boolean; tipo?: 'qr' | 'reserva'; onAbrir?: () => void; onAnadir?: () => void; etiqueta?: string; datos?: string; /** (V70) El QR de HOY como el dibujo de Design: el círculo de 52 px (icono de 26) sobre la foto de la tarjeta de llegada y de vuelta. */ grande?: boolean }) {
   const nombre = etiqueta ?? (hay ? (tipo === 'qr' ? 'Ver el código en grande' : 'Ver tu reserva') : tipo === 'qr' ? 'Añadir el código' : 'Añadir tu reserva')
   return (
     <button
@@ -121,15 +121,15 @@ export function IconoDeDocumento({ hay, tipo = 'qr', onAbrir, onAnadir, etiqueta
       aria-label={nombre}
       data-icono-documento={hay ? 'si' : 'falta'}
       data-icono-documento-tipo={datos}
-      className="relative flex h-11 w-11 flex-none items-center justify-center border-none bg-transparent p-0"
+      className={`relative flex flex-none items-center justify-center border-none bg-transparent p-0 ${grande ? 'h-[52px] w-[52px]' : 'h-11 w-11'}`}
     >
-      <span aria-hidden="true" className="flex h-[30px] w-[30px] items-center justify-center rounded-full" style={hay ? { background: DORADO, border: '1.5px solid #B58A2E', color: '#4A3510' } : { background: '#ECE8DE', border: '1.5px solid rgba(107,102,90,.4)', color: '#6B665A' }}>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+      <span aria-hidden="true" className={`flex items-center justify-center rounded-full ${grande ? 'h-[52px] w-[52px]' : 'h-[30px] w-[30px]'}`} style={hay ? { background: DORADO, border: grande ? '1.5px solid rgba(181,138,46,.8)' : '1.5px solid #B58A2E', color: grande ? '#5A3E0C' : '#4A3510' } : grande ? { background: '#ECEAE4', border: '1.5px solid rgba(28,34,48,.14)', color: 'rgba(28,34,48,.42)' } : { background: '#ECE8DE', border: '1.5px solid rgba(107,102,90,.4)', color: '#6B665A' }}>
+        <svg width={grande ? 26 : 15} height={grande ? 26 : 15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
           <path d={tipo === 'qr' ? D_QR : D_RESERVA} />
         </svg>
       </span>
       {!hay && (
-        <span aria-hidden="true" className="absolute bottom-[5px] right-[5px] flex h-[15px] w-[15px] items-center justify-center rounded-full text-[12px] font-bold leading-none" style={{ background: '#1C2230', color: '#F3D88F' }}>
+        <span aria-hidden="true" className={`absolute flex items-center justify-center rounded-full font-bold leading-none ${grande ? '-bottom-1 -right-1 h-5 w-5 text-[14px]' : 'bottom-[5px] right-[5px] h-[15px] w-[15px] text-[12px]'}`} style={grande ? { background: '#8E6820', color: '#fff', border: '2px solid #fff' } : { background: '#1C2230', color: '#F3D88F' }}>
           +
         </span>
       )}

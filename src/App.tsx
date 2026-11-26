@@ -1,49 +1,50 @@
 import { Suspense, useEffect } from 'react'
 import { AvisoDeVersionNueva } from './components/AvisoDeVersionNueva'
 import { reintentarLogros, soltarLaFilaDeLogros } from './components/logros/momentos/reintentarLogros'
-import { Cargando, pantallaPerezosa } from './components/layout/PantallaPerezosa'
+import { Cargando, hostPerezoso, pantallaPerezosa } from './components/layout/PantallaPerezosa'
 import { CargandoApp } from './components/layout/CargandoApp'
 import { useSyncStore } from './store/useSyncStore'
 import { AnimatePresence } from 'framer-motion'
 import { useRouteStore } from './store/useRouteStore'
-import { TrazoFlow } from './components/trazo/TrazoFlow'
 import { useRouteGeneration } from './lib/useRouteGeneration'
 import { Layout } from './components/layout/Layout'
 import { decodeTripFromUrl } from './lib/shareUrl'
 import { TripSync } from './components/sync/TripSync'
 import { PuertaDeCuenta } from './components/cuenta/PuertaDeCuenta'
-import { UnirseHost } from './components/cuenta/HojaUnirse'
 import { useInvitacionEnMarcha } from './hooks/useInvitacionEnMarcha'
-import { CompartidoHost } from './components/compartir/CompartidoHost'
-import { PagoHost } from './components/pase/PagoHost'
-import { ListaDelPaseHost } from './components/pase/ListaDelPaseHost'
-import { AvisoPaseHost } from './components/pase/AvisoPase'
-import { SinPasePrueba } from './components/pase/SinPasePrueba'
 import { useSinPasePrueba } from './store/useSinPasePrueba'
-import { PropuestaHost } from './components/propuesta/PropuestaHost'
-import { CuentanosHost } from './components/cuentanos/Cuentanos'
 import { encenderLaCola, instalarRegistroDeErrores } from './lib/cuentanos/envio'
-import { AvisosHost } from './components/avisos/AvisosHost'
-import { GastosCompartidosHost } from './components/presupuesto/GastosCompartidosHost'
-import { ModoCuentasHost } from './components/route/presupuesto/CuentaModo'
-import { AjustesHosts } from './components/ajustes/AjustesHosts'
 import { VistosPorPersona } from './components/cuenta/VistosPorPersona'
 import { LogrosPorVisto } from './components/logros/LogrosPorVisto'
 import { MomentosHost } from './components/logros/momentos/MomentosHost'
 import { PantallasHost } from './components/logros/pantallas/PantallasHost'
-import { AvisoInstalar } from './components/logros/AvisoInstalar'
-import { PrimeraVezArranque } from './components/primeraVez/PrimeraVezArranque'
-import { EliminarViajeHost } from './components/perfil/EliminarViajeHost'
-import { JuntarViajeHost } from './components/perfil/JuntarViajeHost'
 import { CampaignLinks } from './components/sync/CampaignLinks'
 import { PrecioVuela } from './components/route/presupuesto/PrecioVuela'
 import { PiezaSegura } from './components/PiezaSegura'
 import { FotoVuela } from './components/perfil/FotoVuela'
-import { RehacerRuta } from './components/route/RehacerRuta'
-import { HojaResumenVuelo } from './components/route/reservas/HojaResumenVuelo'
 import { AvisosDeVueloWatcher } from './components/route/AvisosDeVueloWatcher'
 
 // Lo que no es de la primera pantalla se carga cuando se abre (Tanda 8A3): la ruta con todas sus pestañas y mapas, Mis viajes, «Preparando tu viaje…» y la pantalla de desarrollo.
+const CuentanosHost = hostPerezoso(() => import('./components/cuentanos/Cuentanos'), 'CuentanosHost')
+const PropuestaHost = hostPerezoso(() => import('./components/propuesta/PropuestaHost'), 'PropuestaHost')
+const GastosCompartidosHost = hostPerezoso(() => import('./components/presupuesto/GastosCompartidosHost'), 'GastosCompartidosHost')
+const ModoCuentasHost = hostPerezoso(() => import('./components/route/presupuesto/CuentaModo'), 'ModoCuentasHost')
+const AjustesHosts = hostPerezoso(() => import('./components/ajustes/AjustesHosts'), 'AjustesHosts')
+const PrimeraVezArranque = hostPerezoso(() => import('./components/primeraVez/PrimeraVezArranque'), 'PrimeraVezArranque')
+const EliminarViajeHost = hostPerezoso(() => import('./components/perfil/EliminarViajeHost'), 'EliminarViajeHost')
+const JuntarViajeHost = hostPerezoso(() => import('./components/perfil/JuntarViajeHost'), 'JuntarViajeHost')
+const ListaDelPaseHost = hostPerezoso(() => import('./components/pase/ListaDelPaseHost'), 'ListaDelPaseHost')
+const PagoHost = hostPerezoso(() => import('./components/pase/PagoHost'), 'PagoHost')
+const CompartidoHost = hostPerezoso(() => import('./components/compartir/CompartidoHost'), 'CompartidoHost')
+const HojaResumenVuelo = hostPerezoso(() => import('./components/route/reservas/HojaResumenVuelo'), 'HojaResumenVuelo')
+const RehacerRuta = hostPerezoso(() => import('./components/route/RehacerRuta'), 'RehacerRuta')
+const AvisosHost = hostPerezoso(() => import('./components/avisos/AvisosHost'), 'AvisosHost')
+const AvisoPaseHost = hostPerezoso(() => import('./components/pase/AvisoPase'), 'AvisoPaseHost')
+const SinPasePrueba = hostPerezoso(() => import('./components/pase/SinPasePrueba'), 'SinPasePrueba')
+const AvisoInstalar = hostPerezoso(() => import('./components/logros/AvisoInstalar'), 'AvisoInstalar')
+const UnirseHost = hostPerezoso(() => import('./components/cuenta/HojaUnirse'), 'UnirseHost')
+
+const TrazoFlow = pantallaPerezosa(() => import('./components/trazo/TrazoFlow').then((m) => ({ default: m.TrazoFlow })))
 const cargarRouteScreen = () => import('./components/route/RouteScreen')
 const RouteScreen = pantallaPerezosa(cargarRouteScreen)
 const PreparandoViaje = pantallaPerezosa(() => import('./components/loading/PreparandoViaje').then((m) => ({ default: m.PreparandoViaje })))
@@ -221,7 +222,11 @@ function App() {
         {/* Formulario de creación de viaje (diseño "Trazo App"): sustituye a LandingScreen + Questionnaire. */}
         {/* (Tanda 10N §5: con un enlace de invitación en marcha NO sale «Crear viaje», ni al abrirlo ni al tocar [Unirme].) */}
         {(screen === 'destination' || screen === 'questionnaire') && !invitacionEnMarcha && !cargaHecha && <CargandoApp key="cargando-app" />}
-        {(screen === 'destination' || screen === 'questionnaire') && !invitacionEnMarcha && cargaHecha && <TrazoFlow key="trazo" />}
+        {(screen === 'destination' || screen === 'questionnaire') && !invitacionEnMarcha && cargaHecha && (
+          <Suspense key="trazo" fallback={<CargandoApp />}>
+            <TrazoFlow />
+          </Suspense>
+        )}
         {screen === 'loading' && (
           <Suspense key="loading" fallback={<Cargando />}>
             <PreparandoViajeContainer />
