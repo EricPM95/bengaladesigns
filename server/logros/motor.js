@@ -334,6 +334,19 @@ export function calcular(e) {
 function calcularViajero({ e, datos, ajustes, cuentan, viajes, items, dar, infoDestino, ahora }) {
   const V = datos.viajero
   const sitioDe = (h) => datosDeSitio(datos.destinos[h.destino], h.sitio)
+  /** (V71) De una lista de viajes, los que NO se pisan: ordenados por su inicio, un viaje cuenta solo si empieza DESPUÉS de que acabe el último que cuenta; el que se pisa con él es el mismo viaje (se queda el primero). */
+  const viajesSinPisarse = (lista) => {
+    const salida = []
+    let finActual = null
+    for (const v of [...lista].sort((a, b) => String(a.inicio).localeCompare(String(b.inicio)) || new Date(a.primera) - new Date(b.primera))) {
+      const fin = v.fin ?? v.inicio
+      if (finActual == null || String(v.inicio) > String(finActual)) {
+        salida.push(v)
+        finActual = fin
+      } else if (String(fin) > String(finActual)) finActual = fin
+    }
+    return salida
+  }
   const primeras = (agrupar) => {
     const mapa = new Map()
     for (const h of cuentan) {
@@ -525,8 +538,9 @@ function calcularViajero({ e, datos, ajustes, cuentan, viajes, items, dar, infoD
         break
       }
       case 'viajes_en_un_ano': {
+        // (V71) Los viajes que se PISAN en fechas cuentan como uno (crear el viaje dos veces no suma): se cuentan solo los que empiezan después de que acabe el anterior.
         const porAnio = new Map()
-        for (const v of listaViajes) {
+        for (const v of viajesSinPisarse(listaViajes)) {
           const anio = Number(v.inicio.slice(0, 4))
           if (!porAnio.has(anio)) porAnio.set(anio, [])
           porAnio.get(anio).push(v)
@@ -593,12 +607,16 @@ function calcularViajero({ e, datos, ajustes, cuentan, viajes, items, dar, infoD
         break
       }
       case 'volver': {
+        // (V71) El segundo viaje al destino tiene que EMPEZAR DESPUÉS de que acabe el primero: dos viajes con fechas que se pisan (el viaje creado dos veces) no cuentan.
         const porCiudad = new Map()
         for (const v of listaViajes) {
           if (!porCiudad.has(v.destino)) porCiudad.set(v.destino, [])
           porCiudad.get(v.destino).push(v)
         }
-        for (const [d, lista] of porCiudad) if (lista.length >= 2) dar(d, `viajero:${def.id}`, '', lista[1].trip_id, lista[1].primera)
+        for (const [d, viajesDelDestino] of porCiudad) {
+          const lista = viajesSinPisarse(viajesDelDestino)
+          if (lista.length >= 2) dar(d, `viajero:${def.id}`, '', lista[1].trip_id, lista[1].primera)
+        }
         break
       }
       case 'fotografo': {

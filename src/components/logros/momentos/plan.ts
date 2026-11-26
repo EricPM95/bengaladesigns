@@ -9,10 +9,10 @@ import ajustes from '../../../../data/logros/ajustes.json'
  *   2) el Emblema Oculto (si es de una maravilla, su película; (V39B) después, la maravilla: «Una maravilla nueva», su propia pantalla);
  *   3) cada colección completada, una pantalla por colección;
  *   4) el sello, si sube;
- *   5) «Y además…» (país, destino, continente, Patrimonio, logros de viajero), en el sitio del primero;
+ *   5) (V71) país, destino, continente, Patrimonio y logros de viajero: CADA UNO su pantalla grande, de uno en uno y en el orden del servidor (se quitó «Y además…»);
  *   6) (V39B) cada maravilla de la 1.ª a la 6.ª tiene su pantalla «Una maravilla nueva» (de una en una, justo después del sello, ya NO dentro de «Y además…»); la SÉPTIMA tiene «El final de las 7 maravillas» (la animación grande de la medalla).
  */
-export type TipoPantalla = 'sello' | 'pedazos' | 'coleccion' | 'emblema' | 'ademas' | 'pais' | 'destino_nuevo' | 'continente' | 'maravilla' | 'maravilla_nueva' | 'final7' | 'patrimonio' | 'viajero'
+export type TipoPantalla = 'sello' | 'pedazos' | 'coleccion' | 'emblema' | 'pais' | 'destino_nuevo' | 'continente' | 'maravilla' | 'maravilla_nueva' | 'final7' | 'patrimonio' | 'viajero'
 
 export interface Pantalla {
   id: string
@@ -20,7 +20,6 @@ export interface Pantalla {
   momentos: Momento[]
 }
 
-const FAMILIA_ADEMAS = new Set(['patrimonio', 'viajero', 'destino_nuevo', 'pais', 'continente'])
 export const GRADOS = ['bronce', 'plata', 'oro', 'diamante'] as const
 
 const texto = (m: Momento, k: string): string => String(m[k] ?? '')
@@ -45,7 +44,6 @@ const RANGO: Partial<Record<TipoPantalla, number>> = { pedazos: 0, coleccion: 1,
 export function planificar(momentos: Momento[]): Pantalla[] {
   const salida: Pantalla[] = []
   let pedazos: Pantalla | null = null
-  let ademas: Pantalla | null = null
   // (V6) Una colección que se COMPLETA tiene su pantalla: su último pedazo no sale en la de los pedazos nuevos (se marca como visto con la de la colección).
   const completadas = new Set(momentos.filter((m) => m.tipo === 'coleccion').map((m) => texto(m, 'id')))
   const sueltos: Momento[] = []
@@ -65,16 +63,8 @@ export function planificar(momentos: Momento[]): Pantalla[] {
     } else if (m.tipo === 'maravilla') {
       // (V39B) La 1.ª a la 6.ª: su propia pantalla, de una en una (antes iban dentro de «Y además…»).
       salida.push({ id: `maravilla_nueva${i}`, tipo: 'maravilla_nueva', momentos: [m] })
-    } else if (FAMILIA_ADEMAS.has(m.tipo)) {
-      if (!ademas) salida.push((ademas = { id: 'ademas', tipo: 'ademas', momentos: [] }))
-      ademas.momentos.push(m)
     } else salida.push({ id: `${m.tipo}${i}`, tipo: m.tipo as TipoPantalla, momentos: [m] })
   })
-  // «Y además…» con uno solo es la pantalla de ese logro.
-  if (ademas && ademas.momentos.length === 1) {
-    ademas.tipo = ademas.momentos[0].tipo as TipoPantalla
-    ademas.id = 'uno'
-  }
   for (const m of sueltos) salida.find((p) => p.tipo === 'coleccion' && texto(p.momentos[0], 'id') === texto(m, 'coleccion'))?.momentos.push(m)
   return salida.map((p, i) => ({ p, i })).sort((a, b) => (RANGO[a.p.tipo] ?? 5) - (RANGO[b.p.tipo] ?? 5) || a.i - b.i).map(({ p }) => p)
 }
@@ -95,7 +85,7 @@ export function clavesDe(p: Pantalla): { destino: string; logro: string; escalon
 
 /** El sonido de la pantalla (los nombres de `sonidos.json`). */
 export function sonidoDePantalla(t: TipoPantalla): string {
-  const mapa: Record<TipoPantalla, string> = { sello: 'sello', pedazos: 'pedazo', coleccion: 'coleccion', emblema: 'emblema', pais: 'pais', destino_nuevo: 'pais', continente: 'pais', maravilla: 'maravilla', maravilla_nueva: 'maravilla_nueva', final7: 'maravilla', patrimonio: 'patrimonio', viajero: 'viajero', ademas: 'viajero' }
+  const mapa: Record<TipoPantalla, string> = { sello: 'sello', pedazos: 'pedazo', coleccion: 'coleccion', emblema: 'emblema', pais: 'pais', destino_nuevo: 'pais', continente: 'pais', maravilla: 'maravilla', maravilla_nueva: 'maravilla_nueva', final7: 'maravilla', patrimonio: 'patrimonio', viajero: 'viajero' }
   return mapa[t]
 }
 

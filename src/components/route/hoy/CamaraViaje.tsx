@@ -7,7 +7,6 @@ import { fotosDelSitio, listarFotos, modoDeFoto } from '../../../lib/fotosViaje'
 import { haversineMeters } from '../../../lib/distanceMock'
 import { abrirPase } from '../../../lib/pago'
 import { nombreDelPase } from '../../../lib/nombrePase'
-import { reproducirMomentos } from '../../../lib/sonidos'
 import { METROS_EN_LA_PARADA, camaraExplicada, guardarFotoSinSubir, marcarCamaraExplicada, modoDeCamara, paradaDeLaFoto, rangoDelViaje, subirFotosPendientes, useCamaraViajeStore, type FaseDelViaje, type ModoDeCamara, type PedidoDeFoto } from '../../../lib/camaraViaje'
 import { useLogrosStore } from '../../../store/useLogrosStore'
 import { useSyncStore } from '../../../store/useSyncStore'
@@ -229,8 +228,9 @@ export function BotonCamaraViaje({ route, fase, conAcceso, day }: PropsBotonCama
   const bloquea = Boolean(camara) || resultado?.tipo === 'logro'
   useEffect(() => {
     if (!bloquea) return undefined
-    useLogrosStore.getState().ponerHojaAbierta(true)
-    return () => useLogrosStore.getState().ponerHojaAbierta(false)
+    // (V71 §2) Por el almacén del Visto: si a la vez hay una hoja del Visto abierta, cerrar la cámara no la «desbloquea».
+    useVistoStore.getState().poner({ ocupadoFuera: true })
+    return () => useVistoStore.getState().poner({ ocupadoFuera: false })
   }, [bloquea])
 
   // Las fotos que esperaban conexión se suben al volver la señal (y al abrir HOY).
@@ -320,7 +320,11 @@ export function BotonCamaraViaje({ route, fase, conAcceso, day }: PropsBotonCama
     const datosAlbum = { tripId, dayId: day?.id ?? '', dayNumber: day?.dayNumber ?? 1, stopName: ped.nombre ?? null }
     void guardarFotoSinSubir({ id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, ...datosAlbum, blob: archivo }).then(() => subirFotosPendientes())
     if (!r) return setResultado({ tipo: 'sin_conexion', url })
-    if (r.valida !== false) void anotarFotoDeLaParada()
+    if (r.valida !== false) {
+      // (V71 §1) Con la parada conocida (la hoja de llegada del emblema) la foto es la de ESA parada, esté el GPS o no: ya no se pide otra al pulsar [He terminado].
+      if (ped.stopId) useVistoStore.getState().marcarConFoto(ped.stopId)
+      else void anotarFotoDeLaParada()
+    }
     if (r.valida !== false && r.nuevos?.length) return setResultado({ tipo: 'logro', respuesta: r })
     setResultado({ tipo: 'recuerdo', url, sub: r.valida === false ? (r.mensaje ?? null) : null })
   }
@@ -329,8 +333,8 @@ export function BotonCamaraViaje({ route, fase, conAcceso, day }: PropsBotonCama
     if (resultado?.tipo !== 'logro') return
     const r = resultado.respuesta
     setResultado(null)
+    // (V71 §2) El sonido sale con su pantalla (`Reproductor`), no aquí.
     useLogrosStore.getState().recibir(r)
-    if (r.nuevos?.length) reproducirMomentos(r.nuevos.map((m) => m.tipo), r.nuevos)
   }
 
   return (

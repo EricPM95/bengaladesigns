@@ -11,6 +11,7 @@ import { useVistoStore } from '../../logros/visto/vistoStore'
 import { FueraDeRuta, yaDijoAhoraNo } from './FueraDeRuta'
 import { AvisoDeHoy, avisoCerrado, cerrarAvisoDelDia } from './v2/AvisosHoy'
 import { HojaLlegadaOculta, TarjetaBrilla } from './JuegoCerca'
+import { anotarQueSalio, yaSalio } from '../../../lib/marcasDelJuego'
 import { useCercaDeAqui, type SitioCerca } from './useCercaDeAqui'
 
 /**
@@ -18,21 +19,7 @@ import { useCercaDeAqui, type SitioCerca } from './useCercaDeAqui'
  * Un solo componente para enganchar en HOY con UNA línea: `<AvisosDeCerca route={route} day={day} dateIso={dateIso} />`. No pinta nada si no hay nada que decir.
  * Solo con el pase (o en el día de prueba) y con «Sugerencias del compañero» encendido. Nada cambia el día salvo [Añadir a mi ruta], que lleva [Deshacer].
  */
-const claveJuego = (tripId: string, fecha: string, sitio: string, nivel: string) => `trazo:hoy1:juego:${tripId}:${fecha}:${sitio}:${nivel}`
-export const yaSalio = (tripId: string, fecha: string, sitio: string, nivel: string): boolean => {
-  try {
-    return window.localStorage.getItem(claveJuego(tripId, fecha, sitio, nivel)) === '1'
-  } catch {
-    return false
-  }
-}
-export const anotarQueSalio = (tripId: string, fecha: string, sitio: string, nivel: string) => {
-  try {
-    window.localStorage.setItem(claveJuego(tripId, fecha, sitio, nivel), '1')
-  } catch {
-    /* sin almacenamiento: puede volver a salir */
-  }
-}
+export { yaSalio, anotarQueSalio }
 
 /** «Por la mañana»: antes de las 12 en el móvil (en desarrollo, `window.__hoy1HoraLocal` pone otra hora). */
 export function esDeManana(): boolean {
@@ -61,6 +48,14 @@ export function AvisosDeCerca({ route, day, dateIso }: { route: Route; day: DayP
   const [llegada, setLlegada] = useState<SitioCerca | null>(null)
   const [cerradas, setCerradas] = useState<Set<string>>(new Set())
   const actual = useRef<Mostrando>(null)
+  useEffect(() => {
+    const alLlegar = () => {
+      actual.current = null
+      setMostrando(null)
+    }
+    window.addEventListener('trazo:hoy1-llegada', alLlegar)
+    return () => window.removeEventListener('trazo:hoy1-llegada', alLlegar)
+  }, [])
 
   // El juego, una vez por sitio y por día: cada paso (brilla → más cerca → llegada) sale una sola vez, y si ya no estás cerca, se va.
   useEffect(() => {
@@ -89,7 +84,8 @@ export function AvisosDeCerca({ route, day, dateIso }: { route: Route; day: DayP
     }
     // (Sin efectos dentro de `setMostrando`: en desarrollo React lo ejecuta dos veces y la segunda ya vería el sitio como «enseñado».)
     if (actual.current?.nivel === juego && actual.current.sitio === sitio) return
-    if (yaSalio(tripId, dateIso, sitio, juego)) {
+    // (V71 §1) «Algo brilla…» y «Más cerca…» no salen nunca después de la hoja de llegada de ese sitio (ni con la marca de «llegada» ya puesta por [Ya he llegado] o por [He terminado]).
+    if (yaSalio(tripId, dateIso, sitio, juego) || yaSalio(tripId, dateIso, sitio, 'llegada')) {
       actual.current = null
       setMostrando(null)
       return
@@ -127,7 +123,7 @@ export function AvisosDeCerca({ route, day, dateIso }: { route: Route; day: DayP
           <FueraDeRuta sitio={tarjetaFuera} tipo={fuera ? 'fuera' : 'junto'} route={route} day={day} tripId={tripId} fecha={dateIso} onCerrar={() => cerrar(tarjetaFuera.sitio)} />
         </AvisoDeHoy>
       )}
-      {llegada && <HojaLlegadaOculta sitio={llegada} onCerrar={() => setLlegada(null)} onDesmarcar={() => { const p = numberedStopsOf(day).find((s) => sinAcentos(s.name) === sinAcentos(llegada.nombre)); if (p) { useRouteStore.getState().setStopVisto(day.id, p.id, false); useVistoStore.getState().quitarPendiente(p.id) } }} />}
+      {llegada && <HojaLlegadaOculta sitio={llegada} stopId={numberedStopsOf(day).find((s) => sinAcentos(s.name) === sinAcentos(llegada.nombre))?.id} onCerrar={() => setLlegada(null)} onDesmarcar={() => { const p = numberedStopsOf(day).find((s) => sinAcentos(s.name) === sinAcentos(llegada.nombre)); if (p) { useRouteStore.getState().setStopVisto(day.id, p.id, false); useVistoStore.getState().quitarPendiente(p.id) } }} />}
     </>
   )
 }

@@ -103,9 +103,9 @@ export default function Reproductor({ momentos, exp: _exp = null, onTerminar }: 
     if (pantallas.length === 0) cerrar()
   }, [pantallas.length, cerrar])
   const p = pantallas[i]
-  // (V40) Como el estudio: si un sonido de Eric cae ANTES del primer fotograma (ms negativos, p. ej. la medalla de oro), no se recorta: la pantalla espera ese rato. Solo desde la 2.ª pantalla (la 1.ª ya sonó al ganarla y llega con su propio retraso).
-  const esperaMs = p && i > 0 && !enElVisor() ? Math.round(esperaDe(animacionDeLaPantalla(p) ?? '') * 1000) : 0
-  const [listaLa, setListaLa] = useState(0)
+  // (V40) Como el estudio: si un sonido de Eric cae ANTES del primer fotograma (ms negativos, p. ej. la medalla de oro), no se recorta: la pantalla espera ese rato. (V71 §2) Vale también para la 1.ª pantalla: su sonido ya no suena al contestar el servidor, suena con ella.
+  const esperaMs = p && !enElVisor() ? Math.round(esperaDe(animacionDeLaPantalla(p) ?? '') * 1000) : 0
+  const [listaLa, setListaLa] = useState(-1)
   useEffect(() => {
     if (esperaMs <= 0) return undefined
     const t = window.setTimeout(() => setListaLa(i), esperaMs)

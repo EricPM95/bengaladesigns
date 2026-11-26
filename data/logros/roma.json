@@ -19,8 +19,7 @@
         "museos_vaticanos_y_capilla_sixtina",
         "basilica_de_san_pedro",
         "cupula_de_san_pedro",
-        "plaza_de_san_pedro",
-        "100_presepi_in_vaticano"
+        "plaza_de_san_pedro"
       ]
     }
   },
@@ -467,7 +466,6 @@
         "porta_pinciana": "Dentro de las murallas",
         "jardines_del_pincio": "Dentro de las murallas (revisado a mano: el contorno aproximado lo dejaba en el borde)",
         "mercadillo_de_navidad_de_piazza_navona": "Dentro de las murallas",
-        "100_presepi_in_vaticano": "Es parte de la Ciudad del Vaticano (otro Patrimonio)",
         "santo_bambino_de_aracoeli": "Dentro de las murallas",
         "luces_de_navidad_del_tridente": "Dentro de las murallas"
       }
@@ -480,8 +478,7 @@
         "museos_vaticanos_y_capilla_sixtina",
         "basilica_de_san_pedro",
         "cupula_de_san_pedro",
-        "plaza_de_san_pedro",
-        "100_presepi_in_vaticano"
+        "plaza_de_san_pedro"
       ]
     },
     "via_appia": {

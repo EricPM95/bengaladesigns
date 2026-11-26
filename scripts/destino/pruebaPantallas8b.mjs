@@ -169,8 +169,8 @@ console.log('5. Tanda 8B2: el orden de las sorpresas, el pedazo con su insignia,
     m('pais'), m('maravilla', { id: 'coliseo', n: 1 }), m('patrimonio'), m('viajero'),
   ]
   const pantallas = P.planificar(lista)
-  debe(pantallas.map((p) => p.tipo).join() === 'pedazos,coleccion,coleccion,emblema,sello,maravilla_nueva,ademas' /* (V6) todas las colecciones que avanzan, en UNA pantalla; luego las completas, el emblema, el sello; (V39B) la maravilla en su pantalla */, 'orden', `(8B4, V3, V39B) las pantallas (la lista de la prueba va tal cual, sin ordenar): los pedazos de cada colección juntos y una pantalla por colección, una por colección completada, emblema, sello, «Una maravilla nueva» y «Y además…» (sin la maravilla): ${pantallas.map((p) => p.tipo).join()}`)
-  debe(pantallas[0].momentos.length === 2 && pantallas[6].momentos.length === 3, 'orden', '(V3, V39B) los pedazos de cada colección, en su pantalla (los de una misma colección, juntos) y «Y además…» con país, Patrimonio y logro de viajero (la maravilla ya no va dentro)')
+  debe(pantallas.map((p) => p.tipo).join() === 'pedazos,coleccion,coleccion,emblema,sello,maravilla_nueva,pais,patrimonio,viajero' /* (V71: «Y además…» ya no existe: país, Patrimonio y logro de viajero, cada uno su pantalla) */ /* (V6) todas las colecciones que avanzan, en UNA pantalla; luego las completas, el emblema, el sello; (V39B) la maravilla en su pantalla */, 'orden', `(8B4, V3, V39B) las pantallas (la lista de la prueba va tal cual, sin ordenar): los pedazos de cada colección juntos y una pantalla por colección, una por colección completada, emblema, sello, «Una maravilla nueva» y «Y además…» (sin la maravilla): ${pantallas.map((p) => p.tipo).join()}`)
+  debe(pantallas[0].momentos.length === 2 && pantallas.slice(6).map((p) => p.momentos.length).join() === '1,1,1', 'orden', '(V71) (V3, V39B) los pedazos de cada colección, en su pantalla (los de una misma colección, juntos) y «Y además…» con país, Patrimonio y logro de viajero (la maravilla ya no va dentro)')
   debe(!pantallas[6].momentos.some((x) => x.tipo === 'maravilla') && pantallas[5].tipo === 'maravilla_nueva', 'orden', '(V39B) la maravilla ya NO va como tarjetita dentro de «Y además…»: tiene su pantalla «Una maravilla nueva»')
   debe(P.planificar([m('maravilla', { id: 'gran_muralla', n: 2 })]).map((p) => p.tipo).join() === 'maravilla_nueva' && P.planificar([m('maravilla', { id: 'taj_mahal', n: 7 })]).map((p) => p.tipo).join() === 'final7', 'orden', '(V39B) una maravilla de la 1.ª a la 6.ª tiene su pantalla «Una maravilla nueva»; la séptima, «El final de las 7 maravillas»')
   const momentos = archivos('src/components/logros/momentos').map((f) => sinComentarios(leer(f))).join('\n')
@@ -267,8 +267,8 @@ console.log('7. Tanda 8B4: Patrimonio del Coliseo, artículos, sin cuenta atrás
   const pl = B.planificar
   const m = (tipo, extra = {}) => ({ tipo, nombre: tipo, primera_vez: true, ...extra })
   const col = pl([m('suma', { coleccion: 'imprescindibles', sitios: ['coliseo'] }), m('emblema', { id: 'coliseo', maravilla: 'coliseo' }), m('sello', { sello: 'roma', grado: 'bronce' }), m('pais'), m('destino_nuevo'), m('maravilla', { id: 'coliseo', n: 1 }), m('patrimonio')])
-  debe(col.map((p) => p.tipo).join() === 'pedazos,emblema,sello,maravilla_nueva,ademas', 'maravilla', `el Coliseo: pedazos, película, sello, «Una maravilla nueva» y «Y además…» (${col.map((p) => p.tipo).join()})`)
-  debe(col[4].momentos.map((x) => x.tipo).join() === 'pais,destino_nuevo,patrimonio', 'maravilla', '(V39B) y «Y además…» lleva el país, el destino y el Patrimonio de Roma (la maravilla, no)')
+  debe(col.map((p) => p.tipo).join() === 'pedazos,emblema,sello,maravilla_nueva,pais,destino_nuevo,patrimonio', 'maravilla', `(V71) el Coliseo: pedazos, película, sello, «Una maravilla nueva» y después país, destino y Patrimonio, cada uno su pantalla (${col.map((p) => p.tipo).join()})`)
+  debe(col.slice(4).map((p) => p.momentos.map((x) => x.tipo).join()).join() === 'pais,destino_nuevo,patrimonio', 'maravilla', '(V71) y el país, el destino y el Patrimonio de Roma, cada uno en su pantalla el país, el destino y el Patrimonio de Roma (la maravilla, no)')
   const f7 = pl([m('emblema', { id: 'taj', maravilla: 'taj_mahal' }), m('maravilla', { id: 'taj_mahal', n: 7 }), m('pais')])
   debe(f7.map((p) => p.tipo).join() === 'emblema,final7,pais', 'maravilla', `la séptima: su película, «El final de las 7 maravillas» y lo demás (${f7.map((p) => p.tipo).join()})`)
   const pant = leer('src/components/logros/momentos/pantallas.tsx')
@@ -333,7 +333,7 @@ console.log('8. Tanda 8B5: fotos elegidas, medalla nueva, Patrimonio con número
   debe(B.lineaDeSecretos('Roma', 12, 11) === 'Roma aún esconde 1 secreto.', 'resumen', 'si solo queda uno: «Roma aún esconde 1 secreto.»')
   debe(B.lineaDeSecretos('Roma', 12, 12) === 'Has encontrado todos los secretos de Roma.', 'resumen', 'si no queda ninguno: «Has encontrado todos los secretos de Roma.»')
   const rd5 = leer('src/components/logros/momentos/ResumenDia.tsx')
-  debe(rd5.includes('Lo que te llevas de hoy') && !rd5.includes('Esto es lo que has ganado hoy') && rd5.includes('data-fila="sello"'), 'resumen', 'el título es «Lo que te llevas de hoy» y la fila del sello va aparte, sin número')
+  debe(rd5.includes("'Lo que te llevaste ayer' : 'Lo que te llevas de hoy'") && !rd5.includes('Esto es lo que has ganado hoy') && rd5.includes('data-resumen-titulo'), 'resumen', '(V71) el título del resumen vigente (V59, R1/R2): «Lo que te llevas de hoy» por la noche y «Lo que te llevaste ayer» a la mañana siguiente')
   const rv5 = leer('src/components/logros/momentos/ResumenViaje.tsx')
   debe(rv5.includes('lineaDeSecretos') && !/secretos encontrados`/.test(rv5), 'resumen', 'el resumen del viaje usa la misma línea de secretos')
   // Las fotos elegidas

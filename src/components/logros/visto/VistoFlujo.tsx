@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { displayStopName } from '../../../lib/format'
 import { subirFoto, urlParaMostrar } from '../../../lib/fotosViaje'
 import { demoActivo, enviarDeshacerVisto, enviarFotoDeGaleria, enviarFotoDeLaCamara, enviarVisto, llamar, pedirUnirFotos, ubicacionDeAhora, type RespuestaDeHecho } from '../../../lib/logros'
-import { reproducirMomentos } from '../../../lib/sonidos'
 import { listarFotos } from '../../../lib/fotosViaje'
 import { useLogrosStore } from '../../../store/useLogrosStore'
 import { useRouteStore } from '../../../store/useRouteStore'
@@ -12,10 +11,14 @@ import { abrirGaleriaDeReclamo, HostDeReclamar } from '../reclamar/Reclamar'
 import { HostDeCompanero } from '../companero/Companero'
 import { faseDeReclamo, textoDeLoDeAyer } from '../../../lib/reclamar'
 import { primeraVez } from '../../../lib/avisosUnaVez'
+import { anotarQueSalio, yaSalio } from '../../../lib/marcasDelJuego'
+import { getTodayTripContext } from '../../../lib/todayMode'
+import { lazyReintentable } from '../../../lib/cargaSegura'
 import { AvisoDeVisto, EstilosDelVisto, FranjaSinConexion, HojaDePermisos, HojaDelVisto, HojaFotoDentro, HojaGaleria, HojaLoDeAyer, NotaCorta, type ParadaDeAyer } from './Hojas'
 import { faltaDe, hojaSegunRespuesta as decidirHoja } from './decidir'
 import { deSitio, enSitio } from '../../../lib/articulos'
-import { abrirHoja, cerrarHoja, useVistoStore, type DestinoDeFoto, type Hoja, type ParadaVista, type QueFalta } from './vistoStore'
+import { Suspense } from 'react'
+import { abrirHoja, cerrarHoja, ocuparElVisto, useVistoStore, type DestinoDeFoto, type Hoja, type ParadaVista, type QueFalta } from './vistoStore'
 
 /**
  * EL VISTO Y LAS FOTOS (Tanda 8b, App · HOY apartado 02). Un solo componente montado una vez (desde `LogrosPorVisto`, detrás del interruptor de los logros) que dibuja, encima de la app:
@@ -25,11 +28,15 @@ import { abrirHoja, cerrarHoja, useVistoStore, type DestinoDeFoto, type Hoja, ty
  * caen en `useLogrosStore.momentos` y esperan mientras `hojaAbierta` sea true (lo mantiene `vistoStore.ts`).
  */
 
+// (V71 §1) La hoja del Emblema Oculto es UNA sola, la de HOY (`JuegoCerca`): también al pulsar [He terminado]. Carga perezosa (arrastra la pantalla de HOY).
+const HojaDelEmblema = lazyReintentable(() => import('../../route/hoy/JuegoCerca').then((m) => ({ default: m.HojaLlegadaOculta })))
+
 const CLAVE_PERMISOS = 'trazo:logros:permisos-vistos'
 const MS_DEL_AVISO = 5000
 const esperar = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms))
 
-let resolverPermisos: (() => void) | null = null
+// (V71 §2) Varios [Visto] seguidos pueden esperar a la vez a la pantalla de permisos: todos se reanudan al continuar (antes solo el último).
+const resolverPermisos: (() => void)[] = []
 let contadorDeAvisos = 0
 const avisos = new Map<number, { deshacer: () => void }>()
 
@@ -56,7 +63,7 @@ const ponerMarca = (clave: string, valor: string) => {
 export function asegurarPermisos(): Promise<void> {
   if (leerMarca(CLAVE_PERMISOS) === '1') return Promise.resolve()
   return new Promise((resolver) => {
-    resolverPermisos = resolver
+    resolverPermisos.push(resolver)
     useVistoStore.getState().poner({ permisos: true })
   })
 }
@@ -78,8 +85,7 @@ async function continuarPermisos() {
   }
   // No se espera a que contesten las ventanas del móvil más de un momento: el Visto sigue su camino.
   await Promise.race([Promise.all(pedir), esperar(1500)])
-  resolverPermisos?.()
-  resolverPermisos = null
+  resolverPermisos.splice(0).forEach((r) => r())
 }
 
 /* ------------------------------------------------------------------ */
@@ -104,7 +110,17 @@ export function hojaSegunRespuesta(r: RespuestaDeHecho | null, parada: ParadaVis
  * Lo que pasa al tocar [Visto] con los logros encendidos: permisos (la primera vez), el aviso de 5 segundos con [Deshacer], el envío al servidor y, pasados los 5 segundos, la tarjeta que toque.
  * Las sorpresas esperan desde el toque hasta que se cierra la tarjeta. Si se deshace dentro de los 5 segundos, lo que había caído en el almacén se quita.
  */
-export async function procesarVisto(p: { tripId: string; dayId: string; stopId: string; nombre: string; /** (V27) Viaje terminado: se manda el Visto pero no se abre ninguna hoja. */ sinHoja?: boolean }): Promise<void> {
+export async function procesarVisto(p: Parameters<typeof procesarVistoSinTurno>[0]): Promise<void> {
+  // (V71 §2) Desde el toque hasta que sale su hoja (o se ve que no hay) la fila de momentos espera: no hay hueco entre el aviso y la hoja por el que se cuele el resumen del día.
+  const liberar = ocuparElVisto()
+  try {
+    await procesarVistoSinTurno(p)
+  } finally {
+    liberar()
+  }
+}
+
+async function procesarVistoSinTurno(p: { tripId: string; dayId: string; stopId: string; nombre: string; /** (V27) Viaje terminado: se manda el Visto pero no se abre ninguna hoja. */ sinHoja?: boolean }): Promise<void> {
   const parada = paradaDe(p.dayId, p.stopId, p.tripId)
   if (!parada) return
   const { poner } = useVistoStore.getState()
@@ -130,7 +146,7 @@ export async function procesarVisto(p: { tripId: string; dayId: string; stopId: 
   let recuerdoAbierto = false
   const llegada = enviarVisto({ tripId: p.tripId, stopId: p.stopId, nombre: p.nombre }).then((r) => {
     useLogrosStore.getState().recibir(r)
-    if (r?.nuevos?.length) reproducirMomentos(r.nuevos.map((m) => m.tipo), r.nuevos)
+    // (V71 §2) El sonido de lo ganado ya NO suena aquí, al contestar el servidor: suena CON su pantalla (`Reproductor`), cuando le toca el turno.
     const hojaYa = p.sinHoja || deshecho ? null : hojaSegunRespuesta(r, parada)
     if (hojaYa?.tipo === 'recuerdo' && useRouteStore.getState().mode === 'today') {
       useVistoStore.getState().quitarPendiente(p.stopId)
@@ -157,11 +173,27 @@ export async function procesarVisto(p: { tripId: string; dayId: string; stopId: 
   const hoja = hojaSegunRespuesta(r, parada)
   if (!hoja || p.sinHoja) return
   const falta = faltaDe(hoja.tipo, r?.es_importante === true)
-  if (falta) useVistoStore.getState().anotarPendiente(p.stopId, { tripId: p.tripId, falta, nombre: parada.nombre, fotoDentro: hoja.fotoDentro ?? null })
+  // (V71 §1) Si la parada ya tiene su foto (hecha en la hoja de llegada o con la cámara), el emblema no espera otra: ni tira de «sube tu foto» ni hoja.
+  const yaTieneFoto = Boolean(useVistoStore.getState().conFoto[p.stopId])
+  if (falta && !(yaTieneFoto && hoja.tipo === 'oculto')) useVistoStore.getState().anotarPendiente(p.stopId, { tripId: p.tripId, falta, nombre: parada.nombre, fotoDentro: hoja.fotoDentro ?? null })
   // (V52 §3) «Guarda un recuerdo de {sitio}» sale SOLO en una parada sin foto y UNA vez por sitio (por viaje; guardado en el móvil, 0 KB de red). Con foto ya hecha, o si ya salió, no se vuelve a abrir (la tira de la parada sigue ahí).
   if (hoja.tipo === 'recuerdo') {
     if (useVistoStore.getState().conFoto[p.stopId]) return
     if (!primeraVez(p.tripId, 'recuerdos', `recuerdo:${p.stopId}`)) return
+  }
+  // (V71 §1) UNA hoja de foto por parada, nunca dos: con foto ya hecha no se pide otra; y cada hoja sale una sola vez por parada.
+  if (hoja.tipo !== 'recuerdo') {
+    if (yaTieneFoto) return
+    if (hoja.tipo === 'oculto') {
+      // Si el emblema ya salió al llegar ([Ya he llegado] o el GPS), no vuelve a salir: la parada se queda con su tira. Si no salió, sale ahora (la misma hoja, una vez).
+      const sitioId = r?.sitio ?? null
+      const ruta = useRouteStore.getState().route
+      const fecha = (ruta ? getTodayTripContext(ruta, useRouteStore.getState().dev_simulated_today_iso ?? undefined)?.dateIso : null) ?? hoyLocal()
+      if (sitioId && yaSalio(p.tripId, fecha, sitioId, 'llegada')) return
+      if (sitioId) anotarQueSalio(p.tripId, fecha, sitioId, 'llegada')
+      hoja.sitioId = sitioId
+    }
+    if (!primeraVez(p.tripId, 'hojafoto', `${hoja.tipo}:${p.stopId}`)) return
   }
   abrirHoja(hoja)
 }
@@ -218,6 +250,16 @@ async function subirAlAlbum(destino: DestinoDeFoto, archivo: File) {
 
 /** Una foto hecha o elegida: se manda al servidor; si vale, va al álbum y lo ganado cae en el almacén; si no vale, se enseña el motivo con [Elegir otra foto]. */
 async function resolverFoto(destino: DestinoDeFoto, archivo: File, origen: 'app' | 'galeria') {
+  // (V71 §2) Mientras la foto se sube y se espera lo que gane, la fila de momentos espera (así el resumen del día no se cuela entre la hoja y las pantallas de lo ganado).
+  const liberar = ocuparElVisto()
+  try {
+    await resolverFotoSinTurno(destino, archivo, origen)
+  } finally {
+    liberar()
+  }
+}
+
+async function resolverFotoSinTurno(destino: DestinoDeFoto, archivo: File, origen: 'app' | 'galeria') {
   const { poner, quitarPendiente } = useVistoStore.getState()
   const { parada } = destino
   poner({ camara: null, avisoDentro: null, galeria: origen === 'galeria' ? { ...destino, error: null, subiendo: true } : null })
@@ -236,7 +278,7 @@ async function resolverFoto(destino: DestinoDeFoto, archivo: File, origen: 'app'
   void refrescarPendientes(parada.tripId)
   if (r) {
     useLogrosStore.getState().recibir(r)
-    if (r.nuevos?.length) reproducirMomentos(r.nuevos.map((m) => m.tipo), r.nuevos)
+    // (V71 §2) El sonido sale con su pantalla (`Reproductor`), no al contestar el servidor.
   }
   poner({ galeria: null, nota: r ? (r.nuevos?.length ? null : 'Foto guardada') : 'Foto guardada. Tus sorpresas saldrán al volver la señal.' })
 }
@@ -396,7 +438,22 @@ export function VistoFlujo({ tripId }: { tripId: string | null }) {
       {mostrarFranja && <FranjaSinConexion />}
       {s.permisos && <HojaDePermisos onContinuar={() => void continuarPermisos()} />}
       {s.aviso && <AvisoDeVisto key={s.aviso.id} nombre={s.aviso.nombre} ms={MS_DEL_AVISO} onDeshacer={() => deshacerDelAviso(s.aviso!.id)} />}
-      {hoja && !s.camara && !s.avisoDentro && !s.galeria && (
+      {hoja?.tipo === 'oculto' && !s.camara && !s.avisoDentro && !s.galeria && (
+        <Suspense fallback={null}>
+          <HojaDelEmblema
+            sitio={{ sitio: hoja.sitioId ?? hoja.parada.stopId, nombre: hoja.nombreSitio }}
+            stopId={hoja.parada.stopId}
+            onCerrar={() => {
+              setErrorUbic(null)
+              cerrarHoja()
+            }}
+            onDesmarcar={() => desmarcarDeLaHoja(hoja)}
+            alFoto={() => empezarFoto(destinoDe(hoja), 'camara')}
+            alElegir={(f) => void resolverFoto(destinoDe(hoja), f, 'galeria')}
+          />
+        </Suspense>
+      )}
+      {hoja && hoja.tipo !== 'oculto' && !s.camara && !s.avisoDentro && !s.galeria && (
         <HojaDelVisto
           hoja={hoja}
           acciones={{

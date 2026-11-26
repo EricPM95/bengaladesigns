@@ -440,7 +440,7 @@ export function TarjetaParada(p: PropsParada) {
   const dialogos = (
     <>
       {masTiempo && <AvisoMasTiempo route={route} day={day} dateIso={dateIso} paradaId={siguiente.id} minutos={masTiempo} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMin} onCerrar={() => setMasTiempo(null)} />}
-      {hojaOculta && <HojaLlegadaOculta sitio={hojaOculta} onCerrar={() => setHojaOculta(null)} onDesmarcar={() => { useRouteStore.getState().setStopVisto(day.id, siguiente.id, false); useVistoStore.getState().quitarPendiente(siguiente.id) }} />}
+      {hojaOculta && <HojaLlegadaOculta sitio={hojaOculta} stopId={siguiente.id} onCerrar={() => setHojaOculta(null)} onDesmarcar={() => { useRouteStore.getState().setStopVisto(day.id, siguiente.id, false); useVistoStore.getState().quitarPendiente(siguiente.id) }} />}
       {hojaTiempo && <HojaMasTiempo onElegir={elegirTiempo} onCerrar={() => setHojaTiempo(false)} />}
     </>
   )

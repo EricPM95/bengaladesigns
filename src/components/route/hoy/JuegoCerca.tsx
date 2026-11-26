@@ -19,48 +19,61 @@ import { FONDO_DE_HOJA } from '../../ui/fondoDeHoja'
  *   - C18 «Reto del día»: por la mañana, si una colección se puede completar hoy con las paradas del día, «Hoy puedes completar … te faltan 2».
  * Una vez por sitio y por día, sin agobiar: lo decide `AvisosDeCerca` (que guarda en el móvil lo que ya se enseñó). Se apaga con «Sugerencias del compañero».
  */
-const BRILLOS = [
-  { left: '30%', top: '20%', retraso: 0 },
-  { left: '68%', top: '14%', retraso: 0.6 },
-  { left: '18%', top: '60%', retraso: 1.2 },
-  { left: '78%', top: '66%', retraso: 0.3 },
-  { left: '50%', top: '34%', retraso: 1.8 },
-  { left: '40%', top: '78%', retraso: 0.9 },
-  { left: '88%', top: '38%', retraso: 1.5 },
-  { left: '24%', top: '40%', retraso: 2.1 },
-]
-const ESTRELLA = 'M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z'
+/** (V71 §1) El rombo dorado con «?» de la hoja del Emblema Oculto y de las tarjetas «Algo brilla…» / «Más cerca…»: UNA sola pieza (`id` distinto por cada copia en pantalla, para los degradados). */
+export function RomboOculto({ tam, id, brillo = 0.4, opacidad = 1, halo = 14 }: { tam: number; id: string; brillo?: number; opacidad?: number; halo?: number }) {
+  return (
+    <div className="relative flex flex-none items-center justify-center" style={{ width: tam, height: tam }}>
+      <span aria-hidden="true" className="absolute rounded-full" style={{ inset: -halo, background: `radial-gradient(circle,rgba(243,216,143,${brillo}),rgba(243,216,143,0) 66%)`, animation: 'eoPulse 3s ease-in-out infinite' }} />
+      <svg width={tam} height={tam} viewBox="0 0 132 132" fill="none" className="relative" style={{ opacity: opacidad }} aria-hidden="true">
+        <defs>
+          <linearGradient id={`${id}G`} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#FFF1B8" /><stop offset=".45" stopColor="#E0B14A" /><stop offset="1" stopColor="#A8721C" /></linearGradient>
+          <linearGradient id={`${id}D`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#2A2D58" /><stop offset="1" stopColor="#14162C" /></linearGradient>
+        </defs>
+        <path d="M66 6l56 60-56 60L10 66z" fill={`url(#${id}D)`} stroke={`url(#${id}G)`} strokeWidth="4" strokeLinejoin="round" />
+        <path d="M66 18l44 48-44 48L22 66z" stroke="#F3D88F" strokeOpacity=".4" strokeWidth="1.2" strokeLinejoin="round" />
+        <text x="66" y="84" textAnchor="middle" fontFamily="Instrument Serif" fontSize="58" fill={`url(#${id}G)`}>?</text>
+      </svg>
+    </div>
+  )
+}
 
-/** C16 («brilla») y C17 («mas_cerca»): la tarjeta que brilla. En C17 el brillo es más grande. */
+const ESTILOS_DEL_JUEGO = `@keyframes eoSpin{to{transform:rotate(360deg)}}@keyframes eoTw{0%,100%{opacity:.15;transform:scale(.7)}50%{opacity:1;transform:scale(1)}}@keyframes eoPulse{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.07)}}@media (prefers-reduced-motion: reduce){[data-juego] *{animation:none!important}}`
+/** Las estrellitas de una tarjeta (Design «Emblema Oculto · Al acercarte»): x, y en % del ancho y alto; mismo reparto que el dibujo. */
+const estrellasDeTarjeta = (n: number, w: number, h: number) => Array.from({ length: n }, (_, i) => ({ x: ((10 + ((i * 83) % (w - 20))) / w) * 100, y: ((8 + ((i * 47) % (h - 16))) / h) * 100, r: i % 3 ? 2 : 3, d: (2 + (i % 5) * 0.6).toFixed(1), b: (i * 0.31).toFixed(2) }))
+const ESTRELLAS_BRILLA = estrellasDeTarjeta(8, 343, 136)
+const ESTRELLAS_MAS_CERCA = estrellasDeTarjeta(12, 343, 156)
+
+/**
+ * (V71 §1; Design «Emblema Oculto · Al acercarte», A1-A4) C16 «Algo brilla cerca de aquí…» y C17 «Más cerca…»: el MISMO juego que la hoja de llegada (azul noche, rayos que giran, estrellitas, el rombo dorado con «?» y la etiqueta
+ * «EMBLEMA OCULTO»), en una tarjeta de HOY (no es una hoja) que va arriba, encima de la parada, y mide menos de 160 px: 136 en «Algo brilla…» (rombo pequeño y apagado) y 156 en «Más cerca…» (rombo mayor, más brillo y rayos más fuertes).
+ * Solo la X; no dice qué emblema es ni dónde.
+ */
 export function TarjetaBrilla({ nivel, onAhoraNo }: { nivel: 'brilla' | 'mas_cerca'; onAhoraNo: () => void }) {
   const cerca = nivel === 'mas_cerca'
+  const estrellas = cerca ? ESTRELLAS_MAS_CERCA : ESTRELLAS_BRILLA
   return (
     <div
       data-juego={nivel}
       role="status"
-      className="relative flex flex-none flex-col items-center justify-end gap-1.5 overflow-hidden text-center"
-      style={{ height: 300, borderRadius: 28, background: 'radial-gradient(ellipse at 50% 40%,#2C3350,#10162E 80%)', color: '#FFFDF8', padding: 22, boxShadow: '0 18px 30px -18px rgba(28,34,48,.7)' }}
+      className="relative flex flex-none items-center gap-4 overflow-hidden"
+      style={{ height: cerca ? 156 : 136, borderRadius: 26, background: 'radial-gradient(120% 90% at 50% 0%,#2E2A5A 0%,#1E2040 45%,#14162C 100%)', color: '#FFFDF8', padding: '0 54px 0 18px', boxShadow: '0 18px 30px -18px rgba(14,12,40,.8)' }}
     >
-      <style>{`@keyframes cmGlow{0%,100%{opacity:.75;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}}@keyframes cmSpark{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1)}}@media (prefers-reduced-motion: reduce){[data-juego] *{animation:none!important}}`}</style>
-      <span aria-hidden="true" className="absolute rounded-full" style={{ left: '50%', top: '44%', width: cerca ? 260 : 150, height: cerca ? 260 : 150, transform: 'translate(-50%,-50%)', background: 'radial-gradient(circle,rgba(255,226,150,.55),rgba(255,226,150,0) 68%)', animation: 'cmGlow 3.2s ease-in-out infinite' }} />
-      {BRILLOS.map((b, i) => (
-        <span key={i} aria-hidden="true" className="absolute" style={{ left: b.left, top: b.top, width: 10, height: 10, animation: `cmSpark 2.6s ease-in-out ${b.retraso}s infinite` }}>
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="#F7E6BE" aria-hidden="true">
-            <path d={ESTRELLA} />
-          </svg>
-        </span>
+      <style>{ESTILOS_DEL_JUEGO}</style>
+      <span aria-hidden="true" className="pointer-events-none absolute top-1/2" style={{ left: cerca ? -120 : -130, marginTop: -190, width: 380, height: 380, opacity: cerca ? 0.5 : 0.28, animation: 'eoSpin 70s linear infinite', background: 'repeating-conic-gradient(from 0deg,rgba(243,216,143,.38) 0 4deg,transparent 4deg 15deg)', WebkitMaskImage: 'radial-gradient(circle,#000 8%,transparent 62%)', maskImage: 'radial-gradient(circle,#000 8%,transparent 62%)' }} />
+      {estrellas.map((e, i) => (
+        <span key={i} aria-hidden="true" className="pointer-events-none absolute rounded-full" style={{ left: `${e.x}%`, top: `${e.y}%`, width: e.r, height: e.r, background: '#F3D88F', animation: `eoTw ${e.d}s ease-in-out ${e.b}s infinite` }} />
       ))}
-      <button type="button" onClick={onAhoraNo} aria-label="Ahora no" data-juego-boton="ahora-no" className="zona-toque absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-full" style={{ background: 'rgba(255,253,248,.12)', color: '#FFFDF8' }}>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <button type="button" onClick={onAhoraNo} aria-label="Ahora no" data-juego-boton="ahora-no" className="zona-toque absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-full" style={{ background: 'rgba(255,255,255,.12)', color: '#FFFFFF' }}>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M6 6l12 12M18 6L6 18" />
         </svg>
       </button>
-      <span className="relative" style={{ font: "400 30px/1.05 'Instrument Serif',serif", textWrap: 'balance' as never }}>
-        {cerca ? 'Más cerca…' : 'Algo brilla cerca de aquí…'}
-      </span>
-      <span className="relative" style={{ font: "500 13px 'Geist'", color: 'rgba(255,253,248,.7)' }}>
-        {cerca ? 'Sigue por aquí.' : 'Hay un emblema secreto por esta zona.'}
-      </span>
+      <RomboOculto tam={cerca ? 104 : 76} id={cerca ? 'tbC' : 'tbB'} brillo={cerca ? 0.42 : 0.18} opacidad={cerca ? 1 : 0.55} halo={cerca ? 14 : 6} />
+      <div className="relative flex min-w-0 flex-1 flex-col gap-1.5">
+        <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.2em', color: '#F3D88F' }}>EMBLEMA OCULTO</span>
+        <span style={{ font: `400 ${cerca ? 26 : 23}px/1.1 'Instrument Serif',serif`, textWrap: 'balance' as never }}>{cerca ? 'Más cerca…' : 'Algo brilla cerca de aquí…'}</span>
+        <span style={{ font: "400 13.5px/1.4 'Geist'", color: 'rgba(255,253,248,.75)' }}>{cerca ? 'Sigue por aquí.' : 'Hay un emblema secreto por esta zona.'}</span>
+      </div>
     </div>
   )
 }
@@ -71,16 +84,16 @@ export function TarjetaBrilla({ nivel, onAhoraNo }: { nivel: 'brilla' | 'mas_cer
  * Es `role=dialog aria-modal`: con un aviso de [Deshacer] abajo, la hoja empieza justo encima de él (regla V63 §1 de `index.css`) y no se le tapan los botones.
  */
 const ESTRELLAS_OCULTO = Array.from({ length: 16 }, (_, i) => ({ x: 6 + ((i * 83) % 88), y: 3 + ((i * 47) % 40), r: i % 3 ? 2 : 3, d: (2 + (i % 5) * 0.6).toFixed(1), b: (i * 0.31).toFixed(2) }))
-export function HojaLlegadaOculta({ sitio, onCerrar, onDesmarcar }: { sitio: SitioCerca; onCerrar: () => void; onDesmarcar?: () => void }) {
+export function HojaLlegadaOculta({ sitio, stopId, onCerrar, onDesmarcar, alFoto, alElegir }: { sitio: Pick<SitioCerca, 'sitio' | 'nombre'>; /** (V71 §1) La parada de la ruta: con ella la foto cuenta como «la foto de esa parada» y no se vuelve a pedir. */ stopId?: string; onCerrar: () => void; onDesmarcar?: () => void; /** (V71 §1) Quien abre la hoja desde [He terminado] lleva la foto por su propia cámara (con la parada); sin esto, la cámara de viaje de HOY. */ alFoto?: () => void; alElegir?: (f: File) => void }) {
   // (V52 §5) La hoja del emblema oculto suena al salir (antes no sonaba).
   useEffect(() => {
     void sonar('oculto')
   }, [])
-  const pedido = { sitio: sitio.sitio, nombre: sitio.nombre, oculto: true }
+  const pedido = { sitio: sitio.sitio, nombre: sitio.nombre, oculto: true, stopId }
   return createPortal(
     <div data-juego="llegada" role="dialog" aria-modal="true" aria-label="Aquí se esconde un Emblema Oculto" className="fixed inset-0 z-[80] flex flex-col justify-end">
       <EstilosDelVisto />
-      <style>{`@keyframes eoSpin{to{transform:rotate(360deg)}}@keyframes eoTw{0%,100%{opacity:.15;transform:scale(.7)}50%{opacity:1;transform:scale(1)}}@keyframes eoPulse{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.07)}}@media (prefers-reduced-motion: reduce){[data-juego=llegada] *{animation:none!important}}`}</style>
+      <style>{ESTILOS_DEL_JUEGO}</style>
       <button type="button" aria-label="Cerrar" onClick={onCerrar} className="absolute inset-0 cursor-default border-0 p-0" style={{ background: FONDO_DE_HOJA, animation: 'vistoFade .3s ease both' }} />
       <div className="relative mx-auto flex w-full max-w-[520px] flex-col items-center gap-3.5 overflow-y-auto overflow-x-hidden px-5 pb-7 pt-2.5" style={{ maxHeight: '100%', minHeight: 'min(78%, 640px)', borderRadius: '34px 34px 0 0', background: 'radial-gradient(120% 70% at 50% 0%,#2E2A5A 0%,#1E2040 45%,#14162C 100%)', color: '#FFFDF8', boxShadow: '0 -24px 50px rgba(0,0,0,.4)', animation: 'vistoSheet .5s cubic-bezier(.2,.8,.2,1) both' }}>
         <span aria-hidden="true" className="pointer-events-none absolute left-1/2 top-[70px]" style={{ marginLeft: -190, width: 380, height: 380, opacity: 0.5, animation: 'eoSpin 70s linear infinite', background: 'repeating-conic-gradient(from 0deg,rgba(243,216,143,.38) 0 4deg,transparent 4deg 15deg)', WebkitMaskImage: 'radial-gradient(circle,#000 8%,transparent 62%)', maskImage: 'radial-gradient(circle,#000 8%,transparent 62%)' }} />
@@ -89,17 +102,8 @@ export function HojaLlegadaOculta({ sitio, onCerrar, onDesmarcar }: { sitio: Sit
         ))}
         <TiradorDeHoja oscura />
         <CruzDeHoja onCerrar={onCerrar} oscura datos={{ 'data-juego-boton': 'cerrar' }} />
-        <div className="relative mt-1 flex h-[132px] w-[132px] flex-none items-center justify-center">
-          <span aria-hidden="true" className="absolute rounded-full" style={{ inset: -14, background: 'radial-gradient(circle,rgba(243,216,143,.4),rgba(243,216,143,0) 66%)', animation: 'eoPulse 3s ease-in-out infinite' }} />
-          <svg width="132" height="132" viewBox="0 0 132 132" fill="none" className="relative" aria-hidden="true">
-            <defs>
-              <linearGradient id="eoG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#FFF1B8" /><stop offset=".45" stopColor="#E0B14A" /><stop offset="1" stopColor="#A8721C" /></linearGradient>
-              <linearGradient id="eoD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#2A2D58" /><stop offset="1" stopColor="#14162C" /></linearGradient>
-            </defs>
-            <path d="M66 6l56 60-56 60L10 66z" fill="url(#eoD)" stroke="url(#eoG)" strokeWidth="4" strokeLinejoin="round" />
-            <path d="M66 18l44 48-44 48L22 66z" stroke="#F3D88F" strokeOpacity=".4" strokeWidth="1.2" strokeLinejoin="round" />
-            <text x="66" y="84" textAnchor="middle" fontFamily="Instrument Serif" fontSize="58" fill="url(#eoG)">?</text>
-          </svg>
+        <div className="relative mt-1 flex-none">
+          <RomboOculto tam={132} id="eoH" />
         </div>
         <span className="relative" style={{ font: "600 11px 'Geist Mono',monospace", letterSpacing: '.2em', color: '#F3D88F' }}>EMBLEMA OCULTO</span>
         <span className="relative -mt-1.5 text-center" style={{ font: "400 31px/1.08 'Instrument Serif',serif", textWrap: 'balance' as never }}>¡Aquí se esconde un Emblema Oculto!</span>
@@ -109,7 +113,8 @@ export function HojaLlegadaOculta({ sitio, onCerrar, onDesmarcar }: { sitio: Sit
           data-juego-boton="foto"
           onClick={() => {
             onCerrar()
-            useCamaraViajeStore.getState().abrir(pedido)
+            if (alFoto) alFoto()
+            else useCamaraViajeStore.getState().abrir(pedido)
           }}
           className="relative mt-1 flex min-h-14 w-full items-center justify-center gap-2.5 rounded-2xl"
           style={{ ...BOTON_ORO, font: "700 16px 'Geist'", border: 'none' }}
@@ -130,7 +135,8 @@ export function HojaLlegadaOculta({ sitio, onCerrar, onDesmarcar }: { sitio: Sit
               e.target.value = ''
               if (!f) return
               onCerrar()
-              useCamaraViajeStore.getState().abrir({ ...pedido, archivo: f })
+              if (alElegir) alElegir(f)
+              else useCamaraViajeStore.getState().abrir({ ...pedido, archivo: f })
             }}
           />
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

@@ -66,14 +66,16 @@ interface Guion {
   hay_pedazo: boolean
   hay_emblema: boolean
   foto_dentro?: string | null
+  /** (V71) El sitio es imprescindible o maravilla: sale «Guarda un recuerdo». */
+  es_importante?: boolean
   nuevosVisto?: () => Momento[]
   nuevosFoto?: () => Momento[]
 }
 
 const suma = (nombre: string, n: number, total: number, sitios: string[], coleccion: string): Momento => ({ tipo: 'suma', cat: 'pedazo', coleccion, destino: 'roma', nombre, n, total, sitios, linea: `${n} de ${total}`, primera_vez: true }) as Momento
 const sumaSello = (nombre: string, n: number, total: number, sello: string): Momento => ({ tipo: 'suma_sello', cat: 'pedazo', sello, destino: 'roma', nombre, n, total, linea: `${n} de ${total}`, primera_vez: true }) as Momento
-const emblema = (id: string, nombre: string, linea: string, maravilla: string | null = null): Momento =>
-  ({ tipo: 'emblema', cat: 'emblema', clave: `roma|emblema|${id}`, id, destino: 'roma', nombre, linea, momento: false, maravilla, primera_vez: true, frase: '¡Eh! Aquí hay algo…', en: new Date().toISOString() }) as Momento
+const emblema = (id: string, nombre: string, linea: string, maravilla: string | null = null, destino = 'roma'): Momento =>
+  ({ tipo: 'emblema', cat: 'emblema', clave: `${destino}|emblema|${id}`, id, destino, nombre, linea, momento: false, maravilla, primera_vez: true, frase: '¡Eh! Aquí hay algo…', en: new Date().toISOString() }) as Momento
 
 /** Lo que da el Coliseo como PRIMER sitio del viaje (8B3, igual que el servidor): 1 pedazo en cada una de sus 3 colecciones, el sello de Roma que nace en bronce («1 de 8»), país nuevo Italia (el 1.º), destino nuevo Roma (el 1.º), la maravilla (1 de 7) y el Patrimonio «Centro histórico de Roma». La Basílica después sería el país 2, Ciudad del Vaticano. */
 function primeraVezEnRoma(): Momento[] {
@@ -93,6 +95,11 @@ function primeraVezEnRoma(): Momento[] {
 }
 
 const GUIONES: [RegExp, Guion][] = [
+  // (V71) Lanzarote en el servidor de mentira: para ver la secuencia de [Ya he llegado] / [He terminado] / la foto del emblema en el viaje de prueba de Lanzarote.
+  [/la geria/, { sitio: 'la_geria_y_sus_bodegas', nombre: 'La Geria', ubic: 'cerca', hay_pedazo: false, hay_emblema: true, nuevosFoto: () => [emblema('la_geria', 'Viñas en la ceniza', 'Cada cepa en su hoyo, protegida del viento por un muro de piedra.', null, 'lanzarote')] }],
+  [/el golfo/, { sitio: 'el_golfo_y_el_charco_de_los_clicos', nombre: 'El Golfo', ubic: 'cerca', hay_pedazo: false, hay_emblema: true, nuevosFoto: () => [emblema('el_golfo', 'El charco verde', 'Una laguna verde dentro de un cráter, a un paso del mar.', null, 'lanzarote')] }],
+  [/jameos del agua/, { sitio: 'jameos_del_agua', nombre: 'Jameos del Agua', ubic: 'cerca', hay_pedazo: false, hay_emblema: true, nuevosFoto: () => [emblema('jameos', 'El lago bajo el volcán', 'Aquí vive un cangrejo diminuto y ciego que solo existe en los tubos volcánicos de Lanzarote.', null, 'lanzarote')] }],
+  [/montanas del fuego|timanfaya/, { sitio: 'montanas_del_fuego', nombre: 'Timanfaya', ubic: 'cerca', hay_pedazo: false, hay_emblema: false, es_importante: true, nuevosVisto: () => [suma('Los imprescindibles de Lanzarote', 1, 8, ['montanas_del_fuego'], 'imprescindibles'), sumaSello('Lanzarote', 1, 8, 'lanzarote')] }],
   [/fontana de trevi|trevi/, { sitio: 'fontana_de_trevi', nombre: 'Fontana de Trevi', ubic: 'cerca', hay_pedazo: false, hay_emblema: false, nuevosVisto: () => [suma('Las 4 joyas de Roma', 2, 4, ['fontana_de_trevi'], 'cuatro_joyas'), sumaSello('Roma', 2, 8, 'roma')] }],
   [/plaza navona|piazza navona|navona/, { sitio: 'piazza_navona', nombre: 'Plaza Navona', ubic: 'sin', hay_pedazo: true, hay_emblema: false }],
   [/panteon/, { sitio: 'panteon', nombre: 'Panteón', ubic: 'lejos', hay_pedazo: true, hay_emblema: false }],
@@ -117,7 +124,7 @@ const PREGUNTA = { texto: 'Te queda medio día. ¿Usas hoy tu día de prueba o l
 function visto(c: Record<string, unknown>): RespuestaDeHecho {
   const g = guionDe(String(c.nombre ?? ''))
   const nombre = String(c.nombre ?? g?.nombre ?? 'esta parada')
-  const base = { sitio_nombre: nombre, hay_pedazo: (g?.hay_pedazo ?? false) && !demo.ganado.has('foto|' + g?.sitio), hay_emblema: (g?.hay_emblema ?? false) && !demo.ganado.has('foto|' + g?.sitio), foto_dentro: g?.foto_dentro ?? null }
+  const base = { sitio_nombre: nombre, hay_pedazo: (g?.hay_pedazo ?? false) && !demo.ganado.has('foto|' + g?.sitio), hay_emblema: (g?.hay_emblema ?? false) && !demo.ganado.has('foto|' + g?.sitio), foto_dentro: g?.foto_dentro ?? null, es_importante: g?.es_importante ?? false }
   if (demo.pase === 'sin') return { ok: true, cuenta: false, motivo: 'sin_pase', mensaje: null, ubic: 'cerca', ...base, nuevos: [] }
   if (demo.pase === 'prueba' && !demo.preguntaHecha && (demo.hora ?? '') >= '12:00') return { ok: true, cuenta: false, motivo: 'pregunta_medio_dia', pregunta: PREGUNTA, ubic: 'cerca', ...base, nuevos: [] }
   const clave = String(c.stop_id ?? c.nombre)

@@ -69,6 +69,8 @@ export interface PedidoDeFoto {
   oculto: boolean
   /** (V66) Una foto ya elegida de la galería: no se abre la cámara, la foto se manda como si se hubiera hecho allí. */
   archivo?: File
+  /** (V71 §1) La parada de la ruta de la que se trata (la hoja de llegada del emblema): su foto cuenta como «la foto de esa parada» y no se vuelve a pedir al pulsar [He terminado]. */
+  stopId?: string
 }
 
 interface CamaraViajeState {
@@ -80,7 +82,7 @@ interface CamaraViajeState {
 
 export const useCamaraViajeStore = create<CamaraViajeState>((set) => ({
   pedido: null,
-  abrir: (p = {}) => set({ pedido: { sitio: p.sitio ?? null, nombre: p.nombre ?? null, oculto: p.oculto ?? false, archivo: p.archivo } }),
+  abrir: (p = {}) => set({ pedido: { sitio: p.sitio ?? null, nombre: p.nombre ?? null, oculto: p.oculto ?? false, archivo: p.archivo, stopId: p.stopId } }),
   limpiar: () => set({ pedido: null }),
 }))
 

@@ -78,8 +78,18 @@ export const useMomentosUI = create<MomentosUI>((set) => ({
 /** La hoja del Visto o un «Compartir» abiertos por la persona: mientras estén, no sale nada de la fila. */
 const bloqueado = (): boolean => useLogrosStore.getState().hojaAbierta || useMomentosUI.getState().compartir !== null
 // Al cerrarse la hoja del Visto o un «Compartir», sale lo que esperaba.
+// (V71 §2) Se espera un respiro (450 ms) antes de soltar la fila: entre una hoja que se cierra y la siguiente que se abre (la hoja de la foto → la cámara → lo ganado) no se cuela el resumen del día. Y si hay sorpresas por enseñar, la ronda se pide ANTES de soltar: primero las pantallas de logros, el resumen al final.
+let relojDeLaFila = 0
 useLogrosStore.subscribe((e, previo) => {
-  if (previo.hojaAbierta && !e.hojaAbierta) useMomentosUI.setState((u) => ({ fila: repartir(u.fila, bloqueado()) }))
+  if (!previo.hojaAbierta && e.hojaAbierta) window.clearTimeout(relojDeLaFila)
+  if (previo.hojaAbierta && !e.hojaAbierta) {
+    window.clearTimeout(relojDeLaFila)
+    relojDeLaFila = window.setTimeout(() => {
+      if (bloqueado()) return
+      const hay = useLogrosStore.getState().momentos.length > 0 && !useMomentosUI.getState().ronda
+      useMomentosUI.setState((u) => ({ fila: repartir(hay && !u.fila.esperan.includes('ronda') && u.fila.mostrando !== 'ronda' ? { ...u.fila, esperan: [...u.fila.esperan, 'ronda'] } : u.fila, false) }))
+    }, 450)
+  }
 })
 useMomentosUI.subscribe((e, previo) => {
   if (previo.compartir !== null && e.compartir === null) useMomentosUI.setState((u) => ({ fila: repartir(u.fila, bloqueado()) }))

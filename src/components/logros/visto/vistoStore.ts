@@ -25,6 +25,8 @@ export interface Hoja {
   pedazo?: Momento | null
   mensaje?: string | null
   fotoDentro?: string | null
+  /** (V71 §1) El id del sitio del emblema (el del servidor): la hoja del Emblema Oculto lo usa para la foto y para la marca de «ya salió al llegar». */
+  sitioId?: string | null
 }
 
 export type QueFalta = 'sorpresa' | 'pedazo' | 'recuerdo'
@@ -90,6 +92,10 @@ interface VistoState {
   /** Paradas con foto ya subida para los logros: con la foto, lo ganado ya no se deshace (apartado 25). */
   conFoto: Record<string, true>
   marcarConFoto: (stopId: string) => void
+  /** (V71 §2) Cuántas cosas del Visto están EN CURSO (un [He terminado] esperando al servidor y a su hoja, una foto subiéndose): mientras haya alguna, no sale nada de la fila de momentos, así no hay huecos entre una hoja y la siguiente. */
+  ocupado: number
+  /** (V71 §2) Otra cosa de la app que ocupa la pantalla del Visto (la cámara de viaje de HOY). */
+  ocupadoFuera: boolean
   poner: (parcial: Partial<VistoState>) => void
   anotarPendiente: (stopId: string, p: PendienteLocal) => void
   quitarPendiente: (stopId: string) => void
@@ -109,6 +115,8 @@ export const useVistoStore = create<VistoState>((set) => ({
   nota: null,
   pendientes: typeof window === 'undefined' ? {} : leer(),
   conFoto: typeof window === 'undefined' ? {} : leerConFoto(),
+  ocupado: 0,
+  ocupadoFuera: false,
   marcarConFoto: (stopId) =>
     set((s) => {
       const siguientes = { ...s.conFoto, [stopId]: true as const }
@@ -141,8 +149,23 @@ export const useVistoStore = create<VistoState>((set) => ({
 /** Hay algo abierto del Visto o las fotos: las sorpresas esperan. Se llama sola cada vez que cambia el estado. */
 function sincronizarBloqueo() {
   const s = useVistoStore.getState()
-  const abierta = Boolean(s.aviso || s.hoja || s.cola.length || s.permisos || s.camara || s.avisoDentro || s.galeria || s.ayer)
+  const abierta = Boolean(s.ocupado > 0 || s.ocupadoFuera || s.aviso || s.hoja || s.cola.length || s.permisos || s.camara || s.avisoDentro || s.galeria || s.ayer)
   if (useLogrosStore.getState().hojaAbierta !== abierta) useLogrosStore.getState().ponerHojaAbierta(abierta)
+}
+
+/** (V71 §2) Empieza algo del Visto en curso (devuelve la función que lo termina): hasta que se termina, la fila de momentos espera. */
+export function ocuparElVisto(): () => void {
+  useVistoStore.getState().poner({ ocupado: useVistoStore.getState().ocupado + 1 })
+  let hecho = false
+  // Tope de seguridad: si algo se queda esperando (sin red, un servidor que no contesta), la fila de momentos no se queda bloqueada para siempre.
+  const tope = window.setTimeout(() => liberar(), 30_000)
+  const liberar = () => {
+    if (hecho) return
+    hecho = true
+    window.clearTimeout(tope)
+    useVistoStore.getState().poner({ ocupado: Math.max(0, useVistoStore.getState().ocupado - 1) })
+  }
+  return liberar
 }
 
 /** Cierra la hoja de ahora y saca la siguiente de la cola, si la hay. */

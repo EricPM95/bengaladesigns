@@ -708,6 +708,29 @@ const tipos = (r) => r.nuevos.map((m) => m.tipo)
   reloj = new Date('2026-10-12T12:00:00Z')
 }
 
+// ── (V71) Viajes repetidos: dos viajes que se pisan en fechas cuentan como uno; uno detrás de otro, sí ──
+{
+  const uid = await nuevoUsuario('pisa@correo.es')
+  const nuevo = (ini, fin) => nuevoViaje(uid, rutaRoma(ini, fin, [['coliseo', 'panteon'], ['fontana_de_trevi'], ['piazza_navona']]))
+  const visita = (trip, instante, sitio = 'coliseo') => servicio.visto(uid, { trip_id: trip, sitio, instante, recibido_en: instante, ubicacion: coords(sitio) })
+  reloj = new Date('2026-12-31T12:00:00Z')
+  const a = await nuevo('2026-10-10', '2026-10-12')
+  const b = await nuevo('2026-10-11', '2026-10-13') // el MISMO viaje creado otra vez: se pisa con el primero
+  await visita(a, '2026-10-10T09:00:00Z')
+  const rb = await visita(b, '2026-10-11T09:00:00Z', 'panteon')
+  debe(!(await tiene({ uid }, 'roma', 'viajero:nunca_ultima_vez')) && !rb.nuevos.some((m) => m.logro === 'nunca_ultima_vez'), 'pisan', '(V71) «Nunca es la última vez»: dos viajes a Roma con fechas que se pisan NO lo dan')
+  const c = await nuevo('2026-10-20', '2026-10-22')
+  const rc = await visita(c, '2026-10-20T09:00:00Z')
+  debe((await tiene({ uid }, 'roma', 'viajero:nunca_ultima_vez')) && rc.nuevos.some((m) => m.logro === 'nunca_ultima_vez'), 'pisan', '(V71) «Nunca es la última vez»: el tercer viaje, que empieza DESPUÉS de que acabe el primero, sí lo da')
+  debe(!(await tiene({ uid }, '*', 'viajero:tres_viajes_ano')), 'pisan', '(V71) «Tres viajes en un año»: tres viajes, pero dos se pisan (cuentan como uno): 2 viajes, no lo da')
+  const d = await nuevo('2026-11-10', '2026-11-12')
+  const rd = await visita(d, '2026-11-10T09:00:00Z')
+  debe((await tiene({ uid }, '*', 'viajero:tres_viajes_ano')) && rd.nuevos.some((m) => m.logro === 'tres_viajes_ano'), 'pisan', '(V71) «Tres viajes en un año»: con tres viajes uno detrás de otro (el que se pisaba cuenta como uno) sí lo da')
+  const nPisaba = (await repoPG.logrosDe(uid)).filter((f) => f.logro === 'viajero:nunca_ultima_vez').length
+  debe(nPisaba === 1, 'pisan', '(V71) lo ya ganado no se quita ni se duplica')
+  reloj = new Date('2026-10-12T12:00:00Z')
+}
+
 // ── Viajero fundador, con la fecha de salida cambiada ──
 {
   const ruta = rutaRoma('2026-11-10', '2026-11-12', [['coliseo'], ['panteon'], ['fontana_de_trevi']])

@@ -58,7 +58,7 @@ const maravilla = (n) => m('maravilla', { id: ORDEN[n - 1], n, maravillas: ORDEN
   const siete = P.planificar([maravilla(7)])
   debe(siete.length === 1 && siete[0].tipo === 'final7', 'plan', 'la 7.ª maravilla sigue con su final («El final de las 7 maravillas»)')
   const con = P.planificar([m('pais'), maravilla(2), m('patrimonio'), m('viajero')])
-  debe(con.map((p) => p.tipo).join() === 'maravilla_nueva,ademas' && !con[1].momentos.some((x) => x.tipo === 'maravilla'), 'ademas', `ya no va dentro de «Y además…» (queda: ${con.map((p) => p.tipo).join()}; «Y además…» lleva ${con[1].momentos.map((x) => x.tipo).join()})`)
+  debe(con.map((p) => p.tipo).join() === 'maravilla_nueva,pais,patrimonio,viajero' && con.every((p) => p.momentos.length === 1), 'ademas', `(V71) la maravilla en su pantalla y país, Patrimonio y logro de viajero cada uno en la suya, sin «Y además…» (${con.map((p) => p.tipo).join()})`)
   const sola = P.planificar([maravilla(3), m('pais')])
   debe(sola.map((p) => p.tipo).join() === 'maravilla_nueva,pais', 'ademas', 'con el país solo, cada una su pantalla: la maravilla y el sellado del pasaporte')
   // El orden: primero el emblema del Coliseo (su película), después la maravilla. El servidor ya los manda así; el cliente lo mantiene aunque lleguen al revés.
@@ -69,7 +69,7 @@ const maravilla = (n) => m('maravilla', { id: ORDEN[n - 1], n, maravillas: ORDEN
   const alReves = P.planificar([cole, emblema])
   debe(tal.map((p) => p.tipo).join() === 'emblema,maravilla_nueva' && alReves.map((p) => p.tipo).join() === 'emblema,maravilla_nueva', 'orden', `el Coliseo: primero el emblema (su película) y después «Una maravilla nueva», llegue como llegue (${tal.map((p) => p.tipo).join()} / ${alReves.map((p) => p.tipo).join()})`)
   const todo = P.planificar(P.ordenarComoElServidor([{ ...m('pais'), cat: 'pais' }, cole, { ...m('suma'), coleccion: 'imprescindibles', cat: 'pedazo' }, emblema, sello, { ...m('patrimonio'), cat: 'patrimonio' }]))
-  debe(todo.map((p) => p.tipo).join() === 'pedazos,emblema,sello,maravilla_nueva,ademas', 'orden', `la ronda entera del Coliseo: pedazos, emblema, sello, «Una maravilla nueva», «Y además…» (${todo.map((p) => p.tipo).join()})`)
+  debe(todo.map((p) => p.tipo).join() === 'pedazos,emblema,sello,maravilla_nueva,pais,patrimonio', 'orden', `(V71) la ronda entera del Coliseo: pedazos, emblema, sello, «Una maravilla nueva», país y Patrimonio, cada uno su pantalla (${todo.map((p) => p.tipo).join()})`)
   debe(todo[3].momentos.length === 1, 'orden', 'sale de una en una')
   const dos = P.planificar([maravilla(1), maravilla(2)])
   debe(dos.map((p) => p.tipo).join() === 'maravilla_nueva,maravilla_nueva', 'orden', 'dos maravillas en la misma ronda: una pantalla cada una (de una en una)')
@@ -130,7 +130,7 @@ console.log('   Tiempos y partitura')
   const pl1 = P.planificar(P.ordenarComoElServidor(E.MOMENTOS_DEL_ESTUDIO.maravilla_nueva()))
   const pl4 = P.planificar(P.ordenarComoElServidor(E.MOMENTOS_DEL_ESTUDIO.maravilla_nueva_cuatro()))
   debe(pl1.map((x) => x.tipo).join() === 'maravilla_nueva' && pl4.map((x) => x.tipo).join() === 'maravilla_nueva', 'estudio', 'las dos tarjetas montan la pantalla «Una maravilla nueva»')
-  debe(E.ANIMACIONES.length === 29 && E.ANIMACIONES.some((x) => x.id === 'maravilla'), 'estudio', `29 tarjetas en total, y «Final de las 7 maravillas» sigue (${E.ANIMACIONES.length})`)
+  debe(E.ANIMACIONES.length === 32 && E.ANIMACIONES.some((x) => x.id === 'maravilla'), 'estudio', `32 tarjetas en total, y «Final de las 7 maravillas» sigue (${E.ANIMACIONES.length})`)
 }
 
 console.log('   Pantallas quietas, sin sonido; sin cambios en el final de las 7')
@@ -145,7 +145,7 @@ console.log('   Pantallas quietas, sin sonido; sin cambios en el final de las 7'
   const fin = sinComentarios(leer('src/components/logros/momentos/FinalSieteMaravillas.tsx'))
   debe(fin.includes('m7Gather') && fin.includes('m7SpinIn') && fin.includes('m7Sweep'), 'final7', 'FinalSieteMaravillas sigue entera')
   const adem = /function PantallaAdemas[\s\S]*?\n}\n/.exec(pant)?.[0] ?? ''
-  debe(adem.length > 200 && !/MedallaDeSiete|maravilla/.test(adem), 'ademas', '«Y además…» ya no sabe nada de maravillas')
+  debe(!/PantallaAdemas/.test(pant) && adem === '', 'ademas', '(V71) la pantalla «Y además…» ya no existe: cada logro, la suya')
 }
 
 /* ───────── 2. La pantalla ───────── */
@@ -257,7 +257,7 @@ try {
   debe(await esperar(a, "document.querySelectorAll('[data-animacion-tarjeta]').length >= 20"), 'pagina', 'la página sale con su lista')
   debe(await esperar(a, `Boolean(${IFR}?.contentWindow?.__estudioVisor?.listo)`, 160), 'marco', 'el marco carga y queda listo')
   const ids = await J(a, "JSON.stringify([...document.querySelectorAll('[data-animacion-tarjeta]')].map((x) => x.getAttribute('data-animacion-tarjeta')))")
-  debe(ids.length === 29 && ids.includes('maravilla_nueva') && ids.includes('maravilla_nueva_cuatro') && ids.includes('maravilla'), 'tarjetas', `la página lista las 29 tarjetas, con las dos de «Maravilla nueva» (${ids.length})`)
+  debe(ids.length === 32 && ids.includes('maravilla_nueva') && ids.includes('maravilla_nueva_cuatro') && ids.includes('maravilla'), 'tarjetas', `la página lista las 32 tarjetas, con las dos de «Maravilla nueva» (${ids.length})`)
   for (const id of ['maravilla_nueva', 'maravilla_nueva_cuatro']) {
     await toque(a, `[data-animacion-tarjeta="${id}"]`)
     await esperar(a, `${IFR}.contentDocument.querySelector('[data-visor-de-animacion]')?.getAttribute('data-animacion-actual') === '${id}'`, 60)

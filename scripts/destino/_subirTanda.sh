@@ -7,6 +7,7 @@ git reset -q
 git add CLAUDE.md src scripts server shared data public supabase 2>/dev/null
 git add docs/dias/PROMPT_TANDA_${T}.md docs/dias/PROMPT_SEGUIDO_V52_A_V58.md docs/dias/${T}_capturas docs/dias/${T}_puntos.json docs/dias/REPASO_${T}.md docs/dias/DECISIONES_${T}.md docs/dias/PROMPT_TANDA_V5*.md 2>/dev/null
 git add docs/dias/CHECKLIST_V60_V65.md docs/dias/REPASO_V60_V65.html docs/dias/_decisiones_V60_V65.md docs/dias/CHECKLIST_V66_V67.md docs/dias/_decisiones_V66_V67.md docs/dias/CATALOGO_AVISOS.html docs/dias/PROMPT_SEGUIDO_V66_V67.md 2>/dev/null
+git add docs/dias/CHECKLIST_V68_V71.md docs/dias/REPASO_V68_V71.html docs/dias/_decisiones_V68_V71.md docs/dias/PROMPT_SEGUIDO_V68_A_V71.md 2>/dev/null
 git add docs/dias/catalogo docs/dias/REPASO_V66_V67.html docs/dias/V6*_log_*.json 2>/dev/null
 git add docs/civitatis docs/dias/PROMPT_SEGUIDO_V60_A_V65.md docs/dias/${T}_puntos.json 2>/dev/null
 git add -A -- docs/dias/RUTAS_REVISION.html docs/dias/RUTAS_REVISION.json docs/dias/RUTAS_REVISION_LARGOS.html docs/dias/RUTAS_REVISION_LARGOS.json 2>/dev/null
