@@ -51,7 +51,7 @@ function horaDeAhora(): number {
 
 export const esDeLanzarote = (route: Route): boolean => normalizar(route.destination ?? '').includes('lanzarote')
 
-const ICONO: Record<TipoAviso, string> = {
+export const ICONO: Record<TipoAviso, string> = {
   lluvia: 'M7 15a4 4 0 0 1 0-8 5 5 0 0 1 9.5 1A3.5 3.5 0 0 1 16 15zM8 18l-1 3M12 18l-1 3M16 18l-1 3',
   nubes: 'M7 18a4 4 0 0 1 0-8 5 5 0 0 1 9.5 1A3.5 3.5 0 0 1 16 18z',
   viento: 'M3 8h11a3 3 0 1 0-3-3M3 12h15a3 3 0 1 1-3 3M3 16h8',

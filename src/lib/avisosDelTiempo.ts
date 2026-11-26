@@ -228,3 +228,27 @@ export function volverAlPlan(day: DayPlan): DayPlan {
 
 /** ¿El cambio guardado lo hizo este aviso (y no el «Si llueve» de Roma)? */
 export const motivoDelCambio = (day: DayPlan): TipoAviso | 'descansar' | null => day.rainBackup?.motivo ?? null
+
+/**
+ * (V73) La línea del tiempo de la tarjeta de MAÑANA («Mañana, viento fuerte en Las Grietas», «Mañana, lluvia por la tarde»): de la previsión por horas de mañana y de sus paradas. Una sola línea, la más importante
+ * (lluvia, viento, nubes); sin aviso, null. Los umbrales y los sitios son los de arriba (`data/hoy/avisos_tiempo.json`); el viento y las nubes solo en Lanzarote (sus sitios); la lluvia, en todos los destinos.
+ * Un día de excursión sin horas en sus paradas mira de las 9 a las 18 (`manana.horas_de_excursion`).
+ */
+export function avisoDeManana(day: DayPlan, meteo: HourlyRain, esLanzarote: boolean): { tipo: TipoAviso; texto: string } | null {
+  const T = datos.manana
+  const paradas = day.stops.filter((s) => isNumberedStop(s) && !s.saltada)
+  const conHora = [...new Set(paradas.flatMap(horasDeParada))]
+  const [h0, h1] = T.horas_de_excursion
+  const horas = conHora.length > 0 ? conHora : day.dayType === 'excursion' || day.interruptor?.mode === 'excursion' ? Array.from({ length: h1 - h0 + 1 }, (_, i) => h0 + i) : []
+  const mojadas = horas.filter((h) => llueveEnHora(meteo, h))
+  if (mojadas.length > 0) {
+    const k = mojadas.every((h) => h < 13) ? 'manana' : mojadas.every((h) => h >= 13 && h < 20) ? 'tarde' : mojadas.every((h) => h >= 20) ? 'noche' : 'dia'
+    return { tipo: 'lluvia', texto: rellena(T.lluvia, { cuando: T.cuando[k] }) }
+  }
+  if (!esLanzarote) return null
+  const ventosa = paradas.find((s) => DE_VIENTO.some((v) => cuenta(s, v.clave)) && horasDeParada(s).some((h) => hayVientoEnHora(meteo, h)))
+  if (ventosa) return { tipo: 'viento', texto: rellena(T.viento, { sitio: DE_VIENTO.find((v) => cuenta(ventosa, v.clave))!.nombre }) }
+  const tapada = paradas.find((s) => MIRADORES.some((m) => cuenta(s, m.clave)) && horasDeParada(s).some((h) => hayNubesEnHora(meteo, h)))
+  if (tapada) return { tipo: 'nubes', texto: rellena(T.nubes, { sitio: MIRADORES.find((m) => cuenta(tapada, m.clave))!.nombre }) }
+  return null
+}

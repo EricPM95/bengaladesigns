@@ -28,7 +28,7 @@ export const cierraElSitio = (nombre: string): string => `${sitioEnPlural(nombre
  * (V58 §5) UNA regla para toda la app: «a el» → «al» y «de el» → «del» (también con mayúscula). Se pasa por aquí cualquier frase que junta una preposición con un nombre de sitio que ya trae su artículo
  * («el Coliseo», de `entradas_nombres_cortos`): «Tu entrada a el Coliseo» sale «Tu entrada al Coliseo». No toca «enseña el»: solo la palabra suelta «a» o «de».
  */
-export const contraer = (texto: string): string => texto.replace(/(?<![p{L}p{N}])([Aa]|[Dd]e) el(?![p{L}p{N}])/gu, (_m, p: string) => (p.toLowerCase() === 'a' ? (p === 'A' ? 'Al' : 'al') : p === 'De' ? 'Del' : 'del'))
+export const contraer = (texto: string): string => texto.replace(/(?<![\p{L}\p{N}])([Aa]|[Dd]e) el(?![\p{L}\p{N}])/gu, (_m, p: string) => (p.toLowerCase() === 'a' ? (p === 'A' ? 'Al' : 'al') : p === 'De' ? 'Del' : 'del'))
 
 /**
  * (V58 §5) «a|de|en» + el sitio con su artículo, sea cual sea el nombre que llegue: «Coliseo» (de los datos del destino, con su artículo en la tabla) o «el Coliseo» (nombre corto que ya lo trae).

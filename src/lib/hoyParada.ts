@@ -1,11 +1,13 @@
-import { dayOfReservation } from './bookings'
+import { dayOfReservation, excursionesDeLaRuta } from './bookings'
+import { elSitio, lugarCon } from './articulos'
+import { esDiaDeExcursion } from './tituloDelDia'
 import type { Reservation } from './bookings'
 import { hasRealCoordinates, haversineMeters, minutosEnCocheDeMetros, KM_POR_HORA_COCHE_APP, RODEO_COCHE_APP } from './distanceMock'
 import { displayStopName } from './format'
 import { numberedStopsOf } from './stopKind'
 import { parseTimeToMinutes } from './time'
 import { diaSiguiente } from './puestaDeSolYManana'
-import type { Coordinates, DayPlan, MealSlot, Route, Stop } from './types'
+import type { Coordinates, DayPlan, Excursion, MealSlot, Route, Stop } from './types'
 import { useRouteStore } from '../store/useRouteStore'
 
 /**
@@ -384,40 +386,76 @@ export function salidaDeCasa(p: { day: DayPlan; primera: Stop; zona: Coordinates
 /* H13: el atardecer y lo de mañana                                     */
 /* ------------------------------------------------------------------ */
 
+/** Una línea de la tarjeta de mañana: su icono (de `iconos.ts`) y su texto, ya con mayúscula. */
+export interface LineaManana {
+  icono: 'reloj' | 'reservas' | 'ubicacion' | 'excursion'
+  texto: string
+}
+
 export interface MananaH13 {
   diaId: string
-  /** El título de la tarjeta: la primera parada de mañana (o el nombre del día). */
+  /** (V73) El título de la tarjeta: el nombre del día de mañana («La Graciosa», «Centro histórico»), sin «(excursión)». */
   titulo: string
-  /** «sales a las 9:26» (con pase y zona o en coche). */
-  sales: string | null
-  /** «turno en la Cueva a las 11:30» (la reserva con hora de mañana). */
+  /** (V73) Mañana es un día de excursión. */
+  esExcursion: boolean
+  /** (V73) La id del día escrito (`DG`, `D2`…): con ella se leen del archivo del destino el traslado con hora y el consejo de la excursión. */
+  diaEscritoId: string | null
+  /** (V73) La primera línea: «Sales a las 8:10» (excursión con reserva), «Aún no tienes la reserva de La Graciosa» (excursión por reservar) o «Empiezas por Timanfaya» (día normal). Null en una excursión por libre: la línea es «Ferry de las 10:00 desde Órzola», que sale de los datos del día (la pone la tarjeta al leerlos). */
+  primera: LineaManana | null
+  /** (V73) Con la excursión por reservar y aún sin reserva: [Añadir tu reserva] abre RESERVAS en esa excursión. */
+  anadirReserva: { excursion: Excursion; dayId: string } | null
+  /** «Turno en la Cueva a las 11:30» (la entrada con hora de mañana). */
   turno: string | null
-  /** Un consejo, si lo hay («lleva la entrada»). */
+  /** Un consejo, si lo hay («Lleva tu entrada», el de la primera parada). En una excursión lo pone la tarjeta desde los datos del día (la playa). */
   consejo: string | null
 }
 
+const cap = (t: string): string => t.charAt(0).toUpperCase() + t.slice(1)
+
 /**
- * «Mañana: … · sales a las 9:26 · turno en la Cueva a las 11:30», con un consejo si lo hay. El último día no lleva. Los consejos salen de la reserva («lleva tu entrada») o del consejo corto de la primera parada.
+ * (V73) Lo de mañana, con el formato de «Hoy Al Acabar» (AC1-AC3): el título del día y debajo sus líneas con icono. Nada inventado: si un dato no existe, su línea no sale. El último día no lleva.
+ * Excursión con reserva en RESERVAS: «Sales a las 8:10» (la hora de la reserva). Excursión que RESERVAS cuenta como por reservar y sin reserva: «Aún no tienes la reserva de La Graciosa» y [Añadir tu reserva].
+ * Excursión por libre: el traslado con hora de los datos del día. Día normal: «Empiezas por Timanfaya».
  */
-export function mananaH13(p: { route: Route; day: DayPlan; reservations: Reservation[]; nombreDelDia: (d: DayPlan) => string; nombreCorto?: (r: Reservation) => string | null; zona: Coordinates | null; enCoche: boolean }): MananaH13 | null {
+export function mananaH13(p: { route: Route; day: DayPlan; reservations: Reservation[]; nombreDelDia: (d: DayPlan) => string; nombreCorto?: (r: Reservation) => string | null }): MananaH13 | null {
   const manana = diaSiguiente(p.route, p.day)
   if (!manana) return null
+  const esExcursion = esDiaDeExcursion(manana)
   const paradas = numberedStopsOf(manana).filter((s) => !s.saltada)
   const primera = paradas.find((s) => s.time) ?? paradas[0] ?? null
-  const entradas = p.reservations
-    .filter((r) => r.kind === 'entrada' && !r.fueraDeRuta && r.time && dayOfReservation(p.route, r)?.id === manana.id)
-    .sort((a, b) => parseTimeToMinutes(a.time) - parseTimeToMinutes(b.time))
+  const entradas = esExcursion
+    ? []
+    : p.reservations
+        .filter((r) => r.kind === 'entrada' && !r.fueraDeRuta && r.time && dayOfReservation(p.route, r)?.id === manana.id)
+        .sort((a, b) => parseTimeToMinutes(a.time) - parseTimeToMinutes(b.time))
   const e = entradas[0]
   const quien = e ? (p.nombreCorto?.(e) ?? displayStopName(e.placeNames[0] ?? e.name)) : null
-  const sale = primera ? salidaDeCasa({ day: manana, primera, zona: p.zona, enCoche: p.enCoche }) : null
   const tip = primera?.insiderTip?.replace(/\s+/g, ' ').trim() ?? ''
-  const consejo = e ? 'lleva tu entrada' : tip && tip.length <= 60 ? tip.replace(/^[A-ZÁÉÍÓÚ]/, (c) => c.toLowerCase()).replace(/\.$/, '') : null
+  const consejo = e ? 'lleva tu entrada' : !esExcursion && tip && tip.length <= 60 ? tip.replace(/^[A-ZÁÉÍÓÚ]/, (c) => c.toLowerCase()).replace(/\.$/, '') : null
+  // El nombre del día sin «(excursión)» ni «(excursión, 7 días)»: la tarjeta ya dice que es mañana.
+  const nombre = p.nombreDelDia(manana).replace(/\s*\((?:[^)]*\b)?excursi[oó]n\b[^)]*\)/i, '').trim() || p.nombreDelDia(manana)
+  // Si el día aún no tiene nombre propio (solo la ciudad, «Lanzarote»), el título es su primera parada, como hasta ahora.
+  const solaCiudad = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim() === `${p.route.destination ?? ''}`.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
+  const titulo = !esExcursion && primera && solaCiudad(nombre) ? displayStopName(primera.name) : nombre
+  let linea: LineaManana | null = null
+  let anadirReserva: MananaH13['anadirReserva'] = null
+  if (esExcursion) {
+    const fila = excursionesDeLaRuta(p.route, p.reservations).find((f) => f.day.id === manana.id)
+    if (fila?.reservation?.time) linea = { icono: 'reloj', texto: `Sales a las ${horaCorta(fila.reservation.time)}` }
+    else if (fila && !fila.reservation) {
+      linea = { icono: 'reservas', texto: `Aún no tienes la reserva de ${titulo}` }
+      anadirReserva = { excursion: fila.excursion, dayId: manana.id }
+    }
+  } else if (primera) linea = { icono: 'ubicacion', texto: `Empiezas por ${elSitio(displayStopName(primera.name))}` }
   return {
     diaId: manana.id,
-    titulo: primera ? displayStopName(primera.name) : p.nombreDelDia(manana),
-    sales: sale ? `sales a las ${sale.hora}` : primera?.time ? `empiezas a las ${horaCorta(primera.time)}` : null,
-    turno: e && quien ? `turno en ${quien} a las ${horaCorta(e.time)}` : null,
-    consejo,
+    titulo,
+    esExcursion,
+    diaEscritoId: manana.diaEscritoId ?? null,
+    primera: linea,
+    anadirReserva,
+    turno: e && quien ? `Turno ${lugarCon('en', quien)} a las ${horaCorta(e.time)}` : null,
+    consejo: consejo ? cap(consejo) : null,
   }
 }
 

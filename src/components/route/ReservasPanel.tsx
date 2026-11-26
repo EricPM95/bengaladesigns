@@ -242,6 +242,14 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
                 <PiezaSegura nombre="RESERVAS: Entradas y Free Tour">
                   <EntradasYFreeTour route={route} info={info} abierto={Boolean(abiertos.entradas)} onToggle={() => alternar('entradas')} />
                 </PiezaSegura>
+                {/* (V73 §5b) El bloque del coche (Lanzarote: «Coche de alquiler | Mi coche») va SIEMPRE justo debajo de «Entradas y Free Tour» y encima de «Excursiones y actividades», lleve o no «SÚPER RECOMENDADO». */}
+                {llevaCoche && (
+                  <PiezaSegura nombre="RESERVAS: Coche">
+                    <ZonaGris activo={grupo.esInvitado} quien={grupo.nombreAdmin}>
+                      <CocheDeViaje abierto={Boolean(abiertos.coche)} />
+                    </ZonaGris>
+                  </PiezaSegura>
+                )}
               </div>
             </div>
 
@@ -254,14 +262,7 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
                 </div>
               )}
               <div className={hayExcursiones ? 'contents' : 'md:col-span-2'}>
-                {/* (LZ2b1) Destinos de coche (Lanzarote): el bloque del coche con su interruptor «Coche de alquiler | Mi coche». */}
-                {llevaCoche && (
-                  <PiezaSegura nombre="RESERVAS: Coche">
-                    <ZonaGris activo={grupo.esInvitado} quien={grupo.nombreAdmin}>
-                      <CocheDeViaje abierto={Boolean(abiertos.coche)} />
-                    </ZonaGris>
-                  </PiezaSegura>
-                )}
+                {/* (LZ2b1, V73) El bloque del coche ya no va aquí: está debajo de «Entradas y Free Tour», arriba. */}
                 <PiezaSegura nombre="RESERVAS: Útil para el viaje">
                   <UtilParaElViaje route={route} pago={pago} />
                 </PiezaSegura>

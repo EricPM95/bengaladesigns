@@ -20,7 +20,7 @@ import { cifraQueSube, dentroDelEstudio, movimientoReducido, sonarResumenUnaVez,
  * EL RESUMEN DEL DÍA (Tanda 8B; V59, Design «Cierre del día» R1, R1b, R2). El mismo al acabar la ruta, al cerrar la hoja de «Por hoy ya está» y a la mañana siguiente. Cuenta lo ganado ese día (del servidor, `GET /api/logros/resumen`;
  * si no contesta, de lo que se acaba de enseñar): arriba la medalla del destino, debajo la tira de las fotos de ese día (si no hay, no sale), una fila por cada cosa ganada (solo las que no son 0, con su miniatura al mismo tamaño),
  * [Ver todos mis logros] y «Roma aún esconde N secretos.». Si ese día no ganó nada, NO sale (se cierra sola: fuera «Aún no has ganado nada hoy»).
- * Por la noche: «TU DÍA EN ROMA · Lo que te llevas de hoy»; a la mañana siguiente: «TU DÍA DE AYER EN ROMA · Lo que te llevaste ayer» (`de.manana`). Una vez por día (`abrirElResumenDeUnDia`).
+ * Por la noche: «TU DÍA EN ROMA · Resumen del día»; a la mañana siguiente: «TU DÍA DE AYER EN ROMA · Resumen de ayer» (`de.manana`). Una vez por día (`abrirElResumenDeUnDia`).
  */
 /**
  * Pura (8B4): de los sellos que salieron ese día (`sello` e `id:grado`), cuántos son NUEVOS (nacen ese día: su primer grado, el bronce; el Vaticano no tiene bronce y nace en plata)
@@ -269,7 +269,7 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar, primeraVez
         <div style={{ flex: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
           <span style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             <span data-resumen-ojo style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em', color: '#6F4E37', textTransform: 'uppercase' }}>{manana ? `Tu día de ayer en ${ciudad || 'el viaje'}` : ciudad ? `Tu día en ${ciudad}` : 'Tu día'}</span>
-            <span data-resumen-titulo style={{ font: `400 30px/1.05 ${SERIF}`, textWrap: 'balance' as never }}>{manana ? 'Lo que te llevaste ayer' : 'Lo que te llevas de hoy'}</span>
+            <span data-resumen-titulo style={{ font: `400 30px/1.05 ${SERIF}`, textWrap: 'balance' as never }}>{manana ? 'Resumen de ayer' : 'Resumen del día'}</span>
           </span>
           <CruzDeHoja onCerrar={alCerrar} enLinea />
         </div>

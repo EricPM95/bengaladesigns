@@ -9,6 +9,7 @@ import { useRouteStore } from '../../../../store/useRouteStore'
 import { pasarImprescindibleAOtroDia } from '../../../../lib/pasarImprescindible'
 import type { NoCabe } from '../../../../lib/adaptarVuelos'
 import { Icono } from '../../../ui/Icono'
+import { elSitio } from '../../../../lib/articulos'
 import { StopDetailSheet, type DayStopRef } from '../../dayDetail/StopDetailSheet'
 import { HojaPasarAOtroDia } from '../saltar'
 import { ParadaFotoDeParada } from './ParadaFoto'
@@ -21,9 +22,7 @@ import { ParadaFotoDeParada } from './ParadaFoto'
  *  · `TarjetaBienvenida`: el día de llegada («Bienvenido a Lanzarote»: el vuelo, el coche, la hora útil de la LL).
  *  · `TarjetaMananaOscura` y `HastaAquiHoy`: el final del día (Completa 7).
  */
-const ORO_CLARO = '#F3D88F'
 const MARFIL = '#FBF3E2'
-const OJO_ORO = { font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.16em', color: ORO_CLARO, textTransform: 'uppercase' as const }
 
 /* ------------------------------------------------------------------ */
 /* La ficha completa                                                    */
@@ -156,45 +155,24 @@ export function HastaAquiHoy() {
   )
 }
 
-/** «Mañana, miércoles 11 · La Graciosa»: la tarjeta oscura de lo de mañana (solo cuando no queda nada por hacer hoy). */
-export function TarjetaMananaOscura({ cuando, titulo, sales, turno, consejo }: { cuando: string; titulo: string; sales: string | null; turno: string | null; consejo: string | null }) {
-  return (
-    <div data-hoy-manana className="flex flex-none flex-col gap-2.5 rounded-[26px] p-[18px]" style={{ background: '#1C2230', color: MARFIL, boxShadow: '0 18px 30px -18px rgba(28,34,48,.7)' }}>
-      <span style={OJO_ORO}>Mañana</span>
-      <b data-hoy-manana-titulo style={{ font: "400 26px/1.12 'Instrument Serif',serif", textWrap: 'balance' as never }}>
-        {cuando} · {titulo}
-      </b>
-      <span className="flex flex-col gap-1.5 text-[13.5px] font-medium" style={{ color: 'rgba(251,243,226,.85)' }}>
-        {sales && (
-          <span data-hoy-manana-sales className="flex items-center gap-2">
-            <Icono nombre="reloj" size={15} grosor={1.8} style={{ color: ORO_CLARO, flex: 'none' }} />
-            {sales.charAt(0).toUpperCase() + sales.slice(1)}
-          </span>
-        )}
-        {turno && (
-          <span data-hoy-manana-reserva className="flex items-center gap-2">
-            <Icono nombre="reservas" size={15} grosor={1.8} style={{ color: ORO_CLARO, flex: 'none' }} />
-            {turno.charAt(0).toUpperCase() + turno.slice(1)}
-          </span>
-        )}
-        {consejo && (
-          <span data-hoy-manana-consejo className="flex items-center gap-2">
-            <Icono nombre="info" size={15} grosor={1.8} style={{ color: ORO_CLARO, flex: 'none' }} />
-            {consejo.charAt(0).toUpperCase() + consejo.slice(1)}
-          </span>
-        )}
-      </span>
-    </div>
-  )
-}
+/** (V73) «Mañana, viernes 27 · La Graciosa» con sus líneas: la tarjeta vive en su archivo (TarjetaMananaOscura.tsx). */
+export { TarjetaMananaOscura } from './TarjetaMananaOscura'
 
 /** La frase de cierre de la tarjeta del día acabado: «Hoy has visto el atardecer» con su sitio, o «Has terminado tu día». */
-export function fraseDeCierre(day: DayPlan, paradas: Stop[]): { titulo: string; sub: string | null } {
+export function fraseDeCierre(day: DayPlan, paradas: Stop[], /** (V73) El peso del sitio (0 = imprescindible; ver `pesoDe` en lib/masVisitas): para «Lo mejor:» los imprescindibles primero. Sin él, las primeras paradas. */ pesoDe?: (nombre: string) => number): { titulo: string; sub: string | null; atardecer: boolean; sitioAtardecer: string | null; hechas: number } {
   const sol = paradas.find((s) => s.isSunset && s.checkedInAt && !s.saltada)
-  if (sol) return { titulo: 'Hoy has visto el atardecer', sub: `Un cierre perfecto en ${displayStopName(sol.name)}.` }
+  const visitas = paradas.filter((s) => s.checkedInAt && !s.saltada && !(s.isBreak || s.isZoneWalk || s.isFreeWalk || s.isFreeTime || s.passThrough || s.isArrival))
   const hechas = paradas.filter((s) => s.checkedInAt && !s.saltada).length
   void day
-  return { titulo: hechas === 1 ? 'Has hecho 1 parada hoy' : `Has hecho ${hechas} paradas hoy`, sub: paradas.some((s) => s.saltada) ? 'Lo que dejaste para luego está abajo, en «Lugares pendientes».' : null }
+  if (sol) return { titulo: 'Hoy has visto el atardecer', sub: `Un cierre perfecto en ${displayStopName(sol.name)}.`, atardecer: true, sitioAtardecer: displayStopName(sol.name), hechas }
+  // (V73 §2) La tarjeta NUNCA vacía: «Lo mejor:» con hasta 3 sitios de lo visto, los imprescindibles primero y, si no hay, las primeras paradas (el orden de la ruta, que ya es el de las horas).
+  const imprescindibles = pesoDe ? visitas.filter((s) => pesoDe(s.name) === 0) : []
+  const mejores = [...imprescindibles, ...visitas.filter((s) => !imprescindibles.includes(s))].slice(0, 3)
+  const lomejor = mejores.length > 0 ? `Lo mejor: ${unirLista(mejores.map((s) => elSitio(displayStopName(s.name).replace(/\s*\([^)]*\)/g, '').trim())))}.` : null
+  const dejadas = paradas.some((s) => s.saltada) ? 'Lo que dejaste para luego está abajo, en «Lugares pendientes».' : null
+  return { titulo: hechas === 1 ? 'Has hecho 1 parada hoy' : `Has hecho ${hechas} paradas hoy`, sub: [lomejor, dejadas].filter(Boolean).join(' ') || null, atardecer: false, sitioAtardecer: null, hechas }
 }
+
+const unirLista = (lista: string[]): string => (lista.length <= 1 ? (lista[0] ?? '') : `${lista.slice(0, -1).join(', ')} y ${lista[lista.length - 1]}`)
 
 

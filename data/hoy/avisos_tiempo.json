@@ -22,6 +22,14 @@
       "_por_que": "Rachas a 10 m (Open-Meteo wind_gusts_10m). El alisio normal en Lanzarote ronda 25-45 km/h de racha; desde 55 km/h (fuerza 7) cuesta andar por los miradores del risco, la pista de Las Grietas levanta polvo y en Los Hervideros el oleaje y el viento hacen peligroso asomarse. Por debajo, el aviso sería casi diario."
     }
   },
+  "manana": {
+    "_por_que": "V73: la línea del tiempo de la tarjeta de MAÑANA (HOY con el día acabado). Mismos umbrales que arriba; el sitio sale de las listas de Lanzarote (nubes y viento) y la lluvia vale para todos los destinos. Una sola línea, la más importante: lluvia, viento, nubes.",
+    "lluvia": "Mañana, lluvia {cuando}",
+    "viento": "Mañana, viento fuerte en {sitio}",
+    "nubes": "Mañana, nubes en el norte: {sitio} puede quedar tapado",
+    "cuando": { "manana": "por la mañana", "tarde": "por la tarde", "noche": "por la noche", "dia": "durante el día" },
+    "horas_de_excursion": [9, 18]
+  },
   "lanzarote": {
     "miradores_de_nubes": [
       { "clave": "mirador del rio", "nombre": "Mirador del Río", "solo_si_tapado": "mirador de guinate" },

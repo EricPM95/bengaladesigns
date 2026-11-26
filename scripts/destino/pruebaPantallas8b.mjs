@@ -137,7 +137,7 @@ console.log('4. Lo que no debe llegar a producción ni pesar al abrir')
       debe(nombres.some((n) => n.startsWith(parte)) || (['Compartir', 'HojaLogros'].includes(parte) && dinamico && !estatico(parte)), 'carga', `la escena «${parte}» va aparte de lo que se baja al abrir (en su propio archivo, o repartida pero solo con import() al abrirla)`)
     }
     const dentro = abren.join('\n')
-    debe(!/Casi 2\.000 años esperándote/.test(dentro) && !/Lo que te llevas de hoy/.test(dentro), 'carga', 'al abrir no entran ni la película del Coliseo ni los resúmenes')
+    debe(!/Casi 2\.000 años esperándote/.test(dentro) && !/Resumen del día/.test(dentro), 'carga', 'al abrir no entran ni la película del Coliseo ni los resúmenes')
     debe(!/cuatro_joyas|baldaquino|dib-quieto|mm-off/.test(dentro), 'carga', 'al abrir no entran los dibujos de los logros (insignias, sellos, emblemas, medalla): la hoja del Visto importa solo InsigniaPerezosa')
     const bytes = urls.filter((u) => u.endsWith('.js')).reduce((s, u) => s + fs.statSync(DIST + u).size, 0)
     const gz = urls.reduce((s, u) => s + zlib.gzipSync(fs.readFileSync(DIST + u)).length, 0)
@@ -333,7 +333,7 @@ console.log('8. Tanda 8B5: fotos elegidas, medalla nueva, Patrimonio con número
   debe(B.lineaDeSecretos('Roma', 12, 11) === 'Roma aún esconde 1 secreto.', 'resumen', 'si solo queda uno: «Roma aún esconde 1 secreto.»')
   debe(B.lineaDeSecretos('Roma', 12, 12) === 'Has encontrado todos los secretos de Roma.', 'resumen', 'si no queda ninguno: «Has encontrado todos los secretos de Roma.»')
   const rd5 = leer('src/components/logros/momentos/ResumenDia.tsx')
-  debe(rd5.includes("'Lo que te llevaste ayer' : 'Lo que te llevas de hoy'") && !rd5.includes('Esto es lo que has ganado hoy') && rd5.includes('data-resumen-titulo'), 'resumen', '(V71) el título del resumen vigente (V59, R1/R2): «Lo que te llevas de hoy» por la noche y «Lo que te llevaste ayer» a la mañana siguiente')
+  debe(rd5.includes("'Resumen de ayer' : 'Resumen del día'") && !rd5.includes('Esto es lo que has ganado hoy') && rd5.includes('data-resumen-titulo'), 'resumen', '(V71) el título del resumen vigente (V59, R1/R2): «Resumen del día» por la noche y «Resumen de ayer» a la mañana siguiente')
   const rv5 = leer('src/components/logros/momentos/ResumenViaje.tsx')
   debe(rv5.includes('lineaDeSecretos') && !/secretos encontrados`/.test(rv5), 'resumen', 'el resumen del viaje usa la misma línea de secretos')
   // Las fotos elegidas

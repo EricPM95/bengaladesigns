@@ -8,8 +8,8 @@ import { Icono } from '../../../ui/Icono'
 import { useAlojamientoDelViaje } from '../../alojamiento/useAlojamientoDelViaje'
 import { useRouteStore } from '../../../../store/useRouteStore'
 import { alojamientoCubierto } from '../../../../lib/tuAlojamiento'
-import { BOTON_ORO } from '../../../ui/botonesOro'
-import { BOTON_AZUL, RecuadroDePuntos } from '../piezas'
+import { BOTON_CLARO, BOTON_ORO } from '../../../ui/botonesOro'
+import { RecuadroDePuntos } from '../piezas'
 
 /**
  * LA FILA «VOLVER AL ALOJAMIENTO» (V2, H4 y H4b). Sustituye al botón de la cama de arriba de HOY (fuera):
@@ -55,7 +55,7 @@ export function VolverAlAlojamiento({ route, desde, casa, enCoche }: { route: Ro
     <RecuadroDePuntos data-alojamiento-hoy="sin-direccion" className="items-center gap-3">
       {cama}
       <span className="min-w-0 flex-1 text-[13.5px] font-medium leading-[1.3]">Pon tu alojamiento para volver con un toque</span>
-      <button type="button" onClick={() => viaje.primeraEstanciaId && abrirTuAlojamiento(viaje.primeraEstanciaId)} data-alojamiento-hoy-anadir className="flex h-11 flex-none items-center gap-1.5 rounded-2xl px-3.5 text-[13px] font-bold" style={BOTON_AZUL}>
+      <button type="button" onClick={() => viaje.primeraEstanciaId && abrirTuAlojamiento(viaje.primeraEstanciaId)} data-alojamiento-hoy-anadir className="flex h-11 flex-none items-center gap-1.5 rounded-2xl px-3.5 text-[13px] font-bold" style={BOTON_CLARO}>
         <Icono nombre="anadir" size={13} grosor={2.4} />
         Añadir
       </button>

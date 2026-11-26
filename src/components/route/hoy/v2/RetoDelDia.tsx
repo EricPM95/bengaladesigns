@@ -5,6 +5,8 @@ import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Route, Stop } from '../../../../lib/types'
 import { displayStopName } from '../../../../lib/format'
+import { useAbiertoSiempre, useHorarioDeParadas } from '../../../../lib/horarioDeParada'
+import { BOTON_ORO } from '../../../ui/botonesOro'
 import { unir } from '../../../../lib/hoyCambiarPlan'
 import { useCompaneroStore } from '../../../../lib/hoyCompanero'
 import { useAddFlowStore } from '../../../../store/useAddFlowStore'
@@ -45,20 +47,32 @@ export function FotoDeSitio({ nombre, ciudad, alto, ancho = '100%', radio = 14 }
   )
 }
 
-function TarjetaDeReto({ reto, ancho, onAbrir }: { reto: RetoDeHoy; ancho: 'completa' | 'fila'; onAbrir: () => void }) {
+const sinTildes = (t: string): string => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
+const aMin = (hora: string | null | undefined): number | null => {
+  const m = /^(\d{1,2}):(\d{2})/.exec(hora ?? '')
+  return m ? Number(m[1]) * 60 + Number(m[2]) : null
+}
+
+/** (V73 §3) «La Geria: falta tu foto»: los sitios del reto que están en la ruta de hoy, que ya has visto (están entre las paradas hechas) y de los que aún no tienes el pedazo. El número y el texto dicen lo mismo. */
+export const textoFaltaFoto = (nombres: string[]): string => `${unir(nombres.map(displayStopName))}: falta tu foto`
+
+function TarjetaDeReto({ reto, ancho, onAbrir, faltaFoto = [], cercaYAbierto = null, onAnadir }: { reto: RetoDeHoy; ancho: 'completa' | 'fila'; onAbrir: () => void; faltaFoto?: string[]; /** (V73) Con el día acabado: el sitio cercano y abierto ahora que sumaría hoy. */ cercaYAbierto?: SitioDeReto | null; onAnadir?: () => void }) {
   const tengo = reto.total - reto.faltan
   const ganados = reto.sitios.filter((s) => s.ganado).map((s) => s.sitio)
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       onClick={onAbrir}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onAbrir() } }}
       data-reto-del-dia={reto.coleccion}
       data-reto-completable={reto.completable_hoy ? '1' : '0'}
-      className="flex flex-none snap-start flex-col gap-2.5 rounded-[22px] p-3.5 text-left"
+      className="flex flex-none cursor-pointer snap-start flex-col gap-2.5 rounded-[22px] p-3.5 text-left"
       style={{ width: ancho === 'completa' ? '100%' : 'min(84%,310px)', background: 'linear-gradient(135deg,#FBF1D2,#F0DCA0)', border: '1px solid #C9A24E' }}
     >
       <span className="flex items-center gap-3.5">
-        <span className="flex flex-none items-center justify-center" style={{ width: 76, height: 76 }}>
+        {/* (V73 §3) El hueco del dibujo nunca vacío: la insignia de la colección con sus pedazos, también con 0 de N. */}
+        <span data-reto-dibujo className="flex flex-none items-center justify-center" style={{ width: 76, height: 76 }}>
           <Insignia coleccion={reto.coleccion} ganados={ganados} completa={false} tam={76} />
         </span>
         <span className="flex min-w-0 flex-1 flex-col gap-1.5">
@@ -68,18 +82,29 @@ function TarjetaDeReto({ reto, ancho, onAbrir }: { reto: RetoDeHoy; ancho: 'comp
           </b>
           <span data-reto-cuenta className="text-[13px] font-bold" style={{ color: '#5A3E0C' }}>
             {tengo} de {reto.total}
+            {cercaYAbierto ? ` · ${displayStopName(cercaYAbierto.nombre)} está cerca` : ''}
           </span>
         </span>
       </span>
       <span style={{ display: 'block', height: 6, borderRadius: 3, background: 'rgba(110,80,24,.18)', overflow: 'hidden' }}>
         <span data-reto-barra style={{ display: 'block', width: `${Math.round((tengo / reto.total) * 100)}%`, height: '100%', background: 'oklch(0.55 0.11 150)' }} />
       </span>
-      {reto.faltan_fuera.length > 0 && (
+      {faltaFoto.length > 0 && (
+        <span data-reto-falta-foto className="text-[12.5px] font-medium leading-[1.3]" style={{ color: '#6E5018' }}>
+          {textoFaltaFoto(faltaFoto)}
+        </span>
+      )}
+      {!cercaYAbierto && reto.faltan_fuera.length > 0 && (
         <span data-reto-fuera className="text-[12.5px] font-medium leading-[1.3]" style={{ color: '#6E5018' }}>
           {textoFueraDeRuta(reto.faltan_fuera)}
         </span>
       )}
-    </button>
+      {cercaYAbierto && onAnadir && (
+        <button type="button" data-reto-anadir onClick={(e) => { e.stopPropagation(); onAnadir() }} className="flex h-12 items-center justify-center rounded-[15px] text-[14.5px] font-bold" style={{ ...BOTON_ORO, border: 'none' }}>
+          Añadir a mi día
+        </button>
+      )}
+    </div>
   )
 }
 
@@ -90,18 +115,32 @@ export const textoColeccionesMas = (n: number): string => `Y ${n} ${n === 1 ? 'c
  * (Tanda V2, H3) UN SOLO reto a la vista: el primero de la lista (el servidor ya la manda ordenada y sin colecciones de menos de 3 sitios:
  * `elegirRetos` en server/logros/cerca.js). Debajo, «Y N colecciones más avanzan hoy ›» abre la lista de las demás; tocar una abre su álbum.
  */
-export function RetoDelDia({ route }: { route: Route }) {
+export function RetoDelDia({ route, diaAcabado = false, dateIso = null, ahoraMin = 0, vistos = [] }: { route: Route; /** (V73) Con el día acabado, el reto solo sale si aún se puede hacer hoy: un sitio cerca y abierto ahora, con [Añadir a mi día]. */ diaAcabado?: boolean; dateIso?: string | null; ahoraMin?: number; /** Los nombres de las paradas de hoy ya hechas (para «falta tu foto»). */ vistos?: string[] }) {
   const retos = useCompaneroStore((s) => s.cerca?.retos) ?? []
   const [abierto, setAbierto] = useState<string | null>(null)
   const [lista, setLista] = useState(false)
+  const horarioDe = useHorarioDeParadas(route.destination, dateIso)
+  const abiertoSiempre = useAbiertoSiempre(route.destination)
   if (retos.length === 0) return null
-  const [principal, ...demas] = retos
+  // (V73 §3) «Abierto ahora»: con su horario de hoy (en un tramo y con 30 min por delante) o sin horario en los datos (plazas, miradores, pueblos: V56/V63); nunca uno que no conocemos.
+  const abiertoAhora = (nombre: string): boolean => {
+    const h = horarioDe({ name: nombre })
+    if (h) return !h.cerrado && h.tramos.some((t) => { const a = aMin(t.abre); const c = aMin(t.cierra); return a != null && c != null && ahoraMin >= a && ahoraMin <= c - 30 })
+    return abiertoSiempre({ name: nombre })
+  }
+  const faltaFotoDe = (r: RetoDeHoy): string[] => r.sitios.filter((s) => s.estado === 'hoy' && !s.ganado && vistos.some((v) => { const x = sinTildes(v); const y = sinTildes(s.nombre); return x.includes(y) || y.includes(x) })).map((s) => s.nombre)
+  const cercaYAbiertoDe = (r: RetoDeHoy): SitioDeReto | null => r.sitios.find((s) => s.estado === 'fuera' && s.cerca_de_hoy && abiertoAhora(s.nombre)) ?? null
+  const visibles = diaAcabado ? retos.filter((r) => cercaYAbiertoDe(r)) : retos
+  if (visibles.length === 0) return null
+  const [principal, ...demas] = visibles
   const reto = retos.find((r) => r.coleccion === abierto) ?? null
+  const sitioCerca = diaAcabado ? cercaYAbiertoDe(principal) : null
   return (
     <>
-      <div data-hoy-retos={retos.length} className="flex flex-none flex-col gap-3">
-        <TarjetaDeReto reto={principal} ancho="completa" onAbrir={() => setAbierto(principal.coleccion)} />
-        {demas.length > 0 && (
+      <div data-hoy-retos={visibles.length} className="flex flex-none flex-col gap-3">
+        <TarjetaDeReto reto={principal} ancho="completa" onAbrir={() => setAbierto(principal.coleccion)} faltaFoto={faltaFotoDe(principal)} cercaYAbierto={sitioCerca} onAnadir={sitioCerca ? () => useAddFlowStore.getState().openAddFlow(null, sitioCerca.nombre) : undefined} />
+        {/* Con el día acabado, «N colecciones avanzan» está en la tarjeta de cierre (una sola vez): aquí no se repite. */}
+        {!diaAcabado && demas.length > 0 && (
           <button type="button" data-reto-mas={demas.length} onClick={() => setLista(true)} aria-label={`${textoColeccionesMas(demas.length)}: ver la lista`} className="flex min-h-11 items-center justify-center gap-1.5 text-[13px] font-semibold" style={{ color: ORO_TEXTO }}>
             {textoColeccionesMas(demas.length)}
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -117,7 +156,7 @@ export function RetoDelDia({ route }: { route: Route }) {
 }
 
 /** La hoja con las demás colecciones que avanzan hoy: insignia, nombre y «2 de 5». */
-function ListaDeColecciones({ retos, onElegir, onCerrar }: { retos: RetoDeHoy[]; onElegir: (coleccion: string) => void; onCerrar: () => void }) {
+export function ListaDeColecciones({ retos, onElegir, onCerrar }: { retos: RetoDeHoy[]; onElegir: (coleccion: string) => void; onCerrar: () => void }) {
   return createPortal(
     <div data-reto-lista role="dialog" aria-modal="true" aria-label="Más colecciones de hoy" className="fixed inset-0 z-[90] flex items-end justify-center">
       <div className="absolute inset-0" style={{ background: FONDO_DE_HOJA }} onClick={onCerrar} />

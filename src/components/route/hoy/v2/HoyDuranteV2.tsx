@@ -37,8 +37,8 @@ import { RainAlert } from '../../today/RainAlert'
 import { TodayExcursion } from '../../today/TodayExcursion'
 import { BilleteDeVuelo } from '../../dayDetail/BilleteDeVuelo'
 import { useFichasDeHoy, type MitadDeHoy } from '../llegadaVuelta'
-import { anadirMasVisita, useMasVisitas } from '../masVisitas'
-import type { MasVisita } from '../../../../lib/masVisitas'
+import { anadirMasVisita, useDatosDeImportancia, useMasVisitas } from '../masVisitas'
+import { pesoDe, type MasVisita } from '../../../../lib/masVisitas'
 import { AZUL, VERDE } from '../piezas'
 import { CabeceraHoy } from './HoyAntesV2'
 import { HojaMasParaTuDia } from './HojasV2'
@@ -92,6 +92,7 @@ import { AvisoDeEntradas, PreguntaParadaNoMarcada } from './PeligroHoy'
 import { ComoVais } from './ComoVais'
 import { QueHagoAhora } from './QueHagoAhora'
 import { RetoDelDia } from './RetoDelDia'
+import { TarjetaDeCierre } from './TarjetaDeCierre'
 import { FichaCompletaDeHoy, HastaAquiHoy, SiTeSobraTiempoHoy, TarjetaBienvenida, TarjetaMananaOscura, fraseDeCierre } from './BloquesHoy'
 import { DORADO } from '../../../ui/botonesOro'
 
@@ -245,6 +246,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const proximaAperturaDe = useProximaApertura(day.city, dateIso)
   const fichas = useFichasDeHoy(route, day, dateIso)
   const masVisitas = useMasVisitas(route, day)
+  const datosDeImportancia = useDatosDeImportancia(route.destination)
   const [hojaMas, setHojaMas] = useState<MasVisita[] | null>(null)
   const [anadidas, setAnadidas] = useState<Set<string>>(new Set())
   // (HOY2) Tocar la tarjeta (o una fila de «Tu día») abre la ficha COMPLETA de DÍAS, no «Sobre este lugar».
@@ -361,7 +363,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   // (HOY2, Completa 7) Lo de mañana, SOLO cuando no queda ninguna parada por hacer hoy (antes salía también a la hora de la cena).
   const manana =
     conPaseOPrueba && !day.isReturnLeg && !siguiente && paradas.length > 0
-      ? mananaH13({ route, day, reservations, nombreDelDia: (d) => nombreDelDia(route, d, info.gruposDia).titulo, nombreCorto: (r) => info.nombresCortos[r.refId] ?? null, zona: zonaCoords, enCoche })
+      ? mananaH13({ route, day, reservations, nombreDelDia: (d) => nombreDelDia(route, d, info.gruposDia).titulo, nombreCorto: (r) => info.nombresCortos[r.refId] ?? null })
       : null
   const diaDeManana = new Intl.DateTimeFormat('es', { weekday: 'long', day: 'numeric' }).format(isoToLocalDate(addDaysToIso(dateIso, 1)))
   const reservaSiguiente = siguiente ? reservaDe(siguiente) : null
@@ -492,7 +494,8 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   // (HOY2b 5, pantalla 33) Un día sin ruta (ni de llegada ni de vuelta): «Hoy libre», a tu aire.
   const aTuAire = conPaseOPrueba && paradas.length === 0 && !esVuelta && !esLlegada
   const horaSolHoy = horaDelSol(day) ?? solDelDestino?.hora ?? null
-  const cierre = fraseDeCierre(day, paradas)
+  // (V73 §2) «Lo mejor:» sale de lo visto, los imprescindibles primero (los datos de importancia del destino).
+  const cierre = fraseDeCierre(day, paradas, (nombre) => pesoDe(nombre, datosDeImportancia))
 
   // ── La cabecera (Completa 1 a 9): arriba de todo, sola ──
   const cabeceraDeHoy = aTuAire ? (
@@ -660,7 +663,8 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {ultimoVisto && siguiente && sumaDelVisto && <LineaDelLogro texto={`+1 en ${sumaDelVisto}`} />}
 
       {/* (V43 §8) La ubicación en todo HOY: la tarjeta de la parada ya la lleva; aquí, en el resto de estados. */}
-      {conPaseOPrueba0 && !esVuelta && (!siguiente || bienvenida) && <UbicacionDeHoy hay={Boolean(ubicacionReal)} zona={zonaUbi} destino={route.destination} estado={ubicacionEstado} pedir={pedirUbicacion} />}
+      {/* (V73 §1) Con el día acabado ya no queda ninguna parada: no hay adónde llegar, así que no sale «Sin tu ubicación no sabemos cuándo llegas». */}
+      {conPaseOPrueba0 && !esVuelta && ((!siguiente && !diaTerminado) || bienvenida) && <UbicacionDeHoy hay={Boolean(ubicacionReal)} zona={zonaUbi} destino={route.destination} estado={ubicacionEstado} pedir={pedirUbicacion} />}
 
       {/* HOY2 (Completa 4) + V59 §3: a la hora de comer o de cenar, la tarjeta de la comida (la misma que la de la parada, con la imagen fija) en lugar de la de la parada; ya lleva su recuadro de ubicación */}
       {!sinParadasDeVuelta && !bienvenida && siguiente && comidaDeAhora && !esVuelta && (
@@ -693,27 +697,16 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       )}
 
       {/* HOY2 (Completa 7): el día acabado. El título de «Todo visto por hoy» está arriba; aquí, lo que has hecho (o «Hoy has visto el atardecer»). */}
+      {/* (V73 §2; Design «Hoy Al Acabar») La tarjeta de cierre: nunca vacía, con sus etiquetas y la franja «Ver el resumen del día ›» (el mismo `ResumenDia`). */}
       {diaTerminado && (
-        <div className="flex flex-none flex-col gap-2.5 rounded-[26px] bg-[#1C2230] p-[18px] text-[#FFFDF8]" data-hoy-todo-visto style={{ boxShadow: '0 18px 30px -18px rgba(28,34,48,.7)' }}>
-          <span className="flex items-start gap-3">
-            <span className="flex min-w-0 flex-1 flex-col gap-1">
-              <b data-hoy-cierre-titulo style={{ font: "400 28px/1.1 'Instrument Serif',serif", textWrap: 'balance' as never }}>{cierre.titulo}</b>
-              {cierre.sub && <span data-hoy-cierre-sub className="text-[13.5px] leading-[1.35]" style={{ color: 'rgba(251,243,226,.78)' }}>{cierre.sub}</span>}
-            </span>
-            {ultimoVisto && (
-              <button type="button" onClick={deshacer} className="flex h-11 flex-none items-center gap-1.5 rounded-full border-[1.5px] border-[#FFFDF8]/40 px-3.5 text-[13px] font-semibold">
-                <Icono nombre="recuperar" size={15} grosor={1.8} />
-                Deshacer
-              </button>
-            )}
-          </span>
-          {masVisitas.length > 0 && (
-            <button type="button" onClick={() => setHojaMas(masVisitas)} data-mas-visitas className="flex h-11 items-center justify-center gap-1.5 rounded-full border-[1.5px] border-[#FFFDF8]/25 text-[14px] font-semibold">
-              <Icono nombre="anadir" size={15} grosor={1.8} />
-              Más visitas
-            </button>
-          )}
-        </div>
+        <TarjetaDeCierre
+          route={route}
+          datos={{ titulo: cierre.titulo, sub: cierre.sub, atardecer: cierre.atardecer, etiquetas: [cierre.hechas === 1 ? '1 parada' : `${cierre.hechas} paradas`, ...(cierre.sitioAtardecer ? [`Atardecer ${lugarCon('en', cierre.sitioAtardecer)}`] : [])] }}
+          onResumen={logrosActivos() && cuentaApp.tipo === 'cuenta' ? () => useMomentosUI.getState().abrirResumenDia({ iso: dateIso, manana: false }) : null}
+          onDeshacer={ultimoVisto ? deshacer : null}
+          hayMasVisitas={masVisitas.length > 0}
+          onMasVisitas={() => setHojaMas(masVisitas)}
+        />
       )}
     </>
   )
@@ -742,9 +735,12 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
 
       {mostrarPrueba && <TarjetaDiaDePrueba dias={diasRestantes} fila={fila} destino={route.destination} />}
 
+      {/* (V73 §1; Design «Hoy Al Acabar») El orden con el día acabado: cabecera · tarjeta de cierre · ALOJAMIENTO (lo que más se necesita ahora) · reto del día (solo si aún se puede hacer hoy) · ¿Qué hago ahora? · Tu día · Hasta aquí, hoy · MAÑANA · Si te sobra tiempo · Lugares pendientes. */}
+      {diaTerminado && !esVuelta && !sinPase && <VolverAlAlojamiento route={route} desde={ubicacion ?? origenCerca} casa={zonaCoords} enCoche={enCoche} />}
+
       {/* 4 · el sitio de [¿Qué hago ahora?] (lo pone la HOY2b; vacío no ocupa nada) */}
       {/* HOY2b (E): el reto del día (todos, debajo de la tarjeta principal) y, justo debajo, [¿Qué hago ahora?] */}
-      {!sinParadasDeVuelta && !esVuelta && !bienvenida && paradas.length > 0 && <RetoDelDia route={route} />}
+      {!sinParadasDeVuelta && !esVuelta && !bienvenida && paradas.length > 0 && <RetoDelDia route={route} diaAcabado={diaTerminado} dateIso={dateIso} ahoraMin={ahoraMinHoy} vistos={vigentes.filter((s) => s.checkedInAt).map((s) => s.name)} />}
       <div data-hoy-hueco-que-hago-ahora className="flex flex-none flex-col empty:hidden">
         {conPaseOPrueba && !sinParadasDeVuelta && !esVuelta && !bienvenida && paradas.length > 0 && <QueHagoAhora route={route} day={day} dateIso={dateIso} siguiente={siguiente} anterior={anterior} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMinHoy} comida={comidaDeAhora} fraseAtardecer={fraseAtardecer} casa={zonaCoords} />}
       </div>
@@ -756,7 +752,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {manana && (
         <>
           <HastaAquiHoy />
-          <TarjetaMananaOscura cuando={`Mañana, ${diaDeManana}`} titulo={manana.titulo} sales={manana.sales} turno={manana.turno} consejo={manana.consejo} />
+          <TarjetaMananaOscura route={route} cuando={`Mañana, ${diaDeManana}`} manana={manana} dateIso={addDaysToIso(dateIso, 1)} />
         </>
       )}
 
@@ -775,7 +771,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       )}
 
       <TusFotosDeHoy day={day} />
-      {!esVuelta && !sinPase && <VolverAlAlojamiento route={route} desde={ubicacion ?? origenCerca} casa={zonaCoords} enCoche={enCoche} />}
+      {!esVuelta && !sinPase && !diaTerminado && <VolverAlAlojamiento route={route} desde={ubicacion ?? origenCerca} casa={zonaCoords} enCoche={enCoche} />}
       {tarjetaVuelve && !esVuelta && vuelveH14(true)}
 
       {/* 7 · «Si te sobra tiempo», abajo del todo (la lista de DÍAS plegada, solo si hay algo) */}

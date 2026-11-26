@@ -88,7 +88,7 @@ try {
   await a.evaluar(`(async () => {
     const UI = (await import('/src/components/logros/momentos/useMomentosUI.ts')).useMomentosUI; const LG = (await import('/src/store/useLogrosStore.ts')).useLogrosStore; const VS = (await import('/src/components/logros/visto/vistoStore.ts')).useVistoStore; const RS = (await import('/src/store/useRouteStore.ts')).useRouteStore
     window.__linea = []; const t0 = performance.now()
-    const marca = () => { const t = document.body.innerText || ''; return [/Lo que te llevas de hoy/.test(t) && 'RESUMEN', document.querySelector('[data-juego=llegada]') && 'HOJA_EMBLEMA', document.querySelector('[data-visto=hoja-oculto]') && 'HOJA_VIEJA_OCULTO', document.querySelector('[data-visto=hoja-recuerdo]') && 'HOJA_RECUERDO', document.querySelector('[data-visto=hoja-ganado]') && 'HOJA_GANADO', /¡Eh! Aquí hay/.test(t) && 'ALGO_AQUI', !document.querySelector('[data-juego=llegada]') && /^Seguir$/m.test(t) && 'LOGRO(Seguir)', document.querySelector('[data-juego=brilla],[data-juego=mas_cerca]') && 'BRILLA'].filter(Boolean).join('+') + ' [fila=' + UI.getState().fila.mostrando + ' espera=' + UI.getState().fila.esperan.join('/') + ' momentos=' + LG.getState().momentos.length + ' ocupado=' + VS.getState().ocupado + ' V=' + RS.getState().route.days.flatMap((d) => d.stops).filter((x) => x.checkedInAt).length + ']' }
+    const marca = () => { const t = document.body.innerText || ''; return [/Resumen del día/.test(t) && 'RESUMEN', document.querySelector('[data-juego=llegada]') && 'HOJA_EMBLEMA', document.querySelector('[data-visto=hoja-oculto]') && 'HOJA_VIEJA_OCULTO', document.querySelector('[data-visto=hoja-recuerdo]') && 'HOJA_RECUERDO', document.querySelector('[data-visto=hoja-ganado]') && 'HOJA_GANADO', /¡Eh! Aquí hay/.test(t) && 'ALGO_AQUI', !document.querySelector('[data-juego=llegada]') && /^Seguir$/m.test(t) && 'LOGRO(Seguir)', document.querySelector('[data-juego=brilla],[data-juego=mas_cerca]') && 'BRILLA'].filter(Boolean).join('+') + ' [fila=' + UI.getState().fila.mostrando + ' espera=' + UI.getState().fila.esperan.join('/') + ' momentos=' + LG.getState().momentos.length + ' ocupado=' + VS.getState().ocupado + ' V=' + RS.getState().route.days.flatMap((d) => d.stops).filter((x) => x.checkedInAt).length + ']' }
     let ultimo = ''
     setInterval(() => { const m = marca(); if (m !== ultimo) { ultimo = m; window.__linea.push(Math.round(performance.now() - t0) + 'ms ' + m) } }, 120)
     const orig = AudioBufferSourceNode.prototype.start
@@ -155,7 +155,7 @@ try {
     for (let i = 0; i < 40 && !(await hay("Boolean(document.querySelector('[data-juego=llegada],[data-visto=hoja-oculto]'))")); i++) await a.esp(500)
     await a.esp(2500)
     await sacar('hoja_del_emblema')
-    console.log('hoja abierta; resumen a la vez:', await hay("/Lo que te llevas de hoy/.test(document.body.innerText)"))
+    console.log('hoja abierta; resumen a la vez:', await hay("/Resumen del día/.test(document.body.innerText)"))
     await a.evaluar("(document.querySelector('[data-juego-boton=cerrar]') ?? document.querySelector('[data-visto=capa] button[aria-label=Cerrar]'))?.click(); true")
     await a.esp(9000)
     await sacar('tras_cerrar_la_hoja')
