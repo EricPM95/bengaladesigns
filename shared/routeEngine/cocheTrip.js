@@ -22,6 +22,17 @@ const COMIDA_A_PARADA = [
   [/Marina Rubic[oó]n|Playa Blanca/i, 'marina_rubicon'], [/Famara/i, 'caleta_de_famara_y_playa_de_famara'], [/Arrecife/i, 'arrecife_charco_de_san_gines_y_el_paseo'],
 ]
 
+/**
+ * (V58 §6) ¿Abre ese día de la semana (0 = domingo)? `dias_sin_confirmar: true` = no se sabe de ningún día (no sale); `dias_sin_confirmar: [1]` = solo ese día de la semana está sin confirmar (Liken: la web da todos los
+ * días de 12:00 a 23:00 y solo el lunes está en duda): sale el resto de los días y no sale ese. Antes un `true` sin más apagaba a Liken y la «Hora de comer» de Marina Rubicón / Playa Blanca salía sin restaurantes.
+ */
+export function abreEseDia(x, semana) {
+  const sc = x.dias_sin_confirmar
+  if (sc === true) return false
+  if (Array.isArray(sc) && (semana == null || sc.includes(semana))) return false
+  return semana == null || !(x.cierra_dias ?? []).includes(semana)
+}
+
 /* ───────────────────────────── el coche ───────────────────────────── */
 
 export function crearCoche({ matriz, paradas }) {
@@ -135,11 +146,13 @@ function pasosDelDia({ dia, variantes, ctx, datos, coche, placeByName, placeById
     const ventana = place?.windows?.length ? place.windows : typeof place?.schedule === 'string' ? [place.schedule] : []
     const abre = ventana.length ? ventana.map((w) => hm(String(w).split('-')[0])).filter(Number.isFinite).sort((a, b) => a - b)[0] : null
     const cierre = ventana.length ? ventana.map((w) => hm(String(w).split('-')[1])).filter(Number.isFinite).sort((a, b) => b - a)[0] : null
+    // (V63 §12) Los tramos del día en orden (un sitio con cierre de mediodía tiene dos): la visita nunca cae en el hueco entre ellos.
+    const tramos = ventana.map((w) => { const [a, b] = String(w).split('-'); return { open: hm(a), close: hm(b) } }).filter((x) => Number.isFinite(x.open) && Number.isFinite(x.close)).sort((a, b) => a.open - b.open)
     const m = row.min ?? place?.duration_minutes ?? 30
     const ult = place?.last_entry ? hm(place.last_entry) : cierre != null && place?.ver_por === 'solo_dentro' ? cierre - m : null
     return {
       lugar: row.lugar, titulo: row.titulo ?? null, aPie: row.a_pie_min ?? null, p, place, m, opc: Boolean(row.opcional), modo: row.modo ?? null, doc: row.doc ?? '', notas: row.notas ?? [],
-      fijo: row.hora_tipo === 'turno' && row.hora ? hm(row.hora) : null, abre, ult,
+      fijo: row.hora_tipo === 'turno' && row.hora ? hm(row.hora) : null, abre, ult, cierre, tramos,
       sol: Boolean(row.hasta_atardecer), llegadaAntes: row.llegada_antes_min ?? null, row,
       llegar: row.llegar_sol_menos != null && ctx.solMin != null ? ctx.solMin - row.llegar_sol_menos : null,
     }
@@ -162,7 +175,7 @@ function pasosDelDia({ dia, variantes, ctx, datos, coche, placeByName, placeById
   if (dia.id === 'D2' && esVar('sabado')) {
     // Jameos 10:00 → Cueva 11:30 → Haría hacia las 12:35 (mercado y comida) → Casa-Museo → Mirador del Río.
     const jameos = manana.find((s) => /Jameos/.test(s.lugar)); const cueva = manana.find((s) => /Cueva/.test(s.lugar)); const rio = manana.find((s) => /Mirador del R/.test(s.lugar))
-    const haria = tarde.find((s) => /Har[ií]a y la Casa/.test(s.lugar))
+    const haria = tarde.find((s) => s.lugar === 'Haría') // (V67) el pueblo y la Casa-Museo son dos paradas (mismo aparcamiento)
     manana = [jameos, cueva].filter(Boolean)
     tarde = [haria ? { ...haria, m: 60 } : null, rio].filter(Boolean)
     comidaHora = hm('12:35')
@@ -271,6 +284,11 @@ function medirDia({ pasos: pasosIn, zona, coche, domingo, sol, margenTurno, sali
       entra = Math.max(st.fijo, llegada)
     }
     if (st.abre != null && !st.comida) entra = Math.max(entra, st.abre)
+    // (V63 §12) Cierre de mediodía (una iglesia de 13:30 a 16:30): si la visita cae dentro del hueco entre dos tramos, o empezaría antes de que cierre y acabaría dentro, entra cuando vuelve a abrir (después del cierre).
+    if (!st.comida && st.fijo == null && st.tramos?.length > 1) {
+      const siguiente = st.tramos.find((x, i) => i > 0 && x.open > entra && st.tramos[i - 1].close <= x.open && (entra >= st.tramos[i - 1].close || entra + st.m > st.tramos[i - 1].close))
+      if (siguiente) { st.movida_por_cierre_mediodia = siguiente.open - entra; entra = siguiente.open }
+    }
     if (st.llegar != null && primeroHecho) entra = Math.max(entra, st.llegar)
     if (st.comida && st.adelantable) {
       // La comida del D1 no espera a su hora: desde las 12:30. Si aun así sobra hueco (más de 30 min), se alarga la parada de antes (hasta 45 min) en vez de dejar una hora muerta.
@@ -282,6 +300,11 @@ function medirDia({ pasos: pasosIn, zona, coche, domingo, sol, margenTurno, sali
     if (st.opc && !st.comida && sol != null && entra > sol - 15) problemas.push({ tipo: 'oscuro', paso: st, texto: `entrarías a las ${fh(entra)}, con el sol casi puesto (${fh(sol)})` })
     let fin = entra + st.m
     if (st.sol && sol != null) { if (llegada > sol) problemas.push({ tipo: 'sol', paso: st, texto: `llegarías a las ${fh(llegada)}, después del atardecer (${fh(sol)})` }); fin = Math.max(fin, sol + 5) }
+    // (V58 §6) NINGUNA visita acaba después de que cierre el sitio: si por la hora (o por «hasta el atardecer») acabaría más tarde, se recorta hasta el cierre (y se apunta cuántos minutos se han quitado). Si ya entra con el sitio cerrado, es un problema del día.
+    if (st.cierre != null && !st.comida && fin > st.cierre) {
+      if (entra >= st.cierre) problemas.push({ tipo: 'cierre', paso: st, texto: `entrarías a las ${fh(entra)} y el sitio cierra a las ${fh(st.cierre)}` })
+      else { st.recortada_por_cierre_min = fin - st.cierre; fin = st.cierre }
+    }
     if (st.comida && entra + 0 > 15 * 60) problemas.push({ tipo: 'comida', paso: st, texto: `la comida empezaría a las ${fh(entra)}, pasadas las 15:00` })
     lineas.push({ paso: st, tramo, llegada, entra, fin, dur: fin - entra })
     if (st.p) prev = st.p
@@ -447,7 +470,7 @@ export function planCocheDia({ destData, datos, dayId, dayNumber, contentDays, d
   }
 
   // ── la comida del día (LL: solo restaurantes que abren ese día de la semana; si no se sabe de ninguno abierto, sin nombre) ──
-  const abre = (x) => !x.dias_sin_confirmar && (semana == null || !(x.cierra_dias ?? []).includes(semana))
+  const abre = (x) => abreEseDia(x, semana)
   const comidaLinea = lineas.find((l) => l.paso.comida)
   const meals = []
   if (comidaLinea) {
@@ -510,7 +533,7 @@ export function planCocheDia({ destData, datos, dayId, dayNumber, contentDays, d
   // LL: el plan de la llegada (qué fila, la hora útil, qué día de la tabla cuenta como hecho) y, el último día, el de la vuelta con su hora límite.
   const llegada_ll = esLL ? {
     aterriza: fh(ll.aterrizaMin), hora_util: fh(ll.horaUtil), fila: ll.fila, zona: ll.zona, absorbe: ll.absorbe ?? null, de_noche: ll.nocheLlegada,
-    salir_aeropuerto_min: datos.ll?.constantes?.salir_aeropuerto_min ?? 45, recoger_coche_min: recoger, instalarse_min: datos.ll?.constantes?.instalarse_min ?? 60,
+    salir_aeropuerto_min: datos.ll?.constantes?.salir_aeropuerto_min ?? 45, recoger_coche_min: recoger, instalarse_min: datos.ll?.constantes?.instalarse_min ?? 20,
     aeropuerto_a_zona_min: coche.min('aeropuerto_ace', ll.zona), comida_cerca: r.comidaInicial, sin_ruta: stops.length === 0,
   } : null
   const salirZona = esV && !stops.length ? vl.salirMin : r.finDia
@@ -607,7 +630,7 @@ function excursionDia({ base, dia, coche, zona, pase, sinCoche, sin_coche, datos
       coche_min: ida + vuelta, coche_con_aparcar_min: ida + vuelta + coche.aparcar(destinoId, false), tope_min: destData.destination_config?.tope_coche_dia_min ?? 180, aviso_tope: null,
     }
   // LL (Eric, 4-nov): la comida de La Graciosa (Casa Enriqueta o El Veril según el día) y la cena cerca del alojamiento, solo con restaurantes que abren ese día.
-  const abre = (x) => !x.dias_sin_confirmar && (semana == null || !(x.cierra_dias ?? []).includes(semana))
+  const abre = (x) => abreEseDia(x, semana)
   const meals = []
   const comidas = dia.id === 'DG' ? (datos.restaurantes?.comidas?.DG_comida ?? []).filter(abre) : []
   if (dia.id === 'DG') {

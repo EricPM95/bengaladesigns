@@ -1088,18 +1088,40 @@ export function planListasTrip(args) {
       const mueve = lista.filter((_, i) => sale.has(i))
       const resto = lista.filter((_, i) => !sale.has(i))
       const iResto = iMalo - (sale.size - 1) // (cuántos de los de delante quedan en `resto`)
+      // (V61) El día de llegada: lo que cierra pronto puede ir ANTES del Free Tour o de la reserva (que se quedan a SU hora) si cabe sin hacerla llegar tarde.
+      const cruzaFijas = Boolean(draft.diaLlegada)
       for (let k = Math.min(iResto, resto.length) - 1; k >= 0; k--) {
         const previo = resto[k]
-        if (previo.kind === 'comida' || previo.kind === 'cena' || previo.franja !== malo.franja) break
+        if (previo.kind === 'comida' || previo.kind === 'cena') break
+        if (!cruzaFijas && previo.franja !== malo.franja) break
         if (previo.kind === 'traslado') continue
-        if (esFijo(previo)) break
-        const pos = resto[k - 1]?.kind === 'traslado' ? k - 1 : k
+        if (esFijo(previo)) {
+          if (!cruzaFijas) break
+          if (previo.llegada) continue // (nunca entre la «Llegada a…» y su parada)
+        }
+        let pos = k
+        while (pos > 0 && (resto[pos - 1].kind === 'traslado' || (cruzaFijas && resto[pos - 1].llegada && resto[pos - 1].de === resto[pos].id))) pos--
         const nuevo = [...resto.slice(0, pos), ...mueve, ...resto.slice(pos)]
         if (cerradasEn(nuevo).some((id) => id === malo.id || !antes.includes(id))) continue
+        if (cruzaFijas && simular(nuevo).some((it) => it.kind === 'stop' && it.hora && !it.llegada && it.tarde > 0)) continue
         if (reglas.nuevas(reglasAntes, baseReglas(nuevo)).length > 0) continue
         const rodeo = andarTotal(nuevo) - andarAntes
         if (rodeo > cfg.rodeo_max_min) continue
         return { lista: nuevo, antesDe: previo, rodeo }
+      }
+      // (V63 §12) Nada por delante: se prueba DESPUÉS (detrás de las paradas de su franja que van tras ella): el cierre de mediodía de una iglesia (13:30-16:30) no se queda con una visita dentro.
+      for (let k = Math.max(0, iResto); k < resto.length; k++) {
+        const sigue = resto[k]
+        if (sigue.kind === 'comida' || sigue.kind === 'cena') break
+        if (sigue.franja !== malo.franja) break
+        if (sigue.kind === 'traslado') continue
+        if (esFijo(sigue)) break
+        const nuevo = [...resto.slice(0, k + 1), ...mueve, ...resto.slice(k + 1)]
+        if (cerradasEn(nuevo).some((id) => id === malo.id || !antes.includes(id))) continue
+        if (reglas.nuevas(reglasAntes, baseReglas(nuevo)).length > 0) continue
+        const rodeo = andarTotal(nuevo) - andarAntes
+        if (rodeo > cfg.rodeo_max_min) continue
+        return { lista: nuevo, antesDe: sigue, rodeo, despues: true }
       }
       return null
     }
@@ -1150,15 +1172,26 @@ export function planListasTrip(args) {
           continue
         }
         // 1b. un rodeo pequeño: si llegaría cuando ya ha cerrado, se prueba a ponerla antes de lo que no cierra (Tanda 11, punto 13)
-        if (abre == null) {
+        // (V63 §12) También si cae en el cierre de MEDIODÍA (una iglesia de 13:30 a 16:30: ya cerró un tramo y aún no abre el siguiente): primero se prueba a moverla antes o después.
+        const enCierreDeMediodia = abre != null && sesiones.some((x) => x.close <= malo.t0)
+        if (abre == null || enCierreDeMediodia) {
           const rodeo = reordenarPorCierre(out, malo)
           if (rodeo) {
             out = rodeo.lista
-            log.push({ id: malo.id, lugar: malo.titulo ?? malo.lugar, sitio: malo.lugar, que: 'orden', causa: `${malo.titulo ?? malo.lugar} llegaría cuando ya ha cerrado: va antes de ${rodeo.antesDe.titulo ?? rodeo.antesDe.lugar} (un rodeo de ${Math.max(0, rodeo.rodeo)} min): lo que cierra antes, primero` })
+            log.push({ id: malo.id, lugar: malo.titulo ?? malo.lugar, sitio: malo.lugar, que: 'orden', causa: rodeo.despues ? `${malo.titulo ?? malo.lugar} llegaría en su cierre de mediodía: va después de ${rodeo.antesDe.titulo ?? rodeo.antesDe.lugar} (un rodeo de ${Math.max(0, rodeo.rodeo)} min)` : `${malo.titulo ?? malo.lugar} llegaría cuando ya ha cerrado: va antes de ${rodeo.antesDe.titulo ?? rodeo.antesDe.lugar} (un rodeo de ${Math.max(0, rodeo.rodeo)} min): lo que cierra antes, primero` })
             continue
           }
         }
         const aviso = horaAbre ? `Abre a las ${horaAbre}` : 'Hoy ya ha cerrado'
+        // (V61) El día de llegada: lo que a su hora ya habrá cerrado NO se queda en la ruta ni «por fuera» ni «de camino»: sale del día (a «Si te sobra tiempo» = Lugares pendientes) y el viajero lo pasa a otro día.
+        if (draft.diaLlegada && abre == null && !esFijo(malo)) {
+          const { lista: nueva, caminos } = mandarASobra(out, malo)
+          apuntarCaminos(caminos, malo)
+          spare.push({ ...malo, razon: 'horario', spareReason: 'Hoy ya ha cerrado: para otro día', cerradoAlLlegar: true })
+          log.push({ id: malo.id, lugar: malo.titulo ?? malo.lugar, sitio: malo.lugar, que: 'sobra', causa: `llegaría hacia las ${toHHMM(malo.t0)} y ya ha cerrado, y no cabe antes: sale del día (otro día o pendientes)` })
+          out = nueva
+          continue
+        }
         // 2. por fuera (o de camino si es de poca importancia), con su aviso
         if (source.minutos_fuera != null || source.pass_by || source.type === 'exterior') {
           const camino = (nivelDe(malo.lugar) ?? 3) >= 3

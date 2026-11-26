@@ -6,7 +6,7 @@
  * del aeropuerto a la zona + 60 (instalarse). Los imprescindibles grandes (D1, D2, DG) nunca el día de llegada ni el de vuelta.
  */
 const hm = (s) => { const [h, m] = String(s).split(':').map(Number); return h * 60 + m }
-export const CONSTANTES_LL = { salir_aeropuerto_min: 45, recoger_coche_min: 60, instalarse_min: 60, devolver_coche_min: 30, aeropuerto_min: 120 }
+export const CONSTANTES_LL = { salir_aeropuerto_min: 45, recoger_coche_min: 60, instalarse_min: 20, devolver_coche_min: 30, aeropuerto_min: 120 }
 
 /** La zona de la que se cuenta: la del viajero; sin zona, la que tiene el trayecto más largo desde el aeropuerto. */
 export function zonaParaLlegada({ coche, zona, zonas }) {
