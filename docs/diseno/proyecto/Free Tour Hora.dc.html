@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 30% at 50% 0%,#F1E8D6 0%,#E0D3BA 75%);padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">APP · RESERVAS · FREE TOUR</span><span style="font:400 40px/1 'Instrument Serif',serif">Elige día y hora</span></div>
+  <div style="display:grid;grid-template-columns:repeat(3,390px);gap:52px 44px;align-items:start;justify-content:start">
+  <sc-for list="{{ boards }}" as="b" hint-placeholder-count="3">
+    <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.08em;color:#6F4E37">{{ b.id }} · {{ b.cap }}</span>
+      <div style="position:relative;width:375px;height:812px;flex:none;border-radius:48px;overflow:hidden;background:#8A8070;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45)">
+        <span style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:112px;height:32px;border-radius:20px;background:#0E1118;z-index:60"></span>
+        <div style="position:absolute;inset:0;background:#E8E3CF"><span style="position:absolute;inset:0;background:repeating-linear-gradient(40deg,rgba(255,255,255,.6) 0 3px,transparent 3px 44px),repeating-linear-gradient(-30deg,rgba(255,255,255,.4) 0 2px,transparent 2px 60px)"></span></div>
+        <div style="position:absolute;inset:0;background:rgba(20,16,10,.45);z-index:40"></div>
+        <div style="position:absolute;left:0;right:0;bottom:0;z-index:50;border-radius:32px 32px 0 0;background:#FBF3E2;padding:10px 18px 30px;display:flex;flex-direction:column;gap:14px;box-shadow:0 -20px 40px rgba(0,0,0,.25)">
+          <span style="align-self:center;width:44px;height:4px;border-radius:2px;background:rgba(28,34,48,.25)"></span>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start"><span style="display:flex;flex-direction:column;gap:2px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:#6F4E37">FREE TOUR · ELIGE DÍA Y HORA</span><span style="font:400 32px/1.05 'Instrument Serif',serif">Free Tour por Roma</span></span><span style="flex:none;width:38px;height:38px;border-radius:50%;background:rgba(28,34,48,.08);display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1C2230" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><sc-for list="{{ b.days }}" as="d" hint-placeholder-count="3"><div style="height:68px;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:{{ d.bg }};color:{{ d.fg }};border:1px solid {{ d.bd }}"><span style="font:700 16px 'Geist'">{{ d.n }}</span><span style="font:500 11.5px 'Geist';color:{{ d.sc }}">{{ d.s }}</span></div></sc-for></div>
+          <sc-if value="{{ b.err }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:10px;padding:14px;border-radius:16px;background:#FDF1DC;border:1px solid rgba(200,100,30,.4)"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#C8641E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 9v4M12 17h.01M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path></svg><span style="font:600 14px/1.35 'Geist';color:#7A3E0E">Este día no quedan plazas. Elige otro día.</span></div></sc-if>
+          <sc-if value="{{ b.hours }}" hint-placeholder-val="{{ true }}">
+            <span style="text-align:center;font:600 11px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.5)">HORA DE INICIO</span>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><sc-for list="{{ b.hs }}" as="h" hint-placeholder-count="6"><div style="min-height:64px;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:{{ h.bg }};border:{{ h.bd }};padding:6px 2px"><span style="font:700 17px 'Geist';color:{{ h.fg }};text-decoration:{{ h.td }}">{{ h.t }}</span><span style="font:600 10.5px 'Geist';color:{{ h.sc }};text-align:center;line-height:1.2">{{ h.s }}</span></div></sc-for></div>
+          </sc-if>
+          <span style="height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;font:700 16px 'Geist';background:{{ b.gbg }};color:{{ b.gfg }};box-shadow:{{ b.gsh }}">Guardar el Free Tour</span>
+        </div>
+      </div>
+      <span style="font:400 14px/1.45 'Geist';color:rgba(28,34,48,.72);max-width:375px;text-wrap:pretty">{{ b.note }}</span>
+    </div>
+  </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals(){
+    const D=(n,s,st)=>({n,s,bg:st==='on'?'#1C2230':st==='off'?'#EFEAE0':'#FFFDF8',fg:st==='on'?'#FBF3E2':st==='off'?'rgba(28,34,48,.4)':'#1C2230',bd:st==='on'?'#1C2230':st==='off'?'rgba(28,34,48,.08)':'rgba(28,34,48,.14)',sc:st==='on'?'#F3D88F':st==='off'?'#A04A2A':'rgba(28,34,48,.55)'});
+    const H=(t,s,k,sel)=>{const base={t,s,td:'none',bg:'#FFFDF8',bd:'1px solid rgba(28,34,48,.14)',fg:'#1C2230',sc:'rgba(28,34,48,.55)'};
+      if(k==='rec')return{...base,bd:'2px solid #2B7F45',bg:'#EAF5EC',s:'Te la recomendamos',sc:'#1F6236'};
+      if(k==='few')return{...base,s:'Quedan 3',sc:'#C8641E'};
+      if(k==='out')return{...base,bg:'#EFEAE0',fg:'rgba(28,34,48,.35)',td:'line-through',bd:'1px solid rgba(28,34,48,.08)',s:'Agotado',sc:'rgba(28,34,48,.45)'};
+      if(k==='sel')return{...base,bg:'#1C2230',fg:'#F3D88F',bd:'1px solid #1C2230',s:'',sc:'#F3D88F'};
+      return{...base,s:''};};
+    const days=[D('Mar 13','En tu ruta','on'),D('Mié 14','','')],days3=[...days,D('Jue 15','','')];
+    const gOff={gbg:'linear-gradient(135deg,#F3EAD0,#E6D8B2)',gfg:'rgba(74,53,16,.4)',gsh:'none'},gOn={gbg:'linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E)',gfg:'#4A3510',gsh:'0 10px 20px -14px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55)'};
+    const full=[H('10:00','','rec'),H('12:00','','few'),H('15:00','',''),H('17:00','','out'),H('19:00','',''),H('21:00','','out')];
+    return{boards:[
+      {id:'H1',cap:'Con las plazas',days:days3,hours:true,err:false,hs:full,...gOff,note:'La recomendada con borde y texto verdes, «Quedan 3» en ámbar y las agotadas tachadas, sin poder pulsarse. [Guardar] apagado hasta elegir una hora.'},
+      {id:'H1b',cap:'Con una hora elegida',days:days3,hours:true,err:false,hs:[full[0],full[1],H('15:00','','sel'),full[3],full[4],full[5]],...gOn,note:'La hora elegida en oscuro con dorado y [Guardar el Free Tour] activo.'},
+      {id:'H2',cap:'Un día sin ninguna hora libre',days:[D('Mar 13','Agotado','off'),D('Mié 14','',''),D('Jue 15','','')],hours:false,err:true,hs:[],...gOff,note:'El día en gris con «Agotado». Al pulsarlo: «Este día no quedan plazas. Elige otro día.»'},
+      {id:'H3',cap:'Sin datos de Civitatis',days:days3,hours:true,err:false,hs:['10:00','12:00','15:00','17:00','19:00','21:00'].map(t=>H(t,'','')),...gOff,note:'Las mismas horas en botones, sin plazas ni «Agotado» ni recomendación.'}
+    ]};
+  }
+}
+</script>
+</body>
+</html>

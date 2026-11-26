@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { Emblema, Insignia, Sello, type GradoDeSello } from '../dibujos'
 import { lineaDeSecretos } from '../momentos/textosResumen'
@@ -10,12 +10,14 @@ import './destino/destino.css'
 import { Capa } from './Capa'
 import { useGanados } from './todos/api'
 import { useLogrosPantallas, type PantallaDe } from './useLogrosPantallas'
-import { ListaDeColeccionPedida } from '../ficha/ListaDeColeccion'
+import { HojasDeLogros } from './todos/HojasDeLogros'
+import { useHojasDeLogros } from './todos/api'
+import './todos/todos.css'
 
 /**
  * LA PÁGINA DE UN DESTINO (8C2; G1, G2 y T3 de «Mi vitrina»): su cabecera con el sello principal, sus sellos de ciudad, sus colecciones y sus emblemas secretos.
  * Los emblemas que faltan salen como «?», nunca cuáles son. El Vaticano vive dentro de Roma: si se llega desde él (`resaltar: 'vaticano'`, o `destino: 'vaticano'`),
- * su sello sale marcado con «Estás aquí». Cada colección abre su álbum (`ColeccionPorDentro`).
+ * su sello sale marcado con «Estás aquí». Tocar una medalla o una colección sube su ficha en grande (V72, `todos/FichaGrande.tsx`; hasta la V71 la colección abría una lista al final de la página y la medalla no abría nada).
  * Lo hecho sale del servidor (GET /api/logros/destino); nada de números escritos a mano.
  */
 type Pagina = PantallaDe<'destino'> & { resaltar?: string }
@@ -47,18 +49,20 @@ export default function PaginaDeDestino({ pantalla }: { pantalla: Pagina }): Rea
 
 function Contenido({ datos, resaltar, volver }: { datos: PaginaDeDestinoDatos; resaltar: string | null; volver: () => void }): ReactNode {
   const foto = useFotoDeDestino(datos.destino, datos.ciudad)
-  // (V14) Tocar una colección abre su lista (✓ lo que tienes, ○ lo que falta) con [Ver la colección ›] al final; ya no salta directo a la pantalla de la colección.
-  const [abierta, setAbierta] = useState<string | null>(null)
-  const abrirColeccion = (coleccion: string) => setAbierta((a) => (a === coleccion ? null : coleccion))
+  // (V72) Tocar una colección o una medalla sube su ficha en grande (la misma pieza de «Todos mis logros»).
+  const abrirFicha = (clave: string) => useHojasDeLogros.getState().abrirFicha(clave)
+  useEffect(() => () => useHojasDeLogros.getState().limpiar(), [])
   const principal = datos.sellos.find((s) => s.principal) ?? datos.sellos[0] ?? null
   const grado = principal?.grado ?? null
   const color = grado ? COLOR_DE_GRADO[grado] : 'rgba(28,34,48,.45)'
   const n = datos.numeros
-  const vitrina = useGanados((s) => s.datos?.vitrina)
+  const ganados = useGanados((s) => s.datos)
+  const vitrina = ganados?.vitrina
   useEffect(() => void useGanados.getState().cargar(), [])
   const enVitrina = (clave: string): boolean | null => (vitrina ? [...(vitrina.pedestal ?? []), ...(vitrina.exclusivos ?? []), ...Object.values(vitrina.baldas ?? {}).flatMap((b) => b.huecos)].includes(clave) : null)
   const lineaSecretos = lineaDeSecretos(datos.ciudad, datos.emblemas.total, datos.emblemas.encontrados, !grado)
   return (
+    <>
     <main style={{ flex: 1, minHeight: 0, overflowY: 'auto', scrollbarWidth: 'none', paddingBottom: 'calc(env(safe-area-inset-bottom,0px) + 40px)', display: 'flex', flexDirection: 'column', gap: 12 }}>
       {/* La cabecera: el color del destino y el sello principal en una tarjeta que sube sobre él. */}
       <div data-foto-de-destino={foto ? '1' : '0'} style={{ position: 'relative', flex: 'none', height: 170, background: foto ? `center/cover url(${foto})` : (FONDO_DE_DESTINO[datos.destino] ?? FONDO_POR_DEFECTO) }}>
@@ -82,19 +86,13 @@ function Contenido({ datos, resaltar, volver }: { datos: PaginaDeDestinoDatos; r
       <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
         <Titulo>Medallas de ciudad</Titulo>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-          {datos.sellos.map((s) => <TarjetaDeSello pin={s.grado ? enVitrina(`${datos.destino}|sello|${s.id}:${s.grado}`) : undefined} key={s.id} s={s} aqui={resaltar === s.id} />)}
+          {datos.sellos.map((s) => <TarjetaDeSello pin={s.grado ? enVitrina(`${datos.destino}|sello|${s.id}:${s.grado}`) : undefined} key={s.id} s={s} aqui={resaltar === s.id} abrir={() => abrirFicha(`sello:${datos.destino}:${s.id}`)} />)}
         </div>
 
         <Titulo cuenta={`${n.colecciones_completas} de ${n.colecciones_total}`}>Colecciones</Titulo>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
-          {datos.colecciones.map((c) => <TarjetaDeColeccion key={c.id} c={c} abrir={() => abrirColeccion(c.id)} pin={c.completa ? enVitrina(`${datos.destino}|coleccion|${c.id}`) : undefined} />)}
+          {datos.colecciones.map((c) => <TarjetaDeColeccion key={c.id} c={c} abrir={() => abrirFicha(`coleccion:${datos.destino}:${c.id}`)} pin={c.completa ? enVitrina(`${datos.destino}|coleccion|${c.id}`) : undefined} />)}
         </div>
-        {abierta && (
-          <div data-coleccion-abierta={abierta} style={{ borderRadius: 18, background: '#F5EFE4', padding: '10px 10px 2px' }}>
-            <span style={{ display: 'block', padding: '0 4px 8px', font: "400 20px/1.1 'Instrument Serif',serif" }}>{datos.colecciones.find((c) => c.id === abierta)?.nombre}</span>
-            <ListaDeColeccionPedida destino={datos.destino} coleccion={abierta} ciudad={datos.ciudad} />
-          </div>
-        )}
 
         <Titulo>Emblemas secretos</Titulo>
         <div style={{ borderRadius: 24, background: '#1C2230', color: '#FFFDF8', padding: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -115,6 +113,8 @@ function Contenido({ datos, resaltar, volver }: { datos: PaginaDeDestinoDatos; r
         </div>
       </div>
     </main>
+    {ganados && <HojasDeLogros g={ganados} />}
+    </>
   )
 }
 
@@ -142,16 +142,16 @@ function PinDeVitrina({ puesto, arriba = 6, derecha = 6 }: { puesto: boolean | n
   )
 }
 
-function TarjetaDeSello({ s, aqui, pin }: { s: SelloDePagina; aqui: boolean; pin?: boolean | null }): ReactNode {
+function TarjetaDeSello({ s, aqui, pin, abrir }: { s: SelloDePagina; aqui: boolean; pin?: boolean | null; abrir: () => void }): ReactNode {
   const color = s.grado ? COLOR_DE_GRADO[s.grado] : 'rgba(28,34,48,.45)'
   return (
-    <div style={{ position: 'relative', borderRadius: 20, background: '#FFFDF8', border: `1px solid ${aqui ? 'oklch(0.8 0.14 70)' : 'rgba(28,34,48,.07)'}`, boxShadow: aqui ? '0 0 0 3px oklch(0.8 0.14 70 / .35)' : 'none', padding: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, textAlign: 'center' }}>
+    <button type="button" data-medalla-de-ciudad={s.id} onClick={abrir} style={{ position: 'relative', minHeight: 44, cursor: 'pointer', color: 'inherit', font: 'inherit', borderRadius: 20, background: '#FFFDF8', border: `1px solid ${aqui ? 'oklch(0.8 0.14 70)' : 'rgba(28,34,48,.07)'}`, boxShadow: aqui ? '0 0 0 3px oklch(0.8 0.14 70 / .35)' : 'none', padding: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, textAlign: 'center' }}>
       <Sello id={s.id} grado={(s.grado ?? 'bronce') as GradoDeSello} tam={72} apagado={!s.grado} animado={false} />
       <span style={{ font: "400 15px/1.1 'Instrument Serif',serif" }}>{`Medalla ${conDe(s.nombre)}`}</span>
       <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.08em', color, textTransform: 'uppercase' }}>{s.grado ?? 'Por conseguir'}</span>
       {aqui && <span style={{ height: 22, padding: '0 9px', borderRadius: 999, background: '#F1E3BF', color: '#6F4E37', font: "700 10.5px/22px 'Geist'" }}>Estás aquí</span>}
       <PinDeVitrina puesto={pin} arriba={8} derecha={8} />
-    </div>
+    </button>
   )
 }
 
@@ -168,6 +168,9 @@ function TarjetaDeColeccion({ c, abrir, pin }: { c: ColeccionDePagina; abrir: ()
       </span>
       <span style={{ font: "500 11px/1.2 'Geist'", textWrap: 'balance' }}>{c.nombre}</span>
       <span style={{ font: "600 10px 'Geist Mono',monospace", color: c.completa ? 'oklch(0.42 0.09 150)' : hay ? 'oklch(0.48 0.17 5)' : 'rgba(28,34,48,.45)' }}>{c.completa ? '✓ Completa' : hay ? `${c.n} de ${c.total}` : 'Sin empezar'}</span>
+      <span data-avance-de-coleccion aria-hidden="true" style={{ width: '80%', height: 3, borderRadius: 3, background: 'rgba(28,34,48,.1)', overflow: 'hidden' }}>
+        <span style={{ display: 'block', height: '100%', width: `${c.total ? Math.round((c.n / c.total) * 100) : 0}%`, borderRadius: 3, background: c.completa ? 'oklch(0.5 0.1 150)' : 'oklch(0.48 0.17 5)' }} />
+      </span>
       <PinDeVitrina puesto={pin} />
     </button>
   )

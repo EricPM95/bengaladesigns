@@ -14,6 +14,8 @@ export function CamaraApp({ nombre, oculto, alFoto, alCerrar }: { nombre: string
   const [lado, setLado] = useState<'environment' | 'user'>('environment')
   const [listo, setListo] = useState(false)
   const [sinVisor, setSinVisor] = useState(false)
+  const estado = useRef({ listo: false, sinVisor: false })
+  estado.current = { listo, sinVisor }
 
   useEffect(() => {
     let vivo = true
@@ -51,9 +53,11 @@ export function CamaraApp({ nombre, oculto, alFoto, alCerrar }: { nombre: string
     [],
   )
 
-  const disparar = () => {
+  const disparar = async () => {
     const v = video.current
-    if (!listo || !v || !v.videoWidth) {
+    // (V72 §3b) Si se pulsa el disparador mientras el visor aún se abre («ABRIENDO LA CÁMARA…») o antes del primer fotograma, se espera hasta 3 s a que esté (antes abría el selector de archivos y la foto no se hacía). Si no hay visor, sí el selector.
+    for (let i = 0; i < 30 && !estado.current.sinVisor && !(estado.current.listo && v?.videoWidth); i++) await new Promise((r) => window.setTimeout(r, 100))
+    if (!estado.current.listo || !v || !v.videoWidth) {
       entrada.current?.click()
       return
     }
@@ -99,7 +103,7 @@ export function CamaraApp({ nombre, oculto, alFoto, alCerrar }: { nombre: string
       <div className="flex-1" />
       <div className="relative flex items-center justify-between px-[34px] pb-[54px]">
         <span className="h-12 w-12" />
-        <button type="button" onClick={disparar} aria-label="Hacer la foto" className="h-20 w-20 rounded-full border-4 border-[#FFFDF8] bg-transparent p-[5px] active:scale-95">
+        <button type="button" onClick={() => void disparar()} aria-label="Hacer la foto" className="h-20 w-20 rounded-full border-4 border-[#FFFDF8] bg-transparent p-[5px] active:scale-95">
           <span className="block h-full w-full rounded-full" style={{ background: oculto ? 'linear-gradient(110deg,#E4C58A,#F7E6BE 50%,#E4C58A)' : '#FFFDF8' }} />
         </button>
         <button type="button" onClick={() => setLado((l) => (l === 'environment' ? 'user' : 'environment'))} aria-label="Girar cámara" className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FFFDF8]/15 text-[#FFFDF8]">

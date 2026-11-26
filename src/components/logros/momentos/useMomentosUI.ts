@@ -104,10 +104,20 @@ function comprobarHojaAlFinal(): void {
   relojHoja = window.setTimeout(() => {
     const u = useMomentosUI.getState()
     const l = useLogrosStore.getState()
+    // (V72 §3b) Si la persona ya ha seguido con lo suyo (la cámara, la hoja de una foto, un aviso del Visto…), «Tus logros» NO se abre sola: ni tapa HOY ni tapa la cámara. Se olvida el encargo (no se abre luego, sin que nadie lo pida).
+    if (u.hojaAlFinal && l.hojaAbierta) {
+      useMomentosUI.setState({ hojaAlFinal: false })
+      return
+    }
     if (!u.hojaAlFinal || u.ronda || u.fila.mostrando || u.fila.esperan.length > 0 || l.momentos.length > 0 || l.exp) return
     useMomentosUI.setState({ hojaAlFinal: false })
+    if (useLogrosStore.getState().hojaAbierta) return
     u.abrirHojaLogros()
   }, 2600)
 }
 useMomentosUI.subscribe(comprobarHojaAlFinal)
 useLogrosStore.subscribe(comprobarHojaAlFinal)
+// (V72 §3b) En cuanto la persona abre la cámara o cualquier hoja del Visto, «Tus logros al final» ya no se abre sola.
+useLogrosStore.subscribe((e, previo) => {
+  if (!previo.hojaAbierta && e.hojaAbierta && useMomentosUI.getState().hojaAlFinal) useMomentosUI.setState({ hojaAlFinal: false })
+})

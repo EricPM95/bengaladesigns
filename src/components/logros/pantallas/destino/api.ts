@@ -11,6 +11,8 @@ export interface SelloDePagina {
   total: number
   fecha: string | null
   principal: boolean
+  /** El grado que sigue y cuántos sitios faltan (las cuentas de `sellos` en data/logros/<destino>.json); null en el más alto. */
+  siguiente?: { grado: 'bronce' | 'plata' | 'oro' | 'diamante'; faltan: number; nombre: string } | null
 }
 export interface ColeccionDePagina {
   id: string

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="position:relative;width:{{ W }};height:{{ H }};overflow:hidden;background:linear-gradient(160deg,#BFD4EA 0%,#E8D3B0 55%,#E39A58 100%);flex:none">
+  <span style="position:absolute;inset:0;background:radial-gradient(60% 80% at 50% 40%,rgba(255,244,214,.55),transparent 70%)"></span>
+  <span style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.05) 0 2px,transparent 2px 16px)"></span>
+  <svg viewBox="0 0 120 80" preserveAspectRatio="xMidYMid meet" style="position:absolute;inset:0;width:100%;height:100%" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 66h108" stroke="#FFF6E2" stroke-opacity=".55" stroke-width="1" stroke-dasharray="1 4"></path>
+    <g transform="translate(84 38) scale(1.45)" stroke="#FFF6E2" stroke-width="1.7" opacity=".97"><path d="{{ ic }}"></path></g>
+    <path d="{{ trail }}" stroke="#FFF6E2" stroke-opacity=".5" stroke-width="1.4" stroke-dasharray="2 4"></path>
+  </svg>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:170},&quot;kind&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;avion&quot;,&quot;tren&quot;,&quot;coche&quot;],&quot;default&quot;:&quot;avion&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;w&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;100%&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;h&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;100%&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const PL='M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z',CAR='M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11M3 11h18v6H3zM6 17v2M18 17v2M7.5 14h.01M16.5 14h.01',TR='M7 3h10a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3zM4 11h16M8 21l2-3M16 21l-2-3M8.5 14.5h.01M15.5 14.5h.01';
+class Component extends DCLogic {
+  renderVals(){
+    const kd=String(this.props.kind||'avion'),tr=kd==='tren';
+    const w=this.props.w==null?'100%':this.props.w,h=this.props.h==null?'100%':this.props.h;
+    return{W:typeof w==='number'?w+'px':w,H:typeof h==='number'?h+'px':h,ic:kd==='coche'?CAR:(tr?TR:PL),trail:tr?'M8 52h32':'M10 56C28 52 40 46 54 40'};
+  }
+}
+</script>
+</body>
+</html>

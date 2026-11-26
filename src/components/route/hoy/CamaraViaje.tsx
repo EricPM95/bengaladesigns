@@ -9,6 +9,7 @@ import { abrirPase } from '../../../lib/pago'
 import { nombreDelPase } from '../../../lib/nombrePase'
 import { METROS_EN_LA_PARADA, camaraExplicada, guardarFotoSinSubir, marcarCamaraExplicada, modoDeCamara, paradaDeLaFoto, rangoDelViaje, subirFotosPendientes, useCamaraViajeStore, type FaseDelViaje, type ModoDeCamara, type PedidoDeFoto } from '../../../lib/camaraViaje'
 import { useLogrosStore } from '../../../store/useLogrosStore'
+import { useMomentosUI } from '../../logros/momentos/useMomentosUI'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { useVistoStore } from '../../logros/visto/vistoStore'
 import { CamaraApp } from '../../logros/visto/CamaraApp'
@@ -214,6 +215,13 @@ export function BotonCamaraViaje({ route, fase, conAcceso, day }: PropsBotonCama
   const tripId = useSyncStore((s) => s.activeTripId) ?? route.id
   const [hoja, setHoja] = useState<ModoDeCamara | null>(null)
   const [camara, setCamara] = useState<PedidoDeFoto | null>(null)
+  // (V72 §3b) La cámara (y su hoja de explicación) NUNCA se queda debajo de «Tus logros»: si la persona la abre, la hoja de logros se cierra y no vuelve a abrirse sola (antes, «Saltar todo» la abría 2,6 s después y tapaba la cámara y HOY).
+  useEffect(() => {
+    if (!camara && !hoja) return
+    const u = useMomentosUI.getState()
+    if (u.hojaAlFinal) useMomentosUI.setState({ hojaAlFinal: false })
+    if (u.hojaLogros) u.cerrarHojaLogros()
+  }, [camara, hoja])
   const [pensando, setPensando] = useState(false)
   const [resultado, setResultado] = useState<Resultado | null>(null)
   const [elegir, setElegir] = useState(false)

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 30% at 50% 0%,#F1E8D6 0%,#E0D3BA 75%);padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">APP · HOY · LA VUELTA</span><span style="font:400 40px/1 'Instrument Serif',serif">Hoy vuelves a casa</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:44px;align-items:flex-start">
+  <sc-for list="{{ boards }}" as="b" hint-placeholder-count="3">
+    <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.08em;color:#6F4E37">{{ b.id }} · {{ b.cap }}</span>
+      <div style="position:relative;width:375px;height:812px;flex:none;border-radius:48px;overflow:hidden;background:#F5EFE4;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45);display:flex;flex-direction:column">
+        <span style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:112px;height:32px;border-radius:20px;background:#0E1118;z-index:60"></span>
+        <div style="flex:none;height:56px"></div>
+        <div style="flex:none;height:56px;padding:0 18px 0 20px;display:flex;align-items:center;justify-content:space-between"><span style="font:400 26px/1 'Instrument Serif',serif;letter-spacing:.32em;color:#B58A2E">JUTRIP</span><span style="width:36px;height:36px;border-radius:50%;background:#1C2230;box-shadow:0 0 0 2px #FBF3E2,0 0 0 3.5px #B58A2E;display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFFDF8" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg></span></div>
+        <div style="flex:1;min-height:0;padding:10px 16px 0;display:flex;flex-direction:column;gap:12px;overflow:hidden">
+          <div style="flex:none;border-radius:28px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);box-shadow:0 20px 34px -24px rgba(28,34,48,.5);overflow:hidden">
+            <div style="height:{{ b.ih }}px;position:relative"><dc-import name="Piezas/Imagen Llegada" kind="avion" w="{{ 343 }}" h="{{ b.ih }}" hint-size="343px,{{ b.ih }}px"></dc-import><span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.14),rgba(0,0,0,0) 40%,rgba(0,0,0,.38))"></span><span style="position:absolute;left:18px;top:14px;font:600 11px 'Geist Mono',monospace;letter-spacing:.18em;color:#FFFDF8">VUELTA</span>
+              <span style="position:absolute;right:14px;top:10px;width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#F9EFCB,#EAD6A0 55%,#D8BD7C);border:1.5px solid rgba(181,138,46,.8);box-sizing:border-box;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5A3E0C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM18 14h2v2h-2zM14 18h2v2h-2z"></path></svg></span>
+              <span style="position:absolute;left:18px;right:18px;bottom:12px;font:400 32px/1 'Instrument Serif',serif;color:#FFFDF8;text-shadow:0 2px 12px rgba(0,0,0,.4)">Hoy vuelves a casa</span></div>
+            <div style="padding:12px 14px 14px;display:flex;flex-direction:column;gap:10px">
+              <span style="font:600 9.5px 'Geist Mono',monospace;letter-spacing:.14em;color:#6F4E37">VUELO VY6105 · Viernes 27</span>
+              <div style="display:flex;align-items:center;gap:10px"><span style="display:flex;flex-direction:column;gap:1px"><span style="font:400 32px/1 'Instrument Serif',serif">{{ b.dep }}</span><span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(28,34,48,.55)">FCO</span></span><span style="flex:1;display:flex;align-items:center;gap:6px;color:#B58A2E"><span style="flex:1;border-top:1.5px dotted rgba(181,138,46,.7)"></span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B58A2E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"></path></svg><span style="flex:1;border-top:1.5px dotted rgba(181,138,46,.7)"></span></span><span style="display:flex;flex-direction:column;gap:1px;align-items:flex-end"><span style="font:400 32px/1 'Instrument Serif',serif">{{ b.arr }}</span><span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(28,34,48,.55)">BCN</span></span></div>
+              <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:linear-gradient(135deg,#232A3C,#1C2230);box-shadow:0 14px 22px -16px rgba(28,34,48,.8)"><span style="width:42px;height:42px;border-radius:50%;flex:none;background:linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E);display:flex;align-items:center;justify-content:center"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#4A3510" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2"></path></svg></span><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font:600 9.5px 'Geist Mono',monospace;letter-spacing:.14em;color:#F3D88F">SAL HACIA EL AEROPUERTO</span><span style="font:400 34px/1 'Instrument Serif',serif;color:#FFFDF8">{{ b.go }}</span>
+                <sc-if value="{{ b.how }}" hint-placeholder-val="{{ true }}"><span style="font:500 12px/1.3 'Geist';color:rgba(255,253,248,.7)">Leonardo Express desde Termini · 35 min</span></sc-if></span></div>
+            </div>
+          </div>
+          <sc-if value="{{ b.free }}" hint-placeholder-val="{{ false }}"><div style="flex:none;border-radius:22px;background:#FBF3E2;border:1px solid rgba(181,138,46,.5);padding:14px;display:flex;flex-direction:column;gap:12px"><span style="font:400 22px/1.15 'Instrument Serif',serif;text-wrap:balance">Tienes hasta las 16:30 antes de salir hacia el aeropuerto</span><span style="height:50px;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:9px;font:700 15px 'Geist';background:linear-gradient(135deg,#F9EFCB,#EAD6A0 55%,#D8BD7C);color:#4A3510;border:1px solid rgba(181,138,46,.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 8px 14px -10px rgba(110,80,24,.6)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#4A3510" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Añadir algo cerca</span><span style="text-align:center;font:600 13px 'Geist';color:#6E5018;text-decoration:underline">Ver en Explorar</span></div></sc-if>
+          <sc-if value="{{ b.stops }}" hint-placeholder-val="{{ false }}"><sc-for list="{{ b.stops }}" as="s" hint-placeholder-count="2"><div style="flex:none;border-radius:24px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);overflow:hidden;box-shadow:0 14px 24px -20px rgba(28,34,48,.5)"><div style="height:84px;position:relative;background:{{ s.bg }}"><span style="position:absolute;left:14px;top:12px;height:26px;padding:0 11px;border-radius:999px;background:rgba(28,34,48,.55);color:#fff;display:flex;align-items:center;font:600 10px 'Geist Mono',monospace;letter-spacing:.14em">PARADA {{ s.n }}</span><span style="position:absolute;left:14px;bottom:10px;font:400 28px/1 'Instrument Serif',serif;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.4)">{{ s.t }}</span></div><div style="padding:10px 14px;display:flex;gap:8px;font:600 12.5px 'Geist';color:rgba(28,34,48,.7)"><span>{{ s.a }}</span><span>·</span><span>{{ s.b }}</span></div></div></sc-for></sc-if>
+        </div>
+        <div style="position:absolute;left:0;right:0;bottom:0;height:96px;z-index:4;background:linear-gradient(180deg,rgba(245,239,228,0),#F5EFE4 55%)"></div>
+        <div style="position:absolute;left:12px;right:12px;bottom:14px;z-index:5"><dc-import name="Piezas/Barra JUTRIP" tone="tinta" act="0" hint-size="100%,64px"></dc-import></div>
+      </div>
+      <span style="font:400 14px/1.45 'Geist';color:rgba(28,34,48,.72);max-width:375px;text-wrap:pretty">{{ b.note }}</span>
+    </div>
+  </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const G=(a,b)=>`linear-gradient(150deg,${a},${b})`;
+class Component extends DCLogic {
+  renderVals(){return{boards:[
+    {id:'V1',cap:'Vuelo por la tarde, con tiempo libre',ih:120,dep:'19:30',arr:'21:45',go:'16:30',how:true,free:true,stops:null,note:'Hay que salir a las 16:30 y son las 10:00. La tarjeta de tiempo libre invita a añadir algo cerca.'},
+    {id:'V2',cap:'Vuelo temprano, sin tiempo',ih:150,dep:'10:00',arr:'12:15',go:'7:00',how:true,free:false,stops:null,note:'Solo la tarjeta de la vuelta y la hora de salir hacia el aeropuerto. Sin tarjeta de tiempo libre.'},
+    {id:'V3',cap:'Con paradas antes de salir',ih:120,dep:'19:30',arr:'21:45',go:'16:30',how:true,free:false,stops:[{n:'1 DE 2',t:'Trastevere',a:'A pie · 12 min',b:'Visita 1 h',bg:G('#E0B890','#7A4E2E')},{n:'2 DE 2',t:'Piazza Navona',a:'A pie · 15 min',b:'Visita 45 min',bg:G('#9DB4D8','#3E5A7A')}],note:'En vez de la tarjeta de tiempo libre salen las paradas del día que caben antes de salir.'}
+  ]};}
+}
+</script>
+</body>
+</html>

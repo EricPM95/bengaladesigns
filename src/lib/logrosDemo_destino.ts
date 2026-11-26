@@ -11,6 +11,8 @@
  *   window.__demoDestino.estado()                    lo que hay puesto
  */
 import roma from '../../data/logros/roma.json' with { type: 'json' }
+import lanzarote from '../../data/logros/lanzarote.json' with { type: 'json' }
+import { ponerLanzarote } from './logrosDemo_ganados'
 import viajeroJson from '../../data/logros/viajero.json' with { type: 'json' }
 import ajustes from '../../data/logros/ajustes.json' with { type: 'json' }
 import { soloActivos } from '../../server/logros/viajeroActivo.js'
@@ -18,10 +20,44 @@ import { logrosVisibles } from '../../server/logros/vistas.js'
 import { coleccionPorDentro, miColeccion, paginaDeDestino } from '../../server/logros/pantallas/destino.js'
 
 type Modo = 'completo' | 'parcial' | 'vacio'
-const estado = { modo: 'completo' as Modo }
+const estado = { modo: 'completo' as Modo, lzImp: 4 }
 
 /** Los nombres de los sitios que salen en las colecciones (del catálogo de Roma; aquí copiados para no cargar el catálogo entero en el demo). */
 const NOMBRES: Record<string, string> = {
+  // (V72) Lanzarote: los nombres de los sitios de sus colecciones.
+  montanas_del_fuego: 'Montañas del Fuego (Timanfaya)',
+  jameos_del_agua: 'Jameos del Agua',
+  cueva_de_los_verdes: 'Cueva de los Verdes',
+  mirador_del_rio: 'Mirador del Río',
+  fundacion_cesar_manrique: 'Fundación César Manrique',
+  el_golfo_y_el_charco_de_los_clicos: 'El Golfo y el Charco de los Clicos',
+  la_geria_y_sus_bodegas: 'La Geria y sus bodegas',
+  jardin_de_cactus: 'Jardín de Cactus',
+  casa_museo_cesar_manrique: 'Casa-Museo César Manrique',
+  casa_museo_del_campesino: 'Casa-Museo del Campesino',
+  castillo_de_san_jose: 'Castillo de San José',
+  los_hervideros: 'Los Hervideros',
+  volcan_del_cuervo: 'Volcán del Cuervo',
+  caldera_blanca: 'Caldera Blanca',
+  las_grietas_montana_blanca: 'Las Grietas (Montaña Blanca)',
+  ciudad_estratificada_rofera_de_teseguite: 'Ciudad estratificada (Rofera de Teseguite)',
+  mirador_de_guinate: 'Mirador de Guinate',
+  ermita_de_las_nieves: 'Ermita de las Nieves',
+  mirador_del_bosquecillo: 'Mirador del Bosquecillo',
+  mirador_de_haria: 'Mirador de Haría',
+  salinas_de_janubio: 'Salinas de Janubio',
+  playas_de_papagayo: 'Playas de Papagayo',
+  caleton_blanco: 'Caletón Blanco',
+  caleta_de_famara_y_playa_de_famara: 'Caleta de Famara y Playa de Famara',
+  punta_mujeres_y_arrieta: 'Punta Mujeres y Arrieta',
+  playa_de_la_garita: 'Playa de la Garita',
+  playa_de_montana_bermeja: 'Playa de Montaña Bermeja',
+  teguise: 'Teguise',
+  arrecife_charco_de_san_gines_y_el_paseo: 'Arrecife: Charco de San Ginés y el paseo',
+  haria_pueblo: 'Haría',
+  puerto_del_carmen_puerto_viejo: 'Puerto del Carmen (Puerto Viejo)',
+  bodega_la_geria: 'Bodega La Geria',
+  bodega_el_grifo: 'Bodega El Grifo',
   coliseo: 'Coliseo',
   foro_romano_y_palatino: 'Foro Romano y Palatino',
   fontana_de_trevi: 'Fontana de Trevi',
@@ -112,7 +148,7 @@ const GLOBALES_DEL_VIAJE: [string, string, string | number, string][] = [
 ]
 
 type Item = { clave: string; logro: string; escalon: string; destino: string; en: string }
-const datos = { destinos: { roma }, viajero: soloActivos(viajeroJson), ajustes }
+const datos = { destinos: { roma, lanzarote }, viajero: soloActivos(viajeroJson), ajustes }
 
 function itemsDeEjemplo(): Map<string, Item> {
   const m = new Map<string, Item>()
@@ -134,6 +170,22 @@ function itemsDeEjemplo(): Map<string, Item> {
     const fechas = (col?.sitios ?? []).filter((x) => dia.has(x)).map((x) => dia.get(x) as string).sort()
     for (const g of s.grados) if (g.desde <= n) poner('roma', 'sello', `${s.id}:${g.grado}`, fechas[Math.min(g.desde, fechas.length) - 1] ?? fechas[0])
   }
+  // (V72) Lanzarote: un viaje de 3 días (26-28 nov.) con `lzImp` imprescindibles vistos y unos pocos más repartidos por sus colecciones (4 de 7 en el dibujo de Design).
+  {
+    const imp = lanzarote.colecciones[0].sitios.slice(0, estado.lzImp)
+    const vistos = [...imp, 'jardin_de_cactus', 'los_hervideros', 'mirador_de_guinate', 'playas_de_papagayo', 'bodega_la_geria']
+    const diaLz = new Map(vistos.map((s, i) => [s, `2026-11-${i < 2 ? 26 : i < 4 ? 27 : 28}`] as [string, string]))
+    for (const c of lanzarote.colecciones) {
+      const hechos = c.sitios.filter((s) => diaLz.has(s))
+      for (const s of hechos) poner('lanzarote', 'pedazo', `${c.id}:${s}`, diaLz.get(s) as string)
+      if (hechos.length === c.sitios.length) poner('lanzarote', 'coleccion', c.id, hechos.map((s) => diaLz.get(s) as string).sort().pop() as string)
+    }
+    for (const s of lanzarote.sellos) {
+      const col = lanzarote.colecciones.find((c) => c.id === s.coleccion)
+      const fechas = (col?.sitios ?? []).filter((x) => diaLz.has(x)).map((x) => diaLz.get(x) as string).sort()
+      for (const g of s.grados) if (g.desde <= fechas.length) poner('lanzarote', 'sello', `${s.id}:${g.grado}`, fechas[g.desde - 1])
+    }
+  }
   for (const [e, d] of completo ? EMBLEMAS_DEL_VIAJE : EMBLEMAS) poner('roma', 'emblema', e, d)
   if (completo) for (const [dest, l, esc, d] of GLOBALES_DEL_VIAJE) poner(dest, l, esc, d)
   else for (const [l, esc, d] of GLOBALES) poner('*', l, esc, d)
@@ -152,6 +204,19 @@ const VIAJE = {
     { numero: 3, fecha: '2026-10-12', paradas: [{ sitio: 'piazza_navona' }, { sitio: 'plaza_de_espana' }] },
     { numero: 4, fecha: '2026-10-13', paradas: [{ sitio: 'castillo_de_santangelo' }, { sitio: 'museos_vaticanos_y_capilla_sixtina' }] },
     { numero: 5, fecha: '2026-10-14', paradas: [] },
+  ],
+}
+
+/** (V72) El viaje de ejemplo a Lanzarote: 3 días, con algunos imprescindibles aún por ver (en coche: sin hora, solo el día). */
+const VIAJE_LZ = {
+  id: 'demo-viaje-lz',
+  destino: 'lanzarote',
+  inicio: '2026-11-26',
+  fin: '2026-11-28',
+  dias: [
+    { numero: 1, fecha: '2026-11-26', paradas: [{ sitio: 'montanas_del_fuego' }, { sitio: 'jameos_del_agua' }] },
+    { numero: 2, fecha: '2026-11-27', paradas: [{ sitio: 'cueva_de_los_verdes' }, { sitio: 'mirador_del_rio' }, { sitio: 'fundacion_cesar_manrique' }] },
+    { numero: 3, fecha: '2026-11-28', paradas: [{ sitio: 'el_golfo_y_el_charco_de_los_clicos' }] },
   ],
 }
 
@@ -177,20 +242,23 @@ function viajeroDeEjemplo(items: Map<string, Item>) {
 }
 
 export function responder(ruta: string, url: URL): unknown {
-  const viaje = url.searchParams.get('trip_id') ? VIAJE : null
+  const destinoPedido = url.searchParams.get('destino') ?? ''
+  const esLz = destinoPedido === 'lanzarote'
+  const viaje = url.searchParams.get('trip_id') ? (esLz ? VIAJE_LZ : VIAJE) : null
+  const hoyLz = '2026-11-27'
   if (ruta === '/api/logros/destino') {
     const destino = url.searchParams.get('destino') ?? ''
-    return destino === 'roma' ? paginaDeDestino({ datos, destino, items: itemsDeEjemplo(), viaje, hoy: estado.modo === 'completo' ? '2026-10-14' : '2026-10-12' }) : { ok: false, motivo: 'destino_sin_logros' }
+    return destino === 'roma' || esLz ? paginaDeDestino({ datos, destino, items: itemsDeEjemplo(), viaje, hoy: esLz ? hoyLz : estado.modo === 'completo' ? '2026-10-14' : '2026-10-12' }) : { ok: false, motivo: 'destino_sin_logros' }
   }
   if (ruta === '/api/logros/coleccion') {
     const destino = url.searchParams.get('destino') ?? ''
     // (V14) Solo para las pruebas: `window.__demoColeccion[<id>]` pone la respuesta de esa colección (con las fotos con que se ganó cada sitio).
     const puesta = (window as unknown as { __demoColeccion?: Record<string, unknown> }).__demoColeccion?.[url.searchParams.get('coleccion') ?? '']
     if (puesta) return puesta
-    if (destino !== 'roma') return { ok: false, motivo: 'destino_sin_logros' }
+    if (destino !== 'roma' && !esLz) return { ok: false, motivo: 'destino_sin_logros' }
     const r = coleccionPorDentro({ datos, destino, coleccion: url.searchParams.get('coleccion') ?? '', items: itemsDeEjemplo(), viaje, nombreDe: (s: string) => NOMBRES[s] ?? s })
     // (V9) Como el servidor: el momento del viaje (para saber si ha terminado); en el demo sin fotos suyas (sale la del sitio).
-    return r ? { ...r, viaje: viaje ? { inicio: viaje.inicio, fin: viaje.fin, hoy: estado.modo === 'completo' ? '2026-10-14' : '2026-10-12' } : null } : { ok: false, motivo: 'coleccion_sin_logros' }
+    return r ? { ...r, viaje: viaje ? { inicio: viaje.inicio, fin: viaje.fin, hoy: esLz ? hoyLz : estado.modo === 'completo' ? '2026-10-14' : '2026-10-12' } : null } : { ok: false, motivo: 'coleccion_sin_logros' }
   }
   if (ruta === '/api/logros/mi-coleccion') {
     const items = itemsDeEjemplo()
@@ -201,7 +269,15 @@ export function responder(ruta: string, url: URL): unknown {
 
 declare global {
   interface Window {
-    __demoDestino?: { modo: (m: Modo) => void; estado: () => { modo: Modo } }
+    __demoDestino?: { modo: (m: Modo) => void; lanzarote: (n: number) => void; estado: () => { modo: Modo } }
   }
 }
-if (typeof window !== 'undefined') window.__demoDestino = { modo: (m) => void (estado.modo = m), estado: () => ({ ...estado }) }
+if (typeof window !== 'undefined') window.__demoDestino = {
+    modo: (m) => void (estado.modo = m),
+    // (V72) Cuántos imprescindibles de Lanzarote ha visto el viajero de ejemplo (4 por defecto; 7 = la colección completa) y lo que eso cambia en lo ganado.
+    lanzarote: (n) => {
+      estado.lzImp = n
+      ponerLanzarote(n)
+    },
+    estado: () => ({ ...estado }),
+  }

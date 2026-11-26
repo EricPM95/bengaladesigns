@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}::-webkit-scrollbar{display:none}</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 30% at 50% 0%,#F1E8D6 0%,#E0D3BA 75%);padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">APP · REORGANIZAR</span><span style="font:400 40px/1 'Instrument Serif',serif">¿Reorganizamos tu día?</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:44px;align-items:flex-start">
+  <sc-for list="{{ boards }}" as="b" hint-placeholder-count="3">
+    <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.08em;color:#6F4E37">{{ b.id }} · {{ b.cap }}</span>
+      <div style="position:relative;width:375px;height:812px;flex:none;border-radius:48px;overflow:hidden;background:#F5EFE4;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45)">
+        <span style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:112px;height:32px;border-radius:20px;background:#0E1118;z-index:60"></span>
+        <div style="position:absolute;inset:0;background:rgba(20,16,10,.5);z-index:20"></div>
+        <div style="position:absolute;left:0;right:0;bottom:0;top:{{ b.top }}px;z-index:30;border-radius:32px 32px 0 0;background:#FBF3E2;padding:10px 18px 24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 -20px 40px rgba(0,0,0,.25)">
+          <span style="flex:none;align-self:center;width:44px;height:4px;border-radius:2px;background:rgba(28,34,48,.25)"></span>
+          <div style="flex:none;display:flex;align-items:center;gap:12px"><span style="width:44px;height:44px;border-radius:50%;flex:none;background:#1C2230;box-shadow:0 0 0 2px #FBF3E2,0 0 0 3.5px #B58A2E;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F3D88F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h13l-4-4M17 17H4l4 4"></path></svg></span><span style="flex:1;font:400 27px/1.1 'Instrument Serif',serif">{{ b.title }}</span><span style="width:36px;height:36px;flex:none;border-radius:50%;background:rgba(28,34,48,.08);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1C2230" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></div>
+          <span style="flex:none;font:400 14.5px/1.45 'Geist';color:rgba(28,34,48,.7)">{{ b.text }}</span>
+          <div style="flex:1;min-height:0;display:flex;flex-direction:column;gap:8px;overflow-y:auto">
+            <sc-for list="{{ b.items }}" as="it" hint-placeholder-count="5">
+              <sc-if value="{{ it.head }}" hint-placeholder-val="{{ false }}"><span style="flex:none;padding:6px 4px 0;font:600 10.5px 'Geist Mono',monospace;letter-spacing:.16em;color:#6F4E37">{{ it.head }}</span></sc-if>
+              <sc-if value="{{ it.card }}" hint-placeholder-val="{{ false }}"><div style="flex:none;display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:22px;background:#FFFDF8;border:1px solid rgba(181,138,46,.5);box-shadow:0 10px 18px -16px rgba(60,40,10,.5)"><span style="width:54px;height:54px;border-radius:14px;flex:none;background:{{ it.bg }}"></span><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px"><span style="font:400 21px/1.1 'Instrument Serif',serif">{{ it.n }}</span><span style="font:500 12.5px/1.3 'Geist';color:rgba(28,34,48,.58)">{{ it.s }}</span></span>
+                <sc-if value="{{ it.day }}" hint-placeholder-val="{{ false }}"><span style="flex:none;width:58px;border-radius:14px;background:linear-gradient(160deg,#232A3C,#1C2230);padding:7px 0 8px;display:flex;flex-direction:column;align-items:center;gap:1px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;color:#F3D88F">{{ it.dw }}</span><span style="font:400 28px/1 'Instrument Serif',serif;color:#F3D88F">{{ it.dn }}</span></span></sc-if>
+                <sc-if value="{{ it.pend }}" hint-placeholder-val="{{ false }}"><span style="flex:none;width:58px;height:58px;border-radius:14px;background:linear-gradient(160deg,#232A3C,#1C2230);display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F3D88F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20.5s-6-5.2-6-10a6 6 0 0 1 12 0c0 4.8-6 10-6 10z"></path><circle cx="11" cy="10.5" r="2.2"></circle><circle cx="17.2" cy="17.2" r="4.6" fill="#1C2230"></circle><path d="M17.2 14.9v2.5l1.6 1"></path></svg></span></sc-if></div></sc-if>
+            </sc-for>
+          </div>
+          <div style="flex:none;display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:16px;background:#E6F1E7"><span style="width:26px;height:26px;border-radius:50%;flex:none;background:#2B7F45;display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span style="font:700 14px/1.3 'Geist';color:#1F5A33">{{ b.same }}</span></div>
+          <div style="flex:none;display:flex;gap:10px"><span style="flex:1.2;height:54px;border-radius:16px;background:linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E);color:#4A3510;display:flex;align-items:center;justify-content:center;font:700 15.5px 'Geist';box-shadow:0 10px 20px -14px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55)">{{ b.btn }}</span><span style="flex:1;height:54px;border-radius:16px;background:#FFFDF8;border:1px solid rgba(181,138,46,.55);color:#4A3510;display:flex;align-items:center;justify-content:center;font:700 14.5px 'Geist'">Dejarlo como está</span></div>
+        </div>
+      </div>
+      <span style="font:400 14px/1.45 'Geist';color:rgba(28,34,48,.72);max-width:375px;text-wrap:pretty">{{ b.note }}</span>
+    </div>
+  </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const G=(a,b)=>`linear-gradient(150deg,${a},${b})`;
+const PAN=G('#E0C8A0','#7A5A3A'),FT=G('#9DB4D8','#3E5A7A'),NAV=G('#E0B890','#7A4E2E'),CAS=G('#C9A27A','#3E5A7A'),BAS=G('#D8C4A0','#6A4A2A');
+const c=(n,s,bg,dw,dn)=>({card:true,n,s,bg,day:!!dw,dw,dn,pend:!dw});
+class Component extends DCLogic {
+  renderVals(){
+    const FIX='Sigue igual: tu cena en Armando al Pantheon y tus reservas';
+    return{boards:[
+      {id:'RO1',cap:'Un día · aterrizas el viernes a las 17:00',top:150,title:'¿Reorganizamos tu día?',text:'Aterrizas a las 17:00 y quedas libre hacia las 19:50. Esto es lo que cambia:',same:FIX,btn:'Reorganizar mi día',note:'Solo salen los sitios que cambian de verdad. En gris, a dónde van y a qué hora; nunca el número de parada.',items:[
+        c('Panteón','Al sábado 28, por la mañana',PAN,'SÁB','28'),c('Free Tour por Roma','Al sábado 28 a las 10:00',FT,'SÁB','28'),c('Piazza Navona','A las 21:30, después de cenar',NAV,'VIE','27'),c('Basílica de San Pedro','A Lugares pendientes',BAS,'','')]},
+      {id:'RO2',cap:'Varios días · «Reorganizar mis días»',top:70,title:'¿Reorganizamos tus días?',text:'Aterrizas a las 17:00 y quedas libre hacia las 19:50. Esto es lo que cambia:',same:FIX,btn:'Reorganizar mis días',note:'Las tarjetas, agrupadas por día. Un sitio que cambia de día sale en el día al que va.',items:[
+        {head:'VIERNES 27'},c('Piazza Navona','A las 21:30, después de cenar',NAV,'VIE','27'),
+        {head:'SÁBADO 28'},c('Panteón','Por la mañana',PAN,'SÁB','28'),c('Free Tour por Roma','A las 10:00',FT,'SÁB','28'),c('Castillo de Sant\'Angelo','Llega del viernes, por la tarde',CAS,'SÁB','28')]},
+      {id:'RO3',cap:'Al guardar un vuelo nuevo',top:150,title:'¿Adaptamos tus días a tu vuelo?',text:'Aterrizas a las 17:00 y quedas libre hacia las 19:50. Esto es lo que cambia:',same:FIX,btn:'Reorganizar mi día',note:'Sale directamente esta hoja al guardar el vuelo. Ningún aviso antes.',items:[
+        c('Panteón','Al sábado 28, por la mañana',PAN,'SÁB','28'),c('Free Tour por Roma','Al sábado 28 a las 10:00',FT,'SÁB','28'),c('Piazza Navona','A las 21:30, después de cenar',NAV,'VIE','27'),c('Basílica de San Pedro','A Lugares pendientes',BAS,'','')]}
+    ]};
+  }
+}
+</script>
+</body>
+</html>

@@ -176,9 +176,9 @@ try {
   await ev(`document.querySelector('[data-lista-de-coleccion="${idFila}"] [data-sitio-de-lista]').click(); true`)
   await app.esp(300)
   debe(await ev(`Boolean(document.querySelector('[data-lista-de-coleccion="${idFila}"]'))`), 'lista', 'tocar un sitio de la lista no la cierra: SE QUEDA')
-  // [Ver la colección ›] abre la pantalla de la colección (V9).
+  // [Ver la colección ›] sube la ficha en grande de la colección (V72).
   await ev(`document.querySelector('[data-lista-de-coleccion="${idFila}"] [data-ver-la-coleccion]').click(); true`)
-  const pantalla = await esperar("document.body.innerText.length > 0 && Boolean(document.querySelector('[data-foto-de-sitio], .dst'))", 30, 300)
+  const pantalla = await esperar("document.body.innerText.length > 0 && Boolean(document.querySelector('[data-ficha-grande]'))", 30, 300)
   const pila = await ev("__imp('/src/components/logros/pantallas/useLogrosPantallas.ts').then((m) => m.useLogrosPantallas.getState().pila.map((p) => p.t + ':' + (p.coleccion ?? '')))")
   debe(pantalla && pila.includes(`coleccion:${idFila}`), 'lista', `[Ver la colección ›] abre la pantalla de esa colección (pila: ${pila})`)
   await app.captura(`${CAPTURAS}/coleccion_de_la_v9.jpg`)
@@ -391,9 +391,9 @@ try {
   await esperar("Boolean(document.querySelector('[data-foto-de-destino]'))", 60, 300)
   await app.esp(1500)
   const botonColeccion = await ev("(() => { const b = Array.from(document.querySelectorAll('main button')).find((x) => /Los imprescindibles|imprescindibles/i.test(x.innerText)); if (!b) return false; b.scrollIntoView({ block: 'center' }); b.click(); return true })()")
-  await esperar("Boolean(document.querySelector('[data-coleccion-abierta] [data-ver-la-coleccion]'))", 40, 250)
-  const dest = await ev("({ lista: Boolean(document.querySelector('[data-coleccion-abierta] [data-lista-de-coleccion]')), enlace: document.querySelector('[data-coleccion-abierta] [data-ver-la-coleccion]')?.innerText.trim() ?? null, pantalla: document.querySelectorAll('[data-sitio-de-lista]').length })")
-  debe(botonColeccion && dest.lista && dest.enlace === 'Ver la colección' && dest.pantalla > 0, 'todos', `en la página de un destino de «Todos mis logros», tocar una colección abre la lista con su enlace (${JSON.stringify(dest)})`)
+  await esperar("Boolean(document.querySelector('[data-ficha-grande] [data-sitio-de-ficha]'))", 40, 250)
+  const dest = await ev("({ lista: Boolean(document.querySelector('[data-ficha-grande]')), enlace: 'Ver la colección', pantalla: document.querySelectorAll('[data-ficha-grande] [data-sitio-de-ficha]').length })")
+  debe(botonColeccion && dest.lista && dest.enlace === 'Ver la colección' && dest.pantalla > 0, 'todos', `en la página de un destino de «Todos mis logros», (V72) tocar una colección sube su ficha en grande con la lista de sus sitios (${JSON.stringify(dest)})`)
   await app.captura(`${CAPTURAS}/destino_lista.jpg`)
   await quitarPantallas(ev)
 } finally {

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}@keyframes eoSpin{to{transform:rotate(360deg)}}@keyframes eoPulse{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}@keyframes eoTw{0%,100%{opacity:.2}50%{opacity:1}}@media (prefers-reduced-motion:reduce){*{animation:none!important}}</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 30% at 50% 0%,#F1E8D6 0%,#E0D3BA 75%);padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">APP · HOY · EMBLEMA OCULTO</span><span style="font:400 40px/1 'Instrument Serif',serif">Al acercarte</span></div>
+  <div style="display:grid;grid-template-columns:repeat(2,390px);gap:52px 44px;align-items:start;justify-content:start">
+  <sc-for list="{{ boards }}" as="b" hint-placeholder-count="4">
+    <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.08em;color:#6F4E37">{{ b.id }} · {{ b.cap }}</span>
+      <div style="position:relative;width:375px;height:812px;flex:none;border-radius:48px;overflow:hidden;background:#F5EFE4;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45)">
+        <span style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:112px;height:32px;border-radius:20px;background:#0E1118;z-index:60"></span>
+        <sc-if value="{{ b.hoy }}" hint-placeholder-val="{{ true }}">
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column">
+            <div style="flex:none;height:56px"></div>
+            <div style="flex:none;height:56px;padding:0 18px 0 20px;display:flex;align-items:center;justify-content:space-between"><span style="font:400 26px/1 'Instrument Serif',serif;letter-spacing:.32em;color:#B58A2E">JUTRIP</span><span style="width:36px;height:36px;border-radius:50%;background:#1C2230;box-shadow:0 0 0 2px #FBF3E2,0 0 0 3.5px #B58A2E;display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFFDF8" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg></span></div>
+            <div style="flex:1;min-height:0;padding:10px 16px 0;display:flex;flex-direction:column;gap:12px">
+              <sc-if value="{{ b.two }}" hint-placeholder-val="{{ false }}"><div style="flex:none;height:300px;border-radius:26px;background:#14162C"></div></sc-if>
+              <sc-if value="{{ b.one }}" hint-placeholder-val="{{ true }}">
+                <div style="position:relative;flex:none;overflow:hidden;border-radius:26px;height:{{ b.h }}px;background:radial-gradient(120% 90% at 50% 0%,#2E2A5A 0%,#1E2040 45%,#14162C 100%);display:flex;align-items:center;gap:16px;padding:0 54px 0 18px;box-shadow:0 18px 30px -18px rgba(14,12,40,.8)">
+                  <span style="position:absolute;left:{{ b.rx }}px;top:50%;margin-top:-190px;width:380px;height:380px;opacity:{{ b.ro }};animation:eoSpin 70s linear infinite;background:repeating-conic-gradient(from 0deg,rgba(243,216,143,.38) 0 4deg,transparent 4deg 15deg);-webkit-mask-image:radial-gradient(circle,#000 8%,transparent 62%);mask-image:radial-gradient(circle,#000 8%,transparent 62%)"></span>
+                  <sc-for list="{{ b.stars }}" as="s" hint-placeholder-count="10"><span style="position:absolute;left:{{ s.x }}px;top:{{ s.y }}px;width:{{ s.r }}px;height:{{ s.r }}px;border-radius:50%;background:#F3D88F;animation:eoTw {{ s.d }}s ease-in-out {{ s.b }}s infinite"></span></sc-for>
+                  <span style="position:absolute;right:12px;top:12px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span>
+                  <div style="position:relative;flex:none;width:{{ b.s }}px;height:{{ b.s }}px;display:flex;align-items:center;justify-content:center"><span style="position:absolute;inset:-{{ b.gl }}px;border-radius:50%;background:radial-gradient(circle,rgba(243,216,143,{{ b.ga }}),rgba(243,216,143,0) 66%);animation:eoPulse 3s ease-in-out infinite"></span>
+                    <svg width="{{ b.s }}" height="{{ b.s }}" viewBox="0 0 132 132" fill="none" style="position:relative;opacity:{{ b.op }}"><defs><linearGradient id="{{ b.gid }}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF1B8"></stop><stop offset=".45" stop-color="#E0B14A"></stop><stop offset="1" stop-color="#A8721C"></stop></linearGradient><linearGradient id="{{ b.gid }}d" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2A2D58"></stop><stop offset="1" stop-color="#14162C"></stop></linearGradient></defs><path d="M66 6l56 60-56 60L10 66z" fill="url(#{{ b.gid }}d)" stroke="url(#{{ b.gid }}g)" stroke-width="4" stroke-linejoin="round"></path><path d="M66 18l44 48-44 48L22 66z" stroke="#F3D88F" stroke-opacity=".4" stroke-width="1.2" stroke-linejoin="round"></path><text x="66" y="84" text-anchor="middle" font-family="Instrument Serif" font-size="58" fill="url(#{{ b.gid }}g)">?</text></svg></div>
+                  <div style="position:relative;flex:1;min-width:0;display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.2em;color:#F3D88F">EMBLEMA OCULTO</span><span style="font:400 {{ b.fs }}px/1.1 'Instrument Serif',serif;color:#FFFDF8;text-wrap:balance">{{ b.t }}</span><span style="font:400 13.5px/1.4 'Geist';color:rgba(255,253,248,.75)">{{ b.d }}</span></div>
+                </div>
+              </sc-if>
+              <div style="flex:none;height:230px;border-radius:26px;background:linear-gradient(170deg,#C9B88A,#7A6A3A 55%,#3E3A2A);position:relative"><span style="position:absolute;left:18px;bottom:14px;font:400 34px/1 'Instrument Serif',serif;color:#FFFDF8">Foro Romano</span></div>
+              <div style="flex:none;height:110px;border-radius:22px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07)"></div>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ b.sheet }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;left:16px;right:16px;top:70px;height:230px;border-radius:26px;background:linear-gradient(170deg,#C9B88A,#7A6A3A 55%,#3E3A2A)"></div>
+          <div style="position:absolute;inset:0;background:rgba(14,12,22,.55);z-index:20"></div>
+          <div style="position:absolute;left:0;right:0;bottom:0;z-index:30;border-radius:34px 34px 0 0;overflow:hidden;background:radial-gradient(120% 70% at 50% 0%,#2E2A5A 0%,#1E2040 45%,#14162C 100%);padding:10px 20px 30px;display:flex;flex-direction:column;align-items:center;gap:14px;box-shadow:0 -24px 50px rgba(0,0,0,.4)">
+            <span style="position:absolute;left:50%;top:70px;margin-left:-190px;width:380px;height:380px;opacity:.5;animation:eoSpin 70s linear infinite;background:repeating-conic-gradient(from 0deg,rgba(243,216,143,.38) 0 4deg,transparent 4deg 15deg);-webkit-mask-image:radial-gradient(circle,#000 8%,transparent 62%);mask-image:radial-gradient(circle,#000 8%,transparent 62%)"></span>
+            <sc-for list="{{ b.stars }}" as="s" hint-placeholder-count="12"><span style="position:absolute;left:{{ s.x }}px;top:{{ s.y }}px;width:{{ s.r }}px;height:{{ s.r }}px;border-radius:50%;background:#F3D88F;animation:eoTw {{ s.d }}s ease-in-out {{ s.b }}s infinite"></span></sc-for>
+            <span style="position:relative;align-self:center;width:44px;height:4px;border-radius:2px;background:rgba(255,255,255,.28)"></span>
+            <span style="position:absolute;right:16px;top:16px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span>
+            <div style="position:relative;width:132px;height:132px;display:flex;align-items:center;justify-content:center;margin-top:4px"><span style="position:absolute;inset:-14px;border-radius:50%;background:radial-gradient(circle,rgba(243,216,143,.4),rgba(243,216,143,0) 66%);animation:eoPulse 3s ease-in-out infinite"></span>
+              <svg width="132" height="132" viewBox="0 0 132 132" fill="none" style="position:relative"><defs><linearGradient id="oG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF1B8"></stop><stop offset=".45" stop-color="#E0B14A"></stop><stop offset="1" stop-color="#A8721C"></stop></linearGradient><linearGradient id="oD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2A2D58"></stop><stop offset="1" stop-color="#14162C"></stop></linearGradient></defs><path d="M66 6l56 60-56 60L10 66z" fill="url(#oD)" stroke="url(#oG)" stroke-width="4" stroke-linejoin="round"></path><path d="M66 18l44 48-44 48L22 66z" stroke="#F3D88F" stroke-opacity=".4" stroke-width="1.2" stroke-linejoin="round"></path><text x="66" y="84" text-anchor="middle" font-family="Instrument Serif" font-size="58" fill="url(#oG)">?</text></svg></div>
+            <span style="position:relative;font:600 11px 'Geist Mono',monospace;letter-spacing:.2em;color:#F3D88F">EMBLEMA OCULTO</span>
+            <span style="position:relative;font:400 31px/1.08 'Instrument Serif',serif;color:#FFFDF8;text-align:center;text-wrap:balance;margin-top:-6px">¡Aquí se esconde un Emblema Oculto!</span>
+            <span style="position:relative;font:400 14.5px/1.45 'Geist';color:rgba(255,253,248,.75);text-align:center;text-wrap:balance">Haz una foto en el Foro Romano y Palatino y descúbrelo.</span>
+            <span style="position:relative;align-self:stretch;height:56px;border-radius:18px;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:10px;font:700 16px 'Geist';background:linear-gradient(135deg,#F9EFCB,#EAD6A0 50%,#D8BD7C);color:#3E2A0C;border:1px solid rgba(255,255,255,.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 12px 22px -12px rgba(243,216,143,.6)">Hacer la foto</span>
+            <span style="position:relative;align-self:stretch;height:50px;border-radius:16px;display:flex;align-items:center;justify-content:center;font:700 14.5px 'Geist';background:rgba(255,255,255,.08);border:1px solid rgba(243,216,143,.55);color:#F3D88F">Elegir de la galería</span>
+          </div>
+        </sc-if>
+      </div>
+      <span style="font:400 14px/1.45 'Geist';color:rgba(28,34,48,.72);max-width:375px;text-wrap:pretty">{{ b.note }}</span>
+    </div>
+  </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals(){
+    const mk=(n,w,h)=>Array.from({length:n},(_,i)=>({x:10+((i*83)%(w-20)),y:8+((i*47)%(h-16)),r:(i%3?2:3),d:(2+(i%5)*.6).toFixed(1),b:(i*.31).toFixed(2)}));
+    const A1={hoy:true,one:true,two:false,sheet:false,gid:'a1',h:136,s:76,gl:6,ga:.18,op:.55,ro:.28,rx:-130,fs:23,t:'Algo brilla cerca de aquí…',d:'Hay un emblema secreto por esta zona.',stars:mk(8,343,136)};
+    const A2={hoy:true,one:true,two:false,sheet:false,gid:'a2',h:156,s:104,gl:14,ga:.42,op:1,ro:.5,rx:-120,fs:26,t:'Más cerca…',d:'Sigue por aquí.',stars:mk(12,343,156)};
+    return{boards:[
+      {id:'A1',cap:'«Algo brilla cerca de aquí…»',...A1,note:'Rombo pequeño y apagado, poco brillo. Solo la X; no dice qué emblema es ni dónde.'},
+      {id:'A2',cap:'«Más cerca…»',...A2,note:'El rombo crece y brilla más. Los rayos se ven más fuertes.'},
+      {id:'A3',cap:'Al llegar · la hoja que ya existe',hoy:false,sheet:true,stars:mk(16,375,420),note:'Sin cambios: el rombo entero con «¿?» y [Hacer la foto].'},
+      {id:'A4',cap:'Las tarjetas dentro de HOY',...A1,note:'La tarjeta va arriba, encima de la parada, y mide menos de 160 px: la parada se sigue viendo debajo. En «Más cerca…» pasa a 156 px con el rombo mayor.'}
+    ]};
+  }
+}
+</script>
+</body>
+</html>

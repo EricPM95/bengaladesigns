@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 30% at 50% 0%,#F1E8D6 0%,#E0D3BA 75%);padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">APP · FICHA · ENTRADAS</span><span style="font:400 40px/1 'Instrument Serif',serif">Free Tour por Roma</span></div>
+  <div style="display:flex;flex-wrap:wrap;gap:44px;align-items:flex-start"><sc-for list="{{ boards }}" as="b" hint-placeholder-count="3"><div style="display:flex;flex-direction:column;gap:12px;width:390px">
+    <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.08em;color:#6F4E37">{{ b.id }} · {{ b.cap }}</span>
+    <div style="position:relative;width:375px;height:812px;flex:none;border-radius:48px;overflow:hidden;background:#F5EFE4;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45)">
+      <span style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:112px;height:32px;border-radius:20px;background:#0E1118;z-index:60"></span>
+      <div style="position:absolute;left:0;right:0;top:0;height:200px;background:#EDE6D2"><svg viewBox="0 0 375 300" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%"><path d="M-10 230C60 180 120 250 190 210S320 150 390 200L390 300L-10 300Z" fill="#CFE3EA"></path><g stroke="#fff" stroke-width="7" stroke-linecap="round" fill="none"><path d="M-10 110L390 140"></path><path d="M100 -10L140 310"></path><path d="M270 -10L240 310"></path></g><g stroke="#E3D6B8" stroke-width="3" fill="none"><path d="M-10 60L390 50"></path><path d="M-10 190L390 170"></path><path d="M30 -10L20 310"></path><path d="M200 -10L210 310"></path></g></svg>
+        <sc-for list="{{ pins }}" as="p" hint-placeholder-count="6"><span style="position:absolute;left:{{ p.x }}px;top:{{ p.y }}px;width:26px;height:26px;border-radius:50%;background:#E9E5DC;border:2px solid #fff;color:#4A4A4A;display:flex;align-items:center;justify-content:center;font:700 12px 'Geist';box-shadow:0 3px 8px rgba(0,0,0,.25)">{{ p.n }}</span></sc-for>
+        <span style="position:absolute;left:18px;top:60px;width:42px;height:42px;border-radius:50%;background:#FFFDF8;border:1.5px solid #B58A2E;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1C2230" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg></span>
+        <span style="position:absolute;right:16px;top:64px;height:34px;padding:0 14px;border-radius:999px;background:#FFFDF8;border:1.5px solid #B58A2E;display:flex;align-items:center;font:700 13px 'Geist'">Vie, 27 Nov</span>
+      </div>
+      <div style="position:absolute;left:0;right:0;bottom:0;top:158px;border-radius:30px 30px 0 0;background:#F5EFE4;box-shadow:0 -16px 30px -18px rgba(28,34,48,.45);padding:10px 14px 0;display:flex;flex-direction:column;gap:10px">
+        <span style="align-self:center;width:44px;height:4px;border-radius:2px;background:rgba(28,34,48,.22)"></span>
+        <div style="display:flex;padding:4px;border-radius:999px;background:#E8DFCB"><span style="flex:1;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;font:700 15px 'Geist';color:rgba(28,34,48,.5)">Resumen</span><span style="flex:1;height:44px;border-radius:999px;background:#1C2230;color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;font:700 15px 'Geist'">Entradas<span style="width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#F3E2B0,#B58A2E);color:#4A3510;display:flex;align-items:center;justify-content:center;font:700 11px 'Geist'">1</span></span></div>
+        <div style="border-radius:22px;background:#FFFDF8;padding:16px 14px 16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 10px 20px -18px rgba(28,34,48,.5)">
+          <div style="display:flex;flex-direction:column;gap:8px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:#6F4E37">INCLUYE</span><span style="display:flex;align-items:center;gap:10px;font:500 15px 'Geist'"><span style="width:26px;height:26px;border-radius:50%;background:#DCEBDD;display:flex;align-items:center;justify-content:center;flex:none"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#2B7F45" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>Guía de habla española.</span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:18px;background:#F7F1E4"><span style="width:44px;height:44px;border-radius:14px;flex:none;background:#FFFDF8;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6E5018" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.5-6-10a6 6 0 0 1 12 0c0 4.5-6 10-6 10zM12 8.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z"></path></svg></span><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font:600 9.5px 'Geist Mono',monospace;letter-spacing:.14em;color:#6F4E37">PUNTO DE ENCUENTRO</span><span style="font:700 14.5px/1.25 'Geist'">Plaza de España, esquina Vicolo del Bottino.</span></span><span style="flex:none;height:36px;padding:0 13px;border-radius:999px;border:1px solid rgba(181,138,46,.7);background:#FFFDF8;display:flex;align-items:center;font:700 13px 'Geist';color:#4A3510">Ver mapa</span></div>
+          <div style="padding:12px 14px;border-radius:18px;background:#F7F1E4;display:flex;flex-direction:column;gap:3px"><span style="font:600 9.5px 'Geist Mono',monospace;letter-spacing:.14em;color:#6F4E37">CANCELACIÓN</span><span style="font:700 15px 'Geist'">No se puede cancelar sin coste.</span></div>
+          <sc-if value="{{ b.warn }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:14px;background:{{ b.wbg }};border:1px solid {{ b.wbd }};font:700 13px/1.3 'Geist';color:{{ b.wfg }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 9v4M12 17h.01M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path></svg>{{ b.warn }}</div></sc-if>
+          <div style="display:flex;align-items:flex-start;gap:14px;padding:15px 16px;border-radius:20px;background:linear-gradient(135deg,#DDF0E0,#EAF5EA);border:1.5px solid #5FAE79;box-shadow:0 10px 18px -14px rgba(43,127,69,.7)">
+            <span style="width:48px;height:48px;border-radius:50%;flex:none;background:#2B7F45;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(43,127,69,.15)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3.2 2"></path></svg></span>
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px"><span style="font:700 9.5px 'Geist Mono',monospace;letter-spacing:.14em;color:#1F6236">{{ b.lab }}</span><span style="font:400 30px/1.05 'Instrument Serif',serif;color:#14502B">{{ b.when }}</span><span style="font:500 13px/1.35 'Geist';color:#2B6B42">{{ b.why }}</span></span>
+          </div>
+          <sc-if value="{{ b.grey }}" hint-placeholder-val="{{ false }}"><span style="margin-top:-4px;padding:0 4px;font:400 12.5px/1.4 'Geist';color:rgba(28,34,48,.55)">{{ b.grey }}</span></sc-if>
+          <span style="height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;gap:10px;font:700 16px 'Geist';background:linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E);color:#3E2A0C;box-shadow:0 12px 22px -12px rgba(110,80,24,.8),inset 0 1px 0 rgba(255,255,255,.55)">{{ b.btn }}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3E2A0C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M8 7h9v9"></path></svg></span>
+        </div>
+        <span style="text-align:center;font:500 14px 'Geist';color:rgba(28,34,48,.55);text-decoration:underline;padding-top:2px">¿Hay algún dato mal? Cuéntanoslo</span>
+      </div>
+    </div>
+    <span style="font:400 14px/1.45 'Geist';color:rgba(28,34,48,.72);max-width:375px">{{ b.note }}</span>
+  </div></sc-for></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const CLK='M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3.2 2',WARN='M12 9v4M12 17h.01M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z',NO='M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM5.6 5.6l12.8 12.8';
+const G={bg:'linear-gradient(135deg,#DDF0E0,#EAF5EA)',bd:'#5FAE79',sh:'rgba(43,127,69,.7)',ic:'#2B7F45',ring:'rgba(43,127,69,.15)',lc:'#1F6236',big:'#14502B',tx:'#2B6B42',icp:CLK};
+const A={bg:'linear-gradient(135deg,#FFF1D6,#FBE6B8)',bd:'#D9A23C',sh:'rgba(185,120,20,.7)',ic:'#C98616',ring:'rgba(201,134,22,.18)',lc:'#8A5A0C',big:'#6A4208',tx:'#7A5410',icp:WARN};
+const R={bg:'linear-gradient(135deg,#FBE7E2,#F7D8D1)',bd:'#D9806F',sh:'rgba(163,60,40,.6)',ic:'#B5503A',ring:'rgba(181,80,58,.16)',lc:'#8A3322',big:'#6A2418',tx:'#8A3A2A',icp:NO};
+class Component extends DCLogic {
+  renderVals(){return{boards:[
+    {id:'F1',cap:'La hora que te recomendamos',lab:'TE RECOMENDAMOS',when:'Viernes 27 · 17:00',why:'Aterrizas a las 13:30: a esta hora llegas con calma.',warn:'',grey:'',btn:'Reservar Free Tour',note:'La caja verde es siempre la misma.'},
+    {id:'F2',cap:'Ese día no llegas',lab:'TE RECOMENDAMOS',when:'Sábado 28 · 10:00',why:'El primer día que te encaja.',warn:'El viernes 27 no llegas: aterrizas a las 17:20',wbg:'#FFF1D6',wbd:'#D9A23C',wfg:'#6A4208',grey:'Cuando añadas la reserva, lo pasamos al sábado en tu ruta.',btn:'Reservar Free Tour',note:'Franja ámbar con el problema y, debajo, la caja verde de siempre.'},
+    {id:'F3',cap:'No quedan plazas',lab:'TE RECOMENDAMOS',when:'Sábado 28 · 10:00',why:'El día más cercano con plazas.',warn:'El viernes 27 no quedan plazas',wbg:'#FBE7E2',wbd:'#D9806F',wfg:'#8A3322',grey:'Cuando añadas la reserva, lo pasamos al sábado en tu ruta.',btn:'Reservar Free Tour',note:'Igual, con la franja en rojo.'}
+  ],pins:[{n:1,x:196,y:206},{n:3,x:222,y:176},{n:4,x:248,y:146},{n:5,x:236,y:96},{n:6,x:120,y:182},{n:8,x:292,y:70}]};}
+}
+</script>
+</body>
+</html>

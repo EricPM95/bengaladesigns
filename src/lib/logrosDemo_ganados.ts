@@ -24,6 +24,31 @@ export function ponerEscenario(e: EscenarioGanados): void {
   actual = copia(e)
 }
 
+/**
+ * (V72) Lanzarote en lo ganado del demo (solo para ver las fichas en grande): `n` imprescindibles vistos (4 → medalla de plata en la vitrina; 7 → colección completa y diamante, fuera de la vitrina). Con la misma forma que el servidor.
+ */
+const GRADOS_LZ: [number, string, string, string][] = [[1, 'bronce', 'Primeros pasos en Lanzarote', 'Has visto tu primer imprescindible.'], [3, 'plata', 'Lanzarote te atrapa', '{n} de {total} imprescindibles.'], [5, 'oro', 'Tierra de volcanes', '{n} de {total} imprescindibles.'], [7, 'diamante', 'Lanzarote, de punta a punta', 'Todos los imprescindibles de Lanzarote.']]
+export function ponerLanzarote(n: number): void {
+  actual.items = actual.items.filter((i) => i.destino !== 'lanzarote')
+  const dia = (k: number): string => `2026-11-${k < 2 ? 26 : k < 4 ? 27 : 28}`
+  const nuevos: ItemGanado[] = []
+  const grados = GRADOS_LZ.filter(([desde]) => desde <= n)
+  grados.forEach(([desde, grado, nombreGrado, linea], i) => {
+    const clave = `lanzarote|sello|lanzarote:${grado}`
+    const fecha = dia(desde - 1)
+    nuevos.push({ clave, tipo: 'sello', destino: 'lanzarote', logro: 'sello', escalon: `lanzarote:${grado}`, nombre: 'Medalla de Lanzarote', linea: linea.replace('{n}', String(n)).replace('{total}', '7'), en: `${fecha}T10:00:00Z`, fecha, lugar: 'Lanzarote, España', balda: 'sellos', titulable: false, momento: { tipo: 'sello', cat: 'sello', clave, sello: 'lanzarote', destino: 'lanzarote', grado, nombre: nombreGrado, linea, primera_vez: false, en: `${fecha}T10:00:00Z`, frase: null } as never, sello: 'lanzarote', grado, nombre_grado: nombreGrado, ...(i < grados.length - 1 ? { superado: true } : {}) } as ItemGanado)
+  })
+  if (n >= 7) {
+    const clave = 'lanzarote|coleccion|lz_imprescindibles'
+    nuevos.push({ clave, tipo: 'coleccion', destino: 'lanzarote', logro: 'coleccion', escalon: 'lz_imprescindibles', nombre: 'Los imprescindibles de Lanzarote', linea: 'Lo esencial, visto', en: '2026-11-28T10:00:00Z', fecha: '2026-11-28', lugar: 'Lanzarote, España', balda: 'colecciones', titulable: false, momento: { tipo: 'coleccion', cat: 'coleccion', clave, id: 'lz_imprescindibles', destino: 'lanzarote', nombre: 'Los imprescindibles de Lanzarote', linea: 'Lo esencial, visto', primera_vez: false, en: '2026-11-28T10:00:00Z', frase: null } as never, coleccion: 'lz_imprescindibles' } as ItemGanado)
+  }
+  actual.items = [...actual.items, ...nuevos]
+  // En la vitrina solo está la medalla (F3: «En tu vitrina»); la colección completa aún no (F2: «Llevar a mi vitrina»).
+  const hueco = grados.length ? `lanzarote|sello|lanzarote:${grados[grados.length - 1][1]}` : null
+  const sellos = actual.vitrina.baldas.sellos.huecos.filter((k) => !k.startsWith('lanzarote|'))
+  actual.vitrina.baldas.sellos = { ...actual.vitrina.baldas.sellos, huecos: hueco ? [...sellos, hueco].slice(0, 4) : sellos }
+}
+
 const BALDAS = ['viajero', 'sellos', 'colecciones', 'emblemas'] as const
 
 export function responder(ruta: string, _url: URL, c: Record<string, unknown>, opciones: { metodo?: string; cuerpo?: unknown }): unknown {

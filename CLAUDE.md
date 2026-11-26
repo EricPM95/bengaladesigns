@@ -188,3 +188,7 @@ Al contestar «¿En qué país vives?» (primera vez o Ajustes) la moneda pasa a
 
 ## Nunca un botón que no hace nada (Eric, 26-nov, V69)
 **Todo botón que se ve hace algo; si todavía no puede hacer nada, no se pinta** (nunca un botón «puesto» con `onClick={() => undefined}` para rellenar el dibujo). Caso real: [Ver entrada] de la ficha de la parada › pestaña Entradas (`StopReservation.tsx`) estuvo meses con `onVerEntrada={() => undefined}`; desde la V69 abre el código (o, sin documento, dice «+ Subir tu entrada» y abre la hoja de la V64: `useVerEntrada.tsx`), y si no hay nada que ver ni que subir (la entrada es de otra persona), el botón no sale.
+
+## Los agentes no tocan el trabajo de otros; y el script de subida lo incluye TODO (Eric, 26-nov, V72)
+- **Un agente nunca hace `git stash`, `git restore` ni `git checkout` de archivos, ni cierra los Chrome de prueba de otro agente.** Para capturas «antes», copia aparte (`git worktree`) o `git show <commit>:<archivo>`. (Caso real: lo que pasó en la V69 y la V71 con las capturas «antes».)
+- **El script de subida (`scripts/destino/_subirTanda.sh`) incluye TODO lo cambiado** (`src/`, `server/`, `shared/`, `data/`, `api/`, `.gitignore`, los archivos de la raíz…), no una lista a mano: `shared/` estuvo sin subir de la V58 a la V70. Antes del commit, el script mira `git status --short | grep -Ev '^.. "?docs/'` y **se para (código 6) si queda código modificado o nuevo sin subir**. Antes del push, `git status` limpio.

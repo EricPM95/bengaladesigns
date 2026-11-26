@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 30% at 50% 0%,#F1E8D6 0%,#E0D3BA 75%);padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">APP · RESERVAS · EL BILLETE</span><span style="font:400 40px/1 'Instrument Serif',serif">Los datos del vuelo, ordenados</span></div>
+  <div style="display:grid;grid-template-columns:repeat(3,390px);gap:52px 44px;align-items:start;justify-content:start">
+  <sc-for list="{{ boards }}" as="b" hint-placeholder-count="2">
+    <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.08em;color:#6F4E37">{{ b.id }} · {{ b.cap }}</span>
+      <div style="position:relative;width:375px;height:812px;flex:none;border-radius:48px;overflow:hidden;background:#F5EFE4;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45)">
+        <span style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:112px;height:32px;border-radius:20px;background:#0E1118;z-index:60"></span>
+        <div style="position:absolute;inset:0;padding:60px 16px 0">
+          <div style="display:flex;align-items:center;justify-content:space-between;height:44px"><span style="font:400 24px/1 'Instrument Serif',serif;letter-spacing:.32em;color:#B58A2E">JUTRIP</span><span style="width:34px;height:34px;border-radius:50%;background:#1C2230;box-shadow:0 0 0 2px #FBF3E2,0 0 0 3.5px #B58A2E"></span></div>
+          <div style="display:flex;align-items:center;gap:10px;margin:8px 0 12px"><span style="width:38px;height:38px;border-radius:50%;border:1.5px solid #B58A2E;display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1C2230" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span><span style="font:400 28px/1 'Instrument Serif',serif">Reservas</span></div>
+          <div style="border-radius:24px;background:linear-gradient(180deg,#FFFAEC,#FBF1D6);border:1px solid rgba(181,138,46,.5);padding:14px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;gap:10px"><span style="height:28px;padding:0 12px;border-radius:999px;background:#1C2230;color:#F3D88F;display:flex;align-items:center;font:700 11px 'Geist Mono',monospace;letter-spacing:.12em">IDA</span><span style="flex:1;font:700 14px 'Geist'">Martes 24 noviembre</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><span style="font:400 40px/1 'Instrument Serif',serif">{{ b.t1 }}</span><span style="width:32px;height:32px;border-radius:50%;border:1.5px solid #B58A2E;display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8A6A2C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ b.tic }}"></path></svg></span><span style="font:400 40px/1 'Instrument Serif',serif">{{ b.t2 }}</span></div>
+            <span style="font:500 13.5px 'Geist';color:rgba(28,34,48,.62)">{{ b.route }}</span>
+
+            <sc-if value="{{ b.a }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;align-items:center;justify-content:space-between"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:#6F4E37">{{ b.dt }}</span><span style="width:32px;height:32px;border-radius:50%;background:#1C2230;border:1.5px solid #B58A2E;display:flex;align-items:center;justify-content:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F3D88F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1-4L16 5l3 3L8 19zM14 7l3 3"></path></svg></span></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                  <sc-for list="{{ b.data }}" as="d" hint-placeholder-count="6"><div style="display:flex;align-items:center;gap:10px;padding:10px 10px;border-radius:16px;background:#FFFDF8;border:1px solid rgba(181,138,46,.35)"><span style="width:34px;height:34px;border-radius:50%;flex:none;background:#F3E3B2;display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#6E5018" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ d.ic }}"></path></svg></span><span style="min-width:0;display:flex;flex-direction:column;gap:1px"><span style="font:600 8.5px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(28,34,48,.5)">{{ d.l }}</span><span style="font:700 15px/1.15 'Geist'">{{ d.v }}</span></span></div></sc-for>
+                </div>
+                <div style="position:relative;margin:6px -14px 0;height:0;border-top:1.5px dashed rgba(181,138,46,.6)"><span style="position:absolute;left:-9px;top:-10px;width:18px;height:18px;border-radius:50%;background:#F5EFE4"></span><span style="position:absolute;right:-9px;top:-10px;width:18px;height:18px;border-radius:50%;background:#F5EFE4"></span></div>
+                <div style="margin-top:4px;border-radius:20px;background:linear-gradient(160deg,#232A3C,#1C2230);padding:14px;display:flex;align-items:center;gap:14px;box-shadow:0 16px 24px -18px rgba(28,34,48,.9)">
+                  <span style="width:112px;height:112px;border-radius:14px;background:#fff;padding:9px;flex:none"><svg viewBox="0 0 21 21" width="94" height="94" shape-rendering="crispEdges"><path d="{{ qr }}" fill="#1C2230"></path></svg></span>
+                  <span style="flex:1;display:flex;flex-direction:column;gap:8px"><span style="font:600 9.5px 'Geist Mono',monospace;letter-spacing:.16em;color:#F3D88F">{{ b.pt }}</span><span style="font:400 21px/1.15 'Instrument Serif',serif;color:#FFFDF8">{{ b.sub }}</span><span style="align-self:flex-start;height:34px;padding:0 13px;border-radius:12px;display:flex;align-items:center;gap:7px;font:700 12.5px 'Geist';background:linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E);color:#4A3510"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4A3510" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"></path></svg>Ampliar</span></span>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ b.b }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:0">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:#6F4E37">DATOS DEL VUELO</span><span style="width:32px;height:32px;border-radius:50%;background:#1C2230;border:1.5px solid #B58A2E;display:flex;align-items:center;justify-content:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F3D88F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1-4L16 5l3 3L8 19zM14 7l3 3"></path></svg></span></div>
+                <div style="display:flex;align-items:stretch;border-radius:16px;background:#FFFDF8;border:1px solid rgba(181,138,46,.35);overflow:hidden">
+                  <sc-for list="{{ data }}" as="d" hint-placeholder-count="4"><div style="flex:1;min-width:0;padding:10px 4px 10px 9px;border-left:{{ d.bl }};display:flex;flex-direction:column;gap:3px"><span style="font:600 7.5px 'Geist Mono',monospace;letter-spacing:.06em;color:rgba(28,34,48,.5);white-space:nowrap">{{ d.l }}</span><span style="font:700 14px/1.1 'Geist';white-space:nowrap">{{ d.vs }}</span></div></sc-for>
+                  
+                </div>
+                <div style="margin-top:12px;border-radius:20px;background:linear-gradient(160deg,#232A3C,#1C2230);padding:14px;display:flex;align-items:center;gap:14px;box-shadow:0 16px 24px -18px rgba(28,34,48,.9)">
+                  <span style="width:112px;height:112px;border-radius:14px;background:#fff;padding:9px;flex:none"><svg viewBox="0 0 21 21" width="94" height="94" shape-rendering="crispEdges"><path d="{{ qr }}" fill="#1C2230"></path></svg></span>
+                  <span style="flex:1;display:flex;flex-direction:column;gap:8px"><span style="font:600 9.5px 'Geist Mono',monospace;letter-spacing:.16em;color:#F3D88F">TARJETA DE EMBARQUE</span><span style="font:400 21px/1.15 'Instrument Serif',serif;color:#FFFDF8">Enséñala en la puerta</span><span style="align-self:flex-start;height:34px;padding:0 13px;border-radius:12px;display:flex;align-items:center;gap:7px;font:700 12.5px 'Geist';background:linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E);color:#4A3510"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4A3510" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"></path></svg>Ampliar</span></span>
+                </div>
+              </div>
+            </sc-if>
+            <div style="display:flex;justify-content:flex-end"><span style="width:38px;height:38px;border-radius:50%;background:#F6D9D6;display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#B3261E" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"></path></svg></span></div>
+          </div>
+        </div>
+      </div>
+      <span style="font:400 14px/1.45 'Geist';color:rgba(28,34,48,.72);max-width:375px;text-wrap:pretty">{{ b.note }}</span>
+    </div>
+  </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  qrPath(){
+    const N=21;let d='';const set=(x,y)=>{d+=`M${x} ${y}h1v1h-1z`;};
+    const finder=(ox,oy)=>{for(let y=0;y<7;y++)for(let x=0;x<7;x++){const e=x==0||x==6||y==0||y==6,c=x>=2&&x<=4&&y>=2&&y<=4;if(e||c)set(ox+x,oy+y);}};
+    finder(0,0);finder(14,0);finder(0,14);
+    let s=7;const rnd=()=>{s=(s*1103515245+12345)&0x7fffffff;return s/0x7fffffff;};
+    for(let y=0;y<N;y++)for(let x=0;x<N;x++){const inF=(x<8&&y<8)||(x>12&&y<8)||(x<8&&y>12);if(!inF&&rnd()>.52)set(x,y);}
+    return d;
+  }
+  renderVals(){
+    const PL='M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z',TR='M7 3h10a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3zM4 11h16M8 21l2-3M16 21l-2-3M8.5 14.5h.01M15.5 14.5h.01';
+    const IC={co:'M4 8h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM9 8V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 13h18',vu:PL,te:'M4 21V9l8-5 8 5v12M9 21v-7h6v7',as:'M7 4h6a2 2 0 0 1 2 2v7H7zM15 13h3a2 2 0 0 1 2 2v3H9M9 18v3M18 18v3',du:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2',lo:'M3 7h18v10H3zM9 7v10M13 10h4M13 14h3',tr:TR,es:'M12 21s-6-5.5-6-10a6 6 0 0 1 12 0c0 4.5-6 10-6 10zM12 8.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z'};
+    const mk=(arr)=>arr.filter(x=>x[2]).map(([k,l,v])=>({ic:IC[k],l,v}));
+    const fly=mk([['co','COMPAÑÍA','Vueling'],['vu','VUELO','VY 3063'],['te','TERMINAL','T1 · El Prat'],['as','ASIENTO','23B'],['du','DURACIÓN','1 h 45 min'],['lo','LOCALIZADOR','DMHS2N']]);
+    const flyMiss=mk([['co','COMPAÑÍA','Vueling'],['vu','VUELO','VY 3063'],['te','TERMINAL',''],['as','ASIENTO',''],['du','DURACIÓN','1 h 45 min'],['lo','LOCALIZADOR','DMHS2N']]);
+    const tren=mk([['co','COMPAÑÍA','Iryo'],['tr','TREN','6171'],['es','ESTACIÓN','Barcelona Sants'],['as','ASIENTO','Coche 5 · 12A'],['du','DURACIÓN','3 h 02 min'],['lo','LOCALIZADOR','X7K2M']]);
+    const F={t1:'08:35',t2:'11:20',route:'Barcelona (El Prat) → Roma (Ciampino)',tic:PL,dt:'DATOS DEL VUELO',pt:'TARJETA DE EMBARQUE',sub:'Enséñala en la puerta',a:true,b:false};
+    return{qr:this.qrPath(),boards:[
+      {...F,id:'B1',cap:'Vuelo · seis cajas en tres filas de dos',data:fly,note:'Compañía y vuelo, terminal y asiento, duración y localizador. El lápiz arriba y el código en el panel azul noche.'},
+      {...F,id:'B2',cap:'Vuelo · cuando falta un dato',data:flyMiss,note:'Sin terminal ni asiento: sus cajas no salen y las demás se recolocan, sin huecos.'},
+      {id:'B3',cap:'Tren',a:true,b:false,t1:'08:35',t2:'11:37',route:'Barcelona Sants → Roma Termini',tic:TR,dt:'DATOS DEL TREN',pt:'TU BILLETE',sub:'Enséñalo al revisor',data:tren,note:'Compañía, tren, estación, asiento, duración y localizador. Misma estructura.'}
+    ]};
+  }
+}
+</script>
+</body>
+</html>

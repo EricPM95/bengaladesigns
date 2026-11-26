@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 30% at 50% 0%,#F1E8D6 0%,#E0D3BA 75%);padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">APP · HOY · LA LLEGADA</span><span style="font:400 40px/1 'Instrument Serif',serif">Llegas a Roma</span></div>
+  <div style="display:grid;grid-template-columns:repeat(3,390px);gap:52px 44px;align-items:start;justify-content:start">
+  <sc-for list="{{ boards }}" as="b" hint-placeholder-count="7">
+    <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.08em;color:#6F4E37">{{ b.id }} · {{ b.cap }}</span>
+      <div style="position:relative;width:375px;height:812px;flex:none;border-radius:48px;overflow:hidden;background:#F5EFE4;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45);display:flex;flex-direction:column">
+        <span style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:112px;height:32px;border-radius:20px;background:#0E1118;z-index:60"></span>
+        <div style="flex:none;height:56px"></div>
+        <div style="flex:none;height:56px;padding:0 18px 0 20px;display:flex;align-items:center;justify-content:space-between"><span style="font:400 26px/1 'Instrument Serif',serif;letter-spacing:.32em;color:#B58A2E">JUTRIP</span><span style="width:36px;height:36px;border-radius:50%;background:#1C2230;box-shadow:0 0 0 2px #FBF3E2,0 0 0 3.5px #B58A2E;display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFFDF8" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg></span></div>
+        <div style="flex:1;min-height:0;padding:12px 16px 0">
+          <div style="border-radius:28px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);box-shadow:0 20px 34px -24px rgba(28,34,48,.5);overflow:hidden">
+            <div style="height:150px;position:relative"><dc-import name="Piezas/Imagen Llegada" kind="{{ b.kind }}" w="{{ 343 }}" h="{{ 150 }}" hint-size="343px,150px"></dc-import><span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.14) 0%,rgba(0,0,0,0) 40%,rgba(0,0,0,.38))"></span><span style="position:absolute;left:18px;top:16px;display:flex;align-items:center;gap:8px;font:600 11px 'Geist Mono',monospace;letter-spacing:.18em;color:#FFFDF8"><sc-if value="{{ b.dot }}" hint-placeholder-val="{{ false }}"><span style="width:9px;height:9px;border-radius:50%;background:#4CC477;box-shadow:0 0 0 3px rgba(76,196,119,.3)"></span></sc-if>{{ b.lbl }}</span>
+              <sc-if value="{{ b.qr }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;right:14px;top:12px;width:52px;height:52px;border-radius:50%;background:{{ b.qbg }};border:1.5px solid {{ b.qbd }};box-sizing:border-box;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="{{ b.qic }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM18 14h2v2h-2zM14 18h2v2h-2z"></path></svg><sc-if value="{{ b.plus }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:-4px;bottom:-4px;width:20px;height:20px;border-radius:50%;background:#8E6820;border:2px solid #fff;display:flex;align-items:center;justify-content:center"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></span></sc-if></span></sc-if>
+              <span style="position:absolute;left:18px;right:18px;bottom:14px;font:400 34px/1 'Instrument Serif',serif;color:#FFFDF8;text-shadow:0 2px 12px rgba(0,0,0,.4)">{{ b.title }}</span></div>
+            <div style="padding:14px 14px 16px;display:flex;flex-direction:column;gap:12px">
+              <sc-if value="{{ b.tk }}" hint-placeholder-val="{{ true }}"><div style="display:flex;flex-direction:column;gap:6px;padding:2px 2px 4px">
+                <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.12em;color:rgba(28,34,48,.55)">{{ b.lab }}</span>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <span style="display:flex;flex-direction:column;gap:1px;min-width:0"><span style="font:400 32px/1 'Instrument Serif',serif">{{ b.dep }}</span><span style="font:600 11.5px 'Geist Mono',monospace;letter-spacing:.08em;color:rgba(28,34,48,.6);white-space:nowrap">{{ b.from }}</span></span>
+                  <span style="flex:1;min-width:20px;position:relative;height:24px;display:flex;align-items:center"><span style="position:absolute;left:0;right:0;top:50%;border-top:2px dotted rgba(181,138,46,.7)"></span><span style="position:relative;margin:0 auto;width:26px;height:26px;border-radius:50%;background:#FFFDF8;display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8A6A2C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ b.tic }}"></path></svg></span></span>
+                  <span style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;min-width:0">
+                    <span style="display:flex;align-items:center;gap:7px"><sc-if value="{{ b.old }}" hint-placeholder-val="{{ false }}"><span style="font:500 15px 'Geist';color:rgba(28,34,48,.4);text-decoration:line-through">{{ b.old }}</span></sc-if><sc-if value="{{ b.ok }}" hint-placeholder-val="{{ false }}"><span style="width:20px;height:20px;border-radius:50%;background:#2B7F45;display:flex;align-items:center;justify-content:center"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span></sc-if><span style="font:400 32px/1 'Instrument Serif',serif">{{ b.arr }}</span></span>
+                    <span style="font:600 11.5px 'Geist Mono',monospace;letter-spacing:.08em;color:rgba(28,34,48,.6);white-space:nowrap">{{ b.to }}</span></span>
+                </div>
+                
+              </div></sc-if>
+              <sc-if value="{{ b.hasFly }}" hint-placeholder-val="{{ true }}"><div style="display:grid;grid-template-columns:{{ b.fcols }};gap:8px"><sc-for list="{{ b.fly }}" as="x" hint-placeholder-count="3"><div style="min-width:0;display:flex;flex-direction:column;gap:6px;padding:11px 10px 12px;border-radius:18px;background:#F7F1E4"><span style="display:flex;align-items:center;gap:5px;font:600 9.5px 'Geist Mono',monospace;letter-spacing:.08em;color:#6F4E37;white-space:nowrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6E5018" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="{{ x.ic }}"></path></svg>{{ x.l }}</span><span style="font:700 16px/1.15 'Geist'">{{ x.v }}</span><span style="font:500 11px/1.3 'Geist';color:rgba(28,34,48,.6)">{{ x.s }}</span></div></sc-for></div></sc-if>
+              <div style="display:grid;grid-template-columns:{{ b.cols }};gap:8px">
+                <sc-for list="{{ b.boxes }}" as="x" hint-placeholder-count="3"><div style="min-width:0;display:flex;flex-direction:column;gap:6px;padding:11px 10px 12px;border-radius:18px;background:#F7F1E4"><span style="display:flex;align-items:center;gap:5px;font:600 9.5px 'Geist Mono',monospace;letter-spacing:.08em;color:#6F4E37;white-space:nowrap"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6E5018" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="{{ x.ic }}"></path></svg>{{ x.l }}</span><span style="font:700 {{ x.fs }}px/1.15 'Geist'">{{ x.v }}</span><span style="font:500 11px/1.3 'Geist';color:rgba(28,34,48,.6)">{{ x.s }}</span></div></sc-for>
+              </div>
+              <sc-if value="{{ b.two }}" hint-placeholder-val="{{ true }}"><div style="display:flex;gap:10px"><span style="flex:1;height:50px;border-radius:16px;display:flex;align-items:center;justify-content:center;font:700 14.5px 'Geist';background:linear-gradient(135deg,#F9EFCB,#EAD6A0 55%,#D8BD7C);color:#4A3510;border:1px solid rgba(181,138,46,.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 8px 14px -10px rgba(110,80,24,.6)">{{ b.b1 }}</span><span style="flex:1.1;height:50px;border-radius:16px;display:flex;align-items:center;justify-content:center;font:700 14px 'Geist';background:#FFFDF8;border:1px solid rgba(181,138,46,.5);color:#4A3510;white-space:nowrap">{{ b.b2 }}</span></div>
+              <span style="text-align:center;font:600 13px 'Geist';color:#6E5018;text-decoration:underline">Cómo llegar al centro</span></sc-if>
+              <sc-if value="{{ b.strip }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:16px;background:#FBF3E2;border:1px solid rgba(181,138,46,.5)"><span style="width:34px;height:34px;border-radius:50%;flex:none;background:#1C2230;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F3D88F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11M3 11h18v6H3zM6 17v2M18 17v2M7.5 14h.01M16.5 14h.01"></path></svg></span><span style="font:600 13.5px/1.3 'Geist';color:#3E2A0C">{{ b.strip }}</span></div></sc-if>
+              <sc-if value="{{ b.one }}" hint-placeholder-val="{{ false }}"><span style="height:54px;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:9px;font:700 15px 'Geist';background:linear-gradient(135deg,#F9EFCB,#EAD6A0 55%,#D8BD7C);color:#4A3510;border:1px solid rgba(181,138,46,.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 8px 14px -10px rgba(110,80,24,.6)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A3510" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"></path></svg>Cómo llegar a tu alojamiento</span></sc-if>
+            </div>
+          </div>
+        </div>
+        <div style="position:absolute;left:0;right:0;bottom:0;height:96px;z-index:4;background:linear-gradient(180deg,rgba(245,239,228,0),#F5EFE4 55%)"></div>
+        <div style="position:absolute;left:12px;right:12px;bottom:14px;z-index:5"><dc-import name="Piezas/Barra JUTRIP" tone="tinta" act="0" hint-size="100%,64px"></dc-import></div>
+        <sc-if value="{{ b.sheet }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;inset:0;background:rgba(20,16,10,.5);z-index:40"></div>
+          <div style="position:absolute;left:0;right:0;bottom:0;z-index:50;border-radius:32px 32px 0 0;background:#FBF3E2;padding:10px 18px 28px;display:flex;flex-direction:column;gap:14px;box-shadow:0 -20px 40px rgba(0,0,0,.25)">
+            <span style="align-self:center;width:44px;height:4px;border-radius:2px;background:rgba(28,34,48,.25)"></span>
+            <div style="display:flex;justify-content:space-between;align-items:center"><span style="font:400 28px/1.05 'Instrument Serif',serif">¿A qué hora llegas ahora?</span><span style="width:36px;height:36px;border-radius:50%;background:rgba(28,34,48,.08);display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1C2230" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></div>
+            <div style="position:relative;height:150px;border-radius:20px;background:#F3E9D2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;overflow:hidden"><span style="position:absolute;left:12px;right:12px;top:52px;height:46px;border-radius:13px;background:#FFFDF8;box-shadow:0 4px 12px -6px rgba(60,40,10,.4);border:1px solid rgba(181,138,46,.45)"></span><span style="position:relative;font:400 20px/1 'Instrument Serif',serif;opacity:.3">11:30</span><span style="position:relative;font:400 36px/1.1 'Instrument Serif',serif">12:00</span><span style="position:relative;font:400 20px/1 'Instrument Serif',serif;opacity:.3">12:30</span></div>
+            <span style="height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font:700 15.5px 'Geist';background:linear-gradient(135deg,#F3E2B0,#D2B67A 55%,#B58A2E);color:#4A3510;box-shadow:0 10px 20px -14px rgba(110,80,24,.7),inset 0 1px 0 rgba(255,255,255,.55)">Guardar</span>
+          </div>
+        </sc-if>
+      </div>
+      <span style="font:400 14px/1.45 'Geist';color:rgba(28,34,48,.72);max-width:375px;text-wrap:pretty">{{ b.note }}</span>
+    </div>
+  </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const PL='M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z',TR='M7 3h10a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3zM4 11h16M8 21l2-3M16 21l-2-3M8.5 14.5h.01M15.5 14.5h.01',BUS='M5 4h14a1 1 0 0 1 1 1v11H4V5a1 1 0 0 1 1-1zM4 11h16M7 19v2M17 19v2M8 15h.01M16 15h.01',HOT='M4 21V8l8-5 8 5v13M9 21v-6h6v6M9 11h.01M15 11h.01',DAY='M7 3v3M17 3v3M4 8h16v12H4zM8 13h3',CAR='M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11M3 11h18v6H3zM6 17v2M18 17v2M7.5 14h.01M16.5 14h.01',TER='M4 21V9l8-5 8 5v12M9 21v-7h6v7',SEAT='M7 4h6a2 2 0 0 1 2 2v7H7zM15 13h3a2 2 0 0 1 2 2v3H9M9 18v3M18 18v3',REF='M3 7h18v10H3zM9 7v10M13 10h4M13 14h3';
+class Component extends DCLogic {
+  renderVals(){
+    const gold={qr:true,qbg:'linear-gradient(135deg,#F9EFCB,#EAD6A0 55%,#D8BD7C)',qbd:'rgba(181,138,46,.8)',qic:'#5A3E0C',plus:false};
+    const gray={qr:true,qbg:'#ECEAE4',qbd:'rgba(28,34,48,.14)',qic:'rgba(28,34,48,.42)',plus:true};
+    const bx=(ic,l,v,s,fs)=>({ic,l,v,s,fs:fs||16});
+    const three=[bx(BUS,'AL CENTRO','35 min','Leonardo Express'),bx(HOT,'HOTEL','Hotel Quirinale','Roma',13.5),bx(DAY,'TU DÍA','7 paradas','Empieza en Piazza Navona',14)];
+    const avion={tk:true,kind:'avion',tic:PL,lab:'VUELO VY6102 · Martes 24',dep:'08:35',from:'BCN',arr:'11:15',to:'FCO',old:'',ok:false};
+    const FLY3=[bx(TER,'TERMINAL','T1','El Prat'),bx(SEAT,'ASIENTO','14C',''),bx(REF,'REF','Vueling','K7M2QX')];
+    const FLY2=[FLY3[0],FLY3[2]];
+    const ace=[bx(CAR,'COCHE','Cicar','Recógelo al llegar'),bx(HOT,'HOTEL','The Colors House','20 min en coche',13.5),bx(DAY,'TU DÍA','3 paradas','Empieza en Timanfaya',14)];
+    const base=(o)=>({sheet:false,two:true,one:false,boxes:three,cols:'1fr 1fr 1fr',hasFly:true,fly:FLY3,fcols:'1fr 1fr 1fr',title:'Llegas a Roma',strip:'',lbl:'LLEGADA',dot:false,...o});
+    const HERE={lbl:'AQUÍ · YA HAS LLEGADO',dot:true};
+    const FLYT=[bx(TER,'ESTACIÓN','Sants',''),bx(SEAT,'ASIENTO','Coche 5 · 12A','',13.5),bx(REF,'REF','Iryo','X7K2M')];
+    const trenBoxes=[bx(BUS,'AL CENTRO','5 min','Metro desde Termini'),three[1],three[2]];
+    return{boards:[
+      base({id:'L1',cap:'Antes de aterrizar · con tarjeta de embarque',...gold,...avion,b1:'He aterrizado',b2:'Vuelo retrasado',note:'La línea del billete va debajo de la imagen. El QR dorado dice que la tarjeta de embarque está guardada.'}),
+      base({id:'L1b',cap:'Cuando falta un dato · sin asiento y sin tarjeta',...gray,...avion,fly:FLY2,fcols:'1fr 1fr 1fr',b1:'He aterrizado',b2:'Vuelo retrasado',note:'QR gris con «+»: abre la hoja de [Añadir tarjeta de embarque] de RESERVAS.'}),
+      base({id:'L2',cap:'Después de pulsar [He aterrizado]',...gold,...avion,ok:true,...HERE,two:false,one:true,note:'Las dos filas de cajas se quedan. Fuera [He aterrizado] y [Vuelo retrasado]; queda [Cómo llegar a tu alojamiento], de punta a punta.'}),
+      base({id:'L3',cap:'Después de guardar un retraso',...gold,...avion,arr:'12:00',old:'11:15',b1:'He aterrizado',b2:'Vuelo retrasado',note:'La hora nueva en grande y la de antes tachada al lado.'}),
+      base({id:'L3a',cap:'[Vuelo retrasado] · la hoja de la hora',...gold,...avion,b1:'He aterrizado',b2:'Vuelo retrasado',sheet:true,note:'La hoja con la rueda de la hora y [Guardar].'}),
+      base({id:'L4',cap:'En tren',...gold,tk:true,kind:'tren',fly:FLYT,boxes:trenBoxes,tic:TR,lab:'TREN · Martes 24',dep:'08:35',from:'Barcelona Sants',arr:'11:15',to:'Roma Termini',old:'',ok:false,b1:'He llegado',b2:'Tren retrasado',note:'Misma línea con el tren y su fila de datos del billete. En autobús y ferry, [Autobús retrasado] y [Ferry retrasado].'}),
+      base({id:'L4b',cap:'En tren · después de llegar',...gold,tk:true,kind:'tren',fly:FLYT,boxes:trenBoxes,tic:TR,lab:'TREN · Martes 24',dep:'08:35',from:'Barcelona Sants',arr:'11:15',to:'Roma Termini',old:'',ok:true,...HERE,two:false,one:true,note:'La etiqueta pasa a «● AQUÍ · YA HAS LLEGADO» y la hora lleva solo el ✓ verde.'}),
+      base({id:'L5',cap:'En coche propio',kind:'coche',hasFly:false,qr:false,tk:false,plus:false,old:'',ok:false,boxes:[three[1],three[2]],cols:'1fr 1fr',b1:'He llegado',b2:'He salido tarde',note:'Sin línea de billete ni QR, con la imagen de un coche. Dos cajas: hotel y tu día.'}),
+      base({id:'L5b',cap:'En coche propio · después de llegar',kind:'coche',hasFly:false,qr:false,tk:false,plus:false,old:'',ok:false,...HERE,boxes:[three[1],three[2]],cols:'1fr 1fr',two:false,one:true,note:'Igual, sin línea de billete: solo cambia la etiqueta de la imagen.'}),
+      base({id:'L6',cap:'Con coche de alquiler reservado · Lanzarote',...gold,...avion,title:'Llegas a Lanzarote',lab:'VUELO VY3920 · Domingo 8',dep:'07:30',from:'BCN',arr:'09:30',to:'ACE',boxes:ace,b1:'He aterrizado',b2:'Vuelo retrasado',note:'«AL CENTRO» pasa a «COCHE · Cicar · Recógelo al llegar» y el hotel se cuenta en coche. La fila del vuelo, igual que en L1.'}),
+      base({id:'L7',cap:'L6 después de aterrizar',...gold,...avion,title:'Llegas a Lanzarote',lab:'VUELO VY3920 · Domingo 8',dep:'07:30',from:'BCN',arr:'09:30',to:'ACE',ok:true,boxes:ace,two:false,one:true,strip:'Primero, recoge tu coche: Cicar · Ref CK-48213',...HERE,note:'Fuera los dos botones. Una franja con el coche encima de [Cómo llegar a tu alojamiento].'})
+    ]};
+  }
+}
+</script>
+</body>
+</html>

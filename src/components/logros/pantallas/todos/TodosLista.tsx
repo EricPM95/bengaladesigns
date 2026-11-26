@@ -87,7 +87,7 @@ export function TodosLista({ g, vistaInicial = 'destinos' }: { g: Ganados; vista
           <span style={{ padding: '12px 20px 0', ...TITULO }}>Exclusivos</span>
           <div style={{ flex: 'none', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, padding: '0 16px' }}>
             {g.exclusivos.map((x) => (
-              <ExclusivoDeLista key={x.clave} x={x} abrir={() => abrirFicha(x.clave)} />
+              <ExclusivoDeLista key={x.clave} x={x} enVitrina={enVitrina.has(x.clave)} abrir={() => abrirFicha(x.clave)} />
             ))}
           </div>
         </>
@@ -189,26 +189,37 @@ function TarjetaDePais({ p }: { p: PaisGanado }): ReactNode {
   )
 }
 
+/** El + (dorado, aún no en la vitrina) y el ✓ (verde, ya en la vitrina): UNA pieza, mismo tamaño y misma esquina en las tarjetas de viajero y en los Exclusivos (V72, L1-L2). */
+function PinDeVitrinaLista({ enVitrina, borde = '#FFFDF8' }: { enVitrina: boolean; borde?: string }): ReactNode {
+  return (
+    <span aria-hidden data-pin-vitrina={enVitrina ? 'en' : 'fuera'} style={{ position: 'absolute', top: 8, right: 8, width: 26, height: 26, borderRadius: '50%', background: enVitrina ? VERDE : DORADO, color: enVitrina ? '#fff' : '#17120a', boxShadow: `0 0 0 2px ${borde},0 4px 10px -4px rgba(0,0,0,.4)`, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3 }}>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+        <path d={enVitrina ? 'M5 12.5l4.5 4.5L19 7.5' : 'M12 5v14M5 12h14'} />
+      </svg>
+    </span>
+  )
+}
+
 function TarjetaDeFila({ f, enVitrina, abrir }: { f: FilaDeViajero; enVitrina: boolean; abrir: () => void }): ReactNode {
   const color = GRUPO[f.grupo]?.color ?? '#1C2230'
+  // (V72) Sin el círculo de color; lo que llevas («2 de 3») y la barrita solo en las que aún no tienes y se cuentan por pasos (varios pasos o escalones; las de «sí o no», como «Navidad fuera de casa», solo el nombre) (lo que antes dibujaba el círculo gris).
+  const conPasos = !f.ganado && (f.objetivo > 1 || (f.con_escalones && f.cuenta !== null))
   const p = f.objetivo > 0 ? Math.min(1, f.actual / f.objetivo) : 0
   return (
-    <button type="button" data-fila={f.id} aria-label={`${f.nombre}${f.ganado ? '' : ' (por conseguir)'}`} onClick={abrir} data-tarjeta-de-viajero style={{ flex: 'none', width: 120, minHeight: 156, scrollSnapAlign: 'start', position: 'relative', border: 'none', borderRadius: 20, background: '#FFFDF8', boxShadow: '0 0 0 1px rgba(28,34,48,.07)', padding: '12px 6px 10px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, cursor: 'pointer', color: '#1C2230' }}>
-      {f.ganado && (
-        <span aria-hidden style={{ position: 'absolute', top: 6, right: 6, width: 26, height: 26, borderRadius: '50%', background: enVitrina ? VERDE : DORADO, color: enVitrina ? '#fff' : '#17120a', boxShadow: '0 0 0 2px #FFFDF8,0 4px 10px -4px rgba(0,0,0,.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3 }}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <path d={enVitrina ? 'M5 12.5l4.5 4.5L19 7.5' : 'M12 5v14M5 12h14'} />
-          </svg>
-        </span>
-      )}
-      <span style={{ position: 'relative', width: 92, height: 92, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <svg width="92" height="92" viewBox="0 0 84 84" style={{ position: 'absolute', inset: 0, transform: 'rotate(-90deg)' }} aria-hidden>
-          <circle cx="42" cy="42" r="39" fill="none" stroke="rgba(28,34,48,.09)" strokeWidth="3.5" />
-          <circle cx="42" cy="42" r="39" fill="none" stroke={f.ganado ? color : 'rgba(28,34,48,.25)'} strokeWidth="3.5" strokeLinecap="round" strokeDasharray="245" strokeDashoffset={Math.round(245 * (1 - p))} />
-        </svg>
-        <ChapaDeFila fila={f} tam={80} />
+    <button type="button" data-fila={f.id} aria-label={`${f.nombre}${f.ganado ? '' : ' (por conseguir)'}`} onClick={abrir} data-tarjeta-de-viajero style={{ flex: 'none', width: 120, minHeight: 196, scrollSnapAlign: 'start', position: 'relative', border: 'none', borderRadius: 20, background: '#FFFDF8', boxShadow: '0 0 0 1px rgba(28,34,48,.07)', padding: '14px 6px 12px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, cursor: 'pointer', color: '#1C2230' }}>
+      {f.ganado && <PinDeVitrinaLista enVitrina={enVitrina} />}
+      <span data-medalla-de-viajero style={{ position: 'relative', width: 106, height: 106, flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <ChapaDeFila fila={f} tam={106} />
       </span>
-      <span style={{ marginTop: 4, font: "500 11.5px/1.2 'Geist'", color: f.ganado ? '#1C2230' : 'rgba(28,34,48,.5)', textWrap: 'balance' as never, textAlign: 'center' }}>{f.nombre}</span>
+      <span style={{ font: "500 11.5px/1.2 'Geist'", color: f.ganado ? '#1C2230' : 'rgba(28,34,48,.5)', textWrap: 'balance' as never, textAlign: 'center' }}>{f.nombre}</span>
+      {conPasos && (
+        <>
+          <span data-avance-de-viajero style={{ font: "600 10.5px 'Geist Mono',monospace", color }}>{`${Math.min(f.actual, f.objetivo)} de ${f.objetivo}`}</span>
+          <span aria-hidden style={{ width: '64%', height: 3, borderRadius: 3, background: 'rgba(28,34,48,.1)', overflow: 'hidden' }}>
+            <span style={{ display: 'block', height: '100%', width: `${Math.round(p * 100)}%`, background: color }} />
+          </span>
+        </>
+      )}
     </button>
   )
 }
@@ -238,16 +249,12 @@ function SieteMaravillas({ g }: { g: Ganados }): ReactNode {
   )
 }
 
-function ExclusivoDeLista({ x, abrir }: { x: ItemGanado; abrir: () => void }): ReactNode {
+function ExclusivoDeLista({ x, enVitrina, abrir }: { x: ItemGanado; enVitrina: boolean; abrir: () => void }): ReactNode {
   return (
-    <button type="button" onClick={abrir} style={{ position: 'relative', border: 'none', borderRadius: 20, background: '#1C2230', color: '#FFFDF8', padding: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, textAlign: 'center', cursor: 'pointer', minHeight: 44 }}>
-      <span aria-hidden style={{ position: 'absolute', top: 8, right: 8, width: 24, height: 24, borderRadius: '50%', background: VERDE, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M5 12.5l4.5 4.5L19 7.5" />
-        </svg>
-      </span>
-      <DibujoDeItem item={x} tam={84} />
-      <span style={{ font: "400 16px/1.1 'Instrument Serif',serif" }}>{x.nombre}</span>
+    <button type="button" data-exclusivo={x.clave} onClick={abrir} style={{ position: 'relative', border: 'none', borderRadius: 24, background: '#1C2230', color: '#FFFDF8', padding: '14px 6px 12px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, textAlign: 'center', cursor: 'pointer', minHeight: 44 }}>
+      <PinDeVitrinaLista enVitrina={enVitrina} borde="#1C2230" />
+      <DibujoDeItem item={x} tam={124} />
+      <span style={{ font: "400 17px/1.1 'Instrument Serif',serif" }}>{x.nombre}</span>
     </button>
   )
 }
