@@ -274,6 +274,7 @@ let PARADA = null
 if (args.parar) {
   const [hh, mm] = args.parar.split(':').map(Number)
   PARADA = new Date(); PARADA.setHours(hh, mm, 0, 0)
+  if (PARADA.getTime() < Date.now() - 3 * 3600000) PARADA.setDate(PARADA.getDate() + 1) // (parar=00:45 lanzado de noche = la madrugada siguiente)
 }
 const hayQueParar = () => PARADA && Date.now() >= PARADA.getTime()
 let contador = 0
