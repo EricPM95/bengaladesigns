@@ -254,5 +254,8 @@ export async function probar(caso: CasoProbador): Promise<ResultadoProbador> {
   const extra = [propuesta.dias.length > 0 ? `Reorganizar cambia ${propuesta.dias.length === 1 ? '1 día' : `${propuesta.dias.length} días`} (${propuesta.dias.map((dia) => `día ${dia.dayNumber}`).join(', ')})` : 'Reorganizar no cambia ningún día']
   const noCaben = propuesta.dias.flatMap((dia) => dia.noCaben ?? []).filter((x) => x.imprescindible !== false)
   if (noCaben.length > 0) extra.push(`no caben: ${noCaben.map((x) => x.nombre).join(', ')}`)
+  // (FINDE paso 6) Lanzarote: el motor de coche no devuelve aquí el plan de la llegada ni el de la vuelta (en la app, la vuelta la pide HOY al abrir el día, `asegurarElPlanDeVuelta`); se dice, en vez de dejar la línea sin la hora del vuelo.
+  if (caso.llegada && !propuesta.planes.llegada) extra.push(`Llegada a las ${caso.llegada}: el motor no da su plan en el probador`)
+  if (caso.salida && !propuesta.planes.vuelta) extra.push(`Vuelta a las ${caso.salida}: el motor no da su plan en el probador (en la app lo pide HOY al abrir el día de vuelta)`)
   return { antes, despues, linea: lineaDelMotor(propuesta.planes.llegada, propuesta.planes.vuelta, extra), camino: 'reorganizar' }
 }

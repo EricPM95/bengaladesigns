@@ -188,6 +188,11 @@ async function aSupabase(r, url) {
     const fila = columnas(url, { id: YO, nombre: 'Eric', foto_path: null, foto_encuadre: null, portadas: null, moneda: 'EUR', globo_pasaporte: null, sellos_estampados: {}, email: 'eric@prueba.test' })
     return contestar(r.requestId, 200, soloUno ? fila : [fila])
   }
+  if (tabla === 'billetes_personales') {
+    // (Finde, paso 5) Un billete guardado en la nube con su QR: ≈ 150 KB. Es de hace años (la nube NO es más nueva que el móvil): solo el sello debe bajar, nunca el `datos` entero.
+    const fila = columnas(url, { trip_id: TRIP_ID, user_id: YO, datos: { arrival: { codigo: { imagen: relleno(150 * 1024) }, dueno: YO } }, actualizado_en: '2020-01-01T00:00:00Z' })
+    return contestar(r.requestId, 200, soloUno ? fila : [fila])
+  }
   if (tabla === 'trip_photos') {
     const filas = Array.from({ length: 12 }, (_, i) => ({ id: `f${i}`, trip_id: TRIP_ID, day_id: 'day-2', day_number: 2, stop_name: 'Parada', storage_path: `${YO}/${TRIP_ID}/f${i}.jpg`, width: 1600, height: 1200, bytes: 90000, created_at: new Date(ahoraReal - i * 60000).toISOString() }))
     return contestar(r.requestId, 200, filas.map((f) => columnas(url, f)))
@@ -301,6 +306,27 @@ try {
   debe(!quieta.some((p) => p.donde === 'supabase' && /rest\/trips/.test(p.etiqueta) && p.bajado > 20 * 1024), '(b) quieta 10 min: no se baja el viaje entero')
 
   debe(!quieta.some((p) => p.metodo === 'PATCH'), '(b) quieta 10 min: la app no guarda el viaje si nadie ha cambiado nada (cada recarga de la lista de personas guardaba la ruta entera)')
+
+  /* ── (d) (Finde, paso 5) cambiar de pestaña: lo que baja cada una, la primera vez y al volver (la copia del móvil debe bastar) ── */
+  console.log('(d) pestañas...')
+  const irA = (nombre) => app.evaluar(`(() => { const b = document.querySelector('nav[aria-label="Barra del viaje"] button[aria-label^="${nombre}"]'); if (b) b.click(); return Boolean(b) })()`)
+  const resultadoPestanas = []
+  for (const vuelta of [1, 2]) {
+    for (const nombre of ['Ruta', 'Días', 'Explorar', 'Reservas', 'Hoy']) {
+      fase = `pestana:${vuelta}:${nombre}`
+      const hay = await irA(nombre)
+      await app.esp(2500)
+      const lista = peticiones.filter((p) => p.fase === fase)
+      const s = total(lista)
+      resultadoPestanas.push({ vuelta, nombre, hay, n: s.n, bajado: s.bajado, enteros: lista.filter((p) => p.donde === 'supabase' && p.etiqueta.includes('rest/trips') && p.bajado > 20 * 1024).length, billetes: lista.filter((p) => /billetes_personales/.test(p.etiqueta)).reduce((a, p) => a + p.bajado, 0) })
+    }
+  }
+  console.log('   pestaña (vuelta): peticiones a Supabase · KB bajados · viaje entero · KB de billetes_personales')
+  for (const r of resultadoPestanas) console.log(`   ${r.nombre.padEnd(9)} (${r.vuelta}) ${String(r.n).padStart(3)} · ${KB(r.bajado).padStart(7)} · ${r.enteros} · ${KB(r.billetes)}${r.hay ? '' : '  (el botón no está)'}`)
+  debe(resultadoPestanas.filter((r) => r.hay).length >= 8, '(d) la barra de abajo tiene las pestañas para medir')
+  debe(resultadoPestanas.every((r) => r.enteros === 0), '(d) cambiar de pestaña NO baja el viaje entero')
+  debe(resultadoPestanas.filter((r) => r.vuelta === 2).reduce((a, r) => a + r.billetes, 0) < 5 * 1024, '(d) volver a las pestañas NO baja otra vez el billete entero de la nube (150 KB con su QR): solo el sello (la primera vez sí baja el billete, una vez)')
+  debe(resultadoPestanas.filter((r) => r.vuelta === 2).every((r) => r.bajado < 60 * 1024), '(d) cada pestaña, a la segunda vuelta, baja menos de 60 KB de Supabase')
 
   /* ── (c) en segundo plano: cero ── */
   console.log('(c) oculta...')

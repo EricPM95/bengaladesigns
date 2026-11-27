@@ -1,0 +1,46 @@
+{
+  "fase": "despues",
+  "fecha": "2026-11-27T19:25:06.541Z",
+  "red": {
+    "offline": false,
+    "latency": 60,
+    "downloadThroughput": 1179648,
+    "uploadThroughput": 196608
+  },
+  "filas": [
+    {
+      "grupo": "Arranque",
+      "nombre": "Abrir la app hasta la primera pantalla (sin caché)",
+      "marca_ms": 12720,
+      "quieto_ms": 13842,
+      "peticiones": 578,
+      "kb": 12926
+    },
+    {
+      "grupo": "Arranque",
+      "nombre": "Abrir la app hasta la primera pantalla (con caché)",
+      "marca_ms": 6334,
+      "quieto_ms": 6736,
+      "peticiones": 516,
+      "kb": 113
+    },
+    {
+      "grupo": "Hojas",
+      "nombre": "Hoja de propuestas (viajero) · 1.ª vez",
+      "marca_ms": 125,
+      "quieto_ms": 125,
+      "peticiones": 0,
+      "kb": 0,
+      "mayores": []
+    },
+    {
+      "grupo": "Hojas",
+      "nombre": "Hoja de propuestas (viajero) · 2.ª vez",
+      "marca_ms": 2,
+      "quieto_ms": 2,
+      "peticiones": 0,
+      "kb": 0,
+      "mayores": []
+    }
+  ]
+}

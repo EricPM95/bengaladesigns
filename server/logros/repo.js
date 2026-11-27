@@ -14,8 +14,12 @@ const cacheDeViajes = new Map()
 /** (V26) Las direcciones firmadas de las fotos de los logros (id de foto → dirección y cuándo caduca). */
 const cacheDeFotos = new Map()
 const MAXIMO_DE_VIAJES_EN_MEMORIA = 150
-/** Por si algo cambió el viaje sin tocar `updated_at`: pasado este tiempo se vuelve a bajar entero. */
-const EDAD_MAXIMA_DE_UN_VIAJE_MS = 15 * 60 * 1000
+/**
+ * Por si algo cambió el viaje sin tocar `updated_at`: pasado este tiempo se vuelve a bajar entero.
+ * (Finde, paso 5) ANTES 15 minutos: con «cerca de aquí» cada 75 s en HOY (8 h), la ruta ENTERA se bajaba ~32 veces al día por viajero (medido con el reloj avanzando: 6 MB al día con una ruta de 200 KB).
+ * Todo guardado del viaje pone `updated_at` (la app lo manda en cada escritura; el sello de la app ya caduca a las 3 h por lo mismo), así que 3 horas basta: ≈ 3 bajadas en 8 h.
+ */
+const EDAD_MAXIMA_DE_UN_VIAJE_MS = 3 * 60 * 60 * 1000
 /** Para las pruebas: vacía la memoria de rutas. */
 export const olvidarViajesEnMemoria = () => cacheDeViajes.clear()
 
@@ -109,8 +113,11 @@ export function repoSupabase(admin, { destinosConPionero = [] } = {}) {
       }
       return todos.map((t) => ({ ...t, es_duo: duo.has(t.id) }))
     },
-    async logrosDe(userId) {
-      return ok(await admin.from('achievements').select('*').eq('user_id', userId), 'logrosDe')
+    async logrosDe(userId, { ligero = false } = {}) {
+      // (Finde, paso 5) La lectura ligera (la de «cerca de aquí», cada 75 s en HOY) solo usa estas 6 columnas (`aItems` y el alias de viajes compartidos); sin `frase`, `detalle`… la fila pesa la mitad.
+      // CADA CUÁNTO: con la lectura ligera, cada vez que «cerca» no la tiene guardada (30 s). CUÁNTO BAJA: ≈ 0,1 KB por logro ganado (90 logros ≈ 10 KB; antes ≈ 28 KB).
+      const columnas = ligero ? 'logro, escalon, destino, trip_id, ganado_en, animacion_vista' : '*'
+      return ok(await admin.from('achievements').select(columnas).eq('user_id', userId), 'logrosDe')
     },
     async insertarLogros(userId, filas) {
       const dedup = [...new Map(filas.map((f) => [`${f.destino}|${f.logro}|${f.escalon}`, f])).values()]

@@ -78,7 +78,9 @@ try {
     return JSON.stringify({ filas, estampado: T.TIEMPOS_ESTAMPADO })
   })`)
   const filas = datos.filas
-  debe(filas.length === 29 && new Set(filas.map((f) => f.id)).size === 29, 'lista', `las de la V36C, la V37C (los imprescindibles y dos colecciones a la vez), la V38B (tres colecciones; un emblema por destino) y la V39B (la maravilla nueva, 1 de 7 y 4 de 7): 29 tarjetas, cada una con su id (${filas.length})`)
+  // (Finde, paso 3) La V52 añadió tres tarjetas al estudio (oculto, exp y dinero: «todo lo que se ve moverse o salir lleva su sonido en el estudio»): 29 + 3 = 32. Se pone al día el número; las tres tienen que estar.
+  debe(filas.length === 32 && new Set(filas.map((f) => f.id)).size === 32, 'lista', `las de la V36C, la V37C, la V38B y la V39B (29) más las tres de la V52 (oculto, exp, dinero): 32 tarjetas, cada una con su id (${filas.length})`)
+  debe(['oculto', 'exp', 'dinero'].every((id) => filas.some((f) => f.id === id)), 'lista', 'las tres tarjetas de la V52 (oculto, exp, dinero) están en el estudio')
   const ESPERADO = {
     medalla_bronce: ['sello'], medalla_plata: ['sello'], medalla_oro: ['sello'], medalla_diamante: ['sello'], coleccion: ['coleccion'], coleccion_imprescindibles: ['coleccion'], pedazo_dos: ['pedazos'], pedazo_tres: ['pedazos'], emblema: ['emblema'], emblema_lanzarote: ['emblema'], emblema_maravilla: ['emblema'], maravilla: ['final7'], maravilla_nueva: ['maravilla_nueva'], maravilla_nueva_cuatro: ['maravilla_nueva'], pais: ['pais'],
     pedazo: ['pedazos'], patrimonio: ['patrimonio'], viajero: ['viajero'], resumen_dia: ['ademas'],

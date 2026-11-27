@@ -27,9 +27,24 @@ const J = async (a, js) => {
 const esperar = async (a, js, n = 80) => {
   for (let i = 0; i < n; i++) {
     if (await a.evaluar(js).catch(() => false)) return true
-    await a.esp(250)
+    await quieto(a, 250)
   }
   return false
+}
+/**
+ * (Finde, paso 3) Espera `ms` y, además, hasta que la pantalla deje de cambiar (el texto de la página igual en 3 miradas seguidas, tope 8 s). Antes eran esperas FIJAS de 400-900 ms tras cada clic: con la máquina cargada
+ * (una batería con varios Chrome, o un barrido en marcha) el panel tardaba más, la prueba leía a medias y fallaba UNA COSA DISTINTA CADA VEZ. Así la espera se estira sola cuando hace falta y no se alarga cuando no.
+ */
+const quieto = async (a, ms = 400) => {
+  await a.esp(ms)
+  let antes = null
+  let iguales = 0
+  for (let i = 0; i < 40 && iguales < 3; i++) {
+    const ahora = await a.evaluar("document.body ? document.body.innerText.length + ':' + document.querySelectorAll('*').length : ''").catch(() => '')
+    iguales = ahora === antes ? iguales + 1 : 0
+    antes = ahora
+    await a.esp(200)
+  }
 }
 const CARPETA = 'docs/dias/V35A_capturas'
 const RUTA = '/admin/logros?cuentas=off&logros=on&logrosDemo=1&apertura=0'
@@ -40,13 +55,13 @@ const ESTADO_ESPERADO = { Roma: 'publicado', Lanzarote: 'publicado' /* V77: Lanz
 const capturaEntera = async (a, id, ancho) => {
   const alto = Math.min(6000, Math.max(700, await a.evaluar("Math.ceil(Math.max(document.documentElement.scrollHeight, document.getElementById('root')?.scrollHeight ?? 0))")))
   await a.cdp('Emulation.setDeviceMetricsOverride', { width: ancho, height: alto, deviceScaleFactor: 1, mobile: ancho < 500 })
-  await a.esp(500)
+  await quieto(a, 500)
   await a.captura(`${CARPETA}/logros_${id}.jpg`, 78)
 }
 const clic = (a, sel) => a.evaluar(`(() => { const e = document.querySelector('${sel}'); if (!e) return false; e.click(); return true })()`)
 const pestana = async (a, id) => {
   await clic(a, `[data-pestana="${id}"]`)
-  await a.esp(900)
+  await quieto(a, 900)
 }
 const sinScrollLateral = (a) => a.evaluar('document.documentElement.scrollWidth <= window.innerWidth + 1 && document.body.scrollWidth <= window.innerWidth + 1')
 
@@ -188,22 +203,22 @@ const reglaTexto = (txt, donde) => {
     debe(lg.destinos.join('|') === 'Roma|Lanzarote', 'logros', `el selector de destino: ${lg.destinos.join(' · ')}`)
     debe(lg.banderasSin === 0, 'banderas', 'ninguna bandera en blanco en Logros')
     await clic(a, '[data-sorteo-ver]')
-    await a.esp(400)
+    await quieto(a, 400)
     const ver = await J(a, "JSON.stringify({ n: document.querySelectorAll('[data-sorteo-lista] li').length, href: document.querySelector('[data-sorteo-ficha]')?.getAttribute('href') ?? '' })")
     debe(ver.n >= 1 && /^\/admin\/usuarios\?ficha=/.test(ver.href), 'sorteo', `[Ver quién entra] abre la lista (${ver.n}) con enlace a la ficha: ${ver.href}`)
     await clic(a, '[data-sorteo-ver]')
     // Cambio de periodo y de destino
     await clic(a, '[data-periodo-id="todo"]')
-    await a.esp(700)
+    await quieto(a, 700)
     const todoP = await J(a, "JSON.stringify({ pie: document.querySelector('[data-cifra=\"Logros ganados\"]').innerText })")
     debe(/Desde siempre/.test(todoP.pie), 'periodo', 'al elegir «Todo» la cifra lo dice')
     await clic(a, '[data-destino-logros="lanzarote"]')
-    await a.esp(800)
+    await quieto(a, 800)
     const lz = await J(a, "JSON.stringify({ n: document.querySelectorAll('[data-emblema-logros]').length, preguntas: (document.querySelector('[data-bloque=emblemas]').innerText.replace(/¿demasiado escondido\\?/g, '').match(/\\?/g) || []).length, dib: [...document.querySelectorAll('[data-emblema-dibujo]')].every((d) => d.querySelectorAll('svg,img,canvas,[style*=gradient]').length > 0) })")
     debe(lz.n === leerJson('data/logros/lanzarote.json').emblemas.length && lz.preguntas === 0 && lz.dib, 'emblemas', `Lanzarote: sus ${lz.n} emblemas, también dibujados`)
     await clic(a, '[data-destino-logros="roma"]')
     await clic(a, '[data-periodo-id="mes"]')
-    await a.esp(900)
+    await quieto(a, 900)
     reglaTexto(await textoSeccion(), 'Logros')
     await capturaEntera(a, 'P7', 1280)
     await a.cdp('Emulation.setDeviceMetricsOverride', { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false })
@@ -211,7 +226,7 @@ const reglaTexto = (txt, donde) => {
     // — Qué tiene cada destino: la tabla
     await pestana(a, 'destinos')
     debe(await esperar(a, "document.querySelectorAll('[data-destino-fila]').length === 14", 60), 'tabla', 'la tabla tiene 14 filas')
-    await a.esp(600)
+    await quieto(a, 600)
     const tb = await J(a, `JSON.stringify([...document.querySelectorAll('[data-destino-fila]')].map((f) => { const c = [...f.children].map((x) => x.innerText.trim()); return { nombre: c[0], n: c.slice(1, 7), estado: f.getAttribute('data-estado'), texto: c[7], bandera: f.querySelector('[data-bandera]')?.getAttribute('data-bandera') } }))`)
     debe(tb.map((x) => x.nombre).join('|') === TABLA.join('|'), 'tabla', 'los nombres y el orden de las 14 filas')
     for (const [i, f] of filas.entries()) {
@@ -230,7 +245,7 @@ const reglaTexto = (txt, donde) => {
     // — Roma por dentro
     await clic(a, '[data-destino-fila="roma"]')
     debe(await esperar(a, "document.querySelector('[data-destino-pagina=\"roma\"]') && document.querySelectorAll('[data-emblema]').length >= 14", 80), 'pagina', 'al tocar Roma se abre «Roma por dentro»')
-    await a.esp(900)
+    await quieto(a, 900)
     const rp = await J(a, `JSON.stringify({
       chips: [...document.querySelectorAll('[data-chip]')].map((x) => x.innerText.replace(/\\s+/g, ' ').trim()),
       medallas: document.querySelectorAll('[data-medalla]').length,
@@ -263,13 +278,13 @@ const reglaTexto = (txt, donde) => {
     await esperar(a, "document.querySelectorAll('[data-destino-fila]').length === 14", 40)
     await clic(a, '[data-destino-fila="lanzarote"]')
     debe(await esperar(a, "Boolean(document.querySelector('[data-destino-pagina=\"lanzarote\"]'))", 60), 'pagina', 'también se abre Lanzarote')
-    await a.esp(600)
+    await quieto(a, 600)
     debe(!/solo lo ven los administradores/.test(await textoSeccion()), 'estado', '(V77) la página de Lanzarote ya no dice que está oculto: es visible para todos')
 
     // — Sonidos
     await pestana(a, 'sonidos')
     debe(await esperar(a, "Boolean(document.querySelector('[data-admin-sonidos]')) && document.querySelectorAll('[data-animacion-tarjeta]').length >= 20", 120), 'sonidos', 'la pestaña Sonidos monta el estudio de sonidos con todas sus tarjetas')
-    await a.esp(1500)
+    await quieto(a, 1500)
     await capturaEntera(a, 'P7b', 1280)
     await a.cdp('Emulation.setDeviceMetricsOverride', { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false })
 
@@ -293,18 +308,18 @@ const reglaTexto = (txt, donde) => {
     debe(hr.orden.join('|') === 'probador|mis-pruebas|cuentas-que-no-cuentan|para-code' && hr.codePlegado === 'false' && !hr.codeContenido, 'herramientas', '«Para Code» está plegado y al final')
     // Los dos botones de borrar piden confirmar y [Cancelar] no borra
     await clic(a, '[data-reiniciar-boton]')
-    await a.esp(300)
+    await quieto(a, 300)
     const c1 = await J(a, "JSON.stringify({ dialogo: document.querySelector('[data-reiniciar-dialogo]')?.innerText ?? '' })")
     debe(/¿Seguro\? «Reiniciar mis pruebas» borra/.test(c1.dialogo) && /Cancelar/.test(c1.dialogo) && /Sí, reiniciar/.test(c1.dialogo), 'confirmacion', 'Reiniciar mis pruebas pide confirmar (Cancelar / Sí, reiniciar)')
     await capturaEntera(a, 'P7c', 1280)
     await a.cdp('Emulation.setDeviceMetricsOverride', { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false })
     await clic(a, '[data-reiniciar-no]')
     await clic(a, '[data-empezar-de-cero-boton]')
-    await a.esp(300)
+    await quieto(a, 300)
     debe(/¿Seguro\?/.test(await a.evaluar("document.querySelector('[data-empezar-de-cero-dialogo]')?.innerText ?? ''")), 'confirmacion', 'Empezar de cero pide confirmar')
     await clic(a, '[data-empezar-de-cero-no]')
     await clic(a, '[data-para-code-boton]')
-    await a.esp(700)
+    await quieto(a, 700)
     debe(Boolean(await a.evaluar("Boolean(document.querySelector('[data-para-code-contenido]'))")), 'herramientas', '«Para Code» se despliega')
     reglaTexto(await textoSeccion(), 'Herramientas')
     debe(!/Avisos de viajeros|Destinos pedidos/.test(await textoSeccion()), 'quitado', 'en la sección ya no salen «Avisos de viajeros» ni «Destinos pedidos»')
@@ -319,7 +334,7 @@ console.log('4. El móvil (390): sin desplazamiento a los lados')
   const a = await abrirApp(APP, { ruta: RUTA, ancho: 390, alto: 844, sinEsperarRoot: true, esperaFija: 5 })
   try {
     debe(await esperar(a, "document.querySelectorAll('[data-emblema-logros]').length >= 11", 120), 'movil', 'Logros sale en el móvil')
-    await a.esp(800)
+    await quieto(a, 800)
     debe(await sinScrollLateral(a), 'movil', 'Logros: sin desplazamiento lateral a 390')
     await capturaEntera(a, 'M7', 390)
     await a.cdp('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true })
@@ -330,20 +345,20 @@ console.log('4. El móvil (390): sin desplazamiento a los lados')
     await a.cdp('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true })
     await clic(a, '[data-destino-fila="roma"]')
     await esperar(a, "document.querySelectorAll('[data-emblema]').length >= 14", 80)
-    await a.esp(900)
+    await quieto(a, 900)
     debe(await sinScrollLateral(a), 'movil', 'Roma por dentro: sin desplazamiento lateral a 390')
     await capturaEntera(a, 'M7c', 390)
     await a.cdp('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true })
     await pestana(a, 'sonidos')
     await esperar(a, "document.querySelectorAll('[data-animacion-tarjeta]').length >= 20", 120)
-    await a.esp(800)
+    await quieto(a, 800)
     debe(await sinScrollLateral(a), 'movil', 'Sonidos: sin desplazamiento lateral a 390')
     await pestana(a, 'herramientas')
     await esperar(a, "Boolean(document.querySelector('[data-empezar-de-cero-boton]'))", 40)
-    await a.esp(500)
+    await quieto(a, 500)
     debe(await sinScrollLateral(a), 'movil', 'Herramientas: sin desplazamiento lateral a 390')
     await clic(a, '[data-para-code-boton]')
-    await a.esp(800)
+    await quieto(a, 800)
     debe(await sinScrollLateral(a), 'movil', '«Para Code» abierto: sin desplazamiento lateral a 390')
     await clic(a, '[data-para-code-boton]')
     await capturaEntera(a, 'M7d', 390)

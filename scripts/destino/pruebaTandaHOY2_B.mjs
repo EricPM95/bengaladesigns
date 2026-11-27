@@ -41,6 +41,9 @@ async function abrir() {
         if (!hecho) break
         await a.esp(600)
       }
+      // (Finde, paso 3) ESPERA EXPLÍCITA a que los días estén ya adaptados a los vuelos: la ruta aparece en el almacén ANTES de que termine la adaptación (`vuelos`), y con la máquina cargada la prueba cogía la ruta a medias (el día 3 sin Jameos del Agua ni la Cueva de los Verdes) y todas las partes fallaban. Antes se contaba con que 2,5 s bastaban.
+      for (let i = 0; i < 90 && !(await ev(`${R}.getState().route.days.find((d) => d.dayNumber === 3)?.stops.some((s) => s.name.startsWith('Jameos')) === true`).catch(() => false)); i++) await a.esp(1000)
+      await a.esp(1500)
       return a
     }
     a.cerrar()
@@ -194,21 +197,24 @@ try {
     debe(r.r60.quitadas.join() === 'B:opcional:sobra,C:flexible:manana', 'retraso_60', `con 60 min: primero lo opcional, luego lo flexible a mañana (sale ${r.r60.quitadas.join()})`)
     debe(/^Quitamos B/.test(r.r15.cambia.titulo) && /Es opcional/.test(r.r15.cambia.detalle), 'retraso_15', `el «Cambia:» dice lo que se quita (${r.r15.cambia.titulo})`)
     debe(/pasamos C al día 2/.test(r.r60.cambia.titulo) && /^\d\|?|^[^|]*\|$/.test(r.r60.destinoE) === true, 'retraso_60', `lo flexible pasa a mañana (${r.r60.cambia.titulo}; mañana: ${r.r60.destinoE})`)
-    debe(/^tu entrada de las 11:30$/.test(r.r15.mantiene.titulo) || /11:30/.test(r.r15.mantiene.titulo), 'retraso_15', `«Se mantiene» nombra lo fijo (${r.r15.mantiene.titulo})`)
+    // (Finde, paso 3) El motor ahora nombra lo fijo con «lo más importante de tu día» (V55: lo imprescindible no se toca).
+    debe(/11:30|lo más importante de tu día/.test(r.r15.mantiene.titulo), 'retraso_15', `«Se mantiene» nombra lo fijo (${r.r15.mantiene.titulo})`)
     debe(r.r15.todas.length >= 1 && new Set(r.r15.todas).size === r.r15.todas.length, 'ver_otra_opcion', 'las opciones de [Ver otra opción] son distintas entre sí')
     debe(r.holgado.length >= 1 && r.holgado[0].q === 0 && /retrasan un poco/.test(r.holgado[0].cambia), 'retraso_holgado', 'si cabe sin quitar nada, la primera propuesta no quita nada')
     debe(r.holgado.length >= 2 && r.holgado[1].q === 1, 'ver_otra_opcion', 'y [Ver otra opción] ofrece dejar lo más prescindible')
     debe(r.prioridad[0] === 'B:opcional', 'prioridad', `lo opcional (B) se quita antes que lo imprescindible (X) (sale ${r.prioridad.join(' / ')})`)
     debe(!r.prioridad.some((x) => /X:/.test(x)), 'prioridad', 'lo imprescindible no sale en ninguna propuesta si hay otra salida')
     debe(r.pregunta.length >= 1 && r.pregunta.every((x) => x.pregunta === true && /^F:imprescindible$/.test(x.q)), 'imprescindible', `lo imprescindible solo preguntando, y solo si no hay otra salida (${JSON.stringify(r.pregunta)})`)
-    debe(/¿Lo quitamos\?$/.test(r.pregunta[0].intro), 'imprescindible', 'la pregunta se hace como pregunta')
+    // (Finde, paso 3) Ahora la frase dice qué habría que quitar y por qué; que es una pregunta lo dice `pregunta: true`, comprobado arriba.
+    debe(/tendríamos que quitar F/.test(r.pregunta[0].intro) && /de lo más importante/.test(r.pregunta[0].intro), 'imprescindible', `la pregunta dice qué habría que quitar (${r.pregunta[0].intro})`)
     // pasar a otro día en sus tres casos
     debe(r.otro_a?.caso === 'a' && r.otro_a.estaEnE && r.otro_a.yaNoEnD && !r.otro_a.estaEnSobraE && r.otro_a.sale === null, 'pasar_26a', `cabe sin tocar nada (${JSON.stringify(r.otro_a)})`)
     debe(/^E pasa al día 2$/.test(r.otro_a?.cambia ?? '') && /^el resto de tu día 1$/.test(r.otro_a?.mantiene ?? ''), 'pasar_26a', 'los textos de 26a: «Cambia: … pasa al …» y «Se mantiene: el resto de tu …»')
     debe(r.otro_b?.caso === 'b' && r.otro_b.estaEnE && r.otro_b.sale === 'O' && r.otro_b.saleEnSobra === true && r.otro_b.hora === '11:10', 'pasar_26b', `cabe quitando algo flexible, que queda en «Si te sobra tiempo» (${JSON.stringify(r.otro_b)})`)
     debe(/^entra E, sale O$/.test(r.otro_b?.cambia ?? ''), 'pasar_26b', 'los textos de 26b: «Entra …, sale …»')
     debe(r.otro_c?.caso === 'c' && r.otro_c.estaEnSobraE && !r.otro_c.estaEnE && r.otro_c.yaNoEnD, 'pasar_26c', `no cabe: queda al final de ese día, en «Si te sobra tiempo» (${JSON.stringify(r.otro_c)})`)
-    debe(/Si te sobra tiempo/.test(r.otro_c?.intro ?? ''), 'pasar_26c', 'el texto de 26c nombra «Si te sobra tiempo» (no «Pendientes»)')
+    // (Finde, paso 3; V77) «Si te sobra tiempo» y «Lugares pendientes» son ahora UNA sola lista, que se llama «Lugares pendientes».
+    debe(/Lugares pendientes/.test(r.otro_c?.intro ?? ''), 'pasar_26c', 'el texto de 26c nombra «Lugares pendientes» (V77: una sola lista)')
     debe(r.otro_a.deshecho && r.otro_b.deshecho && r.otro_c.deshecho, 'pasar_deshacer', 'aplicar y deshacer deja los dos días como estaban (a, b y c)')
     // V43 §4 (antes → ahora): «Pasar a otro día» enseña solo la MEJOR forma en ese día (sin [Ver otra opción]).
     debe(r.otro_b.casos === 'b' && r.otro_a.casos === 'a', 'pasar_dia', `solo la mejor forma en ese día (${r.otro_a.casos} / ${r.otro_b.casos})`)
@@ -260,28 +266,27 @@ try {
     await clic(a, '[data-cambiar-opcion="retraso"]')
     await a.esp(700)
     const t = (await hoja(a)) ?? ''
-    debe(/Vas con algo de retraso\. Buscamos el ajuste más pequeño/.test(t), '23 texto', `la frase del prompt (${t.slice(0, 120)})`)
-    debe(!/\d+\s*min/.test(t), '23 sin minutos', 'sin minutos al viajero')
-    // V43 §1 (antes → ahora): UN bloque de resumen, el botón dorado que dice lo que hace y «Dejarlo como está»; sin «Cambia:», [Aplicar] ni «Volver a mi ruta original».
-    debe((await hay(a, '[data-propuesta-resumen]')) && !/Cambia:|Se mantiene:/.test(t), '23 formato', 'un bloque de resumen, sin «Cambia:» ni «Se mantiene:»')
+    // (Finde, paso 3; V59, hoja única de «Voy con retraso», H4/H5) Con sitios que ya no caben: «Vas tarde: hoy no te da tiempo a ver 1 sitio.», su tarjeta, la franja verde y los botones de «Hoy ya no da tiempo» (dorado, [Dejarlo como está]).
+    debe(/Vas tarde: hoy no te da tiempo a ver 1 sitio/.test(t), '23 texto', `la frase de la hoja única (${t.slice(0, 120)})`)
+    // Sin minutos al viajero, salvo la nota de margen de la entrada («admite hasta 15 minutos de retraso», V67).
+    debe(!/\d+\s*min/.test(t.replace(/admite hasta \d+ minutos de retraso/, '')), '23 sin minutos', 'sin minutos al viajero (salvo el margen de la entrada)')
+    // (Finde, paso 3; V55 y V59) Ya no hay «bloque de resumen» (`data-propuesta-resumen`): una TARJETA por cada sitio que cambia (`data-tarjeta-del-sitio`), la franja verde (`data-franja-sigue-igual`), el botón dorado que dice la acción
+    // y [Dejarlo como está]; sin «Cambia:», [Aplicar] ni «Volver a mi ruta original». La hoja de «Voy con retraso» es `data-hoja-cierre` y su botón dorado `data-cierre-pendientes` / `data-cierre-pasar`.
+    debe((await hay(a, '[data-hoja-cierre]')) && (await hay(a, '[data-tarjeta-del-sitio]')) && (await hay(a, '[data-franja-sigue-igual]')) && !/Cambia:|Se mantiene:/.test(t), '23 formato', 'tarjeta del sitio y franja verde, sin «Cambia:» ni «Se mantiene:»')
     for (const b of ['Dejarlo como está']) debe(new RegExp(b).test(t), '23 botones', `lleva [${b}]`)
     debe(!/Aplicar|Volver a mi ruta original/.test(t), '23 botones', 'no lleva [Aplicar] ni «Volver a mi ruta original»')
-    const cambia1 = await txt(a, '[data-propuesta-resumen]')
-    // V43 §2: a otro día solo si cabe en alguno; en este viaje ningún día admite paradas (excursión y vuelta) y se queda en «quitar», diciéndolo.
-    debe(/Har/.test(cambia1 ?? '') && /pasa a|pasa al|Sale de hoy/.test(cambia1 ?? ''), '23 cambia', `con la tarde apretada, lo que sale es lo principal (Haría) y pasa a otro día o, si no cabe en ninguno, sale de hoy (${cambia1})`)
-    debe(/15:40/.test((await txt(a, '[data-propuesta-resumen]')) ?? ''), '23 mantiene', 'el resumen nombra el turno de las 15:40')
+    const cambia1 = await txt(a, '[data-propuesta-tarjetas], [data-tarjeta-del-sitio]')
+    // V43 §2: a otro día solo si cabe en alguno; en este viaje ningún día admite paradas (excursión y vuelta) y se queda en «Lugares pendientes», diciéndolo en la tarjeta.
+    debe(/Har/.test(cambia1 ?? '') && /A Lugares pendientes|pasa a|Hoy, a otra hora|[A-Z]{3} \d+/.test(cambia1 ?? ''), '23 cambia', `con la tarde apretada, lo que sale es lo principal (Haría) y pasa a otro día o, si no cabe en ninguno, a «Lugares pendientes» (${cambia1})`)
+    // La franja verde dice lo que sigue igual (la tarde, desde el último sitio hecho); el turno de las 15:40 se comprueba abajo, en la ruta («el turno de las 15:40 sigue donde estaba»).
+    debe(/sigue igual/i.test((await txt(a, '[data-franja-sigue-igual]')) ?? ''), '23 mantiene', 'la franja verde dice lo que sigue igual')
     await foto(a, '23')
-    await clic(a, '[data-propuesta-otra]')
-    await a.esp(500)
-    const cambia2 = await txt(a, '[data-propuesta-resumen]')
-    debe(cambia2 !== cambia1 || (await cuantos(a, '[data-propuesta-otra]')) === 0, 'ver_otra', `[Ver otra opción] enseña otra propuesta (${cambia1} → ${cambia2})`)
-    await clic(a, '[data-propuesta-otra]')
-    await a.esp(400)
-    debe((await txt(a, '[data-propuesta-resumen]')) === cambia1 || true, 'ver_otra', 'y da la vuelta')
+    // (V59) La hoja de «Voy con retraso» ya no tiene [Ver otra opción]: una sola propuesta (la mínima).
+    debe((await cuantos(a, '[data-propuesta-otra]')) === 0, 'ver_otra', 'la hoja de retraso no ofrece [Ver otra opción]')
     // Aplicar: el turno no se mueve; el aviso «Plan actualizado · Deshacer»
-    await clic(a, '[data-propuesta-aplicar]')
-    await a.esp(900)
-    debe(!(await hay(a, '[data-cambiar-hoja]')), 'aplicar', '[Aplicar] cierra la hoja')
+    await clic(a, '[data-cierre-pendientes]') // el botón dorado de la hoja (en este caso «Guardarlo en pendientes»)
+    // (La hoja se cierra con su animación: se espera a que se vaya en vez de mirar a los 900 ms justos. Ojo: tras el cambio, el día ya no da tiempo y la app abre sola, UNA vez, la hoja «Hoy ya no da tiempo a todo» (V59, variante `h1`, el mismo `data-hoja-cierre`): lo que tiene que haberse ido es la de «Voy con retraso», `h4` o `h5`.)
+    debe(await a.hasta("!document.querySelector('[data-hoja-cierre=\"h5\"], [data-hoja-cierre=\"h4\"]')", { segundos: 8 }), 'aplicar', 'el botón dorado cierra la hoja de «Voy con retraso»')
     const casa = await ev(`(async () => { const d = ${R}.getState().route.days.find((x) => x.dayNumber === 3); const s = d.stops.find((x) => x.name.startsWith('Casa-Museo')); return [s.time, s.reservationTime, Boolean(s.saltada)] })()`)
     debe(casa[0] === '15:40' && casa[1] === '15:40' && casa[2] === false, 'aplicar', `el turno de las 15:40 sigue donde estaba (${casa})`)
     const aviso = (await txt(a, '[data-aviso-de-abajo]')) ?? ''
@@ -301,7 +306,8 @@ try {
       await a.esp(500)
       await clic(a, '[data-cambiar-opcion="retraso"]')
       await a.esp(600)
-      await clic(a, '[data-propuesta-aplicar]')
+      // (V59) el botón dorado de la hoja de retraso: «Guardarlo en pendientes» / «Pasarlo al …» (o [Entendido] si hoy cabe todo)
+      await a.evaluar("(() => { const b = document.querySelector('[data-cierre-pasar]') || document.querySelector('[data-cierre-pendientes]') || document.querySelector('[data-cierre-entendido]'); if (b) b.click(); return true })()")
       await a.esp(700)
     }
     debe((await foto3(a, 0)) !== inicio, 'original', 'hay cambios aplicados hoy antes de volver a la original')
@@ -319,8 +325,9 @@ try {
     await clic(a, '[data-cambiar-opcion="saltar"]')
     await a.esp(600)
     const t = (await hoja(a)) ?? ''
-    debe(/Tienes reserva/.test(t) && /Saltarlo igual/.test(t) && /No, lo mantengo/.test(t), '25 reserva', `con la reserva por llegar, antes se pregunta (${t.slice(0, 100)})`)
-    await clic(a, '[data-saltar-cancelar]')
+    // (Finde, paso 3; V55) La hoja de saltar con una reserva por llegar es una HojaPropuesta: el aviso de que se puede perder la reserva, la tarjeta del sitio («A Lugares pendientes»), el dorado «Guardarlo en pendientes» y [Dejarlo como está] (antes: [Saltarlo igual] / [No, lo mantengo]).
+    debe(/Tienes reserva/.test(t) && /Si te lo saltas, puedes perderla/.test(t) && /Guardarlo en pendientes/.test(t) && /Dejarlo como está/.test(t) && (await hay(a, '[data-tarjeta-del-sitio]')), '25 reserva', `con la reserva por llegar, antes se pregunta (${t.slice(0, 100)})`)
+    await clic(a, '[data-propuesta-dejar]')
     await a.esp(400)
     const sinTocar = await ev(`${R}.getState().route.days[2].stops.find((s) => s.name.startsWith('Cueva')).saltada ? 1 : 0`)
     debe(sinTocar === 0, '25 reserva', '[No, lo mantengo] no salta nada')
@@ -328,7 +335,7 @@ try {
     await a.esp(500)
     await clic(a, '[data-cambiar-opcion="saltar"]')
     await a.esp(500)
-    await clic(a, '[data-saltar-igual]')
+    await clic(a, '[data-propuesta-aplicar]') // (V55) el dorado «Guardarlo en pendientes»
     await a.esp(900)
     const saltada = await ev(`${R}.getState().route.days[2].stops.find((s) => s.name.startsWith('Cueva')).saltada ? 1 : 0`)
     debe(saltada === 1, '25 saltar', '[Saltar igual] salta la parada')
@@ -405,7 +412,7 @@ try {
   })
   await sec(async () => {
     const { t, jueves } = await pasar('c', `const d5 = dia(5); d5.meals.find((m) => m.mealTime === 'dinner').time = '21:30'; parada(d5, 'Faro').durationMinutes = 150;`, 'c')
-    debe(/No cabe en tus otros días/.test(t) && /Si te sobra tiempo/.test(t), '26c texto', `«No cabe en tus otros días…» con «Si te sobra tiempo» (${t.slice(0, 200)})`)
+    debe(/No cabe en tus otros días/.test(t) && /Lugares pendientes/.test(t), '26c texto', `«No cabe en tus otros días…» con «Lugares pendientes» (V77: una sola lista) (${t.slice(0, 200)})`)
     await clic(a, '[data-propuesta-aplicar]')
     await a.esp(800)
     const r = await ev(`(async () => { const d = ${R}.getState().route.days.find((x) => x.id === ${JSON.stringify(jueves)}); return [d.stops.some((s) => s.name.startsWith('Mirador del R')), (d.spareStops ?? []).some((s) => s.name.startsWith('Mirador del R'))] })()`)
@@ -448,7 +455,8 @@ try {
       debe(caso === 'a' || caso === 'b' || /Hoy no cabe/.test(t), '27 propuesta', `sale una propuesta (caso ${caso})`)
       debe(!ROMA.test(t0 + t), 'sin_roma', 'ni en la propuesta')
       if (caso === 'a') {
-        debe(/encaja/.test(t) && /Se añade/i.test(t) && /Sigue igual: todo lo que ya tenías/.test(t), '27a texto', `los textos de 27a (${t.slice(0, 160)})`)
+        // (Finde, paso 3; V55) La hoja de añadir lleva el texto, una tarjeta por cada sitio que se mueve («Hoy, a otra hora» / «Hoy, un poco más tarde») y el botón dorado «Añadirlo a mi día».
+        debe(/encaja sin cambios/.test(t) && /Hoy, a otra hora|Hoy, un poco más tarde/.test(t) && /Añadirlo a mi día/.test(t) && (await hay(a, '[data-tarjeta-del-sitio]')), '27a texto', `los textos de 27a (${t.slice(0, 160)})`)
         await foto(a, '27a')
         const antes = await foto3(a, 0)
         await clic(a, '[data-propuesta-aplicar]')
@@ -476,7 +484,9 @@ try {
       await a.evaluar(`(() => { const e = document.querySelectorAll('[data-anadir-candidato] [data-anadir-elegir]')[${i}]; if (e) e.click(); return true })()`)
       await a.esp(800)
       const caso = await a.evaluar(`document.querySelector('[data-cambiar-hoja="propuesta"]')?.getAttribute('data-propuesta-caso') ?? null`)
-      if (caso === 'b') visto = (await hoja(a)) ?? ''
+      // (Finde, paso 3; V55) Con la hoja nueva, el motor mete el sitio «encajando» y CORRE los sitios de después («Hoy, un poco más tarde»): ese es el caso que antes era «b» en pantalla. El caso «b» de verdad (quitar algo) se comprueba en el motor, arriba (`anadir_27b`).
+      const textoDeLaHoja = (await hoja(a)) ?? ''
+      if (caso === 'b' || (caso === 'a' && /Hoy, un poco más tarde/.test(textoDeLaHoja))) visto = textoDeLaHoja
       else {
         await a.evaluar("(() => { const x = Array.from(document.querySelectorAll('[role=\"dialog\"] [aria-label=\"Cerrar\"]')).pop(); if (x) x.click(); return true })()")
         await a.esp(300)
@@ -488,7 +498,7 @@ try {
     }
     debe(visto !== null, '27b caso', 'con la tarde apretada y un turno detrás, algún sitio obliga a mover algo (caso b)')
     if (visto !== null) {
-      debe(/tendríamos que mover/.test(visto) && /Sigue igual: tus reservas|Se mantiene: tus reservas|tus reservas/.test(visto), '27b texto', `los textos de 27b (${visto.slice(0, 200)})`)
+      debe((/tendríamos que mover/.test(visto) || /Hoy, un poco más tarde/.test(visto)) && /Añadirlo a mi día/.test(visto) && (await hay(a, '[data-tarjeta-del-sitio]')), '27b texto', `los textos de 27b (${visto.slice(0, 200)})`)
       await foto(a, '27b')
       await clic(a, '[data-propuesta-aplicar]')
       await a.esp(800)

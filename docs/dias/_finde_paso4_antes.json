@@ -1,0 +1,576 @@
+{
+  "fase": "antes",
+  "fecha": "2026-11-27T19:15:57.869Z",
+  "red": {
+    "offline": false,
+    "latency": 60,
+    "downloadThroughput": 1179648,
+    "uploadThroughput": 196608
+  },
+  "filas": [
+    {
+      "grupo": "Arranque",
+      "nombre": "Abrir la app hasta la primera pantalla (sin caché)",
+      "marca_ms": 12979,
+      "quieto_ms": 14032,
+      "peticiones": 573,
+      "kb": 13414
+    },
+    {
+      "grupo": "Arranque",
+      "nombre": "Abrir la app hasta la primera pantalla (con caché)",
+      "marca_ms": 6210,
+      "quieto_ms": 8575,
+      "peticiones": 541,
+      "kb": 295
+    },
+    {
+      "grupo": "Pestañas",
+      "nombre": "Pestaña HOY · 1.ª vez",
+      "marca_ms": 101,
+      "quieto_ms": 841,
+      "peticiones": 19,
+      "kb": 703,
+      "mayores": [
+        {
+          "u": "/fotos/roma/dia_fontana_de_trevi.jpg?v=79da78bb",
+          "kb": 617
+        },
+        {
+          "u": "/fotos/roma/mini/dia_reloj_de_agua_pincio.webp?v=834a1151",
+          "kb": 7
+        },
+        {
+          "u": "/fotos/roma/mini/dia_fontana_de_trevi.webp?v=79da78bb",
+          "kb": 6
+        },
+        {
+          "u": "/fotos/roma/mini/dia_via_veneto.webp?v=1a4341ed",
+          "kb": 6
+        },
+        {
+          "u": "/fotos/roma/mini/dia_santa_maria_del_popolo.webp?v=bca23bc3",
+          "kb": 6
+        },
+        {
+          "u": "/fotos/roma/mini/dia_via_condotti.webp?v=8ec87fb1",
+          "kb": 6
+        }
+      ]
+    },
+    {
+      "grupo": "Pestañas",
+      "nombre": "Pestaña HOY · 2.ª vez",
+      "marca_ms": 119,
+      "quieto_ms": 119,
+      "peticiones": 0,
+      "kb": 0,
+      "mayores": []
+    },
+    {
+      "grupo": "Pestañas",
+      "nombre": "Pestaña DÍAS · 1.ª vez",
+      "marca_ms": 287,
+      "quieto_ms": 2207,
+      "peticiones": 62,
+      "kb": 1876,
+      "mayores": [
+        {
+          "u": "/fotos/roma/dia_villa_borghese_lago_templo.jpg?v=066398c3",
+          "kb": 385
+        },
+        {
+          "u": "/fotos/roma/dia_via_veneto.jpg?v=1a4341ed",
+          "kb": 344
+        },
+        {
+          "u": "/fotos/roma/dia_porta_pinciana.jpg?v=6ab74b67",
+          "kb": 309
+        },
+        {
+          "u": "/fotos/roma/dia_terraza_pincio.jpg?v=5152c746",
+          "kb": 242
+        },
+        {
+          "u": "/fotos/roma/dia_galeria_borghese.jpg?v=54538370",
+          "kb": 224
+        },
+        {
+          "u": "/fotos/roma/dia_fuente_del_triton.jpg?v=3c3a7dbe",
+          "kb": 154
+        }
+      ]
+    },
+    {
+      "grupo": "Pestañas",
+      "nombre": "Pestaña DÍAS · 2.ª vez",
+      "marca_ms": 155,
+      "quieto_ms": 1358,
+      "peticiones": 28,
+      "kb": 2,
+      "mayores": [
+        {
+          "u": "/photo-1706698319512-499cd769990a?fm=jpg&q=80&w=800",
+          "kb": 0
+        },
+        {
+          "u": "/fotos/roma/dia_fuente_del_triton.jpg?v=3c3a7dbe",
+          "kb": 0
+        },
+        {
+          "u": "/fotos/roma/dia_porta_pinciana.jpg?v=6ab74b67",
+          "kb": 0
+        },
+        {
+          "u": "/fotos/roma/dia_via_veneto.jpg?v=1a4341ed",
+          "kb": 0
+        },
+        {
+          "u": "/fotos/roma/dia_fontana_de_trevi.jpg?v=79da78bb",
+          "kb": 0
+        },
+        {
+          "u": "/styles/v1/mapbox/streets-v12?sdk=js-3.29.0&access_token=pk.eyJ1IjoiYmVuZ2FsYWRlc2lnbnMiLCJhIjoiY210YmNiODRhMD",
+          "kb": 0
+        }
+      ]
+    },
+    {
+      "grupo": "Pestañas",
+      "nombre": "Pestaña EXPLORAR · 1.ª vez",
+      "marca_ms": 32,
+      "quieto_ms": 848,
+      "peticiones": 31,
+      "kb": 400,
+      "mayores": [
+        {
+          "u": "/fotos/roma/dia_coliseo_p.jpg?v=676bfdfb",
+          "kb": 74
+        },
+        {
+          "u": "/fotos/roma/dia_mirador_janiculo_p.jpg?v=8f7fe2cf",
+          "kb": 72
+        },
+        {
+          "u": "/fotos/roma/dia_foro_romano_y_palatino_p.jpg?v=168098e1",
+          "kb": 66
+        },
+        {
+          "u": "/wikipedia/commons/thumb/f/f4/Rome%2C_a_typical_19th-century_fountain.jpg/330px-Rome%2C_a_typical_19th-century",
+          "kb": 54
+        },
+        {
+          "u": "/wikipedia/commons/thumb/a/a5/Italian_trattoria_sign.jpg/330px-Italian_trattoria_sign.jpg?utm_source=es.wikipe",
+          "kb": 41
+        },
+        {
+          "u": "/wikipedia/commons/thumb/4/49/FloralRestroomMosaic.JPG/330px-FloralRestroomMosaic.JPG?utm_source=es.wikipedia.",
+          "kb": 32
+        }
+      ]
+    },
+    {
+      "grupo": "Pestañas",
+      "nombre": "Pestaña EXPLORAR · 2.ª vez",
+      "marca_ms": 16,
+      "quieto_ms": 16,
+      "peticiones": 0,
+      "kb": 0,
+      "mayores": []
+    },
+    {
+      "grupo": "Pestañas",
+      "nombre": "Pestaña RESERVAS · 1.ª vez",
+      "marca_ms": 32,
+      "quieto_ms": 132,
+      "peticiones": 2,
+      "kb": 13,
+      "mayores": [
+        {
+          "u": "/api/destino-pagina",
+          "kb": 6
+        },
+        {
+          "u": "/api/destino-pagina",
+          "kb": 6
+        }
+      ]
+    },
+    {
+      "grupo": "Pestañas",
+      "nombre": "Pestaña RESERVAS · 2.ª vez",
+      "marca_ms": 16,
+      "quieto_ms": 16,
+      "peticiones": 0,
+      "kb": 0,
+      "mayores": []
+    },
+    {
+      "grupo": "Pestañas",
+      "nombre": "Pestaña RUTA · 2.ª vez (desde RESERVAS)",
+      "marca_ms": null,
+      "quieto_ms": null,
+      "peticiones": 16,
+      "kb": 0,
+      "mayores": [
+        {
+          "u": "/styles/v1/mapbox/streets-v12?sdk=js-3.29.0&access_token=pk.eyJ1IjoiYmVuZ2FsYWRlc2lnbnMiLCJhIjoiY210YmNiODRhMD",
+          "kb": 0
+        },
+        {
+          "u": "/v4/mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2.json?secure&language=es&acce",
+          "kb": 0
+        },
+        {
+          "u": "/styles/v1/mapbox/streets-v12/iconset.pbf?access_token=pk.eyJ1IjoiYmVuZ2FsYWRlc2lnbnMiLCJhIjoiY210YmNiODRhMDhk",
+          "kb": 0
+        },
+        {
+          "u": "/events/v2?access_token=pk.eyJ1IjoiYmVuZ2FsYWRlc2lnbnMiLCJhIjoiY210YmNiODRhMDhkZDJ3c2IydWNodWtpYSJ9.BMFwp5iYjM",
+          "kb": 0
+        },
+        {
+          "u": "/fonts/v1/mapbox/DIN%20Pro%20Regular/0-255.pbf?access_token=pk.eyJ1IjoiYmVuZ2FsYWRlc2lnbnMiLCJhIjoiY210YmNiODR",
+          "kb": 0
+        },
+        {
+          "u": "/fonts/v1/mapbox/Arial%20Unicode%20MS%20Regular/0-255.pbf?access_token=pk.eyJ1IjoiYmVuZ2FsYWRlc2lnbnMiLCJhIjoi",
+          "kb": 0
+        }
+      ]
+    },
+    {
+      "grupo": "Perfil, logros, Ajustes",
+      "nombre": "Perfil (Mis viajes) · 1.ª vez",
+      "marca_ms": 457,
+      "quieto_ms": 505,
+      "peticiones": 6,
+      "kb": 250,
+      "mayores": [
+        {
+          "u": "/src/components/logros/dibujos/piezas/MedallaDestino.tsx",
+          "kb": 132
+        },
+        {
+          "u": "/fotos/roma/dia_coliseo_p.jpg",
+          "kb": 74
+        },
+        {
+          "u": "/marcos/marco-2.webp",
+          "kb": 39
+        },
+        {
+          "u": "/src/components/logros/dibujos/Insignia.tsx",
+          "kb": 3
+        },
+        {
+          "u": "/src/components/logros/dibujos/piezas/MedallaDestino.css",
+          "kb": 1
+        },
+        {
+          "u": "/marcos/hueco-2.webp",
+          "kb": 1
+        }
+      ]
+    },
+    {
+      "grupo": "Perfil, logros, Ajustes",
+      "nombre": "Perfil (Mis viajes) · 2.ª vez",
+      "marca_ms": 111,
+      "quieto_ms": 111,
+      "peticiones": 0,
+      "kb": 0,
+      "mayores": []
+    },
+    {
+      "grupo": "Perfil, logros, Ajustes",
+      "nombre": "Hoja de logros (botón flotante) · 1.ª vez",
+      "marca_ms": 430,
+      "quieto_ms": 528,
+      "peticiones": 7,
+      "kb": 179,
+      "mayores": [
+        {
+          "u": "/src/components/logros/momentos/HojaLogros.tsx",
+          "kb": 106
+        },
+        {
+          "u": "/src/components/logros/momentos/hoja/AntesDelViaje.tsx",
+          "kb": 48
+        },
+        {
+          "u": "/src/components/logros/momentos/hoja/textosHoja.ts",
+          "kb": 22
+        },
+        {
+          "u": "/src/components/logros/dibujos/emblemasLanzarote.ts",
+          "kb": 2
+        },
+        {
+          "u": "/api/place-photo",
+          "kb": 0
+        },
+        {
+          "u": "/api/place-photo",
+          "kb": 0
+        }
+      ]
+    },
+    {
+      "grupo": "Perfil, logros, Ajustes",
+      "nombre": "Hoja de logros (botón flotante) · 2.ª vez",
+      "marca_ms": 3,
+      "quieto_ms": 3,
+      "peticiones": 0,
+      "kb": 0,
+      "mayores": []
+    },
+    {
+      "grupo": "Perfil, logros, Ajustes",
+      "nombre": "Ajustes · 1.ª vez",
+      "marca_ms": 112,
+      "quieto_ms": 112,
+      "peticiones": 0,
+      "kb": 0,
+      "mayores": []
+    },
+    {
+      "grupo": "Perfil, logros, Ajustes",
+      "nombre": "Ajustes · 2.ª vez",
+      "marca_ms": 4,
+      "quieto_ms": 4,
+      "peticiones": 0,
+      "kb": 0,
+      "mayores": []
+    },
+    {
+      "grupo": "Perfil, logros, Ajustes",
+      "nombre": "Campana de avisos · 1.ª vez",
+      "marca_ms": 12,
+      "quieto_ms": 12,
+      "peticiones": 0,
+      "kb": 0,
+      "mayores": []
+    },
+    {
+      "grupo": "Perfil, logros, Ajustes",
+      "nombre": "Campana de avisos · 2.ª vez",
+      "marca_ms": 8,
+      "quieto_ms": 8,
+      "peticiones": 0,
+      "kb": 0,
+      "mayores": []
+    },
+    {
+      "grupo": "Hojas",
+      "nombre": "«+ Añadir una reserva» · 1.ª vez",
+      "marca_ms": 3,
+      "quieto_ms": 3,
+      "peticiones": 0,
+      "kb": 0,
+      "mayores": []
+    },
+    {
+      "grupo": "Hojas",
+      "nombre": "«+ Añadir una reserva» · 2.ª vez",
+      "marca_ms": 4,
+      "quieto_ms": 4,
+      "peticiones": 0,
+      "kb": 0,
+      "mayores": []
+    },
+    {
+      "grupo": "Hojas",
+      "nombre": "Hoja de un ferry (formulario) · 1.ª vez",
+      "marca_ms": 332,
+      "quieto_ms": 332,
+      "peticiones": 2,
+      "kb": 89,
+      "mayores": [
+        {
+          "u": "/src/components/route/reservas/HojaReservaExtra.tsx",
+          "kb": 78
+        },
+        {
+          "u": "/src/components/route/reservas/HojaUnirReserva.tsx",
+          "kb": 10
+        }
+      ]
+    },
+    {
+      "grupo": "Hojas",
+      "nombre": "Hoja de un ferry (formulario) · 2.ª vez",
+      "marca_ms": 10,
+      "quieto_ms": 10,
+      "peticiones": 0,
+      "kb": 0,
+      "mayores": []
+    },
+    {
+      "grupo": "Hojas",
+      "nombre": "Hoja de invitar (viaje) · 1.ª vez",
+      "marca_ms": 114,
+      "quieto_ms": 114,
+      "peticiones": 2,
+      "kb": 25,
+      "mayores": [
+        {
+          "u": "/src/components/pase/HojaInvitar.tsx",
+          "kb": 25
+        }
+      ]
+    },
+    {
+      "grupo": "Hojas",
+      "nombre": "Hoja de invitar (viaje) · 2.ª vez",
+      "marca_ms": 1,
+      "quieto_ms": 1,
+      "peticiones": 0,
+      "kb": 0,
+      "mayores": []
+    },
+    {
+      "grupo": "Hojas",
+      "nombre": "Hoja de pago (compra del pase) · 1.ª vez",
+      "marca_ms": 330,
+      "quieto_ms": 330,
+      "peticiones": 5,
+      "kb": 98,
+      "mayores": [
+        {
+          "u": "/src/components/pase/ListaDelPase.tsx",
+          "kb": 72
+        },
+        {
+          "u": "/src/lib/precioMoneda.ts",
+          "kb": 9
+        },
+        {
+          "u": "/src/lib/precioPelicula.ts",
+          "kb": 9
+        },
+        {
+          "u": "/src/components/pase/lista/listaDeCoche.ts",
+          "kb": 7
+        },
+        {
+          "u": "/data/pase/textos.json?import",
+          "kb": 1
+        }
+      ]
+    },
+    {
+      "grupo": "Hojas",
+      "nombre": "Hoja de pago (compra del pase) · 2.ª vez",
+      "marca_ms": 6,
+      "quieto_ms": 6,
+      "peticiones": 0,
+      "kb": 0,
+      "mayores": []
+    },
+    {
+      "grupo": "Hojas",
+      "nombre": "Día abierto en DÍAS · 1.ª vez",
+      "marca_ms": 2,
+      "quieto_ms": 2,
+      "peticiones": 0,
+      "kb": 0,
+      "mayores": []
+    },
+    {
+      "grupo": "Hojas",
+      "nombre": "Día abierto en DÍAS · 2.ª vez",
+      "marca_ms": 272,
+      "quieto_ms": 2693,
+      "peticiones": 25,
+      "kb": 2697,
+      "mayores": [
+        {
+          "u": "/fotos/roma/dia_ara_pacis.jpg?v=f7d9bfa5",
+          "kb": 734
+        },
+        {
+          "u": "/fotos/roma/dia_piazza_del_popolo.jpg?v=8130d917",
+          "kb": 600
+        },
+        {
+          "u": "/fotos/roma/dia_plaza_de_espana.jpg?v=9bb231ad",
+          "kb": 418
+        },
+        {
+          "u": "/fotos/roma/noche_foro_romano.jpg?v=504a170d",
+          "kb": 256
+        },
+        {
+          "u": "/fotos/roma/noche_coliseo.jpg?v=65c699a9",
+          "kb": 224
+        },
+        {
+          "u": "/fotos/roma/dia_via_condotti.jpg?v=8ec87fb1",
+          "kb": 212
+        }
+      ]
+    },
+    {
+      "grupo": "Perfil, logros, Ajustes",
+      "nombre": "Ficha grande de un logro (Todos mis logros → una ficha) · 1.ª vez",
+      "marca_ms": 1234,
+      "quieto_ms": 1662,
+      "peticiones": 24,
+      "kb": 933,
+      "mayores": [
+        {
+          "u": "/src/components/logros/dibujos/piezas/EmblemaOro.tsx",
+          "kb": 221
+        },
+        {
+          "u": "/src/components/logros/dibujos/piezas/CuatroEstaciones.tsx",
+          "kb": 105
+        },
+        {
+          "u": "/src/components/logros/dibujos/piezas/ExclusivoHolo.tsx",
+          "kb": 96
+        },
+        {
+          "u": "/src/components/logros/pantallas/todos/FichaGrande.tsx",
+          "kb": 90
+        },
+        {
+          "u": "/src/components/logros/pantallas/todos/TodosLista.tsx",
+          "kb": 81
+        },
+        {
+          "u": "/src/components/logros/dibujos/piezas/tierraPath.ts",
+          "kb": 76
+        }
+      ]
+    },
+    {
+      "grupo": "Perfil, logros, Ajustes",
+      "nombre": "Ficha grande de un logro (Todos mis logros → una ficha) · 2.ª vez",
+      "marca_ms": 477,
+      "quieto_ms": 477,
+      "peticiones": 0,
+      "kb": 0,
+      "mayores": []
+    },
+    {
+      "grupo": "Hojas",
+      "nombre": "Hoja de propuestas (viajero) · 1.ª vez",
+      "marca_ms": null,
+      "quieto_ms": null,
+      "peticiones": 0,
+      "kb": 0,
+      "mayores": []
+    },
+    {
+      "grupo": "Hojas",
+      "nombre": "Hoja de propuestas (viajero) · 2.ª vez",
+      "marca_ms": null,
+      "quieto_ms": null,
+      "peticiones": 0,
+      "kb": 0,
+      "mayores": []
+    }
+  ]
+}

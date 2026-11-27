@@ -255,10 +255,32 @@ const TOPE_BASE = Number(args.tope ?? 1500)
 const TOPES_PROPIOS = { 'pruebaTanda7_reparto.mjs': 3600 }
 const topeDe = (f) => Math.min(10800, Math.max(TOPES_PROPIOS[f] ?? 0, TOPE_BASE, 2 * (tiempos[f] ?? 0)))
 const resultados = []
+// Resultados guardados al acabar CADA prueba (para poder seguir otro día): docs/dias/_bateria_365.md. Con reanudar=1 se saltan las que ya tienen ✅ o ❌.
+// Con parar=HH:MM no se empieza ninguna prueba nueva a esa hora, y las que sigan en marcha se cortan 5 min después y se apuntan «sin terminar» (se repiten al reanudar).
+const MD_RESULTADOS = args.resultados ?? 'docs/dias/_bateria_365.md'
+const hechas = new Map()
+if (args.reanudar === '1' && fs.existsSync(MD_RESULTADOS)) {
+  for (const l of fs.readFileSync(MD_RESULTADOS, 'utf8').split(/\r?\n/)) {
+    const m = /^\|\s*(\d+)\s*\|\s*(prueba\S+?\.mjs)\s*\|\s*(✅|❌)/.exec(l)
+    if (m) hechas.set(m[2], l)
+  }
+}
+let numeroMd = hechas.size
+const apuntarMd = (f, estado, seg, motivo) => {
+  if (!fs.existsSync(MD_RESULTADOS)) fs.writeFileSync(MD_RESULTADOS, '# Batería completa (resultados por prueba)\n\n| n | prueba | resultado | segundos | motivo si falla |\n|---|---|---|---|---|\n')
+  fs.appendFileSync(MD_RESULTADOS, '| ' + ++numeroMd + ' | ' + f + ' | ' + estado + ' | ' + seg + ' | ' + String(motivo ?? '').replace(/\|/g, '/').replace(/\s+/g, ' ').slice(0, 300) + ' |\n')
+}
+let PARADA = null
+if (args.parar) {
+  const [hh, mm] = args.parar.split(':').map(Number)
+  PARADA = new Date(); PARADA.setHours(hh, mm, 0, 0)
+}
+const hayQueParar = () => PARADA && Date.now() >= PARADA.getTime()
 let contador = 0
 let t0Bateria = Date.now()
 const correr = (f) =>
   new Promise((resolve) => {
+    if (hechas.has(f) || hayQueParar()) return resolve()
     const t0 = Date.now()
     const nombreCarpeta = `bat${process.pid}_${++contador}`
     const tmp = path.join(RUN, nombreCarpeta)
@@ -290,6 +312,8 @@ const correr = (f) =>
       out += d
       rearmar()
     })
+    let sinTerminar = false
+    const corteDeParada = PARADA ? setTimeout(() => { sinTerminar = true; matarArbol(p.pid) }, Math.max(0, PARADA.getTime() + 5 * 60000 - Date.now())) : null
     let porTiempo = false
     const tope = setTimeout(() => {
       porTiempo = true
@@ -297,6 +321,7 @@ const correr = (f) =>
     }, topeDe(f) * 1000)
     p.on('close', (code) => {
       clearTimeout(tope)
+      clearTimeout(corteDeParada)
       clearTimeout(vigilante)
       // Nada de Chrome vivo de esta prueba, y su carpeta fuera.
       if (fs.existsSync(tmp) && fs.readdirSync(tmp).length) matarChromesDe(nombreCarpeta)
@@ -313,6 +338,10 @@ const correr = (f) =>
       const pendientes = Math.max(nPend, motivos.length)
       const ultimas = out.trim().split('\n').slice(-6).join(' | ').slice(0, 500)
       resultados.push({ f, code, fallos, seg, mal, raro, porTiempo, ultimas, pendientes, motivos: motivos.slice(0, 40) })
+      try {
+        if (sinTerminar) apuntarMd(f, '⏸ sin terminar', seg, 'cortada 5 min después de la hora de parar; se repite al reanudar')
+        else apuntarMd(f, mal ? '❌' : '✅', seg, mal ? (porTiempo ? 'pasó de tiempo; ' : '') + ultimas : '')
+      } catch { /* sin permiso */ }
       if (!porTiempo) tiempos[f] = seg // (una prueba cortada por el tope no dice cuánto tarda de verdad)
       console.log(`${raro && !mal ? AMARILLO : ''}${mal ? 'MAL' : raro ? (fallos === 0 ? 'OK*' : 'ok?') : 'OK '} ${f} exit=${code}${porTiempo && !colgadaTrasAcabar ? ' (PASADO DE TIEMPO)' : ''}${colgadaTrasAcabar ? ' (acabó bien pero NO SALÍA SOLA: cortada a los 90 s de su resultado)' : ''} fallos=${fallos} ${seg}s`)
       if (pendientes) console.log(`${AMARILLO}    ${pendientes} pendientes del motor en ${f}${RESET}`)

@@ -57,7 +57,7 @@ export function comprobarViaje({ D, plan, etiqueta, entradas = {}, poolNames = [
     const base = new Map((dia.ordenBase ?? []).map((id, i) => [id, i]))
     // (Un cierre manda sobre el orden escrito —regla 5—: lo que a su hora ya habría cerrado y el motor adelanta a primera hora, con su línea «adelanta» en el registro, no cuenta en el orden.)
     // (Tanda 11, punto 13: la visita que llegaría cerrada y se pone antes de lo que no cierra, con su línea «orden» en el registro, tampoco cuenta.)
-    const adelantadas = new Set(log.filter((l) => l.que === 'adelanta' || (l.que === 'orden' && /llegaría cuando ya ha cerrado/.test(l.causa ?? ''))).map((l) => l.id))
+    const adelantadas = new Set(log.filter((l) => l.que === 'adelanta' || (l.que === 'orden' && /llegaría cuando ya ha cerrado|llegaría en su cierre de mediodía/.test(l.causa ?? ''))).map((l) => l.id))
     const hayFija = rows.some((r) => r.fija && !r.llegada)
     const secuencia = rows.filter((r) => base.has(r.id) && !adelantadas.has(r.id) && !r.llegada && !r.fija && !r.relleno && r.tipo !== 'traslado' && !(hayFija && (r.tipo === 'comida' || r.tipo === 'cena'))).map((r) => base.get(r.id))
     {

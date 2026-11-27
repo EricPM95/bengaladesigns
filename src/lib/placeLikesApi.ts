@@ -22,10 +22,63 @@ export interface PlaceLikes {
 
 export const EMPTY_PLACE_LIKES: PlaceLikes = { counts: new Map(), mine: new Set() }
 
+/**
+ * (V36 / finde paso 5) LA COPIA DEL MÓVIL de los «me gusta» de un destino. CONSULTA: `select place_name, user_id` de TODAS las filas del destino (≈ 90 bytes por «me gusta»: con 2.000 «me gusta» de Roma son ≈ 180 KB) y se hacía en CADA apertura
+ * de la app (una vez por destino y por carga de la página). Ahora se pregunta como mucho CADA 6 HORAS por destino (el número solo se enseña a partir de 20 y no necesita estar al segundo); lo que esta persona marca o desmarca
+ * se apunta en la copia al momento. CUÁNTO BAJA: lo mismo que antes, pero ≈ 1-3 veces al día por persona en vez de en cada apertura (arreglo definitivo: una función que devuelva solo `place_name, total, mío` = ≈ 3 KB; pide migración, ver INFORME_FINDE_PASO5).
+ */
+const CADUCA_LIKES_MS = 6 * 60 * 60 * 1000
+const claveCopia = (destination: string, userId: string | null) => `trazo:likes:v1:${userId ?? 'anon'}:${destination.toLowerCase()}`
+interface CopiaDeLikes {
+  en: number
+  counts: [string, number][]
+  mine: string[]
+}
+function leerCopia(destination: string, userId: string | null): PlaceLikes | null {
+  try {
+    const crudo = window.localStorage.getItem(claveCopia(destination, userId))
+    if (!crudo) return null
+    const c = JSON.parse(crudo) as CopiaDeLikes
+    if (!c || typeof c.en !== 'number' || Date.now() - c.en > CADUCA_LIKES_MS || Date.now() < c.en) return null
+    return { counts: new Map(c.counts), mine: new Set(c.mine) }
+  } catch {
+    return null
+  }
+}
+function guardarCopia(destination: string, userId: string | null, likes: PlaceLikes, en = Date.now()) {
+  try {
+    window.localStorage.setItem(claveCopia(destination, userId), JSON.stringify({ en, counts: [...likes.counts], mine: [...likes.mine] } satisfies CopiaDeLikes))
+  } catch {
+    /* sin almacenamiento: se pregunta cada vez, como antes */
+  }
+}
+/** Lo que esta persona acaba de marcar o desmarcar: se apunta en la copia (sin cambiar su fecha) para que al recargar no se desfase. */
+function apuntarEnCopia(destination: string, userId: string | null, placeName: string, liked: boolean) {
+  try {
+    const crudo = window.localStorage.getItem(claveCopia(destination, userId))
+    if (!crudo) return
+    const c = JSON.parse(crudo) as CopiaDeLikes
+    const counts = new Map(c.counts)
+    const mine = new Set(c.mine)
+    if (liked && !mine.has(placeName)) {
+      mine.add(placeName)
+      counts.set(placeName, (counts.get(placeName) ?? 0) + 1)
+    } else if (!liked && mine.has(placeName)) {
+      mine.delete(placeName)
+      counts.set(placeName, Math.max(0, (counts.get(placeName) ?? 0) - 1))
+    }
+    guardarCopia(destination, userId, { counts, mine }, c.en)
+  } catch {
+    /* sin copia */
+  }
+}
+
 export async function fetchPlaceLikes(destination: string): Promise<PlaceLikes> {
   if (!supabase) return EMPTY_PLACE_LIKES
   try {
     const userId = await bootstrapTraveler().catch(() => null)
+    const copia = leerCopia(destination, userId)
+    if (copia) return copia
     const { data, error } = await supabase.from('place_likes').select('place_name, user_id').eq('destination', destination)
     if (error) {
       console.warn('[place-likes] no se pudieron leer los likes:', error.message)
@@ -37,7 +90,9 @@ export async function fetchPlaceLikes(destination: string): Promise<PlaceLikes> 
       counts.set(row.place_name, (counts.get(row.place_name) ?? 0) + 1)
       if (userId && row.user_id === userId) mine.add(row.place_name)
     }
-    return { counts, mine }
+    const likes = { counts, mine }
+    guardarCopia(destination, userId, likes)
+    return likes
   } catch (error) {
     console.warn('[place-likes] fallo leyendo likes:', error)
     return EMPTY_PLACE_LIKES
@@ -61,6 +116,7 @@ export async function togglePlaceLike(destination: string, placeName: string, li
         console.warn('[place-likes] no se pudo dar like:', error.message)
         return null
       }
+      apuntarEnCopia(destination, userId, placeName, true)
       return true
     }
     const { error } = await supabase.from('place_likes').delete().eq('destination', destination).eq('place_name', placeName).eq('user_id', userId)
@@ -68,6 +124,7 @@ export async function togglePlaceLike(destination: string, placeName: string, li
       console.warn('[place-likes] no se pudo quitar el like:', error.message)
       return null
     }
+    apuntarEnCopia(destination, userId, placeName, false)
     return false
   } catch (error) {
     console.warn('[place-likes] fallo escribiendo el like:', error)

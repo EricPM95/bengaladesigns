@@ -768,11 +768,13 @@ export function DayDetailPanel({
     const at = day.mealAfter?.[mealTime]
     return at != null && at >= -1 && at < schedule.length ? at : null
   }
-  const lunchInsertionIndex = movedMeal('lunch') ?? (lastBeforeLunch >= 0 ? lastBeforeLunch : findMealInsertionIndex(schedule, LUNCH_WINDOW))
+  // (FINDE paso 6) El día de vuelta con el vuelo puesto y el motor diciendo «mañana sin comida» / «corta» no pinta «Hora de comer» (sin comida de comida en el día).
+  const diaDeVueltaSinComida = day.isReturnLeg === true && !lunchMeal && /sin_comida|corta/.test(route?.planVuelta?.lleva ?? '')
+  const lunchInsertionIndex = diaDeVueltaSinComida ? null : (movedMeal('lunch') ?? (lastBeforeLunch >= 0 ? lastBeforeLunch : findMealInsertionIndex(schedule, LUNCH_WINDOW)))
   const lunchCoordinates = lunchMeal?.coordinates && hasRealCoordinates(lunchMeal.coordinates) ? lunchMeal.coordinates : null
   // La ventana de cena la decide el día (20:00 o 20:30, ver dinnerWindowFor) — ya no es constante.
-  // (6-nov, RETOQUES_TARJETAS §5) El día de vuelta de un destino de coche no lleva cena (el vuelo sale por la tarde): sin comida de cena en el día, no se pinta el bloque «Hora de cenar».
-  const diaDeVueltaSinCena = day.isReturnLeg === true && Boolean(day.coche?.activo) && !day.meals.some((meal) => meal.mealTime === 'dinner')
+  // (6-nov, RETOQUES_TARJETAS §5) El día de vuelta no lleva cena (el vuelo sale por la tarde): sin comida de cena en el día, no se pinta el bloque «Hora de cenar». (FINDE paso 6: antes solo en los destinos de coche; Roma con vuelo a las 15:30 pintaba COMIDA y CENA tras «Fin del día».)
+  const diaDeVueltaSinCena = day.isReturnLeg === true && !day.meals.some((meal) => meal.mealTime === 'dinner')
   const dinnerInsertionIndex = diaDeVueltaSinCena ? null : (movedMeal('dinner') ?? findMealInsertionIndex(schedule, dinnerWindowFor(day)))
   const destino = route?.destination ?? day.city
 

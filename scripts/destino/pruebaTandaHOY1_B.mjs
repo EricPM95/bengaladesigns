@@ -217,7 +217,9 @@ if (PARTE === 'todas' || PARTE === '2') {
   const texto = (ev, sel) => ev(`(document.querySelector(${JSON.stringify(sel)})?.innerText ?? '')`)
   const disparar = async ({ a, ev }) => {
     await a.hasta("Boolean(document.querySelector('[data-visto=camara]'))", { segundos: 15, lanzar: 'no se abre la cámara' })
-    await a.esp(1600)
+    // (Finde, paso 3) Espera EXPLÍCITA a que el visor tenga imagen (antes, 1,6 s fijos: con la máquina cargada el visor tardaba más, el disparador abría el selector de archivos y la foto no se hacía).
+    await a.hasta("(() => { const v = document.querySelector('[data-visto=camara] video'); return Boolean(v && v.videoWidth > 0) || /USA LA CÁMARA DEL MÓVIL/.test(document.querySelector('[data-visto=camara]')?.innerText ?? '') })()", { segundos: 20, lanzar: 'el visor de la cámara no llega a tener imagen' })
+    await a.esp(400)
     await ev("(() => { document.querySelector('[data-visto=camara] button[aria-label=\"Hacer la foto\"]').click(); return true })()")
   }
   const tocarCamara = async ({ a, ev }) => {

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ImagenConFundido } from '../../ui/ImagenConFundido'
+import { urlDeTarjeta } from '../../../lib/miniatura'
 import type { ReactNode } from 'react'
 import { KIND_ICON, KIND_STYLE, PERIOD_STYLE, type DayPeriod, type StopKind } from '../../../lib/stopKind'
 import { Icono, IconoRuta } from '../../ui/Icono'
@@ -73,6 +74,17 @@ const NIGHT_PANEL = 'linear-gradient(160deg, oklch(0.45 0.13 285), oklch(0.3 0.0
 const SUNSET_CARD = 'linear-gradient(115deg, #FFF4E6, #FBDCCB)'
 const NIGHT_CARD = 'linear-gradient(135deg, oklch(0.27 0.06 275), oklch(0.21 0.04 265))'
 
+/** La foto de la tarjeta del día: la de 640 px (`_p`) y, si no existe, la grande (FINDE, Paso 4: antes bajaba la de 1600 px, hasta 1 MB por parada). */
+function FotoDeTarjeta({ url }: { url: string }) {
+  const [src, setSrc] = useState(() => urlDeTarjeta(url) ?? url)
+  const [antes, setAntes] = useState(url)
+  if (antes !== url) {
+    setAntes(url)
+    setSrc(urlDeTarjeta(url) ?? url)
+  }
+  return <ImagenConFundido src={src} fondo="transparent" loading="lazy" onError={() => { if (src !== url) setSrc(url) }} />
+}
+
 export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, topNote, meta = [], aviso = null, tags = [], barrio = null, photoUrl, noPhoto, iconPath, dashed, onOpen, menu, children, action, numberColors, edgeTab, conBotonEntrada = false }: TrazoCardProps) {
   const style = KIND_STYLE[kind]
   const hasPhoto = Boolean(photoUrl) && !noPhoto
@@ -101,7 +113,7 @@ export function TrazoCard({ kind, variant = 'normal', number, time, name, sub, t
         {/* (Tanda 6r: sin foto no hay recuadro, ni vacío ni de color: la tarjeta va solo con la franja de su color.) */}
         {hasPhoto && (
           <div className="absolute bottom-0 left-[30px] right-0 top-0 max-[430px]:left-[24px]" style={{ clipPath: 'polygon(26px 0, 100% 0, calc(100% - 20px) 100%, 0 100%)', background: photoBg }}>
-            <ImagenConFundido src={photoUrl!} fondo="transparent" loading="lazy" />
+            <FotoDeTarjeta url={photoUrl!} />
           </div>
         )}
       </div>

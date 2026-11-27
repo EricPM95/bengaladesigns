@@ -1,9 +1,7 @@
 import { useEffect } from 'react'
-import { useBilleteStore, type BilleteGuardado, type LegDelBillete } from '../store/useBilleteStore'
+import { sincronizarBilletes, useBilleteStore, type BilleteGuardado, type LegDelBillete } from '../store/useBilleteStore'
 import { useSyncStore } from '../store/useSyncStore'
 import { useViajeCompartido } from '../store/useViajeCompartido'
-
-const ultimaSync = new Map<string, number>()
 
 /**
  * EL BILLETE PRIVADO DE ESTA PERSONA para una mitad del viaje (10S5 §4). Solo el suyo: si lo guardó otra persona en este móvil, no sale. Sin conexión no hace falta nada de la nube: se lee del móvil.
@@ -20,10 +18,7 @@ export function useBillete(kind: LegDelBillete, horaRoma: string | null): { bill
   // (0070) Una vez por viaje abierto: se trae lo de la nube (otro móvil de esta persona) y se sube lo que falte.
   useEffect(() => {
     // (Varias piezas piden el mismo billete a la vez: una sola sincronización cada 20 s por viaje.)
-    if (tripId && Date.now() - (ultimaSync.get(tripId) ?? 0) > 20_000) {
-      ultimaSync.set(tripId, Date.now())
-      void useBilleteStore.getState().sincronizar(tripId)
-    }
+    sincronizarBilletes(tripId) // (V36) una sola vez y como mucho cada 5 min con la pantalla a la vista; solo baja el sello (60 bytes)
   }, [tripId])
   const b = cargado === tripId ? (datos[kind] ?? null) : null
   const esMio = b && (!b.dueno || !yoId || b.dueno === yoId)

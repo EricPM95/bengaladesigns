@@ -209,6 +209,31 @@ debe(!b.medida.porTabla.has('logro_hechos'), 'la ruta «cerca» ya no lee los he
   Date.now = real
 }
 
+// (Finde, paso 5) LO MISMO, PERO CON EL RELOJ AVANZANDO: arriba las 640 vueltas pasan en menos de 30 s de reloj y la lectura guardada las contesta todas; en la vida real «cerca de aquí» llega cada 75 s y esa lectura (30 s)
+// no sirve. Con 4 h de HOY (192 vueltas, una ruta de 79 KB y 90 logros) la ruta no puede bajar más de ~2 veces (tope de edad de 3 h) y los logros bajan solo las columnas que «cerca» usa.
+{
+  let reloj2 = new Date('2026-11-09T08:00:00Z').getTime()
+  const realNow = Date.now
+  Date.now = () => reloj2
+  try {
+    const b3 = crearBaseDeMentira(tablasHoy(), { rpcs: { logro_orden_pionero: async () => null } })
+    olvidarViajesEnMemoria()
+    const s3 = crearServicioLogros({ repo: repoSupabase(b3.admin, { destinosConPionero: ['roma'] }), datos, catalogos, ahora: () => new Date(reloj2), cobro: false, azar: () => 0 })
+    for (let i = 0; i < 192; i++) {
+      await s3.cerca(UID, { trip_id: ID_VIAJE, ubicacion: { lat: 41.89, lng: 12.4922 }, sitios_hoy: ['Coliseo'] })
+      reloj2 += 75_000
+    }
+    const rutas = Math.round((b3.medida.porTabla.get('trips')?.bytes ?? 0) / (79 * 1024))
+    console.log(`   «cerca de aquí» 192 veces con el reloj avanzando (4 h): ${b3.medida.consultas} consultas, ${kb(b3.medida.bytes)} KB (rutas bajadas ≈ ${rutas}; logros ${kb(b3.medida.porTabla.get('achievements')?.bytes ?? 0)} KB)`)
+    debe(rutas <= 3, `con el reloj avanzando, la ruta de 79 KB se baja como mucho 3 veces en 4 h (≈ ${rutas}; con el tope de 15 min eran 16)`)
+    debe(b3.medida.bytes < 3 * 1024 * 1024, `4 h de «cerca» con el reloj avanzando bajan menos de 3 MB (${kb(b3.medida.bytes)} KB)`)
+    const fuenteRepo = fs.readFileSync('server/logros/repo.js', 'utf8')
+    debe(/ligero \? 'logro, escalon, destino, trip_id, ganado_en, animacion_vista'/.test(fuenteRepo), 'la lectura ligera de logros pide solo las 6 columnas que usa «cerca» (no select *)')
+  } finally {
+    Date.now = realNow
+  }
+}
+
 /* ───────── 2. El panel abierto ───────── */
 console.log('2. El panel abierto (Inicio, Ventas, Usuarios y Logros) con cientos de filas')
 const N = 400

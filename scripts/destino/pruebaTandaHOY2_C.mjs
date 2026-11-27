@@ -49,6 +49,9 @@ async function abrir() {
         if (!hecho) break
         await a.esp(600)
       }
+      // (Finde, paso 3) ESPERA EXPLÍCITA a que los días estén ya adaptados a los vuelos: la ruta aparece en el almacén ANTES de que termine la adaptación (`vuelos`), y con la máquina cargada la prueba cogía la ruta a medias (el día 3 sin Jameos del Agua ni la Cueva de los Verdes) y todas las partes fallaban. Antes se contaba con que 2,5 s bastaban.
+      for (let i = 0; i < 90 && !(await ev(`${R}.getState().route.days.find((d) => d.dayNumber === 3)?.stops.some((s) => s.name.startsWith('Jameos')) === true`).catch(() => false)); i++) await a.esp(1000)
+      await a.esp(1500)
       return a
     }
     a.cerrar()
@@ -327,7 +330,8 @@ try {
     debe((await a.evaluar("document.querySelector('[data-hoy-comida]')?.getAttribute('data-hoy-comida-estado')")) === 'cerrado', 'Completa 4 cerrado', 'si su restaurante está cerrado hoy (La Casa de la Playa cierra los martes), la tarjeta lo dice y no manda allí')
     debe(!(await hay(a, '[data-hoy-comida-como-llegar]')), 'Completa 4 cerrado', 'sin [Cómo llegar] a un sitio cerrado')
     // Sin restaurante propio
-    await ir(a, { min: 13 * 60 + 54, mut: MUT_COMIDA.replace(/d3\.meals\.find[^;]+;/, ''), pos: MIRADOR, perm: 'granted' })
+    // (Finde, paso 3) Sin restaurante propio: antes bastaba con quitar la línea que lo ponía; ahora el viaje de pruebas ya trae uno recomendado en el almuerzo, así que se vacían los dos campos a propósito.
+    await ir(a, { min: 13 * 60 + 54, mut: MUT_COMIDA.replace(/d3\.meals\.find[^;]+;/, "d3.meals.find((m) => m.mealTime === 'lunch').recommendedRestaurant = null; d3.meals.find((m) => m.mealTime === 'lunch').chosenRestaurant = null;"), pos: MIRADOR, perm: 'granted' })
     debe((await a.evaluar("document.querySelector('[data-hoy-comida]')?.getAttribute('data-hoy-comida-estado')")) === 'sin_sitio', 'Completa 4 sin sitio', 'sin restaurante, «Es hora de comer» con [Elegir sitio]')
     // Antes de la hora de comer, no sale
     await ir(a, { min: 11 * 60, mut: MUT_COMIDA, pos: MIRADOR, perm: 'granted' })

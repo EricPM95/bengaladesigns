@@ -91,7 +91,7 @@ export function cajasDelBillete(leg: Pick<LegState, 'kind' | 'mode' | 'codigo' |
   if (avion) {
     const t = (billete?.terminal ?? '').trim().replace(/^terminal\s*/i, '')
     const aeropuerto = esIda ? (/\(([^)]+)\)/.exec(lugarDeSalida)?.[1] ?? '') : lugarDeSalida
-    pon('terminal', 'TERMINAL', t ? `${/^[0-9A-Za-z]{1,2}$/.test(t) ? `T${t.toUpperCase()}` : t}${aeropuerto ? ` · ${aeropuerto}` : ''}` : null, D_CAJAS.terminal)
+    pon('terminal', 'TERMINAL', t ? `${/^[0-9A-Za-z]{1,2}$/.test(t) && !/^T\d$/i.test(t) ? `T${t.toUpperCase()}` : /^T\d$/i.test(t) ? t.toUpperCase() : t}${aeropuerto ? ` · ${aeropuerto}` : ''}` : null, D_CAJAS.terminal)
   } else if (lugarDeSalida) {
     pon('estacion', leg.mode === 'ferry' ? 'PUERTO' : 'ESTACIÓN', lugarDeSalida, D_CAJAS.estacion)
   }

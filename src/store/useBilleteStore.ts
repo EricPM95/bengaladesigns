@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { supabase, usuarioLocal } from '../lib/supabaseClient'
+import { seVe, unaSolaVez } from '../lib/sondeo'
 
 /**
  * EL BILLETE DE CADA PERSONA (Tanda 10S5 §4). El código de la tarjeta de embarque, el asiento, el localizador, la terminal y el coche son PRIVADOS: viven solo en el móvil de quien los pone
@@ -213,8 +214,11 @@ export const useBilleteStore = create<BilleteState>((set, get) => ({
       const { data: u } = await usuarioLocal()
       const uid = u.user?.id
       if (!uid) return
-      const { data, error } = await supabase.from('billetes_personales').select('datos, actualizado_en').eq('trip_id', tripId).eq('user_id', uid).maybeSingle()
+      // (V36 / finde paso 5) PRIMERO solo el sello (`actualizado_en`, ≈ 60 bytes, 1 fila): el `datos` pesa lo que pesen los códigos QR guardados (decenas o cientos de KB, con la imagen) y antes se bajaba entero
+      // CADA vez que se abría una pantalla con un billete. Ahora `datos` se baja SOLO si la nube es más nueva que el móvil (otro móvil de esta persona cambió algo): casi nunca.
+      const { data: sello, error } = await supabase.from('billetes_personales').select('actualizado_en').eq('trip_id', tripId).eq('user_id', uid).maybeSingle()
       if (error) return // sin la 0070 (o sin conexión): se sigue solo con el móvil
+      const data = sello as { actualizado_en?: string | null } | null
       if (useBilleteStore.getState().tripId !== tripId) useBilleteStore.setState({ tripId, datos: leer(claveDe(tripId)) })
       // Solo lo de esta persona: lo que otra persona dejó en este móvil nunca sube a su cuenta.
       const local = delDueno(useBilleteStore.getState().datos, uid)
@@ -228,8 +232,11 @@ export const useBilleteStore = create<BilleteState>((set, get) => ({
       })()
       const tNube = data?.actualizado_en ? Date.parse(data.actualizado_en) : 0
       if (data && tNube > tLocal && !pendiente) {
-        // La nube es más nueva: se queda lo de la nube (también si ya no hay billete: se quitó en otro móvil).
-        const datos = (data.datos && typeof data.datos === 'object' ? data.datos : {}) as Datos
+        // La nube es más nueva: se queda lo de la nube (también si ya no hay billete: se quitó en otro móvil). Solo aquí se baja el `datos` entero (1 fila, el peso de los QR guardados).
+        const { data: entera, error: errorDatos } = await supabase.from('billetes_personales').select('datos').eq('trip_id', tripId).eq('user_id', uid).maybeSingle()
+        if (errorDatos) return
+        const crudo = (entera as { datos?: unknown } | null)?.datos
+        const datos = (crudo && typeof crudo === 'object' ? crudo : {}) as Datos
         useBilleteStore.setState({ tripId, datos })
         escribir(claveDe(tripId), datos)
         poner1(claveT(tripId), String(tNube))
@@ -288,6 +295,15 @@ async function subir(tripId: string | null, datos: Datos) {
   } catch {
     // Pendiente: se sube cuando vuelva la conexión.
   }
+}
+
+/**
+ * (V36 / finde paso 5) La sincronización de los hooks (`useBillete`, `useBilletesDeEntradas`): UNA sola vez aunque la pidan varias piezas a la vez y, como mucho, cada 5 minutos por viaje, solo con la pantalla a la vista.
+ * CADA CUÁNTO: al abrir el viaje y después, como mucho, cada 5 min (antes: cada 20 s al cambiar de pestaña, con dos relojes separados). CUÁNTO BAJA: 1 fila de ≈ 60 bytes (el sello); el `datos` entero solo si cambió en otro móvil.
+ */
+export function sincronizarBilletes(tripId: string | null): void {
+  if (!tripId || !seVe()) return
+  void unaSolaVez(`billetes:${tripId}`, () => useBilleteStore.getState().sincronizar(tripId), 5 * 60_000).catch(() => undefined)
 }
 
 // Al volver la conexión, lo pendiente sube y se trae lo que haya cambiado en otro móvil.

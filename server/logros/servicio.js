@@ -156,7 +156,7 @@ export function crearServicioLogros({ repo: repoBruto, datos, catalogos, ahora =
   }
   async function cargar(userId, { ligero = false } = {}) {
     // (V9) TODAS las lecturas a la vez, en una sola ronda (antes el perfil y los referidos esperaban a las otras seis y la invitación, a todas): cada ronda al servidor de datos son ~150-300 ms.
-    const [hechos, filas, logros, cuenta, pionero, probador, perfil, referidos, invitador, paisVive] = await Promise.all(ligero ? [[], repo.viajesDe(userId), repo.logrosDe(userId), null, {}, null, null, [], undefined, null] : [
+    const [hechos, filas, logros, cuenta, pionero, probador, perfil, referidos, invitador, paisVive] = await Promise.all(ligero ? [[], repo.viajesDe(userId), repo.logrosDe(userId, { ligero: true }), null, {}, null, null, [], undefined, null] : [
       repo.hechosDe(userId),
       repo.viajesDe(userId),
       repo.logrosDe(userId),

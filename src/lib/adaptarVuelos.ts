@@ -169,9 +169,24 @@ function movidasDe(antes: DayPlan, despues: DayPlan): string[] {
   return despues.stops.filter((stop, i) => stop.id !== ids[i]).map((stop) => stop.id)
 }
 
+/**
+ * (FINDE paso 6) El día de vuelta con vuelo nunca lleva «Hora de cenar» si el vuelo sale antes de las 21:00, ni «Hora de comer» si el motor dice «mañana sin comida» o «corta» (probador: vuelo 15:30 → COMIDA y CENA después de «Fin del día»).
+ * Solo se aplica al día de vuelta que acaba de montar el motor (`isReturnLeg`).
+ */
+function sinComidasDeLaVuelta(mapeado: DayPlan, generado: GeneratedDay, route: Route): DayPlan {
+  if (!mapeado.isReturnLeg) return mapeado
+  const horaVuelo = enMinutos(generado.return_day?.hora ?? route.departureFlightTime ?? '')
+  const sinComer = /sin_comida|corta/.test(generado.return_day?.lleva ?? '')
+  const comidas = mapeado.meals.filter((comida) => !(comida.mealTime === 'dinner' && horaVuelo !== null && horaVuelo < 21 * 60) && !(comida.mealTime === 'lunch' && sinComer))
+  if (comidas.length === mapeado.meals.length) return mapeado
+  const sigue = (cual: 'lunch' | 'dinner') => comidas.some((comida) => comida.mealTime === cual)
+  const despuesDe = mapeado.mealAfter
+  return { ...mapeado, meals: comidas, mealAfter: despuesDe ? { ...(sigue('lunch') && despuesDe.lunch !== undefined ? { lunch: despuesDe.lunch } : {}), ...(sigue('dinner') && despuesDe.dinner !== undefined ? { dinner: despuesDe.dinner } : {}) } : undefined }
+}
+
 /** El día de vuelta rehecho por el motor con la hora de la vuelta; null si no cambia nada o repetiría un sitio que ya está en otro día. */
 async function diaDeVueltaNuevo(route: Route, day: DayPlan, generado: GeneratedDay): Promise<DiaAdaptado | null> {
-  const next = mapSingleGeneratedDay(route.destination, generado, day)
+  const next = sinComidasDeLaVuelta(mapSingleGeneratedDay(route.destination, generado, day), generado, route)
   await enrichRoutePhotos({ ...route, days: [next] }).catch(() => {})
   if (firmaDelDia(next) === firmaDelDia(day)) return null
   const propios = new Set(day.stops.map((stop) => stop.name))
@@ -207,7 +222,7 @@ async function adaptarUnDiaDeCoche(route: Route, day: DayPlan, vuelo: DatosParaM
     if (!response.ok) return null
     const generado = ((await response.json()) as { day?: GeneratedDay }).day
     if (!generado) return null
-    const next = mapSingleGeneratedDay(route.destination, generado, day)
+    const next = sinComidasDeLaVuelta(mapSingleGeneratedDay(route.destination, generado, day), generado, route)
     await enrichRoutePhotos({ ...route, days: [next] }).catch(() => {})
     if (firmaDelDia(next) === firmaDelDia(day)) return null
     return { dayId: day.id, dayNumber: day.dayNumber, next, movidas: movidasDe(day, next) }
