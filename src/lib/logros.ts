@@ -121,6 +121,8 @@ export interface RespuestaDeHecho {
   sitio?: string | null
   /** (V5) De una foto de la galería sin parada: los sitios con logro donde cayó, con su nombre. */
   sitios?: { sitio: string; nombre: string }[]
+  /** (V78) Con `motivo: 'sin_logro_aqui'`: la foto cayó en un sitio con logro, pero ya estaba todo ganado (va al álbum, sin aviso). */
+  ya_ganado?: boolean
   nuevos: Momento[]
   /** (8C2) La EXP ganada con este hecho. Se suma en  y sale UNA sola vez, al acabar las sorpresas (nunca durante ellas ni en el resumen del día). */
   exp?: ExpDeRespuesta | null
@@ -336,22 +338,31 @@ export async function enviarDeshacerVisto(p: { tripId: string; stopId: string; n
 /* Las fotos                                                           */
 /* ------------------------------------------------------------------ */
 
+/**
+ * (V78) La parada que le toca ahora al viajero en HOY (`paradaDeAhora`, camaraViaje.ts), que se manda con una foto SIN parada (`libre`): el servidor mira la ubicación de la foto y, si entre los sitios posibles está
+ * esa parada, cuenta solo ella. Una foto de otro día no la usa (el servidor lo comprueba con la fecha de la foto). Va dentro del mismo POST de la foto: ninguna petición nueva.
+ */
+export interface ParadaDeAhora {
+  stop_id: string
+  nombre: string
+}
+
 /** Lo que el servidor necesita de una foto de la galería: la fecha de la cámara, la ubicación si la trae y si es de una cámara. */
 export async function datosDeFotoDeLaGaleria(archivo: Blob): Promise<DatosDeFoto> {
   return leerDatosDeFoto(new Uint8Array(await archivo.arrayBuffer()))
 }
 
 /** (V5) `libre`: foto SIN parada (Reclamar con tus fotos): el servidor mira la ubicación de la foto y la cuenta para cada sitio con logro donde cae; `sitio`: el sitio que ha elegido la persona (foto sin ubicación). */
-export async function enviarFotoDeGaleria(p: { tripId: string; stopId?: string | null; nombre: string; archivo: Blob; fotoId?: string | null; libre?: boolean; sitio?: string | null }): Promise<RespuestaDeHecho | null> {
+export async function enviarFotoDeGaleria(p: { tripId: string; stopId?: string | null; nombre: string; archivo: Blob; fotoId?: string | null; libre?: boolean; sitio?: string | null; paradaHoy?: ParadaDeAhora | null }): Promise<RespuestaDeHecho | null> {
   const datos = await datosDeFotoDeLaGaleria(p.archivo)
   return mandarHecho({
     tipo: 'foto',
-    cuerpo: { trip_id: p.tripId, stop_id: p.stopId ?? null, nombre: p.nombre || null, sitio: p.sitio ?? null, libre: p.libre ?? false, origen: 'galeria', tomada_en: datos.tomadaEn, con_camara: datos.conCamara, ubicacion: datos.lat != null && datos.lng != null ? { lat: datos.lat, lng: datos.lng } : null, foto_id: p.fotoId ?? null },
+    cuerpo: { trip_id: p.tripId, stop_id: p.stopId ?? null, nombre: p.nombre || null, sitio: p.sitio ?? null, libre: p.libre ?? false, origen: 'galeria', tomada_en: datos.tomadaEn, con_camara: datos.conCamara, ubicacion: datos.lat != null && datos.lng != null ? { lat: datos.lat, lng: datos.lng } : null, foto_id: p.fotoId ?? null, parada_hoy: p.libre ? (p.paradaHoy ?? null) : null },
   })
 }
 
 /** (HOY1) `sitio`: el id del sitio del catálogo cuando se sabe (la tarjeta «Estás en…» y el juego); `libre`: foto SIN parada (la cámara de viaje): el servidor mira la ubicación y busca el sitio con logro donde estás. */
-export async function enviarFotoDeLaCamara(p: { tripId: string; stopId?: string | null; nombre?: string | null; fotoId?: string | null; sitio?: string | null; libre?: boolean; ubicacion?: Ubicacion | null }): Promise<RespuestaDeHecho | null> {
+export async function enviarFotoDeLaCamara(p: { tripId: string; stopId?: string | null; nombre?: string | null; fotoId?: string | null; sitio?: string | null; libre?: boolean; ubicacion?: Ubicacion | null; paradaHoy?: ParadaDeAhora | null }): Promise<RespuestaDeHecho | null> {
   const ubicacion = p.ubicacion !== undefined ? p.ubicacion : await ubicacionDeAhora()
-  return mandarHecho({ tipo: 'foto', cuerpo: { trip_id: p.tripId, stop_id: p.stopId ?? null, nombre: p.nombre ?? null, sitio: p.sitio ?? null, libre: p.libre ?? false, origen: 'app', tomada_en: new Date().toISOString(), con_camara: true, ubicacion, foto_id: p.fotoId ?? null } })
+  return mandarHecho({ tipo: 'foto', cuerpo: { trip_id: p.tripId, stop_id: p.stopId ?? null, nombre: p.nombre ?? null, sitio: p.sitio ?? null, libre: p.libre ?? false, origen: 'app', tomada_en: new Date().toISOString(), con_camara: true, ubicacion, foto_id: p.fotoId ?? null, parada_hoy: p.libre ? (p.paradaHoy ?? null) : null } })
 }

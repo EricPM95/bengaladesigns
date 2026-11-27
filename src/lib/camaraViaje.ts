@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 import { subirFoto } from './fotosViaje'
 import { pedirUnirFotos } from './logros'
+import { getTodayTripStatus } from './todayMode'
+import type { DayPlan, Route } from './types'
 
 /**
  * LA CÁMARA DE VIAJE DE HOY (Tanda HOY1, K1 a K4). Piezas sin pantalla: qué enseña el botón según el momento, el almacén del «pedido de foto» (para que el botón de la cabecera, la tarjeta
@@ -237,4 +239,23 @@ export function paradaDeLaFoto(dia: { stops: { id: string; name: string; coordin
   }
   const siguiente = reales.find((s) => !s.checkedInAt && !s.saltada) ?? null
   return siguiente ? { stopId: siguiente.id, nombre: siguiente.name } : null
+}
+
+/**
+ * (V78) LA PARADA QUE LE TOCA AHORA al viajero en HOY: la primera del día de hoy que aún no está hecha ni saltada (sin pausas, ratos libres, paseos ni «de camino»). La app la manda al servidor con la foto
+ * (`parada_hoy`) y el servidor decide, con el sitio donde se hizo la foto, qué sitios cuenta (server/logros/cerca.js › sitiosQueCuentaUnaFoto: si entre los sitios posibles está esa parada, cuenta solo ella).
+ * Sin día de hoy (antes o después del viaje, o sin ruta): null.
+ */
+export function paradaDeAhora(dia: Pick<DayPlan, 'stops'> | null): { stop_id: string; nombre: string } | null {
+  if (!dia) return null
+  const reales = dia.stops.filter((s) => !s.isBreak && !s.isFreeTime && !s.isFreeWalk && !s.isZoneWalk && !s.passThrough)
+  const siguiente = reales.find((s) => !s.checkedInAt && !s.saltada) ?? null
+  return siguiente ? { stop_id: siguiente.id, nombre: siguiente.name } : null
+}
+
+/** (V78) Lo mismo desde la ruta entera (para quien no tiene el día a mano, como «Reclamar con tus fotos»): la parada de ahora del día de hoy del viaje, o null si hoy no es un día del viaje. */
+export function paradaDeAhoraDeLaRuta(route: Route | null, hoyIsoSimulado?: string | null): { stop_id: string; nombre: string } | null {
+  if (!route) return null
+  const estado = getTodayTripStatus(route, hoyIsoSimulado ?? undefined)
+  return estado?.phase === 'during' ? paradaDeAhora(estado.context.day) : null
 }

@@ -7,7 +7,7 @@ import { fotosDelSitio, listarFotos, modoDeFoto } from '../../../lib/fotosViaje'
 import { haversineMeters } from '../../../lib/distanceMock'
 import { abrirPase } from '../../../lib/pago'
 import { nombreDelPase } from '../../../lib/nombrePase'
-import { METROS_EN_LA_PARADA, camaraExplicada, guardarFotoSinSubir, marcarCamaraExplicada, modoDeCamara, paradaDeLaFoto, rangoDelViaje, subirFotosPendientes, useCamaraViajeStore, type FaseDelViaje, type ModoDeCamara, type PedidoDeFoto } from '../../../lib/camaraViaje'
+import { METROS_EN_LA_PARADA, camaraExplicada, paradaDeAhora, guardarFotoSinSubir, marcarCamaraExplicada, modoDeCamara, paradaDeLaFoto, rangoDelViaje, subirFotosPendientes, useCamaraViajeStore, type FaseDelViaje, type ModoDeCamara, type PedidoDeFoto } from '../../../lib/camaraViaje'
 import { useLogrosStore } from '../../../store/useLogrosStore'
 import { useMomentosUI } from '../../logros/momentos/useMomentosUI'
 import { useSyncStore } from '../../../store/useSyncStore'
@@ -322,7 +322,8 @@ export function BotonCamaraViaje({ route, fase, conAcceso, day }: PropsBotonCama
       setResultado({ tipo: 'recuerdo', url, sub: nombreParada ? `Guardada en ${nombreParada}` : null })
       return
     }
-    const r = await enviarFotoDeLaCamara({ tripId, stopId: null, nombre: ped.nombre, sitio: ped.sitio, libre: !ped.sitio })
+    // (V78) La ubicación se mira AHORA, al hacer la foto (al mandar la foto), no al abrir la cámara; con ella va la parada que le toca ahora en HOY (la de hoy: `day` es null fuera del viaje).
+    const r = await enviarFotoDeLaCamara({ tripId, stopId: null, nombre: ped.nombre, sitio: ped.sitio, libre: !ped.sitio, paradaHoy: paradaDeAhora(day) })
     setPensando(false)
     // El álbum: la foto va a «los recuerdos de hoy». Se guarda PRIMERO en el móvil (así sin conexión no se pierde) y de ahí se sube al álbum; se quita del móvil cuando ya está arriba.
     const datosAlbum = { tripId, dayId: day?.id ?? '', dayNumber: day?.dayNumber ?? 1, stopName: ped.nombre ?? null }

@@ -126,6 +126,62 @@ export function sitioDeFotoLibre({ datos, catalogos, destino, ubicacion, items }
   return dentro[0].sitio
 }
 
+/** (V78) Radio de un punto de foto que no dice el suyo (los datos piden entre 50 y 150 m). */
+export const RADIO_PUNTO_DE_FOTO_M = 100
+
+/** (V78) Los puntos de foto válidos de un sitio (`puntos_de_foto` de data/logros/<destino>.json): con lat/lng numéricos; el radio por defecto es de 100 m. */
+export function puntosDeFotoDe(d, id) {
+  const lista = d?.sitios?.[id]?.puntos_de_foto
+  if (!Array.isArray(lista)) return []
+  return lista
+    .filter((p) => p && Number.isFinite(p.lat) && Number.isFinite(p.lng))
+    .map((p) => ({ nombre: p.nombre ?? '', lat: p.lat, lng: p.lng, radio_m: Number.isFinite(p.radio_m) && p.radio_m > 0 ? p.radio_m : RADIO_PUNTO_DE_FOTO_M, fuente: p.fuente ?? '' }))
+}
+
+/**
+ * (V78, Eric 27-nov) UNA SOLA REGLA PARA LA CÁMARA Y LA GALERÍA: qué sitios cuenta una foto, mirando dónde se hizo (la ubicación del momento de la foto) y la parada que le toca ahora al viajero en HOY.
+ *   1. Si entre los sitios posibles está la parada de ahora (y tiene algo por ganar), cuenta SOLO esa (al final de Via dei Fori, con el Coliseo de parada: solo el Coliseo, ni el Foro ni el Vittoriano).
+ *      «Posibles» = los que tienen el punto dentro de su radio normal + los que tienen un punto de foto (`puntos_de_foto`) donde estás.
+ *   2. Si no está su parada (va por libre, o su parada ya está ganada): en un punto de foto, solo el sitio (o sitios) de ESE punto; dentro del radio normal, TODOS los que tengan algo por ganar.
+ *   3. Lo ya ganado nunca cuenta (un sitio sin emblema ni pedazo por ganar no cuenta). Sin nada por ganar, la foto solo va al álbum.
+ * Los puntos de foto NO dicen «has llegado»: `sitiosCerca` / `queEnsenar` (la hoja del emblema, el Visto, «Algo brilla») solo miran el radio del sitio y no cambian.
+ * @param {string[]} [p.paradaHoy] los sitios de logro de la parada de ahora (`sitiosDeLaParada`), ya resueltos por el servidor; vacío si no hay parada (otro día, sin ruta…)
+ * @returns {{ sitios: string[], por: 'parada'|'punto'|'radio'|null, posibles: string[] }} `posibles`: lo que había a la vista antes de quitar lo ya ganado (para saber si «ya lo tenías»)
+ */
+export function sitiosQueCuentaUnaFoto({ datos, catalogos, destino, ubicacion, items = new Map(), paradaHoy = [] }) {
+  const vacio = { sitios: [], por: null, posibles: [] }
+  if (!ubicacion || !Number.isFinite(ubicacion.lat) || !Number.isFinite(ubicacion.lng)) return vacio
+  const d = datos.destinos[destino]
+  if (!d) return vacio
+  const dentro = sitiosCerca({ datos, catalogos, destino, ubicacion, items, margenM: 0, sinTope: true, radioSinDatos: RADIO_SIN_DATOS_FOTO_M }).filter((s) => s.dentro)
+  // (V4) `aparta_de`: dentro de una bodega, La Geria (3.000 m) no cuenta para una foto sin parada.
+  const apartados = new Set(dentro.flatMap((s) => d.sitios?.[s.sitio]?.aparta_de ?? []))
+  const porRadio = dentro.filter((s) => !apartados.has(s.sitio))
+  const porPunto = []
+  for (const id of sitiosConLogro(d)) {
+    for (const p of puntosDeFotoDe(d, id)) {
+      const m = metros(ubicacion, { lat: p.lat, lng: p.lng })
+      if (m <= p.radio_m) {
+        porPunto.push({ sitio: id, metros: Math.round(m) })
+        break
+      }
+    }
+  }
+  porPunto.sort((a, b) => a.metros - b.metros)
+  const tiene = (id) => {
+    const g = porGanarEn(d, destino, items, id)
+    return g.emblemas.length > 0 || g.pedazos.length > 0
+  }
+  const posibles = [...new Set([...porPunto.map((s) => s.sitio), ...porRadio.map((s) => s.sitio)])]
+  // 1. La parada de ahora, si está entre los posibles y tiene algo por ganar.
+  const deLaParada = (paradaHoy ?? []).filter((s) => posibles.includes(s) && tiene(s))
+  if (deLaParada.length > 0) return { sitios: deLaParada, por: 'parada', posibles }
+  // 2. Un punto de foto: solo el sitio de ese punto.
+  if (porPunto.length > 0) return { sitios: porPunto.map((s) => s.sitio).filter(tiene), por: 'punto', posibles }
+  // 2. Dentro del radio normal: todos los que tengan algo por ganar, el más cercano primero.
+  return { sitios: [...porRadio].sort((a, b) => a.metros - b.metros).map((s) => s.sitio).filter(tiene), por: 'radio', posibles }
+}
+
 /**
  * Qué enseñar a partir de lo que hay cerca (lo decide el servidor para que móvil y prueba digan lo mismo):
  *   - `juego`: 'llegada' (dentro del radio de un sitio con emblema por ganar), 'mas_cerca' (a ≤150 m del borde), 'brilla' (a ≤500 m) o null.

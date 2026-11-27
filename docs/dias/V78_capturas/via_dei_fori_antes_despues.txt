@@ -1,0 +1,6 @@
+CASO: foto al final de Via dei Fori Imperiali, mirando al Coliseo (punto a mitad de camino entre el centro del Coliseo y el del Foro: 313 m del Coliseo [radio 250 m] y 313 m del Foro [radio 350 m]). El Coliseo es la parada de HOY.
+
+ANTES (V77): cámara -> foro_romano_y_palatino | galería -> ["foro_romano_y_palatino"]   (la foto iba al Foro; cámara y galería podían dar cosas distintas cuando hay varios sitios)
+DESPUÉS con los datos reales de hoy (aún sin puntos de foto aprobados): ["foro_romano_y_palatino"] por=radio   (el Coliseo no está "a la vista" desde allí: sigue yendo al Foro hasta que Eric apruebe el punto «Via dei Fori Imperiali»)
+DESPUÉS con el punto de foto de ejemplo + Coliseo de parada: ["coliseo"] por=parada   (SOLO el Coliseo: ni el Foro ni el Vittoriano)
+DESPUÉS con el punto de foto de ejemplo, sin parada (por libre): ["coliseo"] por=punto   (solo el sitio del punto)

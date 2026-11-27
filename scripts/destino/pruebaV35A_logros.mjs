@@ -34,7 +34,7 @@ const esperar = async (a, js, n = 80) => {
 const CARPETA = 'docs/dias/V35A_capturas'
 const RUTA = '/admin/logros?cuentas=off&logros=on&logrosDemo=1&apertura=0'
 const TABLA = ['Roma', 'París', 'Londres', 'Madrid', 'Barcelona', 'Lisboa', 'Ámsterdam', 'Praga', 'Lanzarote', 'Nueva York', 'Cancún', 'Florencia', 'Berlín', 'Cartagena de Indias']
-const ESTADO_ESPERADO = { Roma: 'publicado', Lanzarote: 'oculto', Florencia: 'proximamente', Berlín: 'proximamente', 'Cartagena de Indias': 'proximamente' }
+const ESTADO_ESPERADO = { Roma: 'publicado', Lanzarote: 'publicado' /* V77: Lanzarote visible para todos */, Florencia: 'proximamente', Berlín: 'proximamente', 'Cartagena de Indias': 'proximamente' }
 
 /** Una captura de TODA la página (se estira la ventana al alto del contenido, como las de Design). */
 const capturaEntera = async (a, id, ancho) => {
@@ -62,7 +62,7 @@ for (const f of filas) {
   debe(f.estado === esperado, 'estado', `${f.nombre}: estado «${f.estado}» (debe ser «${esperado}»)`)
 }
 const curados = fs.readdirSync('data/dias').filter((k) => fs.existsSync(`data/dias/${k}/listas.json`) && fs.existsSync(`data/dias/${k}/_mapa.json`))
-debe(curados.join(',') === 'lanzarote,roma' && /lanzarote/.test(leer('server/destinosCurados.js').match(/\['lanzarote'\]/)?.[0] ?? ''), 'estado', 'los destinos con datos son solo Roma y Lanzarote, y Lanzarote está en la lista de ocultos de la app (server/destinosCurados.js)')
+debe(curados.join(',') === 'lanzarote,roma' && !/\['lanzarote'\]/.test(leer('server/destinosCurados.js')), 'estado', 'los destinos con datos son solo Roma y Lanzarote, y (V77) Lanzarote ya no está en la lista de ocultos de la app (server/destinosCurados.js: por defecto ninguno oculto)')
 for (const clave of ['roma', 'lanzarote']) {
   const d = leerJson(`data/logros/${clave}.json`)
   const dias = Object.keys(leerJson(`data/dias/${clave}/listas.json`).dias).filter((k) => /^D\d+$/.test(k) && k !== 'D0')
@@ -219,7 +219,7 @@ const reglaTexto = (txt, donde) => {
       debe(tb[i].n.join(',') === esperado.join(','), 'tabla', `${f.nombre}: sitios · medallas · colecc. · emblemas · maravillas · días ruta = ${esperado.join(' · ')} (${tb[i].n.join(' · ')})`)
     }
     const textos = { publicado: 'Publicado', oculto: 'Solo administradores', preparacion: 'En preparación', proximamente: 'Próximamente' }
-    debe(tb.every((x) => x.texto === textos[x.estado]) && tb.filter((x) => x.estado === 'publicado').length === 1 && tb.filter((x) => x.estado === 'proximamente').length === 3 && tb.filter((x) => x.estado === 'preparacion').length === 9, 'estado', 'estados en pantalla: 1 Publicado (Roma), 1 oculto (Lanzarote), 9 En preparación y 3 Próximamente')
+    debe(tb.every((x) => x.texto === textos[x.estado]) && tb.filter((x) => x.estado === 'publicado').length === 2 && tb.filter((x) => x.estado === 'oculto').length === 0 && tb.filter((x) => x.estado === 'proximamente').length === 3 && tb.filter((x) => x.estado === 'preparacion').length === 9, 'estado', 'estados en pantalla (V77, Lanzarote visible para todos): 2 Publicado (Roma y Lanzarote), 0 ocultos, 9 En preparación y 3 Próximamente')
     const iso = ['it', 'fr', 'gb', 'es', 'es', 'pt', 'nl', 'cz', 'es', 'us', 'mx', 'it', 'de', 'co']
     debe(tb.every((x, i) => x.bandera === iso[i]), 'banderas', `cada fila con su bandera de verdad (${tb.map((x) => x.bandera).join(',')})`)
     debe((await a.evaluar('document.querySelectorAll("[data-bandera=sin]").length')) === 0, 'banderas', 'ninguna bandera en blanco (data-bandera="sin") en las 14 filas')
@@ -264,7 +264,7 @@ const reglaTexto = (txt, donde) => {
     await clic(a, '[data-destino-fila="lanzarote"]')
     debe(await esperar(a, "Boolean(document.querySelector('[data-destino-pagina=\"lanzarote\"]'))", 60), 'pagina', 'también se abre Lanzarote')
     await a.esp(600)
-    debe(/solo lo ven los administradores/.test(await textoSeccion()), 'estado', 'la página de Lanzarote dice que está oculto y solo lo ven los administradores')
+    debe(!/solo lo ven los administradores/.test(await textoSeccion()), 'estado', '(V77) la página de Lanzarote ya no dice que está oculto: es visible para todos')
 
     // — Sonidos
     await pestana(a, 'sonidos')

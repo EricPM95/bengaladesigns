@@ -71,6 +71,9 @@ export function claveDeDestino(datos, nombre) {
  * Comprueba los datos contra el catálogo. Devuelve una lista de avisos `{ nivel: 'error'|'aviso', donde, texto }`. Sin avisos, está todo bien.
  * `catalogos`: { roma: <contenido de data/pipeline_v2/roma.json> }.
  */
+/** (V78) Paradas que ya no están en el catálogo pero se conservan a propósito en `sitios_de_parada` (clave `destino/id`). */
+const PARADAS_ANTIGUAS_CONSERVADAS = new Set(['lanzarote/haria_y_la_casa_museo_cesar_manrique'])
+
 export function validarDatos(datos, catalogos) {
   const avisos = []
   const error = (donde, texto) => avisos.push({ nivel: 'error', donde, texto })
@@ -96,11 +99,31 @@ export function validarDatos(datos, catalogos) {
       }
     }
     for (const [id, s] of Object.entries(d.sitios)) for (const otro of s.aparta_de ?? []) if (!d.sitios[otro]) error(`${clave}/${id}`, `Aparta de ${otro}, que no es un sitio con datos.`)
+    // (V78) `puntos_de_foto` de cada sitio: desde dónde se ve de lejos (lat/lng, radio de 50 a 150 m, nombre y fuente). Solo cuentan para decidir qué sitio gana una foto (cerca.js › sitiosQueCuentaUnaFoto).
+    for (const [id, s] of Object.entries(d.sitios)) {
+      if (s.puntos_de_foto === undefined) continue
+      if (!Array.isArray(s.puntos_de_foto)) {
+        error(`${clave}/${id}`, '`puntos_de_foto` tiene que ser una lista.')
+        continue
+      }
+      for (const [i, p] of s.puntos_de_foto.entries()) {
+        const donde = `${clave}/${id}/puntos_de_foto/${i}`
+        if (!Number.isFinite(p?.lat) || !Number.isFinite(p?.lng)) error(donde, 'Un punto de foto sin lat/lng.')
+        if (!p?.nombre) aviso(donde, 'Un punto de foto sin nombre.')
+        if (!p?.fuente) aviso(donde, 'Un punto de foto sin fuente.')
+        if (!Number.isFinite(p?.radio_m) || p.radio_m < 50 || p.radio_m > 150) aviso(donde, 'El radio de un punto de foto va de 50 a 150 m.')
+      }
+    }
     for (const m of Object.values(d.momentos ?? {})) for (const id of Array.isArray(m.sitios) ? m.sitios : []) usados.add(id)
     for (const p of Object.values(d.patrimonios ?? {})) for (const id of [...(p.sitios ?? []), ...(p.por_comprobar ?? [])]) usados.add(id)
     for (const v of Object.values(d.excepciones_pais ?? {})) for (const id of v.sitios ?? []) usados.add(id)
     for (const id of usados) {
-      if (!ids.has(id)) error(`${clave}/${id}`, 'Este sitio no existe en los datos del destino (no lo añado yo: hay que decidir qué hacer).')
+      // (V78) EXCEPCIÓN EXPLÍCITA: la parada vieja «haria_y_la_casa_museo_cesar_manrique» (la V67 la separó en «haria_pueblo» y «casa_museo_cesar_manrique») se conserva a propósito en `sitios_de_parada`: los viajes ya creados
+      // y los hechos con ese id se corrigen con `migrarHariaPartida` y siguen valiendo para los dos sitios. Es un aviso, no un error. Cualquier otro id que falte sigue siendo error.
+      if (!ids.has(id)) {
+        if (PARADAS_ANTIGUAS_CONSERVADAS.has(`${clave}/${id}`) && d.sitios_de_parada?.[id]) aviso(`${clave}/${id}`, 'Parada antigua conservada a propósito en `sitios_de_parada` (ya no está en el catálogo; la cubre `migrarHariaPartida`).')
+        else error(`${clave}/${id}`, 'Este sitio no existe en los datos del destino (no lo añado yo: hay que decidir qué hacer).')
+      }
     }
     for (const c of d.colecciones) {
       for (const s of c.sitios) if (!d.sitios[s]) aviso(`${clave}/${c.id}`, `El sitio ${s} está en la colección pero no tiene sus datos (radio, país…).`)

@@ -4,6 +4,7 @@ import { subirFoto } from './fotosViaje'
 import { useLogrosStore } from '../store/useLogrosStore'
 import { useRouteStore } from '../store/useRouteStore'
 import { useMomentosUI } from '../components/logros/momentos/useMomentosUI'
+import { paradaDeAhoraDeLaRuta } from './camaraViaje'
 import type { Route } from './types'
 
 /**
@@ -192,7 +193,8 @@ export async function reclamarConFotos(tripId: string, archivos: File[]): Promis
     const datos = await datosDeFotoDeLaGaleria(archivo)
     const url = URL.createObjectURL(archivo)
     const foto: FotoDelReclamo = { id: siguienteId++, nombre: archivo.name, url, archivo, fecha: datos.tomadaEn ? datos.tomadaEn.slice(0, 10) : null }
-    const r = await enviarFotoDeGaleria({ tripId, nombre: '', archivo, libre: true })
+    // (V78) La misma regla que la cámara: con la parada que le toca ahora en HOY (solo vale si la foto es de hoy: el servidor lo comprueba con la fecha de la foto).
+    const r = await enviarFotoDeGaleria({ tripId, nombre: '', archivo, libre: true, paradaHoy: paradaDeAhoraDeLaRuta(useRouteStore.getState().route, import.meta.env.DEV ? useRouteStore.getState().dev_simulated_today_iso : null) })
     poner({ hechas: i + 1 })
     if (!r) {
       // Sin red: el servidor no la ha visto; queda en la cola del móvil y se comprueba sola al volver la señal.
@@ -216,7 +218,7 @@ function recibirRespuesta(foto: FotoDelReclamo, r: RespuestaDeHecho & { sitios?:
     return
   }
   if (r.motivo === 'sin_logro_aqui') {
-    useReclamarStore.setState((s) => ({ noValen: [...s.noValen, { id: foto.id, nombre: foto.nombre, url: foto.url, motivo: 'sin_logro_aqui', mensaje: 'La foto es válida y va a tus recuerdos, pero no está en ningún sitio con logro.' }], recuerdos: s.recuerdos + 1 }))
+    useReclamarStore.setState((s) => ({ noValen: [...s.noValen, { id: foto.id, nombre: foto.nombre, url: foto.url, motivo: 'sin_logro_aqui', mensaje: r.ya_ganado ? 'La foto es válida y va a tus recuerdos: de este sitio ya tienes todo lo que se podía ganar.' : 'La foto es válida y va a tus recuerdos, pero no está en ningún sitio con logro.' }], recuerdos: s.recuerdos + 1 }))
     return
   }
   if (r.cuenta === false) {

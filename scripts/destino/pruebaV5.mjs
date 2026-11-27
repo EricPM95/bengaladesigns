@@ -106,7 +106,8 @@ function mundo(destino, opciones = {}) {
   debe(r7.valida && r7.cuenta === false && r7.motivo === 'sin_logro_aqui', '10fotos', '7. fuera del radio de todos los sitios: válida (recuerdo) pero no gana nada')
   const antes = m.pedazos(p).length
   const r8 = await m.foto(p, { tomada_en: '2026-11-11T11:00:00', ubicacion: alNorte('roma', 'coliseo', 30) })
-  debe(r8.valida && r8.cuenta && (r8.nuevos ?? []).length === 0 && m.pedazos(p).length === antes, '10fotos', '8. otra foto del mismo sitio: no vuelve a dar lo mismo (cuenta una vez)')
+  // (V78) Lo ya ganado nunca cuenta: la segunda foto del mismo sitio es válida (va a los recuerdos) pero no cuenta ni avisa de nada (antes devolvía cuenta:true con nuevos vacíos). Se sigue vigilando que no vuelva a dar lo mismo.
+  debe(r8.valida && r8.cuenta === false && r8.motivo === 'sin_logro_aqui' && (r8.nuevos ?? []).length === 0 && m.pedazos(p).length === antes, '10fotos', '8. otra foto del mismo sitio: no vuelve a dar lo mismo (cuenta una vez; V78: ya ganado, sin aviso)')
   // La lista: el servidor dice cuántos pedazos hay y de qué sitios.
   debe(m.pedazos(p).some((x) => x.endsWith(':coliseo')) && m.pedazos(p).some((x) => x.endsWith(':fontana_de_trevi')) && m.pedazos(p).some((x) => x.endsWith(':panteon')), '10fotos', 'lo ganado de las 10: Coliseo, Fontana de Trevi y Panteón')
   // Los sitios del viaje para «¿De qué sitio es esta foto?».

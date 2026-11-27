@@ -171,7 +171,7 @@ if (PARTE === 'todas' || PARTE === '1') {
   debe(durante.includes('<AvisosDeCerca ') && durante.includes('<CercaDeTiFila '), 'HoyDuranteV2.tsx: enganchados AvisosDeCerca y CercaDeTiFila (una línea cada uno)')
   debe((durante.match(/<AvisosDeCerca /g) ?? []).length === 1 && (durante.match(/<CercaDeTiFila /g) ?? []).length === 1 && (durante.match(/^import .*(AvisosDeCerca|CercaDeTiFila)/gm) ?? []).length === 2, 'HoyDuranteV2.tsx: solo la importación y UNA línea de enganche por cada uno')
   // El servidor.
-  debe(servicio.includes('sitioDeFotoLibre') && servicio.includes('sin_logro_aqui') && /libre = false/.test(servicio), 'servicio.js: la foto «libre» (sin parada) busca el sitio por la ubicación y, si no hay, es solo un recuerdo')
+  debe(servicio.includes('sitiosQueCuentaUnaFoto') /* (V78: una sola regla para cámara y galería) */ && servicio.includes('sin_logro_aqui') && /libre = false/.test(servicio), 'servicio.js: la foto «libre» (sin parada) busca el sitio por la ubicación y, si no hay, es solo un recuerdo')
   debe(rutas.includes("'/api/logros/cerca'"), 'rutas.js: existe POST /api/logros/cerca')
   debe(servicio.includes('async function cerca(') && /cerca, deshacer/.test(servicio), 'servicio.js: `cerca` está en lo que devuelve el servicio')
   debe(!/insertarHecho\([\s\S]{0,200}ubicacion\s*[,}]/.test(servicio.slice(servicio.indexOf('async function cerca('), servicio.indexOf('async function cerca(') + 1500)), 'servicio.js › cerca: la ubicación no se guarda en ningún hecho')

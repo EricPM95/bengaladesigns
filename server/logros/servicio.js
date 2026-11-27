@@ -18,7 +18,7 @@ import { dondeEstoy, evaluarFoto, evaluarVisto, metros } from './fotos.js'
 import { sitiosDeId, sitiosDeLaParada } from './sitios.js'
 import { sorteoVisible } from './sorteoVisible.js'
 import { armarMomentos } from './momentos.js'
-import { elegirRetos, queEnsenar, retoDelDia, retosDelDia, sitioDeFotoLibre, sitiosCerca, sitiosConLogro, sitiosDeFotoLibre } from './cerca.js'
+import { elegirRetos, queEnsenar, retoDelDia, retosDelDia, sitiosCerca, sitiosConLogro, sitiosQueCuentaUnaFoto } from './cerca.js'
 import { diaSiguienteDePrueba, estadoDePrueba, puedeGanarLogros, precioDelPase, tocaPreguntar } from './pase.js'
 import { clavesSuperadas, vitrinaDeGanados } from './pantallas/ganados.js'
 import { coleccionesDeSitio, estadoDestino, logrosVisibles, pasaporte, pendientes, resumen, sitiosDeLaRuta } from './vistas.js'
@@ -465,20 +465,15 @@ export function crearServicioLogros({ repo: repoBruto, datos, catalogos, ahora =
   }
 
   /* ── Una foto ── */
-  async function foto(userId, { trip_id, sitio = null, nombre = null, stop_id = null, libre = false, origen, tomada_en = null, con_camara = false, ubicacion = null, de_amigo = false, foto_id = null, recibido_en = null }) {
+  async function foto(userId, { trip_id, sitio = null, nombre = null, stop_id = null, libre = false, origen, tomada_en = null, con_camara = false, ubicacion = null, de_amigo = false, foto_id = null, recibido_en = null, parada_hoy = null }) {
     const c = await cargar(userId)
     const viaje = c.viajes[trip_id]
     if (!viaje) return { ok: false, motivo: 'viaje_sin_fechas', mensaje: 'Este viaje no tiene fechas: los logros se ganan en las fechas del viaje.', nuevos: [] }
     if (!sitio && nombre) sitio = sitioDeParada({ name: nombre }, catalogos[viaje.destino])
-    // (HOY1) La cámara de viaje: una foto SIN parada. Cuenta para el sitio con logro en cuyo radio está el viajero (esté o no en su ruta; también La Graciosa);
-    // si no está en ninguno, o no hay ubicación, es solo un recuerdo de hoy: la foto es válida, no gana nada y no se guarda ningún hecho.
-    // (V5) «Reclamar con tus fotos»: una foto de la GALERÍA sin parada ni sitio (`libre`). Pasa por `evaluarFoto` (cámara del móvil, fecha del viaje, plazo) y, con ubicación, cuenta para CADA sitio con logro
-    // en cuyo radio cae (esté o no en la ruta; si cae en dos, para los dos). Sin ubicación devuelve `sin_ubicacion`: la app pregunta de qué sitio es. Varias fotos de un sitio cuentan una vez (lo decide el motor).
-    if (!sitio && !stop_id && libre && origen === 'galeria') return fotoLibreDeGaleria(userId, c, viaje, { tomada_en, con_camara, ubicacion, foto_id, recibido_en })
-    if (!sitio && !stop_id && libre) {
-      sitio = sitioDeFotoLibre({ datos, catalogos, destino: viaje.destino, ubicacion, items: aItems(c.logros) })
-      if (!sitio) return { ok: true, valida: true, cuenta: false, motivo: ubicacion ? 'sin_logro_aqui' : 'sin_ubicacion', nuevos: [] }
-    }
+    // (V78) UNA SOLA REGLA para la foto SIN parada, la de la cámara de la app y la de la galería (`fotoLibre`): el servidor mira dónde se hizo la foto y qué parada le toca ahora al viajero en HOY
+    // (`parada_hoy`, que manda la app) y decide qué sitios cuenta (ver `sitiosQueCuentaUnaFoto` en cerca.js). Sin ubicación devuelve `sin_ubicacion`; sin nada que ganar, `sin_logro_aqui`: la foto es válida,
+    // va al álbum y no se guarda ningún hecho ni sale ningún aviso. Varias fotos de un sitio cuentan una vez (lo decide el motor).
+    if (!sitio && !stop_id && libre) return fotoLibre(userId, c, viaje, { origen, tomada_en, con_camara, ubicacion, foto_id, recibido_en, parada_hoy })
     if (!sitio) return { ok: false, motivo: 'faltan_datos', nuevos: [] }
     const recibido = recibido_en ?? ahora().toISOString()
     // (LG1) La foto usa el radio de cada sitio; sin radio en los datos, 800 m (el Visto y «Ya estás aquí» siguen en 150).
@@ -499,23 +494,42 @@ export function crearServicioLogros({ repo: repoBruto, datos, catalogos, ahora =
     return { ok: true, valida: true, cuenta: true, nuevos, exp, id: fila.id }
   }
 
-  /** (V5) Ver el comentario de `foto`. `sitios`: los sitios con logro donde cayó la foto, con su nombre; `sin_ubicacion` si no trae ubicación (la app pregunta). */
-  async function fotoLibreDeGaleria(userId, c, viaje, { tomada_en, con_camara, ubicacion, foto_id, recibido_en }) {
+  /**
+   * (V78) Los sitios de logro de la parada que le toca AHORA al viajero en HOY, para una foto hecha ese día. `parada` = { stop_id, nombre } que manda la app; se busca en los días del viaje (con su fecha):
+   * solo vale si la foto es de ESE día (una foto de la galería de otro día no tiene parada). Si el servidor no encuentra la parada por su id, se busca por su nombre y solo vale si la foto es de hoy.
+   */
+  function sitiosDeLaParadaDeAhora(viaje, parada, fechaDeLaFoto) {
+    if (!parada || (!parada.stop_id && !parada.nombre)) return []
+    const paradas = (viaje.dias ?? []).flatMap((dia) => (dia.paradas ?? []).map((p) => ({ ...p, fecha: dia.fecha })))
+    const porId = parada.stop_id ? paradas.find((p) => p.stop_id === parada.stop_id) : null
+    if (porId) return porId.fecha === fechaDeLaFoto ? sitiosDeLaParada(porId) : []
+    if (!parada.nombre || fechaDeLaFoto !== hoyEn(viaje.destino)) return []
+    const id = sitioDeParada({ name: parada.nombre }, catalogos[viaje.destino])
+    return id ? sitiosDeId(datos.destinos[viaje.destino], id) : []
+  }
+
+  /**
+   * (V78) Una foto SIN parada (cámara de la app o galería, `libre`): cuenta para los sitios que decide `sitiosQueCuentaUnaFoto`. Se guarda un hecho por sitio (ubic 'cerca'). Devuelve `sitios`: los sitios donde cuenta
+   * y, si no gana nada, `sin_logro_aqui` (con `ya_ganado: true` si estaba en un sitio con logro pero ya lo tenía todo).
+   */
+  async function fotoLibre(userId, c, viaje, { origen, tomada_en, con_camara, ubicacion, foto_id, recibido_en, parada_hoy }) {
     const recibido = recibido_en ?? ahora().toISOString()
     const destinoDatos = datos.destinos[viaje.destino]
     const sinSitio = { coords: null, radio_m: 150 }
-    const e = evaluarFoto({ origen: 'galeria', tomadaEn: tomada_en, conCamara: Boolean(con_camara), ubicacion, sitio: sinSitio, viaje, destino: destinoDatos, nombreSitio: '', recibidoEn: recibido, ajustes: datos.ajustes })
+    const e = evaluarFoto({ origen, tomadaEn: tomada_en, conCamara: origen === 'app' ? true : Boolean(con_camara), ubicacion, sitio: sinSitio, viaje, destino: destinoDatos, nombreSitio: '', recibidoEn: recibido, ajustes: datos.ajustes })
     if (!e.valida) return { ok: true, valida: false, motivo: e.motivo, mensaje: e.mensaje, nuevos: [] }
     const tiene = ubicacion && Number.isFinite(ubicacion.lat) && Number.isFinite(ubicacion.lng)
     if (!tiene) return { ok: true, valida: true, cuenta: false, motivo: 'sin_ubicacion', instante: e.instante, nuevos: [] }
-    const ids = sitiosDeFotoLibre({ datos, catalogos, destino: viaje.destino, ubicacion, items: aItems(c.logros) })
-    if (ids.length === 0) return { ok: true, valida: true, cuenta: false, motivo: 'sin_logro_aqui', instante: e.instante, nuevos: [] }
-    const fecha = horaLocalDe(viaje.destino, recibido).fecha
+    // La fecha de la foto: la de la cámara de la app es la de su hora; la de la galería, la del día en que se sube («Lo de ayer también cuenta»).
+    const fechaDeLaFoto = parteLocal(e.instante, destinoDatos.timezone).fecha
+    const fecha = origen === 'galeria' ? horaLocalDe(viaje.destino, recibido).fecha : fechaDeLaFoto
+    const { sitios: ids, posibles } = sitiosQueCuentaUnaFoto({ datos, catalogos, destino: viaje.destino, ubicacion, items: aItems(c.logros), paradaHoy: sitiosDeLaParadaDeAhora(viaje, parada_hoy, fechaDeLaFoto) })
+    if (ids.length === 0) return { ok: true, valida: true, cuenta: false, motivo: 'sin_logro_aqui', ...(posibles.length > 0 ? { ya_ganado: true } : {}), instante: e.instante, nuevos: [] }
     const pase = await puedeGanar(userId, c, viaje, fecha)
     if (!pase.puede) return { ok: true, valida: true, cuenta: false, motivo: pase.motivo, instante: e.instante, nuevos: [] }
     const antes = calcularCon(c)
     const filas = []
-    for (const s of ids) filas.push(await repo.insertarHecho({ user_id: userId, trip_id: viaje.id, destino: viaje.destino, tipo: 'foto', sitio: s, stop_id: null, instante: e.instante, recibido_en: recibido, ubic: 'cerca', valido: true, origen: 'galeria', foto_id: foto_id ?? null, inicio: viaje.inicio, fin: viaje.fin }))
+    for (const s of ids) filas.push(await repo.insertarHecho({ user_id: userId, trip_id: viaje.id, destino: viaje.destino, tipo: 'foto', sitio: s, stop_id: null, instante: e.instante, recibido_en: recibido, ubic: 'cerca', valido: true, origen, foto_id: foto_id ?? null, inicio: viaje.inicio, fin: viaje.fin }))
     const despues = calcularCon(c, [...c.hechos, ...filas], await repo.ordenPionero(userId))
     const { nuevos, exp } = await respuestaDeNuevos(userId, antes, despues, c, [...c.hechos, ...filas])
     return { ok: true, valida: true, cuenta: true, instante: e.instante, sitios: ids.map((s) => ({ sitio: s, nombre: nombreDeSitio(catalogos, viaje.destino, s) })), nuevos, exp, id: filas[0]?.id }
