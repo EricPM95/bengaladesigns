@@ -230,6 +230,13 @@ export default function HojaReservaExtra({ tipo, editar, onClose, onGuardada }: 
                   <CampoDeHora valor={b.llegada || null} onChange={(h) => set({ llegada: h ?? '' })} titulo="Hora de llegada" ejemplo={tipo === 'ferry' ? '10:45' : tipo === 'tren' ? '11:15' : '15:00'} quitable datos={`extra-${tipo}-llegada`} />
                 </div>
               )}
+              {/* (V81) «Otra»: «Hasta las…» (opcional), con la misma rueda de hora; alimenta la caja HASTA y el fin del rato en el choque con una parada. */}
+              {!esTransporte && (
+                <div className="flex min-w-0 flex-1 flex-col gap-1.5" data-extra-hasta>
+                  <Etiqueta opcional>Hasta las…</Etiqueta>
+                  <CampoDeHora valor={b.llegada || null} onChange={(h) => set({ llegada: h ?? '' })} titulo="Hasta las…" ejemplo="20:30" quitable datos="extra-otra-hasta" />
+                </div>
+              )}
             </div>
 
             {tipo === 'otra' && <CampoTexto etiqueta="Lugar" opcional valor={b.lugar} onChange={(v) => set({ lugar: v })} ejemplo="Playa de Famara" datos="lugar" />}

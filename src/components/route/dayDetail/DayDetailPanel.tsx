@@ -78,7 +78,7 @@ import { ExtraDaySheet } from '../freeDay/ExtraDaySheet'
 import { elegirExcursion, excursionReservationOf, viewedExcursion } from '../../../lib/dayInterruptor'
 import { useInterruptorUiStore } from '../../../store/useInterruptorUiStore'
 import { MealTimeAccordion } from './MealTimeAccordion'
-import { extrasSueltasDelDia, minutosDeLaHora as minutosDeLaReserva } from '../../../lib/reservasUnidas'
+import { extrasSueltasDelDia, lugarDeLaExtraEnElDia, minutosDeLaHora as minutosDeLaReserva } from '../../../lib/reservasUnidas'
 import { TarjetaDeReservaExtraHoy } from '../hoy/v2/TarjetaDeTransporteHoy'
 import { StopAccordion } from './StopAccordion'
 import { WantInsideDialog, useWantInside } from './WantInsideDialog'
@@ -1071,11 +1071,12 @@ export function DayDetailPanel({
   }
   // (V76, R10) Un ferry, tren, autobús u «otra» que no es de ninguna excursión sale en su día, en su sitio por la hora: arriba de la franja donde empieza la primera parada más tarde que él (o, si no hay, al final). Tarjeta con SALE / LLEGA y la fila con su QR.
   const extrasDelDia = route ? extrasSueltasDelDia(route, reservations, day) : []
-  const franjaDeLaExtra = (hora: string): number => {
-    const m = minutosDeLaReserva(hora) ?? 0
-    const i = periodGroups.findIndex((g) => g.items.some((entry) => entry.start > m))
-    return i === -1 ? periodGroups.length - 1 : i
-  }
+  // (V81, R13) En su sitio por la hora, DENTRO de la franja: delante del primer elemento (parada, comida o cena) que empieza a su hora o más tarde; una reserva a las 19:30 va antes de la cena y la cena pasa detrás. El día no se mueve.
+  const sitioDeLaExtra = (hora: string) =>
+    lugarDeLaExtraEnElDia(
+      periodGroups.map((g) => g.items.map((entry) => ({ start: entry.start, cuenta: entry.item.type === 'stop' || entry.item.type === 'lunch' || entry.item.type === 'dinner' }))),
+      minutosDeLaReserva(hora) ?? 0,
+    )
 
     /** Un elemento de la línea del día. `firstInPeriod`: abre franja (sin información de trayecto antes). */
   /** ¿La parada de este índice viene justo detrás de otra parada en la línea del día? */
@@ -1539,18 +1540,33 @@ export function DayDetailPanel({
                   }
                 />
               )}
-              {extrasDelDia
-                .filter((e) => franjaDeLaExtra(e.time) === groupIndex)
-                .map((e) => (
-                  <div key={e.id} className="mb-3 mt-3" data-extras-del-dia>
-                    <TarjetaDeReservaExtraHoy reserva={e} sinFoto />
+              {(() => {
+                // (V81, R13) La franja se corta donde entra una reserva suelta: lo de antes, la reserva (o las reservas) y lo de después.
+                const aqui = extrasDelDia.map((e) => ({ e, ...sitioDeLaExtra(e.time) })).filter((x) => x.g === groupIndex)
+                const cortes = [...new Set(aqui.map((x) => Math.min(x.k, group.items.length)))].sort((a, b) => a - b)
+                const trozos: ReactNode[] = []
+                // La línea punteada del día; todas las tarjetas cuelgan de ella, también la comida y la cena.
+                const linea = (desde: number, hasta: number) => (
+                  <div key={`linea-${desde}`} className="relative flex flex-col pl-[26px] max-[430px]:-ml-px max-[430px]:pl-0">
+                    <div className="absolute bottom-0 left-[11px] top-0 border-l-[1.5px] border-dashed border-text/[.18] max-[430px]:-left-[6px]" aria-hidden="true" />
+                    {renderGroupItems(group.items.slice(desde, hasta), desde === 0 && headerAddIndex !== null)}
                   </div>
-                ))}
-              {/* La línea punteada del día; todas las tarjetas cuelgan de ella, también la comida y la cena. */}
-              <div className="relative flex flex-col pl-[26px] max-[430px]:-ml-px max-[430px]:pl-0">
-                <div className="absolute bottom-0 left-[11px] top-0 border-l-[1.5px] border-dashed border-text/[.18] max-[430px]:-left-[6px]" aria-hidden="true" />
-                {renderGroupItems(group.items, headerAddIndex !== null)}
-              </div>
+                )
+                let desde = 0
+                for (const corte of cortes) {
+                  if (corte > desde) trozos.push(linea(desde, corte))
+                  for (const x of aqui.filter((y) => Math.min(y.k, group.items.length) === corte)) {
+                    trozos.push(
+                      <div key={x.e.id} className="mb-3 mt-3" data-extras-del-dia>
+                        <TarjetaDeReservaExtraHoy reserva={x.e} sinFoto />
+                      </div>,
+                    )
+                  }
+                  desde = corte
+                }
+                if (desde < group.items.length || trozos.length === 0) trozos.push(linea(desde, group.items.length))
+                return trozos
+              })()}
             </div>
             )
           })}

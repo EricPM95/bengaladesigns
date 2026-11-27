@@ -304,6 +304,8 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   // (V76, R10) Un ferry, tren, autobús u «otra» que no es de ninguna excursión sale hoy en su sitio por la hora; si choca con una parada, el aviso de arriba (la app NO mueve el día sola).
   const extrasDeHoy = extrasSueltasDelDia(route, reservations, day)
   const choquesDeHoy = choquesDelDia(route, reservations, day)
+  // (V81, R13) En su sitio por la hora: lo que sale a la hora de lo que viene (la próxima parada o, si toca comer o cenar, la comida) o antes va ANTES de su tarjeta; con la misma hora, la reserva va delante y la cena pasa detrás.
+  const horaDeLoQueViene = Math.min(minutosDe(siguiente?.time ?? null) ?? 24 * 60, comidaDeAhora && !day.isReturnLeg ? (minutosDe(comidaDeAhora.time) ?? 24 * 60) : 24 * 60)
   const reservaDe = (stop: Stop) => reservations.find((r) => r.id === stop.reservedId) ?? entradasDeHoy.find((r) => r.placeNames.includes(stop.name)) ?? null
   const esLlegada = esDiaDeLlegada(route, day)
   const esVuelta = Boolean(day.isReturnLeg)
@@ -700,7 +702,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
 
       {/* (V76, R10) Lo que sale ANTES de la próxima parada (o con el día ya acabado), en su sitio por la hora. */}
       {extrasDeHoy
-        .filter((e) => !siguiente || (minutosDe(e.time) ?? 0) <= (minutosDe(siguiente.time) ?? 24 * 60))
+        .filter((e) => !siguiente || (minutosDe(e.time) ?? 0) <= horaDeLoQueViene)
         .map((e) => (
           <TarjetaDeReservaExtraHoy key={e.id} reserva={e} />
         ))}
@@ -744,7 +746,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {/* (V76, R10) Lo que sale DESPUÉS de la próxima parada, debajo de su tarjeta. */}
       {siguiente &&
         extrasDeHoy
-          .filter((e) => (minutosDe(e.time) ?? 0) > (minutosDe(siguiente.time) ?? 24 * 60))
+          .filter((e) => (minutosDe(e.time) ?? 0) > horaDeLoQueViene)
           .map((e) => (
             <TarjetaDeReservaExtraHoy key={e.id} reserva={e} />
           ))}

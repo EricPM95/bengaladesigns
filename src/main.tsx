@@ -8,9 +8,12 @@ import { logrosActivos } from './lib/logros.ts'
 import { lazy, Suspense } from 'react'
 import { precargarBanderas } from './lib/banderas.ts'
 import { instalarFetchConCuenta } from './lib/fetchConCuenta.ts'
+import { instalarTecladoDeHojas } from './lib/tecladoDeHojas.ts'
 
 // (Arreglo, 5-nov) Toda llamada a /api lleva la sesión del viajero: sin ella, el administrador no podía crear un viaje a un destino oculto (Lanzarote).
 instalarFetchConCuenta()
+// (V81) Las hojas con un campo de texto se colocan encima del teclado del iPhone (una sola pieza para todas).
+instalarTecladoDeHojas()
 
 // (V25) Si una parte de la app ya no existe porque se publicó una versión nueva con la app abierta, Vite avisa con este evento: NO se recarga sola (se perdería lo que se estuviera haciendo); sale «Hay una versión nueva · [Actualizar]».
 window.addEventListener('vite:preloadError', (evento) => {

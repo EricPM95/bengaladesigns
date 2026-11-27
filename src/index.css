@@ -415,6 +415,21 @@ html[data-solo-ver] [data-hueco-solo-anadir], [data-dia-pasado] [data-hueco-solo
 html[data-aviso-abajo] [role='dialog'][aria-modal='true'] {
   bottom: var(--aviso-alto, 0px) !important;
 }
+/* (V81 §3) Con el teclado del iPhone abierto y un campo de texto con el foco, toda hoja ocupa justo la vista visible (encima del teclado, nunca detrás); `src/lib/tecladoDeHojas.ts` pone --vv-top y --vv-bottom y el alto estable del panel. El aviso de abajo queda detrás del teclado: manda el teclado. */
+html[data-teclado] [role='dialog'][aria-modal='true'] {
+  top: var(--vv-top, 0px) !important;
+  bottom: var(--vv-bottom, 0px) !important;
+  height: auto !important;
+}
+/* Con el teclado, el título y el buscador de la hoja de opciones se quedan arriba mientras la lista se desliza. */
+html[data-teclado] [data-hoja-cabecera] {
+  position: sticky;
+  top: -10px;
+  z-index: 3;
+  background: #FDFBF4;
+  padding-top: 10px;
+  margin-top: -10px;
+}
 @keyframes avisoLinea {
   from { transform: scaleX(1); }
   to { transform: scaleX(0); }

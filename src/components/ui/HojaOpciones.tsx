@@ -121,14 +121,17 @@ export function HojaOpciones({
         <span data-hoja-tirador="1" {...arrastre.props} style={{ alignSelf: 'stretch', height: 24, margin: '-8px 40px -8px', flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', touchAction: 'none', cursor: 'grab' }}>
           <TiradorDeHoja />
         </span>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10, paddingTop: 6 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
-            {etiqueta && <span data-hoja-opciones-etiqueta style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.18em', color: '#6F4E37', textTransform: 'uppercase' }}>{etiqueta}</span>}
-            <span data-hoja-opciones-titulo style={{ font: "400 32px/1.05 'Instrument Serif',serif", textWrap: 'pretty', overflowWrap: 'anywhere' }}>{titulo}</span>
+        {/* (V81) Título y cabecera juntos: con el teclado del iPhone abierto se quedan fijos arriba y la lista se desliza debajo (regla en index.css). */}
+        <div data-hoja-cabecera="1" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10, paddingTop: 6 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
+              {etiqueta && <span data-hoja-opciones-etiqueta style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.18em', color: '#6F4E37', textTransform: 'uppercase' }}>{etiqueta}</span>}
+              <span data-hoja-opciones-titulo style={{ font: "400 32px/1.05 'Instrument Serif',serif", textWrap: 'pretty', overflowWrap: 'anywhere' }}>{titulo}</span>
+            </div>
+            <CruzDeHoja enLinea onCerrar={onCerrar} datos={{ 'data-hoja-cerrar': '1' }} />
           </div>
-          <CruzDeHoja enLinea onCerrar={onCerrar} datos={{ 'data-hoja-cerrar': '1' }} />
+          {cabecera}
         </div>
-        {cabecera}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>{children}</div>
       </div>
     </div>,

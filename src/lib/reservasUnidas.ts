@@ -135,3 +135,21 @@ export function revisionDeUnaExtra(route: Route, reserva: Reservation): Revision
     esta: `Revisar ${reserva.kind === 'otra' ? 'la reserva' : reserva.kind === 'bus' ? 'el autobús' : `el ${reserva.kind}`}`,
   }
 }
+
+/**
+ * (V81, R13) EN SU SITIO POR LA HORA, en la lista de DÍAS. `grupos` son las franjas del día, cada una con sus elementos (`start` = el minuto en que empiezan; `cuenta` = es una parada, la comida o la cena: lo que ordena;
+ * un hueco, un tiempo libre o el final del día no cuentan). Una reserva a las 19:30 va ANTES del primer elemento que empieza a su hora o más tarde (con la cena a las 19:30 también: la reserva va delante y la cena pasa detrás); si no hay
+ * ninguno, después del último. Devuelve la franja `g` y la posición `k` (la reserva se pinta delante del elemento `k` de esa franja). Pura: no mueve nada del día.
+ */
+export function lugarDeLaExtraEnElDia(grupos: readonly (readonly { start: number; cuenta: boolean }[])[], minutos: number): { g: number; k: number } {
+  let ultimo: { g: number; k: number } | null = null
+  for (let g = 0; g < grupos.length; g++) {
+    for (let k = 0; k < grupos[g].length; k++) {
+      const e = grupos[g][k]
+      if (!e.cuenta) continue
+      if (e.start >= minutos) return { g, k }
+      ultimo = { g, k: k + 1 }
+    }
+  }
+  return ultimo ?? { g: Math.max(grupos.length - 1, 0), k: 0 }
+}

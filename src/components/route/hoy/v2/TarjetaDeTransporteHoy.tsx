@@ -34,6 +34,7 @@ export const TRAZO = {
   dia: 'M7 3v3M17 3v3M4 8h16v12H4zM8 13h3',
   maleta: 'M6 8h12l1 12H5zM9 8a3 3 0 0 1 6 0',
   reloj: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2',
+  lugar: 'M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11zM12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
 }
 
 /** La imagen fija del trayecto (el mar, el tren…): ningún sitio tiene foto, así que va una de colores como la de la llegada. */
@@ -50,7 +51,7 @@ function ImagenDelTrayecto({ foto }: { foto?: string | null }) {
 const bloqueDe = (r: ReservaExtra): BloqueReservasId => (r.unidaA ? 'excursiones' : (`extra-${r.kind}` as BloqueReservasId))
 
 /** Una fila de billete: el círculo oscuro con el medio, el título, la línea de debajo y el QR a la derecha. */
-export function FilaDeBilleteHoy({ reserva, titulo, sub }: { reserva: ReservaExtra; titulo: string; sub: string }) {
+export function FilaDeBilleteHoy({ reserva, titulo, sub, sencilla = false }: { reserva: ReservaExtra; titulo: string; sub: string; /** (V81, R13) La fila de una reserva suelta: solo «Tu reserva» y su QR, sin el círculo del medio (el nombre y la hora ya están arriba). */ sencilla?: boolean }) {
   const billetes = useBilletesDeExcursiones()
   const billete = billetes.de(reserva.id)
   const hay = Boolean(excursionConCodigo(billete)) && Boolean(billete?.codigo)
@@ -60,10 +61,12 @@ export function FilaDeBilleteHoy({ reserva, titulo, sub }: { reserva: ReservaExt
     useReservasFocusStore.getState().pedir(bloqueDe(reserva))
   }
   return (
-    <div data-hoy-fila-billete={reserva.id} data-hoy-fila-billete-tipo={reserva.kind} className="flex items-center gap-3 rounded-[18px] py-2.5 pl-3 pr-1.5" style={{ background: '#FBF3E2', border: '1px solid rgba(181,138,46,.4)' }}>
-      <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full" style={{ background: '#1C2230', color: '#F3D88F' }}>
-        <Icono nombre={reserva.kind === 'otra' ? 'reservas' : iconoDeMedio(reserva.kind === 'tren' ? 'tren' : reserva.kind === 'bus' ? 'bus' : 'ferry')} size={18} />
-      </span>
+    <div data-hoy-fila-billete={reserva.id} data-hoy-fila-billete-tipo={reserva.kind} className={`flex items-center gap-3 ${sencilla ? 'rounded-2xl py-2.5 pl-3.5 pr-2.5' : 'rounded-[18px] py-2.5 pl-3 pr-1.5'}`} style={{ background: '#FBF3E2', border: `1px solid rgba(181,138,46,${sencilla ? '.45' : '.4'})` }}>
+      {!sencilla && (
+        <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full" style={{ background: '#1C2230', color: '#F3D88F' }}>
+          <Icono nombre={reserva.kind === 'otra' ? 'reservas' : iconoDeMedio(reserva.kind === 'tren' ? 'tren' : reserva.kind === 'bus' ? 'bus' : 'ferry')} size={18} />
+        </span>
+      )}
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span data-hoy-fila-titulo className="[overflow-wrap:anywhere]" style={{ font: "700 14.5px/1.2 'Geist'", color: '#1C2230' }}>
           {titulo}
@@ -132,28 +135,34 @@ export function TarjetaDeExcursionConTransporte({ route, day, excursion, unidas,
   )
 }
 
-/** R10: un ferry, tren, autobús u «otra» que no es de ninguna excursión, en su día. `sinFoto`: la misma tarjeta sin la imagen (la lista de DÍAS). */
+/**
+ * R10 y (V81) R13 / R13b: un ferry, tren, autobús u «otra» que no es de ninguna excursión, en su día. `sinFoto`: la misma tarjeta sin la imagen (la lista de DÍAS): borde dorado que se ve, la etiqueta de su tipo y el nombre UNA vez,
+ * las cajas A LAS / HASTA / LUGAR (las que haya; si solo hay una, de punta a punta) y, abajo, la fila «Tu reserva» con su QR (sin repetir el nombre ni la hora). En HOY (con imagen), un ferry, tren o autobús sigue con SALE y LLEGA.
+ */
 export function TarjetaDeReservaExtraHoy({ reserva, sinFoto = false }: { reserva: Reservation; sinFoto?: boolean }) {
   const r = reserva as ReservaExtra
   const esOtra = r.kind === 'otra'
-  const etiqueta = esOtra ? 'RESERVA' : palabraDelMedio(r).toUpperCase()
-  const llega = !esOtra && r.returnTime ? horaSinCero(r.returnTime) : null
+  const etiqueta = esOtra ? 'OTRA' : palabraDelMedio(r).toUpperCase()
+  const hasta = r.returnTime ? horaSinCero(r.returnTime) : null
   const cajas: { dato: string; etiqueta: string; grande: string; sub: string; trazo: string }[] = []
-  if (esOtra) cajas.push({ dato: 'hora', etiqueta: 'A LAS', grande: horaSinCero(r.time), sub: r.lugar ?? '', trazo: TRAZO.reloj })
-  else {
+  if (esOtra || sinFoto) {
+    cajas.push({ dato: 'hora', etiqueta: 'A LAS', grande: horaSinCero(r.time), sub: '', trazo: TRAZO.reloj })
+    if (hasta) cajas.push({ dato: 'hasta', etiqueta: 'HASTA', grande: hasta, sub: '', trazo: TRAZO.reloj })
+    const lugar = esOtra ? r.lugar : r.origen
+    if (lugar) cajas.push({ dato: 'lugar', etiqueta: 'LUGAR', grande: lugar, sub: '', trazo: TRAZO.lugar })
+  } else {
     cajas.push({ dato: 'sale', etiqueta: 'SALE', grande: horaSinCero(r.time), sub: r.origen ?? '', trazo: TRAZO.barco })
-    if (llega) cajas.push({ dato: 'llega', etiqueta: 'LLEGA', grande: llega, sub: r.destinoDeViaje ?? '', trazo: TRAZO.dia })
+    if (hasta) cajas.push({ dato: 'llega', etiqueta: 'LLEGA', grande: hasta, sub: r.destinoDeViaje ?? '', trazo: TRAZO.dia })
   }
   const titulo = r.name
-  const fila = esOtra ? `${titulo}${r.time ? ` · A las ${horaSinCero(r.time)}` : ''}` : `${titulo} · Sale a las ${horaSinCero(r.time)}`
   return (
-    <div data-hoy-reserva-extra={r.kind} data-hoy-reserva-extra-id={r.id} data-tarjeta="clara" className="flex-none overflow-hidden rounded-[28px]" style={TARJETA_PARADA}>
+    <div data-hoy-reserva-extra={r.kind} data-hoy-reserva-extra-id={r.id} data-tarjeta="clara" className="flex-none overflow-hidden rounded-[28px]" style={sinFoto ? { ...TARJETA_PARADA, border: '1.5px solid rgba(181,138,46,.7)', boxShadow: '0 14px 24px -18px rgba(110,80,24,.6)' } : TARJETA_PARADA}>
       {sinFoto ? (
-        <div className="flex items-center gap-2 px-3.5 pt-3.5">
-          <span data-hoy-insignia className="flex h-7 items-center rounded-full px-[13px]" style={{ background: '#1C2230', color: '#F3D88F', font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em' }}>
+        <div className="flex items-center gap-2.5 px-3.5 pt-3.5">
+          <span data-hoy-insignia className="flex h-7 flex-none items-center rounded-full px-[11px]" style={{ background: '#1C2230', color: '#F3D88F', font: "700 10.5px 'Geist Mono',monospace", letterSpacing: '.12em' }}>
             {etiqueta}
           </span>
-          <span data-hoy-transporte-titulo className="min-w-0 flex-1 [overflow-wrap:anywhere]" style={{ font: "400 24px/1.05 'Instrument Serif',serif" }}>
+          <span data-hoy-transporte-titulo className="min-w-0 flex-1 [overflow-wrap:anywhere]" style={{ font: "400 24px/1.1 'Instrument Serif',serif" }}>
             {titulo}
           </span>
         </div>
@@ -161,12 +170,12 @@ export function TarjetaDeReservaExtraHoy({ reserva, sinFoto = false }: { reserva
         <CabeceraDeTrayecto etiqueta={etiqueta} titulo={titulo} />
       )}
       <div className="flex flex-col gap-3 px-3.5 pb-4 pt-3.5">
-        <div className="grid gap-2" style={columnas(cajas.length)}>
+        <div data-hoy-cajas className="grid gap-2" style={{ gridTemplateColumns: `repeat(${Math.max(cajas.length, 1)}, minmax(0, 1fr))` }}>
           {cajas.map((c) => (
-            <CajaDeParada key={c.dato} dato={c.dato} trazo={c.trazo} etiqueta={c.etiqueta} grande={c.grande} sub={c.sub} />
+            <CajaDeParada key={c.dato} dato={c.dato} trazo={c.trazo} etiqueta={c.etiqueta} grande={c.grande} sub={c.sub} compacta={sinFoto} />
           ))}
         </div>
-        <FilaDeBilleteHoy reserva={r} titulo={fila} sub="" />
+        <FilaDeBilleteHoy reserva={r} titulo="Tu reserva" sub="" sencilla />
       </div>
     </div>
   )

@@ -56,7 +56,7 @@ export interface BorradorExtra {
   dayNumber: string
   /** Hora de salida (o la hora, en «otra»), `HH:MM`. */
   hora: string
-  /** Hora de llegada, opcional. */
+  /** Hora de llegada, opcional (en «otra», el «Hasta las…»). */
   llegada: string
   localizador: string
   /** Solo tren. */
@@ -109,7 +109,8 @@ export function construirReservaExtra(b: BorradorExtra, dinero: { id: string; pr
     dateIso: conFechas ? b.dateIso || null : null,
     dayNumber: conFechas ? null : dayNumberDelDia,
     time: hhmm(b.hora),
-    returnTime: esOtra ? null : horaValida(b.llegada) ? hhmm(b.llegada) : null,
+    // (V81) En «otra», `returnTime` es el «Hasta las…» (opcional): la hora a la que acaba; en ferry, tren y autobús, la hora de llegada.
+    returnTime: horaValida(b.llegada) ? hhmm(b.llegada) : null,
     meetingPoint: null,
     locator: tonto(b.localizador),
     precio: dinero.precio,

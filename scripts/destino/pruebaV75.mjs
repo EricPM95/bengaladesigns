@@ -52,7 +52,7 @@ async function partePura() {
   const sinFechas = m.construirReservaExtra(v('tren', { dayNumber: '3', hora: '8:00', origen: 'Termini', destino: 'Florencia', coche: '5', asiento: '12A' }), { id: 'x2', precio: null }, false, 3)
   debe(sinFechas.dateIso === null && sinFechas.dayNumber === 3 && sinFechas.coche === '5' && sinFechas.asiento === '12A' && sinFechas.precio === null, 'construir-tren-sin-fechas', 'sin fechas en el viaje se guarda el número de día; el tren lleva coche y asiento')
   const o = m.construirReservaExtra(v('otra', { dateIso: '2026-11-09', hora: '16:00', nombre: 'Tour en kayak', lugar: 'Playa de Famara', llegada: '18:00', coche: '9' }), { id: 'x3', precio: null }, true, 4)
-  debe(o.lugar === 'Playa de Famara' && o.returnTime === null && o.coche === null && o.asiento === null && o.origen === null, 'construir-otra', '«otra» guarda el lugar y no lleva llegada, coche ni asiento')
+  debe(o.lugar === 'Playa de Famara' && o.returnTime === '18:00' && o.coche === null && o.asiento === null && o.origen === null, 'construir-otra', '«otra» guarda el lugar y el «Hasta las…» (V81: 18:00 en returnTime), y no lleva coche ni asiento')
   const ida = m.borradorDeLaReserva(f)
   debe(ida.tipo === 'ferry' && ida.origen === 'Órzola' && ida.destino === 'La Graciosa' && ida.hora === '09:30' && ida.llegada === '10:15' && ida.localizador === 'K7M2QX', 'borrador-de-vuelta', 'el lápiz: de la reserva al borrador devuelve lo escrito')
   // Los bloques.
