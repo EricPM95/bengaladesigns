@@ -15,7 +15,7 @@ import { HojaDelMenu } from '../../../ui/MenuHoja'
 import { ICONOS_OPCION, OpcionTarjeta } from '../../../ui/HojaOpciones'
 import { Titulo, useContexto } from './CambiarPlan'
 import { ParadaFotoDeParada } from './ParadaFoto'
-import { BOTON_ORO } from '../../../ui/botonesOro'
+import { BOTON_CLARO, BOTON_ORO } from '../../../ui/botonesOro'
 import { CuadradoFecha } from '../../../ui/CuadradoFecha'
 import { formatWeekdayAbbrEs } from '../../../../lib/dateRange'
 import { BOTON_AZUL, EnlaceDejarlo } from '../piezas'
@@ -31,8 +31,8 @@ import { BOTON_AZUL, EnlaceDejarlo } from '../piezas'
  */
 const TINTA = '#1C2230'
 
-export function LugaresPendientes({ route, day, dateIso, pendientes, modo = 'hoy' }: { route: Route; day: DayPlan | null; dateIso: string | null; pendientes: Pendiente[]; modo?: 'hoy' | 'dias' }) {
-  const [abierta, setAbierta] = useState(modo === 'dias')
+export function LugaresPendientes({ route, day, dateIso, pendientes, modo = 'hoy', abiertaDeEntrada = false, conAHoy = false }: { route: Route; day: DayPlan | null; dateIso: string | null; pendientes: Pendiente[]; modo?: 'hoy' | 'dias'; /** (V80) Sale ya abierta (el día libre de la excursión cancelada). */ abiertaDeEntrada?: boolean; /** (V80) El día libre de la excursión cancelada: cada fila lleva [+ A hoy] (entra en el día de hoy; este día no admite sitios si hay excursión, y aquí ya no la hay). */ conAHoy?: boolean }) {
+  const [abierta, setAbierta] = useState(modo === 'dias' || abiertaDeEntrada)
   const raiz = useRef<HTMLDivElement>(null)
   // (V77) [Ver] de «Y N sitios más pasan a Lugares pendientes»: DÍAS abre esta lista y baja hasta ella.
   const pedida = useReorganizarStore((s) => s.verSobraTiempoDe)
@@ -105,6 +105,22 @@ export function LugaresPendientes({ route, day, dateIso, pendientes, modo = 'hoy
         moveStopToDay(p.stop.id, day.id, p.dayId)
         setStopSaltada(p.dayId, p.stop.id, estabaSaltada)
       }
+    })
+  }
+  // (V80) [+ A hoy]: lo que venía de «Lugares pendientes» entra en el día de hoy (con [Deshacer], como siempre): lo de «No cabía…» con `anadirAHoy`; lo saltado o de otro día con `recuperar`.
+  // Lo de un día que YA PASÓ no se mueve con `moveStopToDay` (la red de seguridad de la V24 no deja): sale de su día y entra en el de hoy con las acciones que sí valen (`addStop` en hoy), y [Deshacer] lo devuelve a su sitio.
+  const aHoy = (p: Pendiente) => {
+    if (!day) return
+    if (p.origen === 'sobra') return anadirAHoy(p)
+    if (p.dayId === day.id) return recuperar(p)
+    const origen = route.days.find((d) => d.id === p.dayId)
+    const indice = origen ? origen.stops.findIndex((s) => s.id === p.stop.id) : -1
+    const estabaSaltada = Boolean(p.stop.saltada)
+    useRouteStore.setState((actual) => (actual.route ? { route: { ...actual.route, days: actual.route.days.map((d) => (d.id === p.dayId ? { ...d, stops: d.stops.filter((s) => s.id !== p.stop.id) } : d)) } } : actual))
+    useRouteStore.getState().addStop(day.id, { ...p.stop, saltada: false, addedByUser: true })
+    conDeshacer(`a-hoy:${p.stop.id}`, `${displayStopName(p.stop.name)}, añadida a tu día`, () => {
+      removeStop(day.id, p.stop.id)
+      useRouteStore.setState((actual) => (actual.route ? { route: { ...actual.route, days: actual.route.days.map((d) => (d.id === p.dayId ? { ...d, stops: [...d.stops.slice(0, Math.max(indice, 0)), { ...p.stop, saltada: estabaSaltada }, ...d.stops.slice(Math.max(indice, 0))] } : d)) } } : actual))
     })
   }
   const visitado = (p: Pendiente) => {
@@ -201,6 +217,11 @@ export function LugaresPendientes({ route, day, dateIso, pendientes, modo = 'hoy
                     Otro día
                   </button>
                 )}
+                {conAHoy && day && !p.stop.reservedId && (
+                  <button type="button" onClick={() => aHoy(p)} data-hoy-pendiente-a-hoy className="zona-toque flex h-9 flex-none items-center whitespace-nowrap rounded-xl px-[9px] text-[12px] font-bold" style={BOTON_CLARO}>
+                    + A hoy
+                  </button>
+                )}
                 <button type="button" onClick={() => setMenu(p)} aria-label="Más opciones" data-hoy-pendiente-mas className="zona-toque flex h-[34px] w-[30px] flex-none items-center justify-center rounded-xl pb-[5px] text-[16px] font-bold leading-none tracking-[1px]" style={{ background: '#FFFDF8', border: '1px solid rgba(28,34,48,.16)', color: TINTA }}>
                   ···
                 </button>
@@ -215,7 +236,7 @@ export function LugaresPendientes({ route, day, dateIso, pendientes, modo = 'hoy
             {menu.motivo !== 'cerrada' && menu.origen !== 'sobra' && day && (
               <OpcionTarjeta tono="salvia" icono={ICONOS_OPCION.volver} titulo="Recuperar hoy" linea="Vuelve a ser una parada normal del día" datos="pendiente-recuperar" atributos={{ 'data-hoy-pendiente-recuperar': '1' }} onClick={() => { recuperar(menu); setMenu(null) }} />
             )}
-            {menu.origen === 'sobra' && day && modo === 'hoy' && diaAdmite(day) && !menu.stop.reservedId && (
+            {menu.origen === 'sobra' && day && modo === 'hoy' && (diaAdmite(day) || conAHoy) && !menu.stop.reservedId && (
               <OpcionTarjeta tono="salvia" icono={ICONOS_OPCION.volver} titulo="Añadir a hoy" linea="Entra en tu día de hoy" datos="pendiente-anadir-hoy" atributos={{ 'data-hoy-pendiente-anadir-hoy': '1' }} onClick={() => { anadirAHoy(menu); setMenu(null) }} />
             )}
             {menu.origen !== 'sobra' && (

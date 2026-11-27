@@ -29,7 +29,7 @@ import type { ConsejoDelDia } from '../../../../lib/consejosDelDia'
  * REGLA «HOY y RESERVAS, los mismos datos»: aquí no se guarda NADA. La hora, el puerto y el billete (el código) se leen de la reserva guardada en RESERVAS (`useBilletesDeExcursiones`, la clave es el id de la reserva).
  * Consultas a Supabase: ninguna (todo sale de la ruta y del móvil).
  */
-const TRAZO = {
+export const TRAZO = {
   barco: 'M3 17l2 3h14l2-3M5 17l1-6h12l1 6M12 11V4M12 4l4 3-4 1',
   dia: 'M7 3v3M17 3v3M4 8h16v12H4zM8 13h3',
   maleta: 'M6 8h12l1 12H5zM9 8a3 3 0 0 1 6 0',
@@ -50,7 +50,7 @@ function ImagenDelTrayecto({ foto }: { foto?: string | null }) {
 const bloqueDe = (r: ReservaExtra): BloqueReservasId => (r.unidaA ? 'excursiones' : (`extra-${r.kind}` as BloqueReservasId))
 
 /** Una fila de billete: el círculo oscuro con el medio, el título, la línea de debajo y el QR a la derecha. */
-function FilaDeBilleteHoy({ reserva, titulo, sub }: { reserva: ReservaExtra; titulo: string; sub: string }) {
+export function FilaDeBilleteHoy({ reserva, titulo, sub }: { reserva: ReservaExtra; titulo: string; sub: string }) {
   const billetes = useBilletesDeExcursiones()
   const billete = billetes.de(reserva.id)
   const hay = Boolean(excursionConCodigo(billete)) && Boolean(billete?.codigo)
@@ -80,7 +80,7 @@ function FilaDeBilleteHoy({ reserva, titulo, sub }: { reserva: ReservaExtra; tit
   )
 }
 
-function Cabecera({ etiqueta, titulo, foto }: { etiqueta: string; titulo: string; foto?: string | null }) {
+export function CabeceraDeTrayecto({ etiqueta, titulo, foto }: { etiqueta: string; titulo: string; foto?: string | null }) {
   return (
     <div data-hoy-foto-parada className="relative overflow-hidden" style={{ height: 150 }}>
       <ImagenDelTrayecto foto={foto} />
@@ -95,7 +95,7 @@ function Cabecera({ etiqueta, titulo, foto }: { etiqueta: string; titulo: string
   )
 }
 
-const columnas = (n: number) => ({ gridTemplateColumns: `repeat(${Math.max(n, 2)}, minmax(0, 1fr))` }) as const
+export const columnas = (n: number) => ({ gridTemplateColumns: `repeat(${Math.max(n, 2)}, minmax(0, 1fr))` }) as const
 
 /** R9: la excursión por tu cuenta, con su ferry (tren, autobús) unido. */
 export function TarjetaDeExcursionConTransporte({ route, day, excursion, unidas, consejos = [] }: { route: Route; day: DayPlan; excursion: Excursion | null; unidas: ReservaExtra[]; /** (V77, 13) Los consejos de la excursión (de los datos del destino), entre las cajas y los billetes. */ consejos?: ConsejoDelDia[] }) {
@@ -110,7 +110,7 @@ export function TarjetaDeExcursionConTransporte({ route, day, excursion, unidas,
   const enlace = enlaceComoLlegarAlojamiento([primero.origen, route.destination].filter(Boolean).join(', '))
   return (
     <div data-hoy-excursion-transporte={excursion?.id ?? day.id} data-tarjeta="clara" className="flex-none overflow-hidden rounded-[28px]" style={TARJETA_PARADA}>
-      <Cabecera etiqueta="EXCURSIÓN" titulo={nombre} foto={excursion?.page?.photoUrl ?? null} />
+      <CabeceraDeTrayecto etiqueta="EXCURSIÓN" titulo={nombre} foto={excursion?.page?.photoUrl ?? null} />
       <div className="flex flex-col gap-3 px-3.5 pb-4 pt-3.5">
         <div className="grid gap-2" style={columnas(2)}>
           {/* Por tu cuenta: SALIDA (el puerto de donde sale el ferry y su hora); «RECOGIDA» es solo de una excursión organizada. */}
@@ -158,7 +158,7 @@ export function TarjetaDeReservaExtraHoy({ reserva, sinFoto = false }: { reserva
           </span>
         </div>
       ) : (
-        <Cabecera etiqueta={etiqueta} titulo={titulo} />
+        <CabeceraDeTrayecto etiqueta={etiqueta} titulo={titulo} />
       )}
       <div className="flex flex-col gap-3 px-3.5 pb-4 pt-3.5">
         <div className="grid gap-2" style={columnas(cajas.length)}>

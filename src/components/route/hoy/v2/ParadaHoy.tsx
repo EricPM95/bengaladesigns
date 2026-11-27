@@ -200,7 +200,7 @@ export function minutosParaCerrar(h: HorarioDeParada | null, ahoraMin: number): 
 }
 
 /** La barrita con las ondas y [Pausa] de la historia sonando (A4). */
-function BarraDeHistoria({ h }: { h: HistoriaDeParada }) {
+export function BarraDeHistoria({ h }: { h: HistoriaDeParada }) {
   const sonando = h.estado === 'hablando'
   return (
     <div data-escuchar-barra data-escuchar={h.estado} className="flex h-[54px] items-center gap-3 rounded-2xl pl-2 pr-3.5" style={{ background: TINTA, color: MARFIL }}>
@@ -248,7 +248,7 @@ export function CajaDeParada({ icono, trazo, etiqueta, grande, tono = 'negro', s
   )
 }
 
-function BotonIcono({ icono, etiqueta, dato, onClick, oro = false, candado = false, texto }: { icono: Parameters<typeof Icono>[0]['nombre']; etiqueta: string; dato: string; onClick: () => void; oro?: boolean; candado?: boolean; /** (V47) El nombre debajo del icono («Qué ver», «Escuchar historia», «Hacer foto»). */ texto?: string }) {
+export function BotonIcono({ icono, etiqueta, dato, onClick, oro = false, candado = false, texto }: { icono: Parameters<typeof Icono>[0]['nombre']; etiqueta: string; dato: string; onClick: () => void; oro?: boolean; candado?: boolean; /** (V47) El nombre debajo del icono («Qué ver», «Escuchar historia», «Hacer foto»). */ texto?: string }) {
   return (
     <button type="button" onClick={onClick} aria-label={etiqueta} data-hoy-icono={dato} className={`relative flex min-w-0 flex-1 items-center justify-center rounded-[18px] ${texto ? 'h-[78px] flex-col gap-[7px]' : 'h-[60px]'}`} style={oro ? BOTON_ORO : BOTON_CLARO}>
       <Icono nombre={icono} size={texto ? 24 : 26} grosor={1.8} />
@@ -259,6 +259,28 @@ function BotonIcono({ icono, etiqueta, dato, onClick, oro = false, candado = fal
         </span>
       )}
     </button>
+  )
+}
+
+/**
+ * (V80) El recuadro dorado «Aquí ganas X pedazos» de la tarjeta de la parada (A1-A4), una sola pieza: lo usan la parada y la excursión organizada. `pieza`: el trozo de ESE sitio (sin él, la estrella de siempre).
+ */
+export function BloqueDePedazos({ pedazos, pieza }: { pedazos: string[]; pieza: ReturnType<typeof piezaDeParada> }) {
+  return (
+        <div data-hoy-pedazos className="flex items-center gap-3 rounded-[18px] px-3.5 py-3" style={{ background: 'linear-gradient(135deg,#FFF4D2,#F1DC9C 60%,#E3C77E)', border: '1px solid rgba(181,138,46,.65)', boxShadow: '0 10px 18px -14px rgba(110,80,24,.8)' }}>
+          {/* (V47) El icono es el trozo de ESE sitio, en color, sobre su círculo blanco (la misma pieza que se gana al terminar); sin ids del servidor, la estrella de siempre. */}
+          {pieza ? (
+            <span data-hoy-pedazo-icono={pieza.coleccion} className="flex h-[44px] w-[44px] flex-none items-center justify-center rounded-full" style={{ background: '#fff', border: '2px solid #1C2230' }}>
+              <InsigniaPartes coleccion={pieza.coleccion} ganados={[pieza.sitio]} tam={34} />
+            </span>
+          ) : (
+            <Icono nombre="estrella" size={20} grosor={1.8} style={{ color: '#8E6820', flex: 'none' }} />
+          )}
+            <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <span data-hoy-pedazos-etiqueta style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.1em', textTransform: 'uppercase', color: '#6F4E37' }}>{etiquetaDePedazos(pedazos)}</span>
+              <span data-hoy-pedazos-nombre style={{ font: "400 20px/1.1 'Instrument Serif',serif", color: '#2A1D0A' }}>{nombreDePedazos(pedazos)}</span>
+            </span>
+          </div>
   )
 }
 
@@ -473,22 +495,7 @@ export function TarjetaParada(p: PropsParada) {
                 Cierra en {cierraEn} min
               </Etiqueta>
             )}
-            {pedazos && (
-              <div data-hoy-pedazos className="flex items-center gap-3 rounded-[18px] px-3.5 py-3" style={{ background: 'linear-gradient(135deg,#FFF4D2,#F1DC9C 60%,#E3C77E)', border: '1px solid rgba(181,138,46,.65)', boxShadow: '0 10px 18px -14px rgba(110,80,24,.8)' }}>
-                {/* (V47) El icono es el trozo de ESE sitio, en color, sobre su círculo blanco (la misma pieza que se gana al terminar); sin ids del servidor, la estrella de siempre. */}
-                {pieza ? (
-                  <span data-hoy-pedazo-icono={pieza.coleccion} className="flex h-[44px] w-[44px] flex-none items-center justify-center rounded-full" style={{ background: '#fff', border: '2px solid #1C2230' }}>
-                    <InsigniaPartes coleccion={pieza.coleccion} ganados={[pieza.sitio]} tam={34} />
-                  </span>
-                ) : (
-                  <Icono nombre="estrella" size={20} grosor={1.8} style={{ color: '#8E6820', flex: 'none' }} />
-                )}
-                <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                  <span data-hoy-pedazos-etiqueta style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.1em', textTransform: 'uppercase', color: '#6F4E37' }}>{etiquetaDePedazos(pedazos)}</span>
-                  <span data-hoy-pedazos-nombre style={{ font: "400 20px/1.1 'Instrument Serif',serif", color: '#2A1D0A' }}>{nombreDePedazos(pedazos)}</span>
-                </span>
-              </div>
-            )}
+            {pedazos && <BloqueDePedazos pedazos={pedazos} pieza={pieza} />}
             {historia.hay && !historia.candado && historia.estado !== 'parado' && <BarraDeHistoria h={historia} />}
             <div className="flex gap-[9px]">
               <BotonIcono icono="ojo" etiqueta="Qué vas a ver" dato="que-vas-a-ver" texto="Qué ver" onClick={p.onQueVasAVer} />

@@ -52,6 +52,8 @@ import { useTrenUnido } from '../../../../hooks/useTrenUnido'
 import { TarjetaDeVuelta, leerEnElSitio } from './TarjetaDeVuelta'
 import { HoyDespuesV2 } from './HoyDespuesV2'
 import { hoyYaEsDespues, useViajeCerrado } from '../../../../lib/cierreDelViaje'
+import { useExcursionCancelada } from '../../../../lib/excursionCancelada'
+import { DiaDeExcursionCancelada, EnlaceExcursionCancelada } from './ExcursionCancelada'
 import { FilaDeAviso, D_AVISO } from './AvisosHoy'
 import { esDiaRecienReorganizado } from '../../../../lib/reorganizarDia'
 import { useReorganizarStore } from '../../../../store/useReorganizarStore'
@@ -263,6 +265,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const sumaDelVisto = useUltimaSuma(ultimoVisto?.id ?? null)
   const ahoraMinHoy = useAhoraMin()
   const viajeCerradoAMano = useViajeCerrado(route.id) // (V79) [Cerrar mi viaje]: HOY pasa a «después»
+  const { cancelada: excursionCancelada } = useExcursionCancelada(route.id, day.id, dateIso) // (V80) «¿Se ha cancelado la excursión?»: en el móvil, por viaje y día
   const conPaseOPrueba0 = pagoActivo()
   const [ofrecerFoto, setOfrecerFoto] = useState<Stop | null>(null)
 
@@ -449,11 +452,22 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
     })
   // (V57) Día de excursión = el interruptor O el tipo del día (Lanzarote, La Graciosa: `dayType: 'excursion'` sin interruptor salía como «Hoy libre»).
   if (esDiaDeExcursion(day) && !(sinPase && (esLlegada || !pase.puede))) {
+    // (V80) La excursión cancelada: la tarjeta gris, [Hacer … otro día] (por tu cuenta), «Tu día libre en …» (pendientes e ideas) y «Cerca de ti». Nunca «¿Qué hago ahora?» en un día de excursión.
+    // (El aviso de abajo [Deshacer] vive en UN solo `AvisoDeAbajoHost` que no se desmonta al cancelar: los dos casos comparten el mismo puesto en el árbol.)
+    const canceladaHoy = excursionCancelada && !sinPase
     return (
       <>
         {cabecera}
-        <TodayExcursion route={route} day={day} />
-        {!sinPase && <VolverAlAlojamiento route={route} desde={ubicacion ?? origenCerca} casa={zonaCoords} enCoche={enCoche} />}
+        {canceladaHoy ? (
+          <DiaDeExcursionCancelada route={route} day={day} dateIso={dateIso} desde={ubicacion ?? zonaCoords} enCoche={enCoche} ahoraMin={ahoraMinHoy} />
+        ) : (
+          <TodayExcursion route={route} day={day} dateIso={dateIso} ubicacion={ubicacionReal} ahoraMin={ahoraMinHoy} enCoche={enCoche} desde={ubicacion ?? zonaCoords} pieDeTarjeta={!sinPase ? <EnlaceExcursionCancelada route={route} day={day} dateIso={dateIso} /> : undefined} />
+        )}
+        {/* Lo que el viajero meta en el día libre con [+ A hoy] sale en «Tu día». */}
+        {canceladaHoy && paradas.length > 0 && <TuDia route={route} day={day} dateIso={dateIso} paradas={paradas} siguienteId={siguiente?.id ?? null} reservaDe={reservaDe} horaDelSol={horaDelSol(day) ?? solDelDestino?.hora ?? null} inicialAbierta={false} onAbrirParada={(s) => setFichaCompleta(s)} ahoraMin={ahoraMinHoy} />}
+        {(canceladaHoy || !sinPase) && <VolverAlAlojamiento route={route} desde={ubicacion ?? origenCerca} casa={zonaCoords} enCoche={enCoche} />}
+        {!sinPase && <AvisoDeAbajoHost />}
+        {canceladaHoy && fichaCompleta && <FichaCompletaDeHoy route={route} day={day} dateIso={dateIso} parada={fichaCompleta} onCerrar={() => setFichaCompleta(null)} />}
       </>
     )
   }
@@ -780,7 +794,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {/* HOY2b (E): el reto del día (todos, debajo de la tarjeta principal) y, justo debajo, [¿Qué hago ahora?] */}
       {!sinParadasDeVuelta && !esVuelta && !bienvenida && paradas.length > 0 && <RetoDelDia route={route} diaAcabado={diaTerminado} dateIso={dateIso} ahoraMin={ahoraMinHoy} vistos={vigentes.filter((s) => s.checkedInAt).map((s) => s.name)} />}
       <div data-hoy-hueco-que-hago-ahora className="flex flex-none flex-col empty:hidden">
-        {conPaseOPrueba && !sinParadasDeVuelta && !esVuelta && !bienvenida && paradas.length > 0 && <QueHagoAhora route={route} day={day} dateIso={dateIso} siguiente={siguiente} anterior={anterior} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMinHoy} comida={comidaDeAhora} fraseAtardecer={fraseAtardecer} casa={zonaCoords} />}
+        {conPaseOPrueba && !sinParadasDeVuelta && !esVuelta && !bienvenida && !esDiaDeExcursion(day) && paradas.length > 0 && <QueHagoAhora route={route} day={day} dateIso={dateIso} siguiente={siguiente} anterior={anterior} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMinHoy} comida={comidaDeAhora} fraseAtardecer={fraseAtardecer} casa={zonaCoords} />}
       </div>
 
       {/* 6 · «Tu día», por franjas y sin horas */}

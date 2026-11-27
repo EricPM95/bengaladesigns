@@ -700,7 +700,8 @@
        "tipo": "traslado",
        "como": "coche",
        "texto": "A Órzola (pocas gasolineras en el norte: repostar antes). Salida desde Playa Blanca hacia las 08:30 (1 h 01, rome2rio); desde Puerto del Carmen, 43 min.",
-       "doc": "Coche hasta Órzola"
+       "doc": "Coche hasta Órzola",
+       "consejo": "Reposta antes: en el norte hay pocas gasolineras."
       },
       {
        "tipo": "traslado",

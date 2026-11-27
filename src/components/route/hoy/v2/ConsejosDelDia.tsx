@@ -21,7 +21,7 @@ const TRAZOS: Record<IconoDeConsejo, [string, string]> = {
  * `tono="claro"` (la tarjeta de la excursión de HOY): el recuadro marfil del dibujo, círculo azul oscuro con el icono dorado. `tono="oscuro"` (la tarjeta oscura de MAÑANA): el mismo bloque adaptado al fondo
  * (círculo dorado, texto marfil), como las demás líneas de esa tarjeta. Sin consejos, no se pinta nada.
  */
-export function BloqueDeConsejos({ consejos, cuando, tono }: { consejos: ConsejoDelDia[]; cuando: string; tono: 'claro' | 'oscuro' }) {
+export function BloqueDeConsejos({ consejos, cuando, tono, onCerrar }: { consejos: ConsejoDelDia[]; cuando: string; tono: 'claro' | 'oscuro'; /** (V80) Con X (en la tarjeta de la excursión de HOY): al cerrarlos no vuelven ese día en ese viaje (`avisosUnaVez`). */ onCerrar?: () => void }) {
   if (consejos.length === 0) return null
   const oscuro = tono === 'oscuro'
   return (
@@ -30,7 +30,18 @@ export function BloqueDeConsejos({ consejos, cuando, tono }: { consejos: Consejo
       className="flex flex-col gap-0.5 rounded-[20px] px-3 pb-2 pt-3"
       style={oscuro ? { background: 'rgba(255,253,248,.06)', border: '1px solid rgba(251,243,226,.12)' } : { background: '#FBF3E2', border: '1px solid rgba(181,138,46,.4)' }}
     >
-      <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase', color: oscuro ? '#F3D88F' : '#6F4E37', padding: '0 2px 6px' }}>Consejos para {cuando}</span>
+      <div className="flex items-center justify-between">
+        <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase', color: oscuro ? '#F3D88F' : '#6F4E37', padding: '0 2px 6px' }}>Consejos para {cuando}</span>
+        {onCerrar && (
+          <button type="button" onClick={onCerrar} data-consejos-x aria-label="Cerrar los consejos" className="-mr-1.5 -mt-1.5 flex h-11 w-11 flex-none items-center justify-center">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full" style={{ background: '#FFFDF8', border: '1px solid rgba(28,34,48,.1)', color: '#1C2230' }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M6 6l12 12M18 6L6 18" />
+              </svg>
+            </span>
+          </button>
+        )}
+      </div>
       {consejos.map((c, i) => {
         const [d, d2] = TRAZOS[c.icono] ?? TRAZOS.documento
         return (

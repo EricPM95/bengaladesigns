@@ -1,0 +1,34 @@
+{
+  "formato": "excursion_hoy/1",
+  "_nota": "(V80) Mismo formato que data/dias/lanzarote/_excursion_hoy.json. Las claves son los ids de las excursiones de data/pipeline_v2/roma.json. `modo_habitual`: Pompeya organizada; Florencia y Nápoles por tu cuenta (Eric, V80); las demás son propuesta de la V80 (docs/dias/DECISIONES_V80.md). `ideas`: sitios muy conocidos del destino, sin foto propia (la tarjeta sale sin foto) y con la fuente que se cita; PENDIENTE de comprobar contra la web de cada sitio (no se pudo abrir en esta tanda).",
+  "excursiones": {
+    "pompeya_sorrento": { "modo_habitual": "organizada", "medio": "autobus" },
+    "costa_amalfitana": { "modo_habitual": "organizada", "medio": "autobus", "propuesta": "Propuesta V80: autobús y barco con guía, todo de la empresa." },
+    "florencia_pisa": { "modo_habitual": "organizada", "medio": "autobus", "propuesta": "Propuesta V80: autobús con guía." },
+    "tivoli_villas": { "modo_habitual": "organizada", "medio": "autobus", "propuesta": "Propuesta V80: excursión con transporte de la empresa." },
+    "ostia_antica": { "modo_habitual": "por_tu_cuenta", "medio": "tren", "propuesta": "Propuesta V80: se llega en tren urbano desde Roma." },
+    "venecia_tren": { "modo_habitual": "por_tu_cuenta", "medio": "tren", "propuesta": "Propuesta V80: como Florencia, tren de alta velocidad por tu cuenta." },
+    "florencia_tren": {
+      "modo_habitual": "por_tu_cuenta",
+      "medio": "tren",
+      "nombre": "Florencia",
+      "destino": { "nombre": "Florencia", "lat": 43.7696, "lng": 11.2558, "radio_m": 6000, "fuente": "Centro de Florencia (coordenadas generales de la ciudad)" },
+      "ideas": [
+        { "nombre": "El Duomo", "sub": "Catedral de Santa Maria del Fiore", "buscar": "Duomo di Firenze", "fuente": "UNESCO, Centro histórico de Florencia (whc.unesco.org/es/list/174); por comprobar con la web del Duomo" },
+        { "nombre": "Galería de los Uffizi", "sub": "Museo de arte", "buscar": "Galleria degli Uffizi, Firenze", "fuente": "uffizi.it; por comprobar" },
+        { "nombre": "Ponte Vecchio", "sub": "Puente sobre el Arno", "buscar": "Ponte Vecchio, Firenze", "fuente": "UNESCO, Centro histórico de Florencia; por comprobar" }
+      ]
+    },
+    "napoles_pompeya_tren": {
+      "modo_habitual": "por_tu_cuenta",
+      "medio": "tren",
+      "nombre": "Nápoles",
+      "destino": { "nombre": "Nápoles", "lat": 40.8518, "lng": 14.2681, "radio_m": 6000, "fuente": "Centro de Nápoles (coordenadas generales de la ciudad)" },
+      "ideas": [
+        { "nombre": "Museo Arqueológico Nacional", "sub": "Piezas de Pompeya y Herculano", "buscar": "Museo Archeologico Nazionale di Napoli", "fuente": "museoarcheologiconapoli.it; por comprobar" },
+        { "nombre": "Spaccanapoli", "sub": "La calle del centro histórico", "buscar": "Spaccanapoli, Napoli", "fuente": "UNESCO, Centro histórico de Nápoles (whc.unesco.org/es/list/726); por comprobar" },
+        { "nombre": "Castel dell'Ovo", "sub": "Castillo sobre el mar", "buscar": "Castel dell'Ovo, Napoli", "fuente": "por comprobar" }
+      ]
+    }
+  }
+}

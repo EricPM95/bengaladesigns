@@ -47,6 +47,8 @@ export function Etiqueta({ tono = 'oro', children, datos, grande = false, classN
  * [Añadir] alojamiento y el punto de encuentro: nunca se vuelve a escribir. Va con `rounded-2xl` (16) y altura 44-48.
  */
 export const BOTON_AZUL = { background: '#1C2230', color: '#F3D88F', boxShadow: '0 12px 20px -14px rgba(28,34,48,.8),inset 0 0 0 1.5px rgba(243,213,154,.55)' } as const
+/** (V80) El botón verde de «lo hecho» ([He terminado], [He embarcado]): el de la tarjeta de la parada. */
+export const BOTON_VERDE = { background: 'linear-gradient(180deg,#3E9A5E,#2B7F45)', color: '#FFFFFF', boxShadow: '0 10px 16px -12px rgba(30,100,60,.8),inset 0 1px 0 rgba(255,255,255,.25)' } as const
 
 /**
  * EL ENLACE PEQUEÑO «Dejarlo como está» de HOY (Design «Lugares Pendientes» L4): una línea subrayada en oro profundo, bajo el botón dorado. UNO solo en todas las hojas de HOY.

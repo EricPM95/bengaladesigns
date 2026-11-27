@@ -81,10 +81,11 @@ export const conMayuscula = (t: string): string => t.charAt(0).toUpperCase() + t
  * (V69, apartado 2) [Solo mover la excursión]: el día de excursión y el día que está en el puesto elegido SE INTERCAMBIAN; los demás días se quedan donde están (con «Cambiar los días» pasaría cada día un puesto).
  * Misma forma que `movimientoDeExcursion` (la usa el almacén con `rutaConElMovimiento`); null si no hay día de excursión en otro puesto, o si el día que cambiaría de sitio tiene otra excursión reservada.
  */
-export function intercambioDeExcursion(route: Route, diaElegidoId: string, pinned: (day: DayPlan) => boolean = () => false): MovimientoDeExcursion | null {
+export function intercambioDeExcursion(route: Route, diaElegidoId: string, pinned: (day: DayPlan) => boolean = () => false, excursionId?: string): MovimientoDeExcursion | null {
   const ciudad = route.days.filter((day) => !day.isReturnLeg)
   const elegido = ciudad.find((day) => day.id === diaElegidoId)
-  const exc = ciudad.find((day) => esDiaDeExcursion(day) && day.id !== diaElegidoId)
+  // (V80) `excursionId`: el día de excursión concreto que se cambia (con dos excursiones en el viaje, no el primero que salga).
+  const exc = excursionId ? ciudad.find((day) => day.id === excursionId && esDiaDeExcursion(day)) : ciudad.find((day) => esDiaDeExcursion(day) && day.id !== diaElegidoId)
   if (!elegido || !exc || esDiaDeExcursion(elegido) || pinned(elegido)) return null
   const nuevo = [...ciudad]
   const a = ciudad.indexOf(exc)
@@ -99,4 +100,18 @@ export function intercambioDeExcursion(route: Route, diaElegidoId: string, pinne
     return { dayNumber: i + 1, fechaIso: fechaDelPuesto(i), nombre: tituloSimpleDelDia(route, day), antesIso: principal ? null : fechaDelPuesto(antes), antesNumero: principal ? null : antes + 1, principal }
   })
   return { orden: [...nuevo.map((day) => day.id), ...route.days.filter((day) => day.isReturnLeg).map((day) => day.id)], filas, diaDeExcursionId: exc.id }
+}
+
+/**
+ * (V80, apartado 4) [Hacer La Graciosa otro día] (excursión por tu cuenta cancelada): con qué día se cambia. El primer día de ciudad POSTERIOR al de la excursión que no sea otra excursión, ni el de llegada ni el de vuelta,
+ * y que no esté fijado por una reserva (`pinned`). Devuelve ese día y el intercambio ya calculado (la excursión pasa a su fecha y lo suyo pasa al día de la excursión: `intercambioDeExcursion`); null si no hay ninguno
+ * (la excursión es el último día): entonces el botón no sale.
+ */
+export function cambioParaLaExcursionCancelada(route: Route, excursion: DayPlan, pinned: (day: DayPlan) => boolean = () => false): { dia: DayPlan; mov: MovimientoDeExcursion } | null {
+  const candidatos = route.days.filter((day) => !day.isReturnLeg && day.dayNumber > excursion.dayNumber && !esDiaDeExcursion(day) && !day.halfDayExcursion && !day.arrivalDay)
+  for (const dia of candidatos) {
+    const mov = intercambioDeExcursion(route, dia.id, pinned, excursion.id)
+    if (mov) return { dia, mov }
+  }
+  return null
 }

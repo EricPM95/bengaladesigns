@@ -1,58 +1,23 @@
-import type { DayPlan, Route } from '../../../lib/types'
-import { excursionReservationOf, viewedExcursion } from '../../../lib/dayInterruptor'
-import { useRouteStore } from '../../../store/useRouteStore'
-import { TuExcursionEnHoy } from '../hoy/TuExcursionEnHoy'
-import { TarjetaDeExcursionConTransporte } from '../hoy/v2/TarjetaDeTransporteHoy'
-import { unidasAUnaExcursion } from '../../../lib/reservasUnidas'
+import type { Coordinates, DayPlan, Route } from '../../../lib/types'
+import { viewedExcursion } from '../../../lib/dayInterruptor'
 import { excursionDeUnDia } from '../../../lib/bookings'
-import { BloqueDeConsejos, useConsejos } from '../hoy/v2/ConsejosDelDia'
+import { ExcursionHoy, useDatosDeExcursion } from '../hoy/v2/ExcursionHoy'
+import type { ReactNode } from 'react'
 
 /**
- * HOY el día de excursión (Tanda 6g, punto 6): sale la excursión, su nombre y su hora de salida, con el código si está confirmada. Nada más. Si es de medio día, después salen los lugares
- * que el viajero haya añadido a la tarde.
+ * HOY el día de excursión (Tanda 6g, punto 6; rehecho en la V80 con Design «Día de excursión en HOY», EX1-EX6): la excursión paso a paso (`ExcursionHoy`), por tu cuenta u organizada. Si es de medio día, después salen los
+ * lugares que el viajero haya añadido a la tarde. El «Tu excursión» con el código (10R §4) es ahora la fila de la reserva dentro de la tarjeta de la excursión organizada.
  */
-export function TodayExcursion({ route, day }: { route: Route; day: DayPlan }) {
-  const reservations = useRouteStore((state) => state.reservations)
+export function TodayExcursion({ route, day, dateIso = '', ubicacion = null, ahoraMin = 0, enCoche = false, desde = null, pieDeTarjeta }: { route: Route; day: DayPlan; dateIso?: string; ubicacion?: Coordinates | null; ahoraMin?: number; enCoche?: boolean; desde?: Coordinates | null; pieDeTarjeta?: ReactNode }) {
   const excursion = viewedExcursion(day)
-  const reservation = excursionReservationOf(route, reservations, day)
-  // (V57) Un día de excursión (dayType) sin la excursión elegida en los datos (La Graciosa sin elegir, o solo con su reserva) sale igual como día de excursión: nunca «Hoy libre».
   const page = excursion?.page
-  const nombre = excursion?.title ?? reservation?.name ?? day.curatedTitle ?? `Excursión desde ${day.city}`
-  const departure = reservation?.time ?? page?.stops[0]?.time ?? null
   const afterwards = day.stops.filter((stop) => !stop.isNightExperience)
-  // (V76, R9) La excursión por tu cuenta con su ferry, tren o autobús UNIDO: la tarjeta de la excursión con una fila por billete (SALIDA · Órzola…). Sin excursión organizada (sin reserva propia), sustituye a la tarjeta de siempre.
+  // (V57) Un día de excursión (dayType) sin la excursión elegida en los datos sale igual como día de excursión: nunca «Hoy libre».
   const excursionDelDia = excursion ?? excursionDeUnDia(day)
-  // (V77, 13) «Consejos para la excursión» (Design «Consejos del día», C2), de los datos del destino; sin ellos, no sale.
-  const consejos = useConsejos(route.destination, [day.diaEscritoId, excursionDelDia?.id], [day.curatedTitle, excursionDelDia?.title])
-  const unidas = excursionDelDia ? unidasAUnaExcursion(reservations, excursionDelDia.id) : []
+  const datos = useDatosDeExcursion(route.destination, excursionDelDia?.id ?? null, day.diaEscritoId)
   return (
     <div className="mx-4 space-y-3">
-      {unidas.length > 0 && <TarjetaDeExcursionConTransporte route={route} day={day} excursion={excursionDelDia} unidas={unidas} consejos={consejos} />}
-      {(unidas.length === 0 || reservation) && (
-      <div className="rounded-2xl border border-text/[.08] bg-bg-card p-4 shadow-[0_1px_2px_rgba(28,34,48,.05)]">
-        <p className="font-mono text-[10.5px] font-medium uppercase tracking-[.14em] text-accent">Excursión del día</p>
-        <p className="mt-1.5 font-display text-[26px] leading-[1.1] text-text">
-          {page ? (
-            <>
-              {page.nameBefore} <em className="text-accent-grande">{page.nameDestination}</em>
-              {page.nameAfter}
-            </>
-          ) : (
-            nombre
-          )}
-        </p>
-        {departure && (
-          <p className="mt-3 text-[14px] text-text">
-            Salida a las <span className="font-mono font-semibold">{departure}</span>
-            {excursion?.meetingPoint ? <span className="text-text-soft"> · {excursion.meetingPoint}</span> : null}
-          </p>
-        )}
-        {reservation && <p className="mt-2 text-[13px] font-medium text-accent-green">✓ Reservada{reservation.locator ? ` · ${reservation.locator}` : ''}</p>}
-        {unidas.length === 0 && consejos.length > 0 && <div className="mt-3"><BloqueDeConsejos consejos={consejos} cuando="la excursión" tono="claro" /></div>}
-      </div>
-      )}
-      {/* (10R §4) Con el pase: «Tu excursión» con su código y [Cómo llegar al punto de encuentro]. */}
-      <TuExcursionEnHoy route={route} reserva={reservation} puntoDeEncuentro={excursion?.meetingPoint ?? null} />
+      {datos.cargado && <ExcursionHoy route={route} day={day} dateIso={dateIso} ubicacion={ubicacion} ahoraMin={ahoraMin} enCoche={enCoche} desde={desde} pieDeTarjeta={pieDeTarjeta} datos={datos} />}
       {page?.halfDay && afterwards.length > 0 && (
         <div className="rounded-2xl border border-text/[.08] bg-bg-card p-4">
           <p className="font-mono text-[10.5px] font-medium uppercase tracking-[.14em] text-text-muted">Tu tarde</p>

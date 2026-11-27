@@ -45,24 +45,26 @@ export function tarjetasDeLosDias(route: Route, filas: FilaDeCambio[], diaDe: (f
   })
 }
 
-export function HojaMoverDias({ titulo, ciudad, tarjetas, solo, onCambiar, onSolo, onCerrar }: { titulo: string; ciudad: string; tarjetas: TarjetaDeDia[]; /** «la entrada» o «la excursión». */ solo: 'la entrada' | 'la excursión'; onCambiar: () => void; onSolo: () => void; onCerrar: () => void }) {
+export function HojaMoverDias({ titulo, ciudad, tarjetas, solo, onCambiar, onSolo, onCerrar, texto, etiquetaSolo, sinRecomendado }: { titulo: string; ciudad: string; tarjetas: TarjetaDeDia[]; /** «la entrada» o «la excursión». */ solo: 'la entrada' | 'la excursión'; onCambiar: () => void; onSolo: () => void; onCerrar: () => void; /** (V80) El texto de arriba si no es el de siempre (la excursión cancelada). */ texto?: string; /** (V80) Lo que dice el botón blanco si no es «Solo mover …» («Dejarlo como está»). */ etiquetaSolo?: string; /** (V80) Sin la etiqueta verde «Recomendado» (aquí no hay dos formas de mover: solo cambiar o dejarlo). */ sinRecomendado?: boolean }) {
   return (
     <HojaV2 onCerrar={onCerrar} etiqueta={titulo} fondo="#FBF3E2">
       <div data-hoja-mover-dias className="flex flex-col gap-3">
         <Titulo texto={titulo} onCerrar={onCerrar} />
         <span data-mover-dias-texto className="text-[14.5px] font-medium leading-[1.45]">
-          Para que disfrutes de tu viaje a {ciudad}, te recomendamos cambiar los días enteros: así cada zona se ve junta y no vas de un lado a otro.
+          {texto ?? `Para que disfrutes de tu viaje a ${ciudad}, te recomendamos cambiar los días enteros: así cada zona se ve junta y no vas de un lado a otro.`}
         </span>
         <TarjetasDeCambios tarjetas={tarjetas} franja={null} />
         <div data-dos-botones className="grid grid-cols-2 gap-2.5 pt-2">
           <button type="button" onClick={onCambiar} data-mover-dias-cambiar className="relative flex min-h-[56px] items-center justify-center rounded-2xl px-3 text-center text-[14.5px] font-bold leading-[1.15]" style={BOTON_ORO}>
             Cambiar los días
-            <span data-etiqueta-recomendado className="absolute left-1/2 top-[-9px] flex h-[18px] -translate-x-1/2 items-center whitespace-nowrap rounded-full px-[9px] text-[9.5px] font-bold tracking-[.04em] text-white" style={{ background: '#2B7F45' }}>
-              Recomendado
-            </span>
+            {!sinRecomendado && (
+              <span data-etiqueta-recomendado className="absolute left-1/2 top-[-9px] flex h-[18px] -translate-x-1/2 items-center whitespace-nowrap rounded-full px-[9px] text-[9.5px] font-bold tracking-[.04em] text-white" style={{ background: '#2B7F45' }}>
+                Recomendado
+              </span>
+            )}
           </button>
           <button type="button" onClick={onSolo} data-mover-dias-solo className="flex min-h-[56px] items-center justify-center rounded-2xl px-3 text-center text-[14.5px] font-bold leading-[1.15]" style={BOTON_CLARO}>
-            Solo mover {solo}
+            {etiquetaSolo ?? `Solo mover ${solo}`}
           </button>
         </div>
       </div>

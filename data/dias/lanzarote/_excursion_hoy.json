@@ -1,0 +1,24 @@
+{
+  "formato": "excursion_hoy/1",
+  "_nota": "(V80) Lo que HOY necesita de cada excursión para el día de excursión paso a paso (src/lib/excursionHoy.ts). `modo_habitual`: lo que se supone mientras el viajero no haya guardado nada (RESERVAS manda en cuanto hay una reserva de excursión organizada, que la hace 'organizada', o billetes unidos, que la hacen 'por_tu_cuenta'). `dia_escrito`: el día de listas.json de donde salen los pasos (`partes`, `vuelta`, `en_la_isla`). `ideas` (Tu tiempo en…): SOLO sitios con su fuente; sin foto propia, la tarjeta sale sin foto. Nada se inventa.",
+  "excursiones": {
+    "la_graciosa": {
+      "modo_habitual": "por_tu_cuenta",
+      "medio": "barco",
+      "dia_escrito": "DG",
+      "nombre": "La Graciosa",
+      "destino": { "nombre": "La Graciosa", "lat": 29.2316, "lng": -13.5036, "radio_m": 2500, "fuente": "data/logros/lanzarote.json (sitios_extra.la_graciosa, Caleta de Sebo, aproximada) y radio de 2.500 m de los datos de logros" },
+      "puerto": { "nombre": "Órzola", "lat": 29.22344, "lng": -13.452461, "fuente": "data/dias/lanzarote/_paradas.json (orzola_puerto_de_la_graciosa)" },
+      "puerto_de_vuelta": { "nombre": "Caleta de Sebo", "buscar": "Puerto de Caleta de Sebo, La Graciosa", "fuente": "Líneas Romero: la ruta Órzola – Caleta de Sebo (lineasromero.com/en/rutas/lanzarote-la-graciosa), recogida en docs/destinos/lanzarote/DATOS_NATURALEZA_PUEBLOS_COCHE.md" },
+      "ideas": [
+        { "nombre": "Playa de La Laja", "sub": "Junto al muelle", "buscar": "Playa de La Laja, La Graciosa", "fuente": "https://turismolanzarote.com/en/what-you-cant-miss-on-la-graciosa/ (feb-2026), recogido en docs/destinos/lanzarote/DATOS_NATURALEZA_PUEBLOS_COCHE.md" },
+        { "nombre": "Playa del Salado", "sub": "A 15 min andando", "buscar": "Playa del Salado, La Graciosa", "fuente": "turismolanzarote.com (la misma)" },
+        { "nombre": "Playa de La Francesa", "sub": "Buena para snorkel", "buscar": "Playa de La Francesa, La Graciosa", "fuente": "turismolanzarote.com (la misma)" }
+      ],
+      "comer": "En Caleta de Sebo hay bares y restaurantes.",
+      "comer_fuente": "listas.json DG, partes.unica.comida.zona («en Caleta de Sebo»); DATOS_NATURALEZA_PUEBLOS_COCHE.md («En Caleta de Sebo están todos los servicios: súper, médico, restaurantes y alquiler de bicis»)"
+    },
+    "fuerteventura": { "modo_habitual": "por_tu_cuenta", "medio": "barco", "propuesta": "Propuesta V80: ferry desde Playa Blanca a Corralejo; se va por la cuenta del viajero (pendiente de que Eric lo confirme)." },
+    "isla_de_lobos": { "modo_habitual": "por_tu_cuenta", "medio": "barco", "propuesta": "Propuesta V80: barco desde Corralejo; por tu cuenta (pendiente de que Eric lo confirme)." }
+  }
+}
