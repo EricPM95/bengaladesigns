@@ -226,6 +226,12 @@ const api = {
     ponerDatos()
     useMomentosUI.getState().abrirResumenDia()
   },
+  /** (V79) El resumen de un día en que se ganan países nuevos, cada uno con el TOTAL que llevaba (`n`): el 1.º y el 2.º, la medalla del nivel 1; el 3.º, la de Trotamundos. Ej.: resumenDiaPaises([['Italia', 4]]). */
+  resumenDiaPaises: (paises: [string, number][]) => {
+    ponerDatos()
+    datosDePrueba.resumen = { ...resumenBase('wow', false), ganado: paises.map(([pais, n]) => ({ clave: `*|pais|${pais}`, logro: 'pais', escalon: pais, destino: '*', en, n })), por_categoria: { pais: paises.length } }
+    useMomentosUI.getState().abrirResumenDia()
+  },
   resumenViaje: (tipo: 'wow' | 'con_ganas' = 'wow') => {
     ponerDatos(true, tipo)
     useMomentosUI.getState().abrirResumenViaje()

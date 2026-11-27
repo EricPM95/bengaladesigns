@@ -295,7 +295,7 @@ export function tituloDeMomento(m: Momento): string {
 function chapaDe(m: Momento): { logro: string; escalon: string | number | null } {
   if (m.tipo === 'viajero') return { logro: s(m, 'logro'), escalon: s(m, 'escalon') || null }
   if (m.tipo === 'maravilla') return { logro: 'maravillas', escalon: Number(m.n ?? 1) }
-  if (m.tipo === 'patrimonio') return { logro: 'patrimonios', escalon: 1 }
+  if (m.tipo === 'patrimonio') return { logro: 'patrimonios', escalon: Number(m.n ?? 1) } // (V79) el total que lleva, no siempre el 1
   if (m.tipo === 'destino_nuevo') return { logro: 'destinos', escalon: Number(m.n ?? 1) }
   if (m.tipo === 'pais') return { logro: 'paises', escalon: Number(m.n ?? 1) }
   return { logro: 'continentes', escalon: null }

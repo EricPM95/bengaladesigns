@@ -66,7 +66,7 @@ debe(/if \(!conCifras \|\| movimientoReducido\(\) \|\| dentroDelEstudio\(\)\) re
 const viaje = sinComentarios(leer('src/components/logros/momentos/ResumenViaje.tsx'))
 debe(/yaSeVio\(claveResumenViaje\(tripId\)\)/.test(viaje) && /marcarVisto\(claveResumenViaje\(tripId\)\)/.test(viaje), 'resumenes', 'el resumen del viaje usa la marca de «ya se vio» (una por viaje, en el móvil)')
 const host = sinComentarios(leer('src/components/logros/momentos/MomentosHost.tsx'))
-debe(/<ResumenDia primeraVez/.test(host) && /window\.localStorage\.setItem\(claveDelResumen/.test(host), 'resumenes', 'el resumen del día sale desde el anfitrión, que ya guarda «este día ya salió» (la marca que existía), y solo él pide el sonido')
+debe(/<ResumenDia primeraVez/.test(host) && /abrirElResumenDeUnDia\(/.test(host) && /window\.localStorage\.setItem\(claveDelResumen/.test(sinComentarios(leer('src/components/logros/momentos/resumenDelDia.ts'))), 'resumenes', 'el resumen del día sale desde el anfitrión, que ya guarda «este día ya salió» (la marca que existía), y solo él pide el sonido')
 const dia = sinComentarios(leer('src/components/logros/momentos/ResumenDia.tsx'))
 debe(/primeraVez = false/.test(dia), 'resumenes', 'sin la marca «primera vez», ResumenDia no suena ni mueve nada')
 debe(/Date\.now\(\) - pendiente\.en < 3_000/.test(sinComentarios(leer('src/lib/sonidos.ts'))), 'pendiente', 'un sonido que no pudo salir solo se repite si el toque llega en menos de 3 s (no con la animación ya acabada)')

@@ -146,8 +146,8 @@ try {
       hayRejillaDeInterrogaciones: /\\?/.test(d.querySelector('[data-resumen-emblemas]')?.innerText ?? ''), nuevo: Boolean(d.querySelector('[data-resumen-viajero]')) }
   })()`)
   debe(!r.llaves && /Lanzarote 2026/.test(r.texto), 'resumen', `ningún texto con {…} y «Lanzarote 2026» con su nombre bien puesto (${r.texto.slice(r.texto.indexOf('Logros de viajero'), r.texto.indexOf('Logros de viajero') + 60)})`)
-  debe(/DÍAS|DÍA/.test(r.cifras ?? '') && /PARADAS/.test(r.cifras ?? '') && /FOTOS|FOTO/.test(r.cifras ?? ''), 'resumen', `las cifras del viaje (${r.cifras})`)
-  debe(/\+8 secretos por descubrir/.test(r.texto), 'resumen', 'el bloque de emblemas dice «+8 secretos por descubrir»')
+  debe(/DÍAS|DÍA/.test(r.texto) && /PARADAS/.test(r.cifras ?? '') && /FOTOS|FOTO/.test(r.cifras ?? ''), 'resumen', `(V79) los días van en la cabecera («TU VIAJE A … · N DÍAS»); las cifras, paradas y fotos (${r.cifras})`)
+  debe(/aún esconde 8 secretos: vuelve cuando quieras/.test(r.texto), 'resumen', '(V79) la línea de abajo dice «… aún esconde 8 secretos: vuelve cuando quieras»')
   debe(r.emblemas.length === 3 && r.emblemas.every((e) => e.dibujo && e.alto > 30), 'emblemas', `los 3 emblemas encontrados salen todos con su dibujo (${JSON.stringify(r.emblemas)})`)
   debe(!r.hayRejillaDeInterrogaciones && r.ancho, 'resumen', 'sin cuadrícula de «?» y sin cortes a la derecha')
   debe(/Te quedan 2 sorpresas por reclamar/.test(r.sorpresa ?? '') && /Hasta el/.test(r.sorpresa ?? ''), 'sorpresas', `la tarjeta cuenta solo los sitios que dan pedazo (2, no los 3 con emblema): «${r.sorpresa}»`)

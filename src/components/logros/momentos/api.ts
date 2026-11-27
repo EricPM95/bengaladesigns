@@ -51,7 +51,7 @@ export interface Pendiente {
 }
 export interface ResumenLogros {
   ok: boolean
-  ganado: { clave: string; logro: string; escalon: string; destino: string; en: string; /** (V59) El nombre de un Patrimonio o de una maravilla. */ nombre?: string }[]
+  ganado: { clave: string; logro: string; escalon: string; destino: string; en: string; /** (V79) El TOTAL que llevaba de ese logro al ganarlo (países, destinos, maravillas, patrimonios): da la medalla del nivel que toca. */ n?: number; /** (V59) El nombre de un Patrimonio o de una maravilla. */ nombre?: string }[]
   por_categoria: Record<string, number>
   pendiente: Pendiente
   texto_viaje: string

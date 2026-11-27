@@ -30,6 +30,8 @@ import { HojaPropuesta, Titulo, useContexto } from './CambiarPlan'
 import { LineaUbicacion } from './LineaUbicacion'
 import { datosDeLaSalida } from './VueltaH14'
 import { FilaDeUnion } from './FilaDeUnion'
+import { TarjetaCerrarViaje } from './TarjetaCerrarViaje'
+import { logrosActivos } from '../../../../lib/logros'
 import { useTrenUnido } from '../../../../hooks/useTrenUnido'
 import { useBilletesDeExcursiones } from '../../../../hooks/useBilleteExcursion'
 import { excursionConCodigo } from '../../../../store/useBilleteStore'
@@ -319,6 +321,8 @@ export function TarjetaDeVuelta({ route, day, dateIso, mitad, info, paradas, ubi
           )}
         </div>
       </div>
+      {/* (V79, VL6) Ya en el aeropuerto: «Tu viaje a Roma termina aquí» y [Cerrar mi viaje], debajo de la tarjeta del vuelo. */}
+      {yaEnElSitio && logrosActivos() && <TarjetaCerrarViaje route={route} />}
       {conTiempoLibre && (
         <div data-hoy-tiempo-libre className="flex flex-none flex-col gap-3 rounded-[22px] p-3.5" style={{ background: '#FBF3E2', border: '1px solid rgba(181,138,46,.5)' }}>
           <span data-hoy-tiempo-libre-titulo style={{ font: "400 22px/1.15 'Instrument Serif',serif", textWrap: 'balance' as never }}>

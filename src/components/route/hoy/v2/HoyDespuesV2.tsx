@@ -8,13 +8,14 @@ import { empezarViajeNuevo } from '../../../../lib/nuevoViaje'
 import { Icono } from '../../../ui/Icono'
 import { NewTripSheet } from '../../../layout/NewTripSheet'
 import { useMomentosUI } from '../../../logros/momentos/useMomentosUI'
+import { abrirElResumenUnaVez } from '../../../../lib/cierreDelViaje'
 import { TarjetaRecuerdos } from '../../fotos/TarjetaRecuerdos'
 import { HoyDespues } from '../HoyDespues'
 import { TarjetaOscura } from '../piezas'
 
 /**
  * HOY después del viaje, versión 2 (8B2). Con los logros encendidos, la pieza del resumen del viaje de «Logros · Momentos» (la abre `useMomentosUI.abrirResumenViaje()`; la monta MomentosHost):
- * se abre sola la primera vez que se entra (una vez por viaje y sesión) y aquí queda [Ver el resumen de mi viaje]. Con los logros apagados, el HOY de después de siempre.
+ * se abre sola UNA vez por viaje (V79: `cierreDelViaje.ts`; también al pulsar [Cerrar mi viaje]) y aquí queda [Ver el resumen de mi viaje]. Con los logros apagados, el HOY de después de siempre.
  */
 export function HoyDespuesV2({ route, startIso }: { route: Route; startIso: string }) {
   if (!logrosActivos()) return <HoyDespues route={route} startIso={startIso} />
@@ -25,15 +26,9 @@ function ConResumen({ route, startIso }: { route: Route; startIso: string }) {
   const [nuevoViaje, setNuevoViaje] = useState(false)
   const totalDias = diasDelViaje(route)
   const finIso = route.answers.dateRange?.end ?? addDaysToIso(startIso, Math.max(0, totalDias - 1))
+  // (V79, V74) El resumen sale solo UNA vez por viaje (ya no «una vez por sesión»): si ya salió (solo, o al pulsar [Cerrar mi viaje]), aquí queda [Ver el resumen de mi viaje].
   useEffect(() => {
-    const clave = `trazo:hoy:resumen-abierto:${route.id}`
-    try {
-      if (window.sessionStorage.getItem(clave)) return
-      window.sessionStorage.setItem(clave, '1')
-    } catch {
-      /* sin almacenamiento: se abre una vez por carga */
-    }
-    useMomentosUI.getState().abrirResumenViaje()
+    abrirElResumenUnaVez(route.id)
   }, [route.id])
   return (
     <>

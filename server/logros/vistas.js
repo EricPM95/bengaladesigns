@@ -272,6 +272,8 @@ export function pendientes({ datos, destino, viaje, items, hoy, nombreDe = null 
 /* Resumen del día y del viaje                                         */
 /* ------------------------------------------------------------------ */
 
+/** (V79) Los logros que se dibujan con la medalla del nivel que toca por el total que llevan. */
+const CUENTAN_POR_TOTAL = new Set(['pais', 'destino_nuevo', 'maravilla', 'patrimonio', 'continente'])
 export function resumen({ datos, destino, items, viaje, desde = null, hasta = null, hoy, nombreDe = null }) {
   const d = datos.destinos[destino]
   const dentro = (it) => {
@@ -291,7 +293,9 @@ export function resumen({ datos, destino, items, viaje, desde = null, hasta = nu
     // (V59) `nombre`: el nombre de un Patrimonio o de una maravilla, para la miniatura del resumen del día («Centro histórico de Roma»).
     ganado: ganado.map((it) => {
       const nombre = it.logro === 'patrimonio' ? Object.values(datos.destinos).map((x) => x.patrimonios?.[it.escalon]).find(Boolean)?.nombre : it.logro === 'maravilla' ? datos.viajero?.maravillas?.[it.escalon]?.nombre : undefined
-      return { clave: it.clave, logro: it.logro, escalon: it.escalon, destino: it.destino, en: it.en, ...(nombre ? { nombre } : {}) }
+      // (V79) `n`: el TOTAL que llevaba de ese logro cuando lo ganó (los países, destinos, maravillas y patrimonios que ya tenía, contando este): de ahí sale la medalla «que toca» (el 2.º país, la misma del 1.º; el 3.º, la de Trotamundos). Es la misma cuenta de las pantallas grandes (momentos.js).
+      const n = CUENTAN_POR_TOTAL.has(it.logro) ? [...items.values()].filter((x) => x.logro === it.logro && new Date(x.en) <= new Date(it.en)).length : undefined
+      return { clave: it.clave, logro: it.logro, escalon: it.escalon, destino: it.destino, en: it.en, ...(n ? { n } : {}), ...(nombre ? { nombre } : {}) }
     }),
     por_categoria: Object.fromEntries(Object.entries(porCategoria).map(([k, v]) => [k, v.length])),
     pendiente: pendientes({ datos, destino, viaje, items, hoy, nombreDe }),

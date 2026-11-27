@@ -230,7 +230,7 @@ console.log('7. Tanda 8B4: Patrimonio del Coliseo, artículos, sin cuenta atrás
       `export { enSitio, deSitio } from '${abs('src/lib/articulos.ts')}'\n` +
       `export { diasParaReclamar, textoDelPlazo } from '${abs('src/components/logros/visto/fechas.ts')}'\n`,
   )
-  await build({ entryPoints: [path.join(carpeta, 'entrada.ts')], outfile: salida, bundle: true, platform: 'node', format: 'cjs', logLevel: 'error', jsx: 'automatic', define: { 'import.meta.env': '{"DEV":false}' } })
+  await build({ entryPoints: [path.join(carpeta, 'entrada.ts')], outfile: salida, bundle: true, platform: 'node', format: 'cjs', logLevel: 'error', jsx: 'automatic', loader: { '.css': 'empty' }, define: { 'import.meta.env': '{"DEV":false}' } })
   const B = createRequire(import.meta.url)(salida)
   // El sello
   debe(JSON.stringify(B.contarSellos([{ sello: 'roma', grado: 'bronce' }])) === '{"nuevos":1,"subidos":0}', 'sello', 'el primer sello (bronce) es «sello nuevo», no «subido de grado»')
@@ -296,7 +296,7 @@ console.log('8. Tanda 8B5: fotos elegidas, medalla nueva, Patrimonio con número
       `export { detalleSellos } from '${abs('src/components/logros/momentos/ResumenDia.tsx')}'\n` +
       `export { tituloDeMomento } from '${abs('src/components/logros/momentos/pantallas.tsx')}'\n`,
   )
-  await build({ entryPoints: [path.join(carpeta, 'entrada.ts')], outfile: salida, bundle: true, platform: 'node', format: 'cjs', logLevel: 'error', jsx: 'automatic', define: { 'import.meta.env': '{"DEV":false}' } })
+  await build({ entryPoints: [path.join(carpeta, 'entrada.ts')], outfile: salida, bundle: true, platform: 'node', format: 'cjs', logLevel: 'error', jsx: 'automatic', loader: { '.css': 'empty' }, define: { 'import.meta.env': '{"DEV":false}' } })
   const B = createRequire(import.meta.url)(salida)
   // Los títulos de las cuatro tarjetas
   const orde = ['', 'primera', 'segunda', 'tercera', 'cuarta', 'quinta', 'sexta']
@@ -335,7 +335,7 @@ console.log('8. Tanda 8B5: fotos elegidas, medalla nueva, Patrimonio con número
   const rd5 = leer('src/components/logros/momentos/ResumenDia.tsx')
   debe(rd5.includes("'Resumen de ayer' : 'Resumen del día'") && !rd5.includes('Esto es lo que has ganado hoy') && rd5.includes('data-resumen-titulo'), 'resumen', '(V71) el título del resumen vigente (V59, R1/R2): «Resumen del día» por la noche y «Resumen de ayer» a la mañana siguiente')
   const rv5 = leer('src/components/logros/momentos/ResumenViaje.tsx')
-  debe(rv5.includes('lineaDeSecretos') && !/secretos encontrados`/.test(rv5), 'resumen', 'el resumen del viaje usa la misma línea de secretos')
+  debe((rv5 + leer('src/components/logros/momentos/datosDelResumenViaje.ts')).includes('lineaDeSecretos') && !/secretos encontrados`/.test(rv5), 'resumen', 'el resumen del viaje usa la misma línea de secretos')
   // Las fotos elegidas
   const tabla = JSON.parse(leer('data/dias/roma/_fotos.json'))
   const nuevas = { 'Foro Romano y Palatino': 'dia_foro_romano_y_palatino.jpg', 'Arco de Constantino': 'dia_arco_de_constantino.jpg', Panteón: 'dia_panteon.jpg', 'Piazza Navona': 'dia_piazza_navona.jpg', 'Museos Vaticanos y Capilla Sixtina': 'dia_museos_vaticanos.jpg', 'Columna de Trajano': 'dia_columna_de_trajano.jpg' }
@@ -379,7 +379,7 @@ console.log('9. Tanda 8C1: dibujos del Dashboard, hoja de secretos, título de H
   debe(dash.includes('IC_ESCALONES') && dash.includes('IC_UNICOS') && dash.includes("'Alondra'"), 'dibujos', 'los iconos del Dashboard están copiados')
   // Las pantallas que enseñan logros usan la chapa nueva
   const pant = leer('src/components/logros/momentos/pantallas.tsx')
-  debe(pant.includes('<Chapa logro={ch.logro}') && leer('src/components/logros/momentos/ResumenViaje.tsx').includes('<Chapa logro={n.id}'), 'dibujos', '«Y además…», los avisos de lo ganado y el resumen del viaje usan las chapas nuevas')
+  debe(pant.includes('<Chapa logro={ch.logro}') && leer('src/components/logros/momentos/ResumenViaje.tsx').includes('<Chapa logro={n.logro}'), 'dibujos', '«Y además…», los avisos de lo ganado y el resumen del viaje usan las chapas nuevas')
   // La hoja de logros
   const hoja = leer('src/components/logros/momentos/HojaLogros.tsx')
   debe((/tituloDeSecretos|lineaDeSecretos/.test(hoja) || /secretos encontrados/i.test(hoja)) && !/de 12 secretos/.test(sinComentarios(hoja).replace(/«N de 12 secretos»/g, '')), 'hoja', 'la hoja de logros cuenta los secretos desde el servidor (V25: «N de M secretos encontrados», con siluetas; antes «Roma aún esconde N secretos»)')

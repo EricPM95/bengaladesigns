@@ -51,6 +51,7 @@ import { HoyVuelvesH14, datosDeLaSalida } from './VueltaH14'
 import { useTrenUnido } from '../../../../hooks/useTrenUnido'
 import { TarjetaDeVuelta, leerEnElSitio } from './TarjetaDeVuelta'
 import { HoyDespuesV2 } from './HoyDespuesV2'
+import { hoyYaEsDespues, useViajeCerrado } from '../../../../lib/cierreDelViaje'
 import { FilaDeAviso, D_AVISO } from './AvisosHoy'
 import { esDiaRecienReorganizado } from '../../../../lib/reorganizarDia'
 import { useReorganizarStore } from '../../../../store/useReorganizarStore'
@@ -261,6 +262,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const [ultimoVisto, setUltimoVisto] = useState<Stop | null>(null)
   const sumaDelVisto = useUltimaSuma(ultimoVisto?.id ?? null)
   const ahoraMinHoy = useAhoraMin()
+  const viajeCerradoAMano = useViajeCerrado(route.id) // (V79) [Cerrar mi viaje]: HOY pasa a «después»
   const conPaseOPrueba0 = pagoActivo()
   const [ofrecerFoto, setOfrecerFoto] = useState<Stop | null>(null)
 
@@ -456,9 +458,11 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
     )
   }
   // (V57) El vuelo de vuelta ya ha salido: nada de «Tu vuelo sale a las…», «Devuelve el coche» ni «0 paradas hoy». Dos horas después, HOY pasa a lo de después del viaje; antes, «Buen viaje de vuelta».
-  if (vueloYaSalio) {
+  // (V79) HOY pasa a «después»: con [Cerrar mi viaje] pulsado, o 2 h después de «Ya en el aeropuerto» o, si no pasó por ahí, 2 h después de la hora del vuelo (una sola cuenta: `hoyYaEsDespues`).
+  const esDespuesDelViaje = esVuelta && hoyYaEsDespues({ cerrado: viajeCerradoAMano, ahoraMin: ahoraMinHoy, enElSitioMin: leerEnElSitio(route, dateIso), vueloMin })
+  if (vueloYaSalio || esDespuesDelViaje) {
     const iso = route.answers.dateRange?.start
-    return ahoraMinHoy >= Math.max(leerEnElSitio(route, dateIso) ?? (vueloMin as number), 0) + 120 && iso ? (
+    return esDespuesDelViaje && iso ? (
       <HoyDespuesV2 route={route} startIso={iso} />
     ) : (
       <>

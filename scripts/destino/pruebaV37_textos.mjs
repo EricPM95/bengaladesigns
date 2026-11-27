@@ -58,6 +58,7 @@ function esTextoVisible(t) {
   if (/^[a-z0-9_.:|\-\[\]="' ]+$/.test(sin) && !/\s/.test(sin)) return false // una palabra o clave
   if (/^[\w.|:\-]+$/.test(sin)) return false // clave sin espacios (ej|sello|roma:plata)
   if (/(^|[\s|])\|?sello\|/.test(t)) return false // clave con tubos (`${destino}|sello|${id}`, `sello|${destino}|${id}`)
+  if (/^sello(:(\$\{[^}]*\}|[\w.-]*))+$/.test(t.trim())) return false // (V79) clave interna de ficha «sello:${destino}:${id}» (sin espacios); una frase con espacios sí cuenta
   if (/^window\.__demo /.test(sin)) return false // la ayuda de la consola de desarrollo (window.__demo)
   if (/^\[[^\]]*\]/.test(sin)) return false // selector CSS ([data-balda="sellos"] button)
   if (/^[\w./:-]*\bSello\b[\w./:-]*$/.test(sin)) return false // ruta de import ('./Sello')
@@ -151,6 +152,8 @@ const enListaBlanca = (rel, texto) => BLANCA.some((b) => b.archivo.test(rel) && 
   debe(cazados.length === 3, 'detector', `caza «Tu sello de Roma», la plantilla «Tu sello \${n.de}» y «Sellos de ciudad» (${cazados.length} de 3)`)
   const bueno = "const k = 'sello'\nconst l = 'roma|sello|roma:plata'\nconst m = 'suma_sello'\n// Tu sello de Roma (un comentario)\n/* Sellos de ciudad */\nimport { Sello } from './Sello'\nconst o = 'Medalla de Roma'\n"
   debe(textosConSello(bueno).length === 0, 'detector', 'deja pasar claves, comentarios, imports y «Medalla de Roma»')
+  debe(textosConSello("const k = `sello:${d}:${i}`\nconst z = 'sello:roma:vaticano'\n").length === 0, 'detector', '(V79) deja pasar la clave interna de ficha sello:${destino}:${id}')
+  debe(textosConSello("const t = 'sello: Tu sello de Roma'\nconst u = `Tu sello:${n}`\n").length === 2, 'detector', '(V79) caso negativo: un texto visible con «sello» sigue cazado aunque lleve «sello:»')
   const jsx = 'export const X = () => <b>Tus sellos de Roma</b>\nconst y = () => <i>{sello.n} · {sello.grado}</i>\n'
   const cj = textosConSello(jsx, { esTsx: true })
   debe(cj.length === 1 && /Tus sellos de Roma/.test(cj[0].texto), 'detector', `caza el texto de JSX «Tus sellos de Roma» y no las llaves con código (${JSON.stringify(cj)})`)

@@ -11,6 +11,7 @@ import { datosDePrueba, pedirEstado, pedirResumen, pedirViajero, viajeroGuardado
 import './momentos.css'
 import { fila, lineaDeSecretos, ORDEN_FILAS, textoDeSello } from './textosResumen'
 import { useMomentosUI } from './useMomentosUI'
+import { BanderaRedonda } from '../../ui/BanderaRedonda'
 import { CruzDeHoja } from '../../ui/CruzDeHoja'
 import { TiradorDeHoja } from '../../ui/TiradorDeHoja'
 import { FONDO_DE_HOJA } from '../../ui/fondoDeHoja'
@@ -64,8 +65,6 @@ export function contarMomentos(ganado: Momento[]): Record<string, number> {
 /* ── Las miniaturas de cada fila (V59): TODAS del mismo tamaño (el grande de los pedazos y los emblemas) y alineadas a la misma izquierda ── */
 const LADO = 56
 const HUECO = 8
-const BANDERAS: Record<string, string> = { italia: '🇮🇹', españa: '🇪🇸', francia: '🇫🇷', portugal: '🇵🇹', alemania: '🇩🇪', 'reino unido': '🇬🇧', grecia: '🇬🇷', méxico: '🇲🇽', marruecos: '🇲🇦', 'países bajos': '🇳🇱', bélgica: '🇧🇪', suiza: '🇨🇭', austria: '🇦🇹', 'ciudad del vaticano': '🇻🇦', vaticano: '🇻🇦' }
-const bandera = (pais: string): string => BANDERAS[pais.trim().toLowerCase()] ?? ''
 const humanizar = (id: string): string => {
   const t = id.replace(/_/g, ' ').trim()
   return t.charAt(0).toUpperCase() + t.slice(1)
@@ -75,8 +74,10 @@ interface Miniatura {
   clave: string
   /** El dibujo, dentro de un cuadrado de LADO × LADO. */
   dibujo: ReactNode
-  /** Lo de debajo, pequeño («🇮🇹 Italia», «Roma», el nombre del logro). */
+  /** Lo de debajo, pequeño («Italia», «Roma», el nombre del logro). */
   pie?: string
+  /** (V79) Lo que va en la esquina del dibujo (la bandera redonda de un país nuevo). */
+  esquina?: ReactNode
 }
 
 /** Cuántas miniaturas caben en una fila de `ancho` px: todas si caben; si no, las que caben menos una, que es el «+N». */
@@ -113,7 +114,7 @@ function FilaDeMiniaturas({ items }: { items: Miniatura[] }): ReactNode {
     <div ref={ref} data-miniaturas-fila style={{ display: 'flex', alignItems: 'flex-start', gap: HUECO, overflow: 'hidden', minHeight: LADO }}>
       {items.slice(0, ver).map((m) => (
         <span key={m.clave} data-miniatura style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, minWidth: LADO, maxWidth: 96, flex: 'none' }}>
-          <span style={{ display: 'flex', width: LADO, height: LADO, alignItems: 'center', justifyContent: 'center' }}>{m.dibujo}</span>
+          <span style={{ position: 'relative', display: 'flex', width: LADO, height: LADO, alignItems: 'center', justifyContent: 'center' }}>{m.dibujo}{m.esquina}</span>
           {m.pie && <span style={{ font: "600 9.5px/1.15 'Geist'", textAlign: 'center', color: 'rgba(28,34,48,.7)', maxWidth: 96, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{m.pie}</span>}
         </span>
       ))}
@@ -212,6 +213,8 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar, primeraVez
 
   // Las miniaturas de cada fila, de lo que se ganó ese día (los datos de `resumen.ganado`: cada uno trae su escalón).
   const ganados = resumen?.ganado ?? []
+  // (V79) La medalla «que toca»: por el TOTAL que llevaba de ese logro al ganarlo (`g.n`, que cuenta el servidor), nunca por el orden dentro del día. Sin `n` (un servidor viejo), el orden entre los del día, como antes.
+  const totalDe = (g: { n?: number }, _logro: string, i: number): number => g.n ?? i + 1
   const miniaturas = (k: string): Miniatura[] => {
     if (k === 'pedazo') {
       const por = new Map<string, string[]>()
@@ -234,11 +237,11 @@ export function ResumenDia({ ganado, estado: estadoInicial, alCerrar, primeraVez
             </span>
           ),
         }))
-    if (k === 'pais') return ganados.filter((x) => x.logro === 'pais').map((g, i) => ({ clave: `pa-${g.escalon}`, dibujo: <Chapa logro="paises" escalon={i + 1} tam={LADO} igual />, pie: `${bandera(g.escalon)} ${g.escalon}`.trim() }))
-    if (k === 'destino_nuevo') return ganados.filter((x) => x.logro === 'destino_nuevo').map((g, i) => ({ clave: `d-${g.escalon}`, dibujo: <Chapa logro="destinos" escalon={i + 1} tam={LADO} igual />, pie: g.escalon === estado?.destino ? ciudad : humanizar(g.escalon) }))
+    if (k === 'pais') return ganados.filter((x) => x.logro === 'pais').map((g, i) => ({ clave: `pa-${g.escalon}`, dibujo: <Chapa logro="paises" escalon={totalDe(g, 'pais', i)} tam={LADO} igual />, esquina: <BanderaRedonda pais={g.escalon} tam={20} esquina="abajo-derecha" />, pie: g.escalon }))
+    if (k === 'destino_nuevo') return ganados.filter((x) => x.logro === 'destino_nuevo').map((g, i) => ({ clave: `d-${g.escalon}`, dibujo: <Chapa logro="destinos" escalon={totalDe(g, 'destino_nuevo', i)} tam={LADO} igual />, pie: g.escalon === estado?.destino ? ciudad : humanizar(g.escalon) }))
     if (k === 'continente') return ganados.filter((x) => x.logro === 'continente').map((g) => ({ clave: `co-${g.escalon}`, dibujo: <span style={{ height: 30, padding: '0 11px', borderRadius: 999, background: '#DDE6F2', display: 'flex', alignItems: 'center', font: "700 12px 'Geist'", whiteSpace: 'nowrap' }}>{humanizar(g.escalon)}</span> }))
-    if (k === 'maravilla') return ganados.filter((x) => x.logro === 'maravilla').map((g, i) => ({ clave: `m-${g.escalon}`, dibujo: <Chapa logro="maravillas" escalon={i + 1} tam={LADO} igual />, pie: g.nombre ?? humanizar(g.escalon) }))
-    if (k === 'patrimonio') return ganados.filter((x) => x.logro === 'patrimonio').map((g) => ({ clave: `pt-${g.escalon}`, dibujo: <Chapa logro="patrimonios" escalon={1} tam={LADO} igual />, pie: g.nombre ?? humanizar(g.escalon) }))
+    if (k === 'maravilla') return ganados.filter((x) => x.logro === 'maravilla').map((g, i) => ({ clave: `m-${g.escalon}`, dibujo: <Chapa logro="maravillas" escalon={totalDe(g, 'maravilla', i)} tam={LADO} igual />, pie: g.nombre ?? humanizar(g.escalon) }))
+    if (k === 'patrimonio') return ganados.filter((x) => x.logro === 'patrimonio').map((g) => ({ clave: `pt-${g.escalon}`, dibujo: <Chapa logro="patrimonios" escalon={totalDe(g, 'patrimonio', 0)} tam={LADO} igual />, pie: g.nombre ?? humanizar(g.escalon) }))
     if (k === 'viajero')
       return ganados
         .filter((x) => x.logro.startsWith('viajero:'))

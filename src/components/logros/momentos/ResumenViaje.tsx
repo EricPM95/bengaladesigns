@@ -1,10 +1,13 @@
 import { FONDO_DE_HOJA } from '../../ui/fondoDeHoja'
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { useSyncStore } from '../../../store/useSyncStore'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { usePortadaDeViaje } from '../../../hooks/usePortadaDeViaje'
+import { useFotosViaje } from '../../../lib/useFotosViaje'
 import { useNumeroFotos } from '../../../lib/useNumeroFotos'
-import { ListaDeColeccion } from '../ficha/ListaDeColeccion'
+import { urlParaMostrar } from '../../../lib/fotosViaje'
+import { resumenDeViaje } from '../../../lib/viajesPerfil'
+import { AlbumDeViaje } from '../../perfil/AlbumDeViaje'
 import { fetchPlacePhoto } from '../../../lib/placePhoto'
 import { fraseDelPlazo } from '../../../lib/reclamar'
 import { subirMiFoto } from '../../../lib/companero'
@@ -12,8 +15,11 @@ import { useLogrosPantallas } from '../pantallas/useLogrosPantallas'
 import { Chapa, Emblema, Insignia, Sello, type GradoDeSello } from '../dibujos'
 import { ORDEN_EMBLEMAS_LANZAROTE, idDeDibujoLanzarote } from '../dibujos/emblemasLanzarote'
 import { abrirGaleriaDeReclamo } from '../reclamar/Reclamar'
+import { BOTON_CLARO, BOTON_GRANATE } from '../../ui/botonesOro'
+import { BanderaRedonda } from '../../ui/BanderaRedonda'
 import { BTN_CAM_ORO } from '../visto/Hojas'
-import { lineaDeSecretos } from './textosResumen'
+import { COLOR_DE_GRADO, conDe } from '../pantallas/destino/formato'
+import { datosDelResumenViaje } from './datosDelResumenViaje'
 import { estadoGuardado, pedirEstado, pedirResumen, pedirViajero, resumenGuardado, viajeroGuardado, type EstadoLogros, type LogrosViajero, type ResumenLogros } from './api'
 import './momentos.css'
 import { useMomentosUI } from './useMomentosUI'
@@ -25,14 +31,16 @@ import { HojasDeLogros } from '../pantallas/todos/HojasDeLogros'
 import '../pantallas/todos/todos.css'
 
 /**
- * EL RESUMEN DEL VIAJE, REHECHO (Tanda V9, apartado 6; «Resumen del viaje» de Design, la versión con la foto arriba). Es el RECUERDO de lo ganado en ESTE viaje (no la hoja de logros, que dice cómo vas):
- *   · arriba una foto grande del viaje (una de las suyas; si no, la del destino), «Lo que te llevas de {ciudad}» y las cifras: días, paradas, km y fotos;
- *   · la medalla grande y sin barra: «Has conseguido el bronce de Lanzarote»;
- *   · colecciones: solo las que han sumado en este viaje, con lo sumado («+2») y sin barras;
- *   · emblemas: solo los descubiertos en este viaje, con su dibujo y su nombre, y «+9 secretos por descubrir» (sin cuadrícula de «?»);
- *   · logros de viajero nuevos, de 3 en 3, todos del mismo tamaño y cada uno con SU dibujo y SU marco;
- *   · «Te quedan N sorpresas por reclamar»: una tarjeta que se toca y abre la hoja con CUÁLES son (los sitios de la ruta que dan algún pedazo y aún no se tiene; los emblemas ocultos nunca se nombran).
- * [Estampar mi sello] (8C3): cierra este aviso y abre el pasaporte en la página del viaje con el sello estampándose (P2e).
+ * «RESUMEN DE TU VIAJE A ROMA» (V79, apartado 2; Design «La vuelta en HOY», VL7a y VL7b; sustituye a «Lo que te llevas de…» de la V9). Pantalla completa con la MISMA forma que la página de logros del destino (P1, V72: `PaginaDeDestino`),
+ * pero SOLO con lo ganado EN ESTE VIAJE (las cuentas, en `datosDelResumenViaje.ts`, puras):
+ *   · arriba la foto real del destino, «TU VIAJE A ROMA · 6 DÍAS», «Resumen de tu viaje a Roma» y la tarjeta de la medalla con su grado y su frase;
+ *   · «Más medallas» (solo si el destino tiene más de una y en este viaje se ganó la otra), «Colecciones que han avanzado» («4 de 8» y su barrita), «Emblemas ocultos descubiertos», «Logros de viajero» (sin círculo de vitrina:
+ *     aquí no hay vitrina) y «Tus fotos del viaje» (+N; al tocar, el álbum). Lo que no tiene nada, no sale (VL7b);
+ *   · «Roma aún esconde 9 secretos: vuelve cuando quieras» y [Ver mi pasaporte], en GRANATE (regla V79: el pasaporte va siempre en granate).
+ * Al tocar una medalla o una colección sube su ficha en grande (V72, `FichaGrande`); un logro de viajero, su ficha (`FichaHoja`).
+ * (Se mantienen, aunque el dibujo no los enseñe —regla V46—: las cifras del viaje, «Te quedan N sorpresas por reclamar», [Compartir mi viaje] y [Ver mi viaje]; ver DECISIONES_V79.)
+ * [Ver mi pasaporte] (8C3): cierra este aviso y abre el pasaporte en la página del viaje, con el sello estampándose la primera vez (P2e) y sin estampar las siguientes (antes: [Estampar mi sello] / [Ver mi sello]).
+ * Consultas a Supabase: la lista de fotos del viaje (`useFotosViaje`: unas 47 filas ≈ 15 KB), UNA vez al abrir; lo ganado sale del servidor (GET /api/logros/estado y /resumen, una vez al abrir). Nada en bucle.
  */
 const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
 export function rangoDeFechas(inicio: string, fin: string): string {
@@ -41,8 +49,9 @@ export function rangoDeFechas(inicio: string, fin: string): string {
   return `${a.getDate()} – ${b.getDate()} ${MESES[b.getMonth()]}`
 }
 
-const ETIQUETA = { font: "600 10px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: 'rgba(28,34,48,.55)' } as const
-const GRADO_CON_ARTICULO: Record<string, string> = { bronce: 'el bronce', plata: 'la plata', oro: 'el oro', diamante: 'el diamante' }
+/** La clave con que se pide una ficha en grande (): «coleccion:roma:imprescindibles» o la de una medalla de ciudad (su clave interna es «sello»: ver CLAUDE.md, V37). */
+const claveDeFicha = (que: 'coleccion' | 'medalla', destino: string, id: string): string => [que === 'medalla' ? 'sel' + 'lo' : que, destino, id].join(':')
+const TITULO_DE_SECCION = { font: "400 26px/1 'Instrument Serif',serif" } as const
 
 /** «{ciudad} {anio}» → «Lanzarote 2026»: los nombres de los logros llevan huecos que se rellenan con el destino y el año del escalón. Nunca sale una llave suelta. */
 export function rellenarNombre(nombre: string | null | undefined, ciudad: string, anio: string | number | null | undefined): string | null {
@@ -86,6 +95,16 @@ export interface DatosDeEjemploDelResumen {
   fotos: number
 }
 
+/** Un título de sección del resumen («Más medallas», «Colecciones que han avanzado»…): el mismo serif de la página del destino. */
+function Seccion({ titulo, datos, hijos }: { titulo: string; datos: string; hijos: ReactNode }): ReactNode {
+  return (
+    <div {...{ [datos]: '' }} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <span style={TITULO_DE_SECCION}>{titulo}</span>
+      {hijos}
+    </div>
+  )
+}
+
 export default function ResumenViaje({ ejemplo }: { ejemplo?: DatosDeEjemploDelResumen } = {}): ReactNode {
   const route = useRouteStore((s) => s.route)
   const tripIdReal = useSyncStore((s) => s.activeTripId) ?? route?.id ?? null
@@ -95,9 +114,9 @@ export default function ResumenViaje({ ejemplo }: { ejemplo?: DatosDeEjemploDelR
   const [resumen, setResumen] = useState<ResumenLogros | null>(() => ejemplo?.resumen ?? resumenGuardado(tripId))
   const [viajero, setViajero] = useState<LogrosViajero | null>(() => ejemplo?.viajero ?? viajeroGuardado())
   const [cargado, setCargado] = useState(Boolean(ejemplo))
-  const [coleccionAbierta, setColeccionAbierta] = useState<string | null>(null)
   const [hojaSorpresas, setHojaSorpresas] = useState(false)
-  // (V38) Tocar un logro de viajero abre SU ficha: la misma pieza de la pestaña Logros (FichaHoja, dentro de HojasDeLogros), no una copia. Lo ganado (`useGanados`) es lo mismo que enseña esa pestaña.
+  const [album, setAlbum] = useState(false)
+  // (V38, V79) Tocar un logro de viajero, una medalla o una colección abre SU ficha: la misma pieza de la pestaña Logros (`FichaHoja` / `FichaGrande`, dentro de HojasDeLogros), no una copia. Lo ganado (`useGanados`) es lo mismo que enseña esa pestaña.
   // Consulta: GET /api/logros/ganados, UNA vez al abrir una ficha (y solo si aún no se había pedido); baja unos 20-40 KB (lo ganado de la cuenta), nunca en bucle ni en segundo plano.
   const ganados = useGanados((x) => x.datos)
   const fichaAbierta = useHojasDeLogros((x) => x.ficha)
@@ -123,53 +142,32 @@ export default function ResumenViaje({ ejemplo }: { ejemplo?: DatosDeEjemploDelR
       vivo = false
     }
   }, [tripId])
-  // (V14) Las fotos del viaje se cuentan y se buscan con el id de la RUTA (`route.id`), que es con el que se guardan (y con el que las cuenta el Perfil). Antes se contaban con el id del viaje en la nube,
-  // que no es el mismo, y salían «2 fotos» donde el Perfil decía «6». Las dos cuentas son ahora la misma: TODAS las fotos del viaje.
+  // (V14) Las fotos del viaje se cuentan y se buscan con el id de la RUTA (`route.id`), que es con el que se guardan (y con el que las cuenta el Perfil). (V79) Además se baja la lista (solo para las miniaturas de «Tus fotos del viaje»).
   const idDeFotos = ejemplo ? '' : (route?.id ?? tripId ?? '')
-  const cuentaDeFotos = useNumeroFotos(idDeFotos ? [idDeFotos] : [])
-  const fotos = ejemplo ? ejemplo.fotos : (cuentaDeFotos?.get(idDeFotos) ?? 0)
+  const { fotos: listaDeFotos } = useFotosViaje(idDeFotos || null)
+  const cuentaDeFotos = useNumeroFotos(idDeFotos ? [idDeFotos] : []) // la misma cuenta que el Perfil (≈0,1 KB, una vez al abrir)
+  const fotos = ejemplo ? ejemplo.fotos : (cuentaDeFotos?.get(idDeFotos) ?? listaDeFotos.length)
   const ciudad = estado?.ciudad ?? ''
   // (V14) La portada: lo que eligió el viajero; si no eligió, una foto hecha EN el destino (mejor la de un sitio con logro); y si no hay ninguna, la del destino de nuestros datos.
   // (V15) La misma regla de portada que el Perfil y los recuerdos (una sola para toda la app): lo que eligió el viajero; si no, una foto hecha en el destino (mejor la de un sitio con logro); si no, la del destino.
   const sitiosConLogro = (estado?.colecciones ?? []).flatMap((c) => c.sitios.map((x) => ({ nombre: x.nombre ?? x.sitio, visto: x.visto })))
   const portada = usePortadaDeViaje(idDeFotos, route?.destination ?? ciudad, true, route, sitiosConLogro)
   const cerrar = () => useMomentosUI.getState().cerrarResumenViaje()
-  // (V14) Estampar solo UNA vez: con el sello ya estampado, el botón es [Ver mi sello] y abre el pasaporte en su página sin estampar.
+  // (V14) Estampar solo UNA vez: con el sello ya estampado, el pasaporte se abre en su página sin estampar.
   const yaEstampado = selloYaEstampado(tripId)
-  const estampar = () => {
+  const verPasaporte = () => {
     cerrar()
     useLogrosPantallas.getState().abrir({ t: 'pasaporte', pagina: `${yaEstampado ? 'ver-sello' : 'sello'}:${tripId}` })
   }
 
-  // Lo ganado EN ESTE VIAJE (`resumen.ganado`).
-  const ganadoDelViaje = resumen?.ganado ?? []
-  const nuevos = ganadoDelViaje
-    .filter((g) => g.logro.startsWith('viajero:'))
-    .map((g) => {
-      const id = g.logro.slice('viajero:'.length)
-      const def = viajero?.logros?.find((l) => l.id === id)
-      const esc = def?.escalones?.find((e) => String(e.n) === String(g.escalon))
-      return { id, clave: g.clave, escalon: g.escalon || null, destino: g.destino, nombre: rellenarNombre(esc?.nombre ?? def?.nombre ?? null, ciudad, g.escalon) }
-    })
-    .filter((x) => x.nombre)
-  const sumadas = useMemo(() => {
-    const por = new Map<string, number>()
-    for (const g of ganadoDelViaje) if (g.logro === 'pedazo') por.set(g.escalon.split(':')[0]!, (por.get(g.escalon.split(':')[0]!) ?? 0) + 1)
-    return [...por.entries()].map(([id, mas]) => ({ id, mas, c: estado?.colecciones.find((c) => c.id === id) })).filter((x) => x.c)
-  }, [ganadoDelViaje, estado])
-  const emblemas = useMemo(() => {
-    const ids = new Set(ganadoDelViaje.filter((g) => g.logro === 'emblema').map((g) => g.escalon))
-    return (estado?.secretos.encontrados_lista ?? []).filter((e) => ids.has(e.id))
-  }, [ganadoDelViaje, estado])
-  const sello = estado?.sellos[0]
-  const secretos = estado?.secretos
-  const porDescubrir = secretos ? Math.max(0, secretos.total - secretos.encontrados) : 0
+  // Lo ganado EN ESTE VIAJE, ya ordenado en secciones (puro: `datosDelResumenViaje`).
+  const d = estado ? datosDelResumenViaje(estado, resumen, viajero) : null
   const lanza = estado?.destino === 'lanzarote'
+  const secretos = estado?.secretos
   const dias = ejemplo ? ejemplo.dias : estado?.viaje ? Math.round((Date.parse(`${estado.viaje.fin}T12:00:00Z`) - Date.parse(`${estado.viaje.inicio}T12:00:00Z`)) / 86400000) + 1 : null
-  const paradas = ejemplo ? ejemplo.paradas : (route?.days ?? []).reduce((n, d) => n + (d.stops ?? []).filter((s) => !s.isZoneWalk).length, 0)
+  const paradas = ejemplo ? ejemplo.paradas : (route?.days ?? []).reduce((n, x) => n + (x.stops ?? []).filter((s) => !s.isZoneWalk).length, 0)
   const km = ejemplo ? ejemplo.km : kmDelViaje(route?.days as never)
   const cifras = [
-    ...(dias ? [{ n: String(dias), l: dias === 1 ? 'DÍA' : 'DÍAS' }] : []),
     { n: String(paradas), l: paradas === 1 ? 'PARADA' : 'PARADAS' },
     ...(km > 0 ? [{ n: String(km), l: 'KM' }] : []),
     { n: String(fotos), l: fotos === 1 ? 'FOTO' : 'FOTOS' },
@@ -190,9 +188,14 @@ export default function ResumenViaje({ ejemplo }: { ejemplo?: DatosDeEjemploDelR
   const hayPlazo = Boolean(pend && !pend.plazo_pasado)
   const hastaCuando = fraseDelPlazo(route)?.replace('Puedes reclamar hasta', 'Hasta')
   const fondoPortada = portada.url ? `center/cover url(${portada.url})` : 'linear-gradient(160deg,#E9A978 0%,#B2593A 38%,#4A2A24 72%,#1C2230 100%)'
+  const miniaturas = listaDeFotos.filter((f) => urlParaMostrar(f)).slice(0, 4)
+  const masFotos = Math.max(0, fotos - miniaturas.length)
+  const medalla = d?.medalla ?? null
+  const colorMedalla = medalla?.grado ? COLOR_DE_GRADO[medalla.grado] : 'rgba(28,34,48,.45)'
+  const abrirDeLogro = (clave: string) => !ejemplo && abrirFicha(clave)
   return (
     <div className="mo" role="dialog" aria-modal="true" aria-label="Resumen del viaje" data-resumen-del-viaje style={{ position: 'fixed', inset: 0, zIndex: 9000, background: '#F5EFE4', color: '#1C2230', fontFamily: "'Geist',system-ui,sans-serif", overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
-      {!estado ? (
+      {!estado || !d ? (
         <>
           <button type="button" aria-label="Cerrar" onClick={cerrar} style={{ position: 'absolute', right: 8, top: 'calc(env(safe-area-inset-top,0px) + 8px)', width: 48, height: 48, border: 'none', background: 'transparent', color: '#1C2230', cursor: 'pointer' }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
@@ -200,137 +203,187 @@ export default function ResumenViaje({ ejemplo }: { ejemplo?: DatosDeEjemploDelR
           <div style={{ margin: 'auto', font: "400 14px 'Geist'", color: 'rgba(28,34,48,.6)', textAlign: 'center', padding: 24 }}>{cargado ? 'Todavía no hay nada que enseñar de este viaje.' : 'Preparando tu resumen…'}</div>
         </>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 26, padding: '0 20px calc(env(safe-area-inset-bottom,0px) + 34px)' }}>
-          <div data-resumen-portada style={{ position: 'relative', margin: '0 -20px', minHeight: 330, background: fondoPortada, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '0 20px 18px', gap: 12 }}>
-            <span aria-hidden="true" style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 130, background: 'linear-gradient(to bottom,rgba(28,34,48,.45),transparent)' }} />
-            <span aria-hidden="true" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 200, background: 'linear-gradient(to top,rgba(20,24,36,.92),transparent)' }} />
-            <button type="button" aria-label="Cerrar" onClick={cerrar} style={{ position: 'absolute', right: 14, top: 'calc(env(safe-area-inset-top,0px) + 10px)', width: 44, height: 44, border: 'none', borderRadius: '50%', background: 'rgba(255,253,248,.9)', color: '#1C2230', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: '0 0 calc(env(safe-area-inset-bottom,0px) + 34px)' }}>
+          <div data-resumen-portada style={{ position: 'relative', flex: 'none', height: 230, background: fondoPortada, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '0 18px 58px', gap: 6 }}>
+            <span aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,rgba(0,0,0,.28),rgba(0,0,0,0) 32%,rgba(0,0,0,.66))' }} />
+            <button type="button" aria-label="Cerrar" onClick={cerrar} style={{ position: 'absolute', right: 16, top: 'calc(env(safe-area-inset-top,0px) + 10px)', width: 44, height: 44, border: 'none', borderRadius: '50%', background: 'rgba(28,34,48,.5)', color: '#FFFDF8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
             </button>
-            <span style={{ position: 'relative', font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase', color: '#F3D59A' }}>
-              Tu viaje{estado.viaje?.inicio && estado.viaje?.fin ? ` · ${rangoDeFechas(estado.viaje.inicio, estado.viaje.fin)}` : ''}
+            <span data-resumen-ojo style={{ position: 'relative', font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase', color: '#F3D59A' }}>
+              {`Tu viaje a ${ciudad || 'tu destino'}${dias ? ` · ${dias} ${dias === 1 ? 'día' : 'días'}` : ''}`}
             </span>
-            <span style={{ position: 'relative', font: "400 38px/1 'Instrument Serif',serif", color: '#FFFDF8', letterSpacing: '-.01em', textWrap: 'balance' as never }}>
-              Lo que te llevas de <em style={{ fontStyle: 'italic', color: '#F3D59A' }}>{ciudad || 'tu viaje'}</em>
-            </span>
-            <span data-cifras-del-viaje style={{ position: 'relative', display: 'flex', gap: 6 }}>
-              {cifras.map((c) => (
-                <span key={c.l} style={{ flex: 1, minWidth: 0, height: 44, borderRadius: 14, background: 'rgba(255,253,248,.14)', border: '1px solid rgba(255,253,248,.22)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ font: "600 16px/1 'Geist'", color: '#FFFDF8' }}>{cifraQueSube(Number(c.n), progreso)}</span>
-                  <span style={{ font: "500 9px 'Geist Mono',monospace", letterSpacing: '.08em', color: 'rgba(255,253,248,.75)', marginTop: 3 }}>{c.l}</span>
-                </span>
-              ))}
+            <span data-resumen-titulo style={{ position: 'relative', font: "400 34px/1.02 'Instrument Serif',serif", color: '#FFFDF8', letterSpacing: '-.01em', textWrap: 'balance' as never }}>
+              {`Resumen de tu viaje a ${ciudad || 'tu destino'}`}
             </span>
           </div>
 
-          {sello?.grado && (
-            <div data-resumen-medalla style={{ position: 'relative', overflow: 'hidden', borderRadius: 28, background: 'radial-gradient(120% 140% at 50% 0%,#3A3F5C 0%,#232840 50%,#1C2230 100%)', border: '1px solid rgba(243,213,154,.35)', boxShadow: '0 16px 28px -18px rgba(28,34,48,.8)', padding: '22px 16px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
-              <span aria-hidden="true" style={{ position: 'absolute', left: '50%', top: -60, marginLeft: -120, width: 240, height: 200, borderRadius: '50%', background: 'radial-gradient(circle,rgba(243,213,154,.25),transparent 68%)' }} />
-              <div style={{ position: 'relative', animation: 'moIn .8s .2s both' }}>
-                <Sello id={sello.id} grado={sello.grado as GradoDeSello} tam={132} />
-              </div>
-              <span style={{ position: 'relative', font: "400 25px/1.1 'Instrument Serif',serif", color: '#FFFDF8', textAlign: 'center', textWrap: 'balance' as never }}>
-                Has conseguido {GRADO_CON_ARTICULO[sello.grado] ?? sello.grado} de <em style={{ fontStyle: 'italic', color: '#F3D59A' }}>{ciudad}</em>
-              </span>
-            </div>
-          )}
-
-          {sumadas.length > 0 && (
-            <div data-resumen-colecciones style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <span style={ETIQUETA}>Colecciones</span>
-              {sumadas.map(({ id, mas, c }) => (
-                <div key={id} data-coleccion-del-resumen={id} data-abierta={coleccionAbierta === id ? '1' : '0'} style={{ borderRadius: 22, background: '#FFFDF8', border: '1px solid rgba(28,34,48,.08)', boxShadow: '0 8px 20px -16px rgba(28,34,48,.35)' }}>
-                  {/* (V14) Tocar una colección abre su lista (✓ lo que tienes, ○ lo que falta) y, al final, [Ver la colección ›]. */}
-                  <button type="button" aria-expanded={coleccionAbierta === id} onClick={() => setColeccionAbierta((a) => (a === id ? null : id))} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 14, padding: '10px 14px 10px 10px', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left', color: 'inherit', font: 'inherit' }}>
-                    <Insignia coleccion={id} ganados={c!.sitios.filter((s) => s.visto).map((s) => s.sitio)} completa={c!.completa} tam={64} />
-                    <span style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <span style={{ flex: 'none', minWidth: 36, height: 26, padding: '0 9px', borderRadius: 999, background: 'oklch(0.55 0.17 5 / .12)', color: 'oklch(0.48 0.17 5)', display: 'flex', alignItems: 'center', justifyContent: 'center', font: "700 13px 'Geist Mono',monospace" }}>+{mas}</span>
-                      <span style={{ flex: 1, font: "400 19px/1.1 'Instrument Serif',serif", textWrap: 'balance' as never }}>{c!.nombre}</span>
-                    </span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(28,34,48,.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none', transform: coleccionAbierta === id ? 'rotate(180deg)' : 'none', transition: 'transform .25s' }} aria-hidden="true">
-                      <path d="M6 9l6 6 6-6" />
-                    </svg>
-                  </button>
-                  {coleccionAbierta === id && (
-                    <div style={{ margin: '0 12px 10px', padding: '8px 8px 2px', borderRadius: 14, background: '#F5EFE4' }}>
-                      <ListaDeColeccion destino={estado.destino} coleccion={id} ciudad={ciudad} sitios={c!.sitios.map((s) => ({ sitio: s.sitio, nombre: s.nombre ?? s.sitio, visto: s.visto }))} antesDeVer={cerrar} />
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {emblemas.length > 0 && (
-            <div data-resumen-emblemas style={{ position: 'relative', overflow: 'hidden', borderRadius: 24, background: 'radial-gradient(120% 100% at 50% 0%,#2A3050 0%,#1C2230 60%,#161B28 100%)', border: '1px solid rgba(243,213,154,.3)', padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <span style={{ paddingLeft: 4, font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.16em', color: '#F3D59A' }}>EMBLEMAS OCULTOS</span>
-              <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(3, emblemas.length)},minmax(0,1fr))`, gap: 12 }}>
-                {emblemas.map((e) => (
-                  <div key={e.id} data-emblema-del-resumen={e.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                    <span style={{ width: 84, height: 84, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Emblema id={lanza && ORDEN_EMBLEMAS_LANZAROTE.includes(e.id) ? idDeDibujoLanzarote(e.id) : e.id} tam={78} animado={false} />
-                    </span>
-                    <span style={{ font: "400 15px/1.15 'Instrument Serif',serif", color: '#FFFDF8', textAlign: 'center', textWrap: 'balance' as never }}>{e.nombre}</span>
-                  </div>
-                ))}
-              </div>
-              {porDescubrir > 0 && <span style={{ textAlign: 'center', font: "italic 400 16px 'Instrument Serif',serif", color: 'rgba(255,253,248,.7)' }}>{`+${porDescubrir} ${porDescubrir === 1 ? 'secreto' : 'secretos'} por descubrir`}</span>}
-            </div>
-          )}
-          {emblemas.length === 0 && secretos && porDescubrir > 0 && <span data-resumen-secretos style={{ textAlign: 'center', font: "italic 400 17px 'Instrument Serif',serif", color: 'rgba(28,34,48,.6)' }}>{lineaDeSecretos(ciudad, secretos.total, secretos.encontrados)}</span>}
-
-          {nuevos.length > 0 && (
-            <div data-resumen-viajero style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <span style={ETIQUETA}>Logros de viajero nuevos</span>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '16px 8px' }}>
-                {nuevos.map((n, i) => (
-                  <button key={i} type="button" data-logro-de-viajero={n.id} onClick={() => !ejemplo && abrirFicha(n.clave)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, border: 'none', background: 'transparent', padding: 0, color: 'inherit', font: 'inherit', cursor: ejemplo ? 'default' : 'pointer' }}>
-                    <span style={{ width: 92, height: 92, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Chapa logro={n.id} escalon={n.escalon} destino={n.destino} ciudad={n.id === "edicion_anio" ? ciudad : undefined} tam={92} igual />
-                    </span>
-                    <span style={{ font: "400 15px/1.12 'Instrument Serif',serif", textAlign: 'center', textWrap: 'balance' as never, maxWidth: 104 }}>{n.nombre}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {hayPlazo && lista.length > 0 && (
-            <button type="button" data-sorpresas-por-reclamar onClick={() => setHojaSorpresas(true)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', borderRadius: 20, background: '#FFFDF8', border: '1.5px solid oklch(0.55 0.17 5 / .45)', boxShadow: '0 10px 20px -14px oklch(0.5 0.17 5 / .5)', textAlign: 'left', cursor: 'pointer', color: 'inherit' }}>
-              <span style={{ flex: 'none', width: 38, height: 38, borderRadius: '50%', background: 'oklch(0.55 0.17 5 / .12)', color: 'oklch(0.48 0.17 5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="3" /><circle cx="9" cy="10" r="1.6" /><path d="M4 17l5-4.5 3.5 3 3-2.5 4.5 4" /></svg>
-              </span>
-              <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <span style={{ font: "600 14.5px/1.2 'Geist'" }}>{`Te quedan ${lista.length} ${lista.length === 1 ? 'sorpresa' : 'sorpresas'} por reclamar`}</span>
-                {hastaCuando && <span style={{ font: "400 12.5px 'Geist'", color: 'rgba(28,34,48,.6)' }}>{hastaCuando}</span>}
-              </span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="oklch(0.48 0.17 5)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6" /></svg>
-            </button>
-          )}
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 'auto' }}>
-            {tripId && (
-              <button type="button" onClick={estampar} data-estampar-sello={yaEstampado ? 'ver' : 'estampar'} style={{ height: 56, border: 'none', borderRadius: 999, background: 'linear-gradient(105deg,#D9B26A,#F8E7BC 45%,#E2BD7A 70%,#C99A4C)', boxShadow: '0 12px 22px -12px rgba(150,105,30,.75), inset 0 1px 0 rgba(255,255,255,.7)', color: '#2A1D10', font: "700 15.5px 'Geist'", cursor: 'pointer' }}>
-                {yaEstampado ? 'Ver mi sello' : 'Estampar mi sello'}
+          <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+            {medalla && (
+              <button type="button" data-resumen-medalla onClick={() => abrirDeLogro(claveDeFicha('medalla', estado.destino, medalla.id))} style={{ position: 'relative', marginTop: -44, border: '1px solid rgba(28,34,48,.07)', borderRadius: 26, background: '#FFFDF8', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 14, boxShadow: '0 18px 30px -18px rgba(28,34,48,.45)', textAlign: 'left', color: 'inherit', font: 'inherit', cursor: ejemplo ? 'default' : 'pointer' }}>
+                <Sello id={medalla.id} grado={(medalla.grado ?? 'bronce') as GradoDeSello} tam={92} apagado={!medalla.grado} animado={false} />
+                <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <span style={{ font: "400 30px/1 'Instrument Serif',serif" }}>{ciudad}</span>
+                  <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.12em', color: colorMedalla, textTransform: 'uppercase' }}>{medalla.grado ? `${medalla.grado}${medalla.nombreGrado ? ` · ${medalla.nombreGrado}` : ''}` : 'Por conseguir'}</span>
+                  {medalla.frase && <span data-resumen-frase-medalla style={{ font: "500 12.5px/1.35 'Geist'", color: 'rgba(28,34,48,.62)' }}>{medalla.frase}</span>}
+                  {medalla.frase2 && <span data-resumen-frase2-medalla style={{ font: "500 12.5px/1.35 'Geist'", color: 'rgba(28,34,48,.62)' }}>{medalla.frase2}</span>}
+                </span>
               </button>
             )}
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button type="button" onClick={() => useMomentosUI.getState().abrirCompartir({ tipo: 'viaje' })} style={{ flex: 1, height: 48, border: '1px solid rgba(28,34,48,.18)', borderRadius: 999, background: '#FFFDF8', color: '#1C2230', font: "600 14px 'Geist'", cursor: 'pointer' }}>
-                Compartir mi viaje
+
+            {hayCifras && (
+              <span data-cifras-del-viaje style={{ display: 'flex', gap: 6, marginTop: medalla ? -8 : -44, position: 'relative' }}>
+                {cifras.map((c) => (
+                  <span key={c.l} style={{ flex: 1, minWidth: 0, height: 44, borderRadius: 14, background: '#FFFDF8', border: '1px solid rgba(28,34,48,.08)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ font: "600 16px/1 'Geist'" }}>{cifraQueSube(Number(c.n), progreso)}</span>
+                    <span style={{ font: "500 9px 'Geist Mono',monospace", letterSpacing: '.08em', color: 'rgba(28,34,48,.6)', marginTop: 3 }}>{c.l}</span>
+                  </span>
+                ))}
+              </span>
+            )}
+
+            {d.masMedallas.length > 0 && (
+              <Seccion titulo="Más medallas" datos="data-resumen-mas-medallas" hijos={
+                <div style={{ display: 'flex', gap: 10 }}>
+                  {d.masMedallas.map((m) => (
+                    <button key={m.id} type="button" data-resumen-mas-medalla={m.id} onClick={() => abrirDeLogro(claveDeFicha('medalla', estado.destino, m.id))} style={{ flex: 1, minWidth: 0, borderRadius: 24, background: '#FFFDF8', border: '1px solid rgba(181,138,46,.3)', boxShadow: '0 12px 20px -16px rgba(28,34,48,.4)', padding: '14px 8px 12px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, color: 'inherit', font: 'inherit', cursor: ejemplo ? 'default' : 'pointer' }}>
+                      <Sello id={m.id} grado={m.grado as GradoDeSello} tam={96} animado={false} />
+                      <span style={{ font: "400 18px/1.1 'Instrument Serif',serif", textAlign: 'center' }}>{`Medalla ${conDe(m.nombre)}`}</span>
+                      <span style={{ font: "600 9.5px 'Geist Mono',monospace", letterSpacing: '.14em', color: COLOR_DE_GRADO[m.grado] ?? '#8A6A2C', textTransform: 'uppercase' }}>{m.grado}</span>
+                    </button>
+                  ))}
+                </div>
+              } />
+            )}
+
+            {d.colecciones.length > 0 && (
+              <Seccion titulo="Colecciones que han avanzado" datos="data-resumen-colecciones" hijos={
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
+                  {d.colecciones.map((c) => {
+                    const est = estado.colecciones.find((x) => x.id === c.id)
+                    return (
+                      <button key={c.id} type="button" data-coleccion-del-resumen={c.id} onClick={() => abrirDeLogro(claveDeFicha('coleccion', estado.destino, c.id))} style={{ minHeight: 44, borderRadius: 20, background: '#FFFDF8', border: '1px solid rgba(28,34,48,.08)', padding: '10px 4px 12px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, textAlign: 'center', cursor: ejemplo ? 'default' : 'pointer', color: 'inherit', font: 'inherit' }}>
+                        <Insignia coleccion={c.id} ganados={(est?.sitios ?? []).filter((s) => s.visto).map((s) => s.sitio)} completa={c.completa} tam={72} />
+                        <span style={{ font: "600 12px/1.2 'Geist'", textWrap: 'balance' as never, padding: '0 4px' }}>{c.nombre}</span>
+                        <span style={{ font: "600 10.5px 'Geist Mono',monospace", color: c.completa ? 'oklch(0.42 0.09 150)' : 'oklch(0.48 0.17 5)' }}>{c.completa ? '✓ Completa' : `${c.n} de ${c.total}`}</span>
+                        <span data-avance-de-coleccion aria-hidden="true" style={{ width: '64%', height: 3, borderRadius: 3, background: 'rgba(28,34,48,.1)', overflow: 'hidden' }}>
+                          <span style={{ display: 'block', height: '100%', width: `${c.total ? Math.round((c.n / c.total) * 100) : 0}%`, borderRadius: 3, background: c.completa ? 'oklch(0.5 0.1 150)' : 'oklch(0.48 0.17 5)' }} />
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              } />
+            )}
+
+            {d.emblemas.length > 0 && (
+              <Seccion titulo="Emblemas ocultos descubiertos" datos="data-resumen-emblemas" hijos={
+                <div style={{ borderRadius: 26, background: 'radial-gradient(120% 100% at 50% 0%,#252B45 0%,#1C2230 60%,#161B28 100%)', padding: '16px 8px', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px 6px', boxShadow: '0 16px 28px -18px rgba(28,34,48,.7)' }}>
+                  {d.emblemas.map((e) => (
+                    <div key={e.id} data-emblema-del-resumen={e.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: 104 }}>
+                      <span style={{ width: 90, height: 90, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Emblema id={lanza && ORDEN_EMBLEMAS_LANZAROTE.includes(e.id) ? idDeDibujoLanzarote(e.id) : e.id} tam={84} animado={false} />
+                      </span>
+                      <span style={{ maxWidth: 104, textAlign: 'center', font: "600 8.5px/1.25 'Geist Mono',monospace", letterSpacing: '.08em', color: 'rgba(243,213,154,.85)', textTransform: 'uppercase' }}>{e.nombre}</span>
+                    </div>
+                  ))}
+                </div>
+              } />
+            )}
+
+            {d.logros.length > 0 && (
+              <Seccion titulo="Logros de viajero" datos="data-resumen-viajero" hijos={
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
+                  {d.logros.map((n, i) => {
+                    const dibujo = (
+                      <span style={{ position: 'relative', display: 'block', width: 92, height: 92 }}>
+                        <Chapa logro={n.logro} escalon={n.escalon} destino={n.destino} ciudad={n.logro === 'edicion_anio' ? ciudad : undefined} tam={92} igual />
+                        {n.pais && <BanderaRedonda pais={n.pais} tam={30} esquina="abajo-derecha" />}
+                      </span>
+                    )
+                    const pie = <span style={{ font: "600 12px/1.2 'Geist'", textAlign: 'center', padding: '0 4px', textWrap: 'balance' as never }}>{n.nombre}</span>
+                    const caja = { borderRadius: 20, background: '#FFFDF8', border: '1px solid rgba(181,138,46,.3)', padding: '12px 4px 10px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, color: 'inherit', font: 'inherit' } as const
+                    // Solo un logro de viajero tiene ficha que abrir; los demás son tarjetas para mirar (nunca un botón que no hace nada).
+                    return n.tipo === 'viajero' ? (
+                      <button key={i} type="button" data-logro-de-viajero={n.logro} onClick={() => abrirDeLogro(n.clave)} style={{ ...caja, cursor: ejemplo ? 'default' : 'pointer' }}>
+                        {dibujo}
+                        {pie}
+                      </button>
+                    ) : (
+                      <div key={i} data-logro-del-viaje={n.tipo} style={caja}>
+                        {dibujo}
+                        {pie}
+                      </div>
+                    )
+                  })}
+                </div>
+              } />
+            )}
+
+            {!ejemplo && miniaturas.length > 0 && (
+              <Seccion titulo="Tus fotos del viaje" datos="data-resumen-fotos" hijos={
+                <button type="button" data-abrir-album-del-viaje onClick={() => setAlbum(true)} aria-label="Abrir el álbum del viaje" style={{ display: 'flex', gap: 8, border: 'none', background: 'transparent', padding: 0, cursor: 'pointer' }}>
+                  {miniaturas.map((f) => (
+                    <span key={f.id} style={{ flex: 1, aspectRatio: '1', borderRadius: 16, background: `center/cover url(${urlParaMostrar(f)})`, boxShadow: '0 8px 14px -10px rgba(28,34,48,.5)', border: '2px solid #FFFDF8' }} />
+                  ))}
+                  {masFotos > 0 && <span style={{ flex: 1, aspectRatio: '1', borderRadius: 16, background: '#1C2230', color: '#F3D88F', display: 'flex', alignItems: 'center', justifyContent: 'center', font: "700 17px 'Geist'" }}>{`+${masFotos}`}</span>}
+                </button>
+              } />
+            )}
+
+            {hayPlazo && lista.length > 0 && (
+              <button type="button" data-sorpresas-por-reclamar onClick={() => setHojaSorpresas(true)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', borderRadius: 20, background: '#FFFDF8', border: '1.5px solid oklch(0.55 0.17 5 / .45)', boxShadow: '0 10px 20px -14px oklch(0.5 0.17 5 / .5)', textAlign: 'left', cursor: 'pointer', color: 'inherit' }}>
+                <span style={{ flex: 'none', width: 38, height: 38, borderRadius: '50%', background: 'oklch(0.55 0.17 5 / .12)', color: 'oklch(0.48 0.17 5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="3" /><circle cx="9" cy="10" r="1.6" /><path d="M4 17l5-4.5 3.5 3 3-2.5 4.5 4" /></svg>
+                </span>
+                <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <span style={{ font: "600 14.5px/1.2 'Geist'" }}>{`Te quedan ${lista.length} ${lista.length === 1 ? 'sorpresa' : 'sorpresas'} por reclamar`}</span>
+                  {hastaCuando && <span style={{ font: "400 12.5px 'Geist'", color: 'rgba(28,34,48,.6)' }}>{hastaCuando}</span>}
+                </span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="oklch(0.48 0.17 5)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6" /></svg>
               </button>
-              <button type="button" onClick={cerrar} style={{ flex: 1, height: 48, border: '1px solid rgba(28,34,48,.18)', borderRadius: 999, background: '#FFFDF8', color: '#1C2230', font: "600 14px 'Geist'", cursor: 'pointer' }}>
-                Ver mi viaje
-              </button>
+            )}
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 2 }}>
+              {d.secretos && secretos && <span data-resumen-secretos style={{ textAlign: 'center', font: "italic 400 19px/1.3 'Instrument Serif',serif", color: '#6F4E37', textWrap: 'balance' as never }}>{d.secretos}</span>}
+              {tripId && (
+                <button type="button" onClick={verPasaporte} data-ver-pasaporte={yaEstampado ? 'ver' : 'estampar'} style={{ ...BOTON_GRANATE, height: 54, border: 'none', borderRadius: 17, font: "700 15.5px 'Geist'", cursor: 'pointer' }}>
+                  Ver mi pasaporte
+                </button>
+              )}
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button type="button" onClick={() => useMomentosUI.getState().abrirCompartir({ tipo: 'viaje' })} style={{ ...BOTON_CLARO, flex: 1, height: 48, borderRadius: 999, font: "600 14px 'Geist'", cursor: 'pointer' }}>
+                  Compartir mi viaje
+                </button>
+                <button type="button" onClick={cerrar} style={{ ...BOTON_CLARO, flex: 1, height: 48, borderRadius: 999, font: "600 14px 'Geist'", cursor: 'pointer' }}>
+                  Ver mi viaje
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
-      {fichaAbierta && !ejemplo && ganados?.items.some((i) => i.clave === fichaAbierta) && (
+      {fichaAbierta && !ejemplo && ganados && (/^(coleccion|sello):/.test(fichaAbierta) || ganados.items.some((i) => i.clave === fichaAbierta)) && (
         <div className="vt" data-ficha-del-resumen style={{ position: 'fixed', inset: 0, zIndex: 9100 }}>
           <HojasDeLogros g={ganados} />
         </div>
       )}
-      {hojaSorpresas && tripId && <HojaDeSorpresas lista={lista} ciudad={ciudad} tripId={tripId} inicio={estado?.viaje?.inicio ?? route?.answers?.dateRange?.start ?? null} quedanSecretos={porDescubrir > 0 && (pend?.pendientes ?? []).some((x) => x.falta.includes('emblema'))} onCerrar={() => setHojaSorpresas(false)} onCerrarResumen={cerrar} />}
+      {album && route && (
+        <div role="dialog" aria-modal="true" aria-label="Álbum del viaje" data-album-del-resumen className="fixed inset-0 flex flex-col bg-bg text-text" style={{ zIndex: 9100 }}>
+          <header className="flex h-14 shrink-0 items-center px-2 pt-[env(safe-area-inset-top)]">
+            <button type="button" onClick={() => setAlbum(false)} aria-label="Volver al resumen" className="flex h-11 items-center gap-1.5 rounded-full px-3 text-[14px] font-semibold text-text">
+              <span aria-hidden="true" className="text-[20px] leading-none">‹</span>
+              Volver
+            </button>
+          </header>
+          <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-[calc(2rem+env(safe-area-inset-bottom))]">
+            <h2 className="font-display text-[34px] leading-none text-text">{route.destination}</h2>
+            <div className="mt-5">
+              <AlbumDeViaje viaje={resumenDeViaje(route, null)} />
+            </div>
+          </div>
+        </div>
+      )}
+      {hojaSorpresas && tripId && <HojaDeSorpresas lista={lista} ciudad={ciudad} tripId={tripId} inicio={estado?.viaje?.inicio ?? route?.answers?.dateRange?.start ?? null} quedanSecretos={Boolean(secretos && secretos.total - secretos.encontrados > 0 && (pend?.pendientes ?? []).some((x) => x.falta.includes('emblema')))} onCerrar={() => setHojaSorpresas(false)} onCerrarResumen={cerrar} />}
     </div>
   )
 }
