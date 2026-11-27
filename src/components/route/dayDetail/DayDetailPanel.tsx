@@ -79,6 +79,8 @@ import { ExtraDaySheet } from '../freeDay/ExtraDaySheet'
 import { elegirExcursion, excursionReservationOf, viewedExcursion } from '../../../lib/dayInterruptor'
 import { useInterruptorUiStore } from '../../../store/useInterruptorUiStore'
 import { MealTimeAccordion } from './MealTimeAccordion'
+import { extrasSueltasDelDia, minutosDeLaHora as minutosDeLaReserva } from '../../../lib/reservasUnidas'
+import { TarjetaDeReservaExtraHoy } from '../hoy/v2/TarjetaDeTransporteHoy'
 import { StopAccordion } from './StopAccordion'
 import { WantInsideDialog, useWantInside } from './WantInsideDialog'
 import { StopConnector } from './StopConnector'
@@ -1069,6 +1071,13 @@ export function DayDetailPanel({
     if (last && last.period === entry.period) last.items.push(entry)
     else periodGroups.push({ period: entry.period, items: [entry] })
   }
+  // (V76, R10) Un ferry, tren, autobús u «otra» que no es de ninguna excursión sale en su día, en su sitio por la hora: arriba de la franja donde empieza la primera parada más tarde que él (o, si no hay, al final). Tarjeta con SALE / LLEGA y la fila con su QR.
+  const extrasDelDia = route ? extrasSueltasDelDia(route, reservations, day) : []
+  const franjaDeLaExtra = (hora: string): number => {
+    const m = minutosDeLaReserva(hora) ?? 0
+    const i = periodGroups.findIndex((g) => g.items.some((entry) => entry.start > m))
+    return i === -1 ? periodGroups.length - 1 : i
+  }
 
     /** Un elemento de la línea del día. `firstInPeriod`: abre franja (sin información de trayecto antes). */
   /** ¿La parada de este índice viene justo detrás de otra parada en la línea del día? */
@@ -1492,6 +1501,13 @@ export function DayDetailPanel({
             />
           )}
 
+          {periodGroups.length === 0 && extrasDelDia.length > 0 && (
+            <div className="flex flex-col gap-3 pb-3" data-extras-del-dia>
+              {extrasDelDia.map((e) => (
+                <TarjetaDeReservaExtraHoy key={e.id} reserva={e} sinFoto />
+              ))}
+            </div>
+          )}
           {muestraParadas && (
           <DndContext sensors={dragSensors} collisionDetection={closestCenter} onDragEnd={handleStopDragEnd}>
           <SortableContext items={sortableIds} strategy={verticalListSortingStrategy}>
@@ -1525,6 +1541,13 @@ export function DayDetailPanel({
                   }
                 />
               )}
+              {extrasDelDia
+                .filter((e) => franjaDeLaExtra(e.time) === groupIndex)
+                .map((e) => (
+                  <div key={e.id} className="mb-3 mt-3" data-extras-del-dia>
+                    <TarjetaDeReservaExtraHoy reserva={e} sinFoto />
+                  </div>
+                ))}
               {/* La línea punteada del día; todas las tarjetas cuelgan de ella, también la comida y la cena. */}
               <div className="relative flex flex-col pl-[26px] max-[430px]:-ml-px max-[430px]:pl-0">
                 <div className="absolute bottom-0 left-[11px] top-0 border-l-[1.5px] border-dashed border-text/[.18] max-[430px]:-left-[6px]" aria-hidden="true" />

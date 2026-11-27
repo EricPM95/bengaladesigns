@@ -11,6 +11,18 @@ import { HojaAbajo, ojoStyle } from './HojaAbajo'
 import { ESTILO_PREGUNTA } from '../../ui/PersonasCuadradas'
 import { cuentaDelViaje, esFamilia } from '../../../lib/cuentaDelViaje'
 import { dateOfDay } from '../../../lib/bookings'
+import { excursionAlQueSeUne, revisionDeUnaExtra, type ExcursionDeLaReserva } from '../../../lib/reservasUnidas'
+import type { RevisionDeHoras } from '../../../lib/revisarLasHoras'
+import { HojaUnirReserva } from './HojaUnirReserva'
+import { mitadDeLaReserva, preguntaDeUnion, revisionDeUnaUnion, type MitadDelViaje, type SitioDeLlegada } from '../../../lib/escalasYUnion'
+import { tripModes } from '../../../lib/arrivalReturn'
+import type { Route } from '../../../lib/types'
+import { segunGrupo } from '../../../lib/viajaEnGrupo'
+import { HojaRevisaLasHoras } from './HojaRevisaLasHoras'
+import { trayectoDeLaReservaExtra } from '../../../lib/reservasExtra'
+import { fechaCorta } from '../../../lib/nombreDeDia'
+import { iconoDeMedio } from './BloqueReservas'
+import { useReservasFocusStore } from '../../../store/useReservasFocusStore'
 import {
   borradorDeLaReserva,
   borradorVacio,
@@ -74,6 +86,11 @@ export default function HojaReservaExtra({ tipo, editar, onClose, onGuardada }: 
   const existente = useMemo(() => [...reservations, ...misReservas].find((r) => r.id === editar && r.kind === tipo) as ReservaExtra | undefined, [reservations, misReservas, editar, tipo])
   const [b, setB] = useState<BorradorExtra>(() => (existente ? borradorDeLaReserva(existente) : borradorVacio(tipo)))
   const [paso, setPaso] = useState<1 | 2>(1)
+  // (V76) Antes de guardar: «¿Es para tu excursión a La Graciosa?» (R5) y, si no se une y choca con una parada, «Revisa las horas» (R10, hoja A1 de la V69).
+  const [unir, setUnir] = useState<{ reserva: ReservaExtra; ex: ExcursionDeLaReserva } | null>(null)
+  const [revision, setRevision] = useState<{ reserva: ReservaExtra; revision: RevisionDeHoras } | null>(null)
+  // (V76, R11) Un tren o autobús el día de llegada o el de vuelta: «¿Es para ir del aeropuerto a tu alojamiento?» / «¿Es para ir al aeropuerto?».
+  const [unirLlegada, setUnirLlegada] = useState<{ reserva: ReservaExtra; kind: MitadDelViaje } | null>(null)
   const grupo = useEntradasDelGrupo()
   const dinero = useDineroDeReserva({ para: existente?.paraQuien ?? null, precio: existente?.precio ?? null, pagado: existente?.pagadoPor ?? null })
   const dias = useMemo(() => (route ? diasParaElegir(route) : []), [route])
@@ -102,12 +119,34 @@ export default function HojaReservaExtra({ tipo, editar, onClose, onGuardada }: 
       conFechas,
       diaElegido.dayNumber,
     )
+    // (V76, R5) Un ferry, tren o autobús que cae el día de una excursión de la ruta: antes de guardar, «¿Es para tu excursión a …?». Al CAMBIAR uno ya guardado no se vuelve a preguntar (se queda como estaba).
+    const otras = [...reservations, ...misReservas]
+    const ex = excursionAlQueSeUne(route, otras, reserva)
+    // (V76, R11) La mitad (llegada o vuelta) a la que cae un tren o autobús, si ese viaje tiene esa mitad en avión, tren o barco.
+    const mitad = mitadUnible(route, reserva)
+    if (existente) {
+      const unida = existente.unidaA && ex?.excursion.id === existente.unidaA ? existente.unidaA : null
+      const unidaALlegada = existente.unidaALlegada && existente.unidaALlegada === mitad ? existente.unidaALlegada : null
+      revisarYGuardar({ ...reserva, ...(unida ? { unidaA: unida } : {}), ...(unidaALlegada ? { unidaALlegada } : {}) })
+    } else if (ex) setUnir({ reserva, ex })
+    else if (mitad) setUnirLlegada({ reserva, kind: mitad })
+    else revisarYGuardar(reserva)
+  }
+
+  /** Lo de siempre: a la lista de la persona (la suya si mira el viaje de otra) o a las reservas del viaje; no toca la ruta. */
+  const persistir = (reserva: ReservaExtra) => {
     // (Quien mira el viaje de otra persona: la reserva es SUYA, va a su lista y no toca el viaje del dueño. Igual que las entradas.)
     if (grupo.esInvitado) useMisReservas.getState().anadir(reserva)
     else addReservation(reserva, null, null)
     onGuardada?.(reserva)
     useAnadirReservaStore.getState().cerrar()
     onClose()
+  }
+  /** (R10) Si no se une a nada y choca con una parada de su día, sale «Revisa las horas» antes de guardar; la app avisa, no prohíbe ni mueve el día. */
+  const revisarYGuardar = (reserva: ReservaExtra) => {
+    const rev = route ? revisionDeUnaExtra(route, reserva) : null
+    if (rev) setRevision({ reserva, revision: rev })
+    else persistir(reserva)
   }
 
   const botonTexto = textoDelBoton({ normal: textoDeGuardarExtra(tipo), solo: dinero.solo, marcados, yoId: dinero.yoId, permiso: dinero.permiso, nombreAdmin: dinero.nombreAdmin })
@@ -123,6 +162,7 @@ export default function HojaReservaExtra({ tipo, editar, onClose, onGuardada }: 
     )
 
   return (
+    <>
     <HojaAbajo titleId="hoja-reserva-extra" onClose={onClose} capa={110} pie={pie}>
       <div data-hoja-reserva-extra={tipo} data-paso={dosPasos ? paso : 1} className="flex flex-col gap-5">
         <div className="flex flex-col gap-1.5">
@@ -250,5 +290,94 @@ export default function HojaReservaExtra({ tipo, editar, onClose, onGuardada }: 
         )}
       </div>
     </HojaAbajo>
+    {/* (V76, R5) «¿Es para tu excursión a La Graciosa?»: el billete debajo, [Sí, unirlo a la excursión] y [No, guardarlo aparte] lado a lado. Si se une, la reserva lleva `unidaA` y cuenta como la de esa excursión. */}
+    {unir && (
+      <HojaUnirReserva
+        titulo={`¿Es para ${unir.ex.frase}?`}
+        billete={{
+          icono: iconoDeMedio(tipo === 'tren' ? 'tren' : tipo === 'bus' ? 'bus' : 'ferry'),
+          titulo: [tipo === 'tren' ? 'Tren' : tipo === 'bus' ? 'Autobús' : 'Ferry', unir.reserva.dateIso ? fechaCorta(unir.reserva.dateIso) : `Día ${unir.reserva.dayNumber ?? ''}`.trim(), unir.reserva.time].join(' · '),
+          sub: trayectoDeLaReservaExtra(unir.reserva),
+        }}
+        onSi={() => {
+          const hecha = { ...unir.reserva, unidaA: unir.ex.excursion.id }
+          setUnir(null)
+          persistir(hecha)
+        }}
+        onNo={() => {
+          const hecha = unir.reserva
+          setUnir(null)
+          revisarYGuardar(hecha)
+        }}
+        onCerrar={() => setUnir(null)}
+      />
+    )}
+    {/* (V76, R11) «¿Es para ir del aeropuerto a tu alojamiento?» (llegada) / «¿Es para ir al aeropuerto?» (vuelta): la MISMA hoja que la de la excursión, con [Sí, unirlo a mi llegada] y [No, guardarlo aparte] lado a lado. Si se une, la reserva lleva `unidaALlegada` y se ve dentro de «Llegada y vuelta». */}
+    {unirLlegada && (
+      <HojaUnirReserva
+        titulo={preguntaDeUnion(unirLlegada.kind, sitioDeLaMitad(route, unirLlegada.kind))}
+        datos="unir-llegada"
+        billete={{
+          icono: iconoDeMedio(tipo === 'bus' ? 'bus' : 'tren'),
+          titulo: [tipo === 'bus' ? 'Autobús' : 'Tren', unirLlegada.reserva.dateIso ? fechaCorta(unirLlegada.reserva.dateIso) : `Día ${unirLlegada.reserva.dayNumber ?? ''}`.trim(), unirLlegada.reserva.time].join(' · '),
+          sub: trayectoDeLaReservaExtra(unirLlegada.reserva),
+        }}
+        textoSi={unirLlegada.kind === 'arrival' ? segunGrupo('Sí, unirlo a nuestra llegada', 'Sí, unirlo a mi llegada') : segunGrupo('Sí, unirlo a nuestra vuelta', 'Sí, unirlo a mi vuelta')}
+        onSi={() => {
+          const hecha = { ...unirLlegada.reserva, unidaALlegada: unirLlegada.kind }
+          const rev = route ? revisionDeUnaUnion(route, hecha, unirLlegada.kind) : null
+          setUnirLlegada(null)
+          // (V76, cierre) Un tren que sale antes de que aterrice el vuelo (o después de que salga el de vuelta) también avisa con [Sí].
+          if (rev) setRevision({ reserva: hecha, revision: rev })
+          else persistir(hecha)
+        }}
+        onNo={() => {
+          const hecha = unirLlegada.reserva
+          setUnirLlegada(null)
+          revisarYGuardar(hecha)
+        }}
+        onCerrar={() => setUnirLlegada(null)}
+      />
+    )}
+    {/* (V76, R10) El mismo «Revisa las horas» de la V69 (A1): la reserva choca con una parada de su día. «Guardarla igualmente» la guarda; el día no se mueve. */}
+    {revision && (
+      <HojaRevisaLasHoras
+        z={130}
+        revision={revision.revision}
+        onCerrar={() => setRevision(null)}
+        onOtro={() => {
+          const otro = revision.revision.otro
+          setRevision(null)
+          onClose()
+          useAnadirReservaStore.getState().cerrar()
+          if (otro.tipo === 'dia') {
+            useRouteStore.getState().setMode('days')
+            useRouteStore.getState().setActiveDayId(otro.dayId)
+          } else useReservasFocusStore.getState().pedir('llegada', otro.tipo === 'vuelo' ? otro.mitad : undefined)
+        }}
+        onEsta={() => setRevision(null)}
+        onGuardarIgualmente={() => {
+          const r = revision.reserva
+          setRevision(null)
+          persistir(r)
+        }}
+      />
+    )}
+    </>
   )
+}
+
+/** (V76, R11) El sitio del medio de esa mitad: avión → aeropuerto, barco → puerto, tren y autobús → estación. */
+function sitioDeLaMitad(route: Route, kind: MitadDelViaje): SitioDeLlegada {
+  const modo = kind === 'arrival' ? tripModes(route).arrival : tripModes(route).departure
+  return modo === 'avion' ? 'aeropuerto' : modo === 'ferry' ? 'puerto' : 'estación'
+}
+
+/** (V76, R11) ¿Se pregunta «¿Es para…?» a esta reserva? Solo un tren o autobús que cae el día de llegada o el de vuelta, si ese lado del viaje tiene su hora puesta y no va en coche. */
+function mitadUnible(route: Route, reserva: ReservaExtra): MitadDelViaje | null {
+  const m = mitadDeLaReserva(route, reserva)
+  if (!m) return null
+  const modos = tripModes(route)
+  if (m === 'arrival') return modos.arrival !== 'coche' && route.arrivalFlightTime ? m : null
+  return modos.departure !== 'coche' && route.departureFlightTime ? m : null
 }

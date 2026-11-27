@@ -149,6 +149,11 @@ async function parteNavegador(lanza) {
       debe(!(await ev("document.querySelector('[data-guardar-extra]')?.disabled ?? true")), `${NOM}·${tipo}-listo`, `${tipo}: con lo obligatorio, [Guardar] se activa`)
       await clic(`[data-guardar-extra="${tipo}"]`)
       await a.esp(1300)
+      // (V76) Antes de guardar puede salir «¿Es para…?» (se contesta [No, guardarlo aparte]) y «Revisa las horas» si la hora de ejemplo (10:00) pisa una parada de ese día (se guarda igualmente): lo de V75 se comprueba igual.
+      for (let i = 0; i < 3; i++) {
+        if (await clic('[data-boton-hoja="unir-no"]')) await a.esp(1000)
+        if (await clic('[data-enlace-hoja="guardarla-igualmente"]')) await a.esp(1100)
+      }
       return dia
     }
     const diaFerry = await guardar('ferry', lanza ? { compania: 'Fred. Olsen', origen: 'Órzola', destino: 'La Graciosa' } : { compania: 'Caremar', origen: 'Nápoles', destino: 'Capri' }, 1, async () => {
@@ -297,6 +302,11 @@ async function parteNavegador(lanza) {
     debe(/¿Para quién es el ferry\?/.test(cuerpo) && /¿Quién la ha pagado\?/.test(cuerpo), `${NOM}·grupo-para-quien`, 'salen «¿Para quién es el ferry?» y «¿Quién la ha pagado?»')
     await clic('[data-guardar-extra="ferry"]')
     await a.esp(1300)
+    // (V76) Si la hora de ejemplo pisa una parada de ese día: «Revisa las horas» › «Guardarla igualmente» (y «¿Es para…?» › [No, guardarlo aparte]).
+    for (let i = 0; i < 3; i++) {
+      if (await clic('[data-boton-hoja="unir-no"]')) await a.esp(1000)
+      if (await clic('[data-enlace-hoja="guardarla-igualmente"]')) await a.esp(1100)
+    }
     const g = await ev(`${R}.getState().reservations.find((r) => r.kind === 'ferry')`)
     debe(g && g.precio?.amount === 90 && igual(g.paraQuien, ['p1', 'p2', 'p3']) && igual(g.pagadoPor, ['p1']), `${NOM}·grupo-guarda`, `el ferry de grupo guarda 90 €, para los tres y pagado por Eric (${JSON.stringify({ p: g?.precio?.amount, q: g?.paraQuien, pg: g?.pagadoPor })})`)
     const reparto = (ids, pagado) => ev(`(async () => { const P = await import('/src/lib/presupuesto.ts'); const s = ${R}.getState(); const gente = ['p1','p2','p3']; const p = P.construirPresupuesto({ route: s.route, reservations: s.reservations, accommodationSelections: {}, transportBookings: {}, insuranceBooking: null, rentalVehicleBooking: null, esimPrecios: {}, moneda: 'EUR', cambio: null, pago: true, compartido: { gastos: [], extrasDeLaRutaMios: true, reparto: { yoId: 'p1', adminId: 'p1', modo: 'conjunta', esInvitado: false, todos: gente, porDefecto: gente, entreDe: null, conVueloPropio: [], conAlojamientoPropio: [], reservasPropias: [], entradasDeInvitados: [], loSuyo: null } } }); const l = p.bloques.flatMap((b) => b.lineas).find((x) => x.id === 'reserva-' + s.reservations.find((r) => r.kind === 'ferry').id); return l ? { entre: l.entre ?? null, pago: l.precio?.amount } : null })()`)

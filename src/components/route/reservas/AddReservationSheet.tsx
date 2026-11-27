@@ -1228,7 +1228,7 @@ function AddReservationSheetInner({ route, target, onClose }: { route: Route; ta
             onClose()
             useRouteStore.getState().setMode('bookings')
             if (otro.tipo === 'vuelo') useReservasFocusStore.getState().pedir('llegada', otro.mitad)
-            else useReservasFocusStore.getState().pedir(otro.reserva.kind === 'excursion' ? 'excursiones' : 'entradas')
+            else if (otro.tipo === 'reserva') useReservasFocusStore.getState().pedir(otro.reserva.kind === 'excursion' ? 'excursiones' : 'entradas')
           }}
           // El botón de «esta»: se vuelve a esta hoja para cambiar el día o la hora.
           onEsta={() => setRevision(null)}

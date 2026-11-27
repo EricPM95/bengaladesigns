@@ -29,6 +29,12 @@ import { HojaV2 } from './HojasV2'
 import { HojaPropuesta, Titulo, useContexto } from './CambiarPlan'
 import { LineaUbicacion } from './LineaUbicacion'
 import { datosDeLaSalida } from './VueltaH14'
+import { FilaDeUnion } from './FilaDeUnion'
+import { useTrenUnido } from '../../../../hooks/useTrenUnido'
+import { useBilletesDeExcursiones } from '../../../../hooks/useBilleteExcursion'
+import { excursionConCodigo } from '../../../../store/useBilleteStore'
+import { useReservasFocusStore } from '../../../../store/useReservasFocusStore'
+import { tramoQueToca, tramosDeLaMitad } from '../../../../lib/escalasYUnion'
 
 /**
  * (V70; Design «El día de la vuelta en HOY», VL1 a VL5) LA TARJETA DE LA VUELTA: la tarjeta de la llegada (V62, `TarjetaDeLlegada`) en versión vuelta. Sustituye a la tarjeta oscura «Hoy vuelves a casa» de la V57
@@ -111,7 +117,14 @@ export function TarjetaDeVuelta({ route, day, dateIso, mitad, info, paradas, ubi
   const [cerca, setCerca] = useState(false)
   const billete = mitad.billete
   const { billete: guardado, tripId } = useBillete('departure', billete?.horaRoma ?? null)
-  const salida = datosDeLaSalida({ route, day, mitad, info })
+  const trenUnido = useTrenUnido('departure') // (V76) el tren o autobús unido a la vuelta (de RESERVAS)
+  const salida = datosDeLaSalida({ route, day, mitad, info, tren: trenUnido })
+  // (V76) El QR de HOY es el del tramo que toca a esta hora (vuelo con escalas: el primero hasta que sale, luego el siguiente).
+  const billetesEscala = useBilletesDeExcursiones()
+  const tramos = tramosDeLaMitad(route, 'departure', { salida: route.departureFlightTime ?? null, llegada: route.departureOtraHora ?? null, compania: route.departureCompania ?? '', codigo: route.departureCodigo ?? '', desde: '', hasta: '' })
+  const tramoDeHoy = tramos.length > 1 ? tramoQueToca(tramos, ahoraMin) : null
+  const escalaDeHoy = tramoDeHoy && !tramoDeHoy.principal ? tramoDeHoy : null
+  const billeteDeEscala = escalaDeHoy ? billetesEscala.de(escalaDeHoy.clave) : null
   const modo = mitad.mode
   const propio = modo === 'coche'
   const enCoche = esDestinoDeCoche(route.destination)
@@ -119,7 +132,8 @@ export function TarjetaDeVuelta({ route, day, dateIso, mitad, info, paradas, ubi
   const sitio = salida.sitio ?? (modo === 'avion' ? 'aeropuerto' : modo === 'ferry' ? 'puerto' : 'estación')
   const alSitio = sitio === 'aeropuerto' ? 'al aeropuerto' : sitio === 'puerto' ? 'al puerto' : 'a la estación'
   const enElSitio = sitio === 'aeropuerto' ? 'EN EL AEROPUERTO' : sitio === 'puerto' ? 'EN EL PUERTO' : 'EN LA ESTACIÓN'
-  const hayQr = Boolean(guardado?.codigo && (guardado.codigo.dibujo || guardado.codigo.imagen))
+  const hayQr = escalaDeHoy ? excursionConCodigo(billeteDeEscala) : Boolean(guardado?.codigo && (guardado.codigo.dibujo || guardado.codigo.imagen))
+  const codigoDeHoy = escalaDeHoy ? (billeteDeEscala?.codigo ?? null) : (guardado?.codigo ?? null)
   const retraso = route.departureRetraso && route.departureRetraso.para === route.departureFlightTime && route.departureRetraso.antes && route.departureRetraso.antes !== route.departureRetraso.para ? route.departureRetraso.antes : null
   const dentroDelSitio = Boolean(ubicacionReal && mitad.point?.coordenadas && hasRealCoordinates(mitad.point.coordenadas) && haversineMeters(ubicacionReal, mitad.point.coordenadas) <= 1500)
   const trayecto = salida.trayectoMin ?? 30
@@ -181,12 +195,15 @@ export function TarjetaDeVuelta({ route, day, dateIso, mitad, info, paradas, ubi
   const horaDeSalir = salida.hasta ? horaCorta(salida.hasta) : null
   const primera = paradas[0] ?? null
   const cajasDeAbajo: { dato: string; trazo: string; etiqueta: string; grande: string; sub: string }[] = []
-  const destinoDelTrayecto = sitio === 'aeropuerto' ? 'Hacia el aeropuerto' : sitio === 'puerto' ? 'Hacia el puerto' : 'Hacia la estación'
+  const destinoDelTrayecto = salida.viaEstacion ? (trenUnido?.kind === 'bus' ? 'Hacia la parada' : 'Hacia la estación') : sitio === 'aeropuerto' ? 'Hacia el aeropuerto' : sitio === 'puerto' ? 'Hacia el puerto' : 'Hacia la estación'
   if (horaDeSalir) cajasDeAbajo.push({ dato: 'salir', trazo: TRAZO.salir, etiqueta: 'SALIR', grande: horaDeSalir, sub: destinoDelTrayecto })
   else if (enCoche && salida.limiteT1) cajasDeAbajo.push({ dato: 'salir', trazo: TRAZO.salir, etiqueta: 'SALIR', grande: `Antes de las ${horaCorta(salida.limiteT1)}`, sub: 'Hora límite del coche' })
   if (enCoche) {
     // En Lanzarote el aeropuerto es la devolución del coche (la hora límite, del motor).
     cajasDeAbajo.push({ dato: 'aeropuerto', trazo: TRAZO.coche, etiqueta: 'AEROPUERTO', grande: 'Devuelve el coche', sub: ['en la T1', salida.limiteT1 ? `antes de las ${horaCorta(salida.limiteT1)}` : ''].filter(Boolean).join(' · ') })
+  } else if (trenUnido) {
+    // (V76) Con un tren o autobús unido: «17:05 · Leonardo Express» (su hora y su nombre, de la reserva de RESERVAS).
+    cajasDeAbajo.push({ dato: 'aeropuerto', trazo: TRAZO.centro, etiqueta: sitio === 'aeropuerto' ? 'AEROPUERTO' : sitio === 'puerto' ? 'PUERTO' : 'ESTACIÓN', grande: horaCorta(trenUnido.time), sub: (trenUnido.compania ?? '').trim() || trenUnido.name })
   } else {
     // «35 min · Leonardo Express»: el tiempo del traslado que se nombra (dato del destino); sin él, el trayecto que cuenta SALIR.
     const minutos = traslado?.grande || (salida.trayectoMin != null ? `${salida.trayectoMin} min` : '')
@@ -203,7 +220,11 @@ export function TarjetaDeVuelta({ route, day, dateIso, mitad, info, paradas, ubi
   const columnas = (n: number) => ({ gridTemplateColumns: `repeat(${Math.max(n, 2)}, minmax(0, 1fr))` }) as const
   const etiqueta = yaEnElSitio ? `YA ${enElSitio}` : decamino ? `DE CAMINO ${alSitio.toUpperCase()}` : 'VUELTA'
   const textoVerBillete = modo === 'avion' ? segunGrupo('Ver mi tarjeta de embarque', 'Ver mi tarjeta de embarque') : 'Ver mi billete'
-  const abrirDocumento = () => (hayQr ? setAmpliado(true) : setVezAnadir((v) => v + 1))
+  const irAReservas = () => {
+    useRouteStore.getState().setMode('bookings')
+    useReservasFocusStore.getState().pedir('llegada', 'departure')
+  }
+  const abrirDocumento = () => (hayQr ? setAmpliado(true) : escalaDeHoy ? irAReservas() : setVezAnadir((v) => v + 1))
 
   // ── El tiempo libre (VL1c): lo que queda antes de salir, desde que acaba lo que falta por hacer ──
   const saleMin = minutosDe(salida.hasta)
@@ -224,7 +245,7 @@ export function TarjetaDeVuelta({ route, day, dateIso, mitad, info, paradas, ubi
           </span>
           {billete && (
             <span className="absolute right-3.5 top-3">
-              <IconoDeDocumento grande hay={hayQr} tipo="qr" onAbrir={() => setAmpliado(true)} onAnadir={() => setVezAnadir((v) => v + 1)} etiqueta={hayQr ? 'Ver el código en grande' : `Añade tu ${modo === 'avion' ? 'tarjeta de embarque' : 'billete'}`} datos="billete-vuelta" />
+              <IconoDeDocumento grande hay={hayQr} tipo="qr" onAbrir={() => setAmpliado(true)} onAnadir={() => (escalaDeHoy ? irAReservas() : setVezAnadir((v) => v + 1))} etiqueta={hayQr ? 'Ver el código en grande' : `Añade tu ${modo === 'avion' ? 'tarjeta de embarque' : 'billete'}`} datos="billete-vuelta" />
             </span>
           )}
           <span data-hoy-vuelta-titulo className="absolute inset-x-[18px] bottom-3.5 text-left" style={NOMBRE_SOBRE_FOTO}>
@@ -263,6 +284,7 @@ export function TarjetaDeVuelta({ route, day, dateIso, mitad, info, paradas, ubi
               ))}
             </div>
           )}
+          {trenUnido && !yaEnElSitio && <FilaDeUnion reserva={trenUnido} mitad="departure" />}
           {!yaEnElSitio && (
             <div data-hoy-cajas className="grid gap-2" style={columnas(cajasDeAbajo.length)}>
               {cajasDeAbajo.map((c) => (
@@ -323,9 +345,9 @@ export function TarjetaDeVuelta({ route, day, dateIso, mitad, info, paradas, ubi
       )}
       {cerca && saleMin != null && <HojaAnadirAntesDeSalir route={route} day={day} dateIso={dateIso} desde={desde} ubicacionEnRuta={ubicacionReal} enCoche={enCoche} ahoraMin={ahoraMin} minutosLibres={libreMin} horaDeSalir={horaDeSalir as string} onVerExplorar={onVerExplorar} onCerrar={() => setCerca(false)} />}
       {vezAnadir > 0 && <AnadirDocumentoDeHoy key={vezAnadir} route={route} kind="departure" mode={modo} />}
-      {ampliado && guardado?.codigo && (
+      {ampliado && codigoDeHoy && (
         <CodigoPantallaCompleta
-          codigo={guardado.codigo}
+          codigo={codigoDeHoy}
           titulo={`${billete?.codigoRoma ?? ''} → ${ciudadDeSalida(route)}`}
           cuando={[diaTexto, billete?.horaRoma].filter(Boolean).join(' · ')}
           pie={[guardado.asiento ? `Asiento ${guardado.asiento}` : null].filter(Boolean).join(' · ')}

@@ -15,14 +15,14 @@ import { FONDO_DE_HOJA } from '../../../ui/fondoDeHoja'
 const OJO = { font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' as const, color: 'rgba(28,34,48,.55)' }
 
 /** LA HOJA DE ABAJO de HOY (Noche 24-25 nov; Design «Aviso Cierre», «Lugares Pendientes»: esquinas de 32, tirador de 44 × 4, fondo marfil #FBF3E2 y la sombra de arriba). UNA sola para todas las hojas de HOY. Va en el body, por encima de la cabecera y de la barra. */
-export function HojaV2({ children, onCerrar, etiqueta, ancha = false, fondo = '#FFFDF8' }: { children: ReactNode; onCerrar: () => void; etiqueta: string; ancha?: boolean; fondo?: string }) {
+export function HojaV2({ children, onCerrar, etiqueta, ancha = false, fondo = '#FFFDF8', z = 90 }: { children: ReactNode; onCerrar: () => void; etiqueta: string; ancha?: boolean; fondo?: string; /** (V76) La capa; 90 de siempre. Una hoja que sale ENCIMA de otra hoja (el formulario de una reserva, capa 110) pide más. */ z?: number }) {
   useEffect(() => {
     const tecla = (e: KeyboardEvent) => e.key === 'Escape' && onCerrar()
     window.addEventListener('keydown', tecla)
     return () => window.removeEventListener('keydown', tecla)
   }, [onCerrar])
   return createPortal(
-    <div className="fixed inset-0 z-[90] flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-label={etiqueta}>
+    <div className="fixed inset-0 flex items-end justify-center md:items-center" style={{ zIndex: z }} role="dialog" aria-modal="true" aria-label={etiqueta}>
       <div className="absolute inset-0" style={{ background: FONDO_DE_HOJA }} onClick={onCerrar} />
       <div className={`relative flex max-h-[88dvh] w-full flex-col gap-3 overflow-y-auto rounded-t-[32px] px-[18px] pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-2.5 md:rounded-[32px] ${ancha ? 'md:w-[520px]' : 'md:w-[440px]'}`} style={{ background: fondo, boxShadow: '0 -20px 40px rgba(0,0,0,.25)', scrollbarWidth: 'none' }}>
         <span className="h-1 w-[44px] flex-none self-center rounded-sm bg-[rgba(28,34,48,.25)]" aria-hidden="true" />

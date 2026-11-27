@@ -188,7 +188,7 @@ console.log('5. La línea pequeña de HOY: «{origen} → Roma · Día de viaje�
   const lineaCasa = plano(aTexto(bloque(hoy(casa, 4), 'data-hoy-titulo-del-dia')))
   debe(lineaCasa === 'Hoy vuelves a casa Roma → Barcelona · Día de viaje', '5 vuelta sin paradas', `el día de vuelta sin paradas debe decir «Hoy vuelves a casa» y debajo «Roma → Barcelona · Día de viaje»: ${lineaCasa}`)
   // En DÍAS es el mismo orden (el trayecto primero, la marca después).
-  const lista = leer('src/components/route/DayList.tsx')
+  const lista = leer('src/components/route/TarjetaDeDia.tsx')
   const durante = leer('src/components/route/hoy/HoyDurante.tsx')
   debe(lista.indexOf('data-viaje-del-dia') > 0 && lista.indexOf('data-viaje-del-dia') < lista.indexOf('data-marca-dia-de-viaje') && durante.indexOf('data-viaje-del-dia') < durante.indexOf('data-marca-dia-de-viaje'), '5 DÍAS igual', 'DÍAS y HOY no ponen el trayecto antes de «Día de viaje»')
   debe(esDiaDeLlegada(recortada, recortada.days[0]) && !esDiaDeLlegada(recortada, recortada.days[1]) && !esDiaDeLlegada(recortada, recortada.days.at(-1)), '5 una función', 'esDiaDeLlegada no marca solo el primer día')

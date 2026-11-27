@@ -21,6 +21,8 @@ const CAMPOS = [
   'arrivalOtraHora',
   'departureOtroPunto',
   'departureOtraHora',
+  'arrivalEscalas',
+  'departureEscalas',
   'accommodationZone',
   'accommodationAddress',
   'accommodationPoint',

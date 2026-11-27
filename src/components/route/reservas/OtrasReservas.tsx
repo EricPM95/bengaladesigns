@@ -8,6 +8,7 @@ import { useBilletesDeExcursiones } from '../../../hooks/useBilleteExcursion'
 import { useEntradasDelGrupo, useReservasParaMi } from '../../../hooks/useEntradasDelGrupo'
 import { leerExcursion, type DatosExcursionLeida } from '../../../lib/billeteLeer'
 import { precioEnVista, useMonedaViajero } from '../../../lib/moneda'
+import { excursionesDeLaRuta } from '../../../lib/bookings'
 import { bloquesExtra, diaDeLaTarjetaExtra, fraseDelDocumentoExtra, nombreDelBloqueExtra, queEliminarReservaExtra, rotuloDeLaTarjetaExtra, textoGuardados, trayectoDeLaReservaExtra, type ReservaExtra, type TipoExtra } from '../../../lib/reservasExtra'
 import type { Route } from '../../../lib/types'
 import { Icono } from '../../ui/Icono'
@@ -28,7 +29,7 @@ const iconoDelTipo = (tipo: TipoExtra) => (tipo === 'otra' ? ICONOS.ticket : ico
 const claveDelDocumento = (tipo: TipoExtra): ClaveDocumento => (tipo === 'ferry' ? 'documento_barco' : tipo === 'otra' ? 'documento_excursion' : 'documento_tren')
 const PUNTEADA = '1px dotted rgba(28,34,48,.28)'
 
-function TarjetaDeReservaExtra({ route, reserva }: { route: Route; reserva: ReservaExtra }) {
+export function TarjetaDeReservaExtra({ route, reserva, rotulo }: { route: Route; reserva: ReservaExtra; /** (V76) «TREN AL CENTRO»: el rótulo de un tren o autobús unido a la llegada o a la vuelta (dentro de «Llegada y vuelta»). */ rotulo?: string }) {
   const billetes = useBilletesDeExcursiones()
   const grupo = useEntradasDelGrupo()
   const billete = billetes.de(reserva.id)
@@ -75,7 +76,7 @@ function TarjetaDeReservaExtra({ route, reserva }: { route: Route; reserva: Rese
       <div className="flex items-center gap-2.5" data-extra-cabecera>
         <span className="inline-flex h-6 flex-none items-center gap-1.5 rounded-full px-[11px]" style={{ background: '#1C2230', color: '#F3D88F', font: "700 11px 'Geist Mono',monospace", letterSpacing: '.14em' }}>
           <Icono nombre={iconoDelTipo(tipo)} size={12} />
-          {rotuloDeLaTarjetaExtra(tipo).replace(/^OTRA RESERVA$/, 'OTRA')}
+          {rotulo ?? rotuloDeLaTarjetaExtra(tipo).replace(/^OTRA RESERVA$/, 'OTRA')}
         </span>
         <span className="min-w-0 flex-1" />
         {/* QR (gris con «+» si falta; dorado si está), lápiz y papelera, de izquierda a derecha. */}
@@ -219,7 +220,10 @@ export function OtrasReservasDelViaje({ route }: { route: Route }) {
   const reservas = useReservasParaMi()
   // Vacío al abrir el viaje de otra persona sin nada: nada que pintar. (El almacén de la ruta se lee aquí solo para repintar al guardar.)
   useRouteStore((state) => state.reservations)
-  const bloques = bloquesExtra(reservas)
+  // (V76) Las unidas a una excursión se ven DENTRO de su ficha de «Excursiones y actividades», no en un bloque aparte.
+  // Si su excursión ya no está en la ruta, la reserva no se pierde de vista: vuelve a su bloque.
+  const excursionesDeHoy = new Set(excursionesDeLaRuta(route, reservas).map((f) => f.excursion.id))
+  const bloques = bloquesExtra(reservas.filter((r) => !(r.unidaA && excursionesDeHoy.has(r.unidaA))))
   if (bloques.length === 0) return null
   return (
     <div className="flex flex-col gap-3.5" data-otras-reservas>

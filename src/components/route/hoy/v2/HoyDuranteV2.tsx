@@ -7,6 +7,8 @@ import type { Coordinates, DayPlan, Route, Stop } from '../../../../lib/types'
 import { useRouteStore } from '../../../../store/useRouteStore'
 import { useDestinationExcursions } from '../../../../lib/destinationExcursions'
 import { dayOfReservation } from '../../../../lib/bookings'
+import { choquesDelDia, extrasSueltasDelDia } from '../../../../lib/reservasUnidas'
+import { TarjetaDeReservaExtraHoy } from './TarjetaDeTransporteHoy'
 import { addDaysToIso, formatWeekdayAbbrEs, isoToLocalDate } from '../../../../lib/dateRange'
 import { esDiaDeExcursion, esDiaDeLlegada, nombreDelDia, tituloSinHorasSiYaNoEsVerdad, viajeDelDia } from '../../../../lib/tituloDelDia'
 import { numberedStopsOf } from '../../../../lib/stopKind'
@@ -46,6 +48,7 @@ import { TarjetaDiaDePrueba, TarjetaP3 } from './TarjetasPase'
 import { TarjetaDeLlegada } from './TarjetaDeLlegada'
 import { CabeceraParada, LineaDelLogro, TarjetaParada, TuDia, ojoDeParada, useAhoraMin, useUltimaSuma } from './ParadaHoy'
 import { HoyVuelvesH14, datosDeLaSalida } from './VueltaH14'
+import { useTrenUnido } from '../../../../hooks/useTrenUnido'
 import { TarjetaDeVuelta, leerEnElSitio } from './TarjetaDeVuelta'
 import { HoyDespuesV2 } from './HoyDespuesV2'
 import { FilaDeAviso, D_AVISO } from './AvisosHoy'
@@ -245,6 +248,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   // (V47) Cuándo vuelve a abrir la parada si ya cerró (los mismos horarios del destino, en memoria: 0 KB de red).
   const proximaAperturaDe = useProximaApertura(day.city, dateIso)
   const fichas = useFichasDeHoy(route, day, dateIso)
+  const trenDeLaVuelta = useTrenUnido('departure') // (V76) el tren o autobús unido a la vuelta: la hora de salir sale de su hora
   const masVisitas = useMasVisitas(route, day)
   const datosDeImportancia = useDatosDeImportancia(route.destination)
   const [hojaMas, setHojaMas] = useState<MasVisita[] | null>(null)
@@ -290,6 +294,9 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   // (V56, 2) Los sitios del atardecer se cuentan desde la ubicación real si hay GPS; si no, desde la ÚLTIMA parada hecha (con todo hecho, `anterior` ya no existe: antes se caía al alojamiento y salían menos sitios).
   const ultimaHecha = [...paradas].reverse().find((s) => s.checkedInAt && !s.saltada && hasRealCoordinates(s.coordinates))
   const entradasDeHoy = reservations.filter((r) => dayOfReservation(route, r)?.id === day.id && r.kind === 'entrada' && !r.fueraDeRuta)
+  // (V76, R10) Un ferry, tren, autobús u «otra» que no es de ninguna excursión sale hoy en su sitio por la hora; si choca con una parada, el aviso de arriba (la app NO mueve el día sola).
+  const extrasDeHoy = extrasSueltasDelDia(route, reservations, day)
+  const choquesDeHoy = choquesDelDia(route, reservations, day)
   const reservaDe = (stop: Stop) => reservations.find((r) => r.id === stop.reservedId) ?? entradasDeHoy.find((r) => r.placeNames.includes(stop.name)) ?? null
   const esLlegada = esDiaDeLlegada(route, day)
   const esVuelta = Boolean(day.isReturnLeg)
@@ -386,7 +393,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const usaTarjetaDeVuelta = vueloPuesto && !pideVuelo && Boolean(fichas.vuelta.hora)
   const vuelveH14 = (conPase: boolean) => (conPase && usaTarjetaDeVuelta ? <TarjetaDeVuelta route={route} day={day} dateIso={dateIso} mitad={fichas.vuelta} info={infoLlegada} paradas={vigentes} ubicacionReal={ubicacionReal} desde={ubicacion ?? zonaCoords ?? origenCerca ?? route.destinationCoordinates ?? null} ahoraMin={ahoraMinHoy} onVerComoIr={() => fichas.abrir('vuelta')} onVerExplorar={() => explorar('atracciones', null, true)} /> : vueloPuesto || pideVuelo ? <HoyVuelvesH14 route={route} day={day} tarjeta={tarjetaVuelve} mitad={fichas.vuelta} info={infoLlegada} conPase={conPase} onVerComoIr={() => fichas.abrir('vuelta')} onAnadirVuelo={pideVuelo && conPase ? anadirVuelo : undefined} /> : null)
   // (V57) Cuándo hay que salir hacia el aeropuerto (la misma cuenta de la tarjeta) y el estado del vuelo: ¿ya ha salido? ¿las paradas que quedan caben antes de salir?
-  const salidaVuelta = esVuelta && vueloPuesto ? datosDeLaSalida({ route, day, mitad: fichas.vuelta, info: infoLlegada }) : null
+  const salidaVuelta = esVuelta && vueloPuesto ? datosDeLaSalida({ route, day, mitad: fichas.vuelta, info: infoLlegada, tren: trenDeLaVuelta }) : null
   const vueloMin = minutosDe(salidaVuelta?.hora ?? null)
   const saleMin = minutosDe(salidaVuelta?.hasta ?? null)
   const vueloYaSalio = vueloMin != null && ahoraMinHoy >= vueloMin
@@ -535,6 +542,12 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
           <FilaDeAviso tono="amarillo" icono={D_AVISO.reloj} titulo={`Tu vuelo sale a las ${horaCorta(salidaVuelta?.hora ?? null)} y hoy no te da tiempo a todo`} boton={{ texto: 'Adaptar mi día', onClick: () => void adaptarMiDia(), datos: { 'data-hoy-adaptar-dia': '1' } }} onIrse={() => cerrarAviso('vuelo-no-cabe')} datos={{ 'data-hoy-aviso-vuelo': '1' }} />
         </AvisoDeHoy>
       )}
+      {/* (V76, R10) «Revisa las horas · Ferry a Fuerteventura · choca con una parada» [Ver]: se va cuando ya no choca o deslizándolo hacia arriba. [Ver] abre ese día en DÍAS. */}
+      {choquesDeHoy.length > 0 && !cerrados.includes('revisa-horas') && (
+        <AvisoDeHoy id="revisa-horas" prio={1.1}>
+          <FilaDeAviso tono="amarillo" icono="M12 9v4M12 17h.01M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" titulo="Revisa las horas" sub={`${choquesDeHoy[0].nombre}${choquesDeHoy.length > 1 ? ` y ${choquesDeHoy.length - 1} más` : ''} · choca con una parada`} boton={{ texto: 'Ver', onClick: () => { setMode('days'); useRouteStore.getState().setActiveDayId(day.id) }, datos: { 'data-hoy-revisa-horas-ver': '1' } }} onIrse={() => cerrarAviso('revisa-horas')} datos={{ 'data-hoy-aviso-revisa-horas': '1' }} />
+        </AvisoDeHoy>
+      )}
       {/* HOY2 (C): lo que corre peligro ya, el primero de los avisos (prioridad 1) */}
       <AvisoDeEntradas route={route} day={day} dateIso={dateIso} ubicacion={ubicacion} enCoche={enCoche} ahoraMin={ahoraMinHoy} />
       {/* HOY2b (8b): los horarios, en HOY. Por la mañana, «Para hoy: … cierra a las …»; en directo, «A este ritmo llegarías a … cuando ya ha cerrado» */}
@@ -665,6 +678,12 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
         )
       })()}
 
+      {/* (V76, R10) Lo que sale ANTES de la próxima parada (o con el día ya acabado), en su sitio por la hora. */}
+      {extrasDeHoy
+        .filter((e) => !siguiente || (minutosDe(e.time) ?? 0) <= (minutosDe(siguiente.time) ?? 24 * 60))
+        .map((e) => (
+          <TarjetaDeReservaExtraHoy key={e.id} reserva={e} />
+        ))}
       {/* HOY1 (H4): la línea dorada del logro que acaba de ganar */}
       {ultimoVisto && siguiente && sumaDelVisto && <LineaDelLogro texto={`+1 en ${sumaDelVisto}`} />}
 
@@ -702,6 +721,13 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
         />
       )}
 
+      {/* (V76, R10) Lo que sale DESPUÉS de la próxima parada, debajo de su tarjeta. */}
+      {siguiente &&
+        extrasDeHoy
+          .filter((e) => (minutosDe(e.time) ?? 0) > (minutosDe(siguiente.time) ?? 24 * 60))
+          .map((e) => (
+            <TarjetaDeReservaExtraHoy key={e.id} reserva={e} />
+          ))}
       {/* HOY2 (Completa 7): el día acabado. El título de «Todo visto por hoy» está arriba; aquí, lo que has hecho (o «Hoy has visto el atardecer»). */}
       {/* (V73 §2; Design «Hoy Al Acabar») La tarjeta de cierre: nunca vacía, con sus etiquetas y la franja «Ver el resumen del día ›» (el mismo `ResumenDia`). */}
       {diaTerminado && (

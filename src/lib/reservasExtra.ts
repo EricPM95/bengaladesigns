@@ -177,7 +177,8 @@ export function extrasDeUnTipo(reservas: readonly Reservation[], tipo: TipoExtra
 
 /** Los bloques que salen (solo los tipos con alguna guardada), en su orden. Sin ninguna guardada: lista vacía y no sale ningún bloque. */
 export function bloquesExtra(reservas: readonly Reservation[]): { tipo: TipoExtra; reservas: ReservaExtra[] }[] {
-  return TIPOS_EXTRA.map((tipo) => ({ tipo, reservas: extrasDeUnTipo(reservas, tipo) })).filter((b) => b.reservas.length > 0)
+  // (V76) Un tren o autobús unido a la llegada o a la vuelta se ve dentro de «Llegada y vuelta», no en su bloque.
+  return TIPOS_EXTRA.map((tipo) => ({ tipo, reservas: extrasDeUnTipo(reservas, tipo).filter((r) => !r.unidaALlegada) })).filter((b) => b.reservas.length > 0)
 }
 
 /** La frase de la hoja de eliminar: «tu ferry a La Graciosa», «tu tren a Florencia», «tu reserva de Tour en kayak». */

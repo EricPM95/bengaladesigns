@@ -9,6 +9,9 @@ import { Icono } from '../../../ui/Icono'
 import { CandadoRedondo } from '../../../pase/Candado'
 import type { MitadDeHoy } from '../llegadaVuelta'
 import { BOTON_ORO } from '../../../ui/botonesOro'
+import type { Reservation } from '../../../../lib/bookings'
+import { puntoDeEstacion } from '../../../../lib/escalasYUnion'
+import { useTrenUnido } from '../../../../hooks/useTrenUnido'
 
 const ORO_CLARO = '#F3D88F'
 
@@ -30,14 +33,24 @@ function datosDeCoche(route: Route, day: DayPlan): { hora: string | null; hasta:
  * (V57) La hora del vuelo y a qué hora hay que salir hacia el aeropuerto/estación/puerto (`hasta`), con el trayecto y el margen. UNA sola cuenta para la tarjeta, el aviso de «hoy no te da tiempo» y el «Buen viaje».
  * Sin consultas a Supabase: todo sale del viaje y de los datos del destino en memoria.
  */
-export function datosDeLaSalida({ route, day, mitad, info }: { route: Route; day: DayPlan; mitad: MitadDeHoy; info: ArrivalInfo }): { hora: string | null; hasta: string | null; trayectoMin: number | null; sitio: string | null; margen: string | null; limiteT1: string | null; sinTiempo: boolean } {
+export function datosDeLaSalida({ route, day, mitad, info, tren }: { route: Route; day: DayPlan; mitad: MitadDeHoy; info: ArrivalInfo; /** (V76) El tren o autobús UNIDO a la vuelta (de RESERVAS): la hora de salir sale de la hora de ese tren (del alojamiento a la ESTACIÓN), no de la del vuelo. */ tren?: Pick<Reservation, 'time' | 'origen' | 'kind'> | null }): { hora: string | null; hasta: string | null; trayectoMin: number | null; sitio: string | null; margen: string | null; limiteT1: string | null; sinTiempo: boolean; /** (V76) true = `hasta` y `trayectoMin` cuentan hasta la estación del tren unido. */ viaEstacion?: boolean } {
   const d = datosDelDiaDeVuelta({ modo: (mitad.mode === 'coche' ? 'avion' : mitad.mode) as MedioDeLaVuelta, hora: mitad.hora, punto: mitad.point, medio: medioOf(info, mitad.mode), info, zonaId: route.accommodationZone ?? null })
   if (esDestinoDeCoche(route.destination)) {
     // Con el día de vuelta del motor (tras Reorganizar) manda su hora y su límite del coche; sin él NO se inventa la hora de salir (el motor de coche cuenta distinto: carretera, devolver el coche, T1): hasta que reorganice, solo «Devuelve el coche en la T1».
     const c = datosDeCoche(route, day)
     return { hora: c.hora ?? mitad.hora, hasta: c.hasta, trayectoMin: c.trayectoMin, sitio: 'aeropuerto', margen: textoDelMargen(120), limiteT1: c.limiteT1, sinTiempo: false }
   }
+  // (V76) Con un tren o autobús unido a la vuelta, se sale para coger el tren: lo que cuenta es el trayecto del alojamiento a su estación y la hora de ese tren (con sus 30 min de margen); el margen que se dice del vuelo sigue siendo el del vuelo.
+  if (tren && minutosDeUnaHora(tren.time) != null && mitad.mode !== 'coche') {
+    const medioTren = medioOf(info, tren.kind === 'bus' ? 'bus' : 'tren')
+    const t = datosDelDiaDeVuelta({ modo: tren.kind === 'bus' ? 'bus' : 'tren', hora: tren.time, punto: puntoDeEstacion(medioTren, tren.origen), medio: medioTren, info, zonaId: route.accommodationZone ?? null })
+    return { hora: mitad.hora, hasta: t.hasta ?? t.sale, trayectoMin: t.trayecto?.min ?? null, sitio: d.sitio, margen: d.margen ? textoDelMargen(d.margen) : null, limiteT1: null, sinTiempo: t.sinTiempo, viaEstacion: true }
+  }
   return { hora: mitad.hora, hasta: d.hasta ?? d.sale, trayectoMin: d.trayecto?.min ?? null, sitio: d.sitio, margen: d.margen ? textoDelMargen(d.margen) : null, limiteT1: null, sinTiempo: d.sinTiempo }
+}
+const minutosDeUnaHora = (h: string | null | undefined): number | null => {
+  const m = /^(\d{1,2}):(\d{2})/.exec(String(h ?? ''))
+  return m ? Number(m[1]) * 60 + Number(m[2]) : null
 }
 
 /**
@@ -46,7 +59,8 @@ export function datosDeLaSalida({ route, day, mitad, info }: { route: Route; day
  */
 export function HoyVuelvesH14({ route, day, tarjeta, mitad, info, conPase, onVerComoIr, onAnadirVuelo }: { route: Route; day: DayPlan; tarjeta: TarjetaHoyVuelvesDato | null; mitad: MitadDeHoy; info: ArrivalInfo; conPase: boolean; onVerComoIr: () => void; /** (V57) Sin vuelo de vuelta: [Añadir mi vuelo] (abre la hoja «Tu vuelo» de RESERVAS). */ onAnadirVuelo?: () => void }) {
   const enCoche = esDestinoDeCoche(route.destination)
-  const { hora, hasta, trayectoMin, sitio, margen, limiteT1 } = datosDeLaSalida({ route, day, mitad, info })
+  const tren = useTrenUnido('departure')
+  const { hora, hasta, trayectoMin, sitio, margen, limiteT1 } = datosDeLaSalida({ route, day, mitad, info, tren })
   const modo = enCoche ? 'avion' : mitad.mode
   const t = lineasDeVuelta({ modo, hora, hasta: conPase ? hasta : null, trayectoMin: conPase ? trayectoMin : null, sitio, margen, enCoche, limiteT1: conPase ? limiteT1 : null, conPase, nombreDelPase: nombreDelPase(route.destination) })
   // Sin la hora del vuelo no hay cuenta: lo que dice el motor, tal cual.

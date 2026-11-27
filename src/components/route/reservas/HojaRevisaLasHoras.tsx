@@ -8,9 +8,9 @@ import type { RevisionDeHoras } from '../../../lib/revisarLasHoras'
  * la frase de lo que choca, dos botones lado a lado ([Revisar el vuelo] / [Revisar el Free Tour] dorado: lleva a lo otro; [Revisar la entrada] blanco con borde: vuelve a cambiar esta) y, abajo y pequeño, «Guardarla igualmente».
  * Si se guarda así: línea naranja en su tarjeta de RESERVAS con la misma frase, y no entra en el día como si cupiera (`reservation.revisarHoras`). La app avisa, no prohíbe. Sin red: todo sale de la ruta y de las reservas del móvil.
  */
-export function HojaRevisaLasHoras({ revision, onOtro, onEsta, onGuardarIgualmente, onCerrar }: { revision: RevisionDeHoras; onOtro: () => void; onEsta: () => void; onGuardarIgualmente: () => void; onCerrar: () => void }) {
+export function HojaRevisaLasHoras({ revision, onOtro, onEsta, onGuardarIgualmente, onCerrar, z }: { revision: RevisionDeHoras; onOtro: () => void; onEsta: () => void; onGuardarIgualmente: () => void; onCerrar: () => void; /** (V76) Encima de la hoja del formulario de una reserva extra (capa 110): 130. */ z?: number }) {
   return (
-    <HojaV2 onCerrar={onCerrar} etiqueta="Revisa las horas" fondo="#FBF3E2">
+    <HojaV2 onCerrar={onCerrar} etiqueta="Revisa las horas" fondo="#FBF3E2" z={z}>
       <div data-hoja-revisa-las-horas={revision.caso} className="flex flex-col gap-3.5">
         <div className="flex flex-col items-center gap-2.5 pt-1.5 text-center">
           <span className="flex h-14 w-14 items-center justify-center rounded-full" style={{ background: '#FDF1DC', border: '1.5px solid rgba(200,100,30,.45)' }} aria-hidden="true">

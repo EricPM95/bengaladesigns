@@ -441,7 +441,12 @@ export function mananaH13(p: { route: Route; day: DayPlan; reservations: Reserva
   let anadirReserva: MananaH13['anadirReserva'] = null
   if (esExcursion) {
     const fila = excursionesDeLaRuta(p.route, p.reservations).find((f) => f.day.id === manana.id)
-    if (fila?.reservation?.time) linea = { icono: 'reloj', texto: `Sales a las ${horaCorta(fila.reservation.time)}` }
+    // (V76) Con el ferry (o tren, autobús) unido a la excursión: «Sales a las 10:00 · Ferry desde Órzola» (la hora y el puerto del primer billete, de la MISMA reserva de RESERVAS).
+    if (fila?.unidas.length && !fila.reservation) {
+      const primero = fila.unidas[0]
+      const medio = primero.kind === 'tren' ? 'Tren' : primero.kind === 'bus' ? 'Autobús' : 'Ferry'
+      linea = { icono: 'reloj', texto: `Sales a las ${horaCorta(primero.time)} · ${medio}${primero.origen ? ` desde ${primero.origen}` : ''}` }
+    } else if (fila?.reservation?.time) linea = { icono: 'reloj', texto: `Sales a las ${horaCorta(fila.reservation.time)}` }
     else if (fila && !fila.reservation) {
       linea = { icono: 'reservas', texto: `Aún no tienes la reserva de ${titulo}` }
       anadirReserva = { excursion: fila.excursion, dayId: manana.id }

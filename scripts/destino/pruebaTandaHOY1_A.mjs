@@ -359,7 +359,8 @@ await sec(async () => {
   await ir(a, { dia: 0, min: 15 * 60, mut })
   debe(!(await hay(a, '[data-hoy-atardecer]')), 'H13', 'a las 15:00 (más de 2 h antes de la puesta) todavía no sale el atardecer')
   await ir(a, { dia: 0, min: 16 * 60 + 45, mut })
-  debe(/^Hoy ves el atardecer en el Pincio: el sol se pone a las 18:26. Llega un cuarto de hora antes, que es cuando más bonito está.$/.test((await txt(a, '[data-hoy-atardecer-titulo]')) ?? ''), 'H13', `el atardecer con su sitio (${await txt(a, '[data-hoy-atardecer-titulo]')})`)
+  // (V66/V70) La tarjeta dice el título («Hoy ves el atardecer en el Pincio»), el detalle («Llega un cuarto de hora antes…») y, en su etiqueta, la hora del sol (18:26).
+  debe(/^Hoy ves el atardecer en el Pincio$/.test((await txt(a, '[data-hoy-atardecer-titulo]')) ?? '') && /Llega un cuarto de hora antes, que es cuando más bonito está\./.test((await txt(a, '[data-hoy-atardecer-texto]')) ?? '') && /18:26/.test((await txt(a, '[data-hoy-atardecer]')) ?? ''), 'H13', `el atardecer con su sitio (${await txt(a, '[data-hoy-atardecer]')})`)
   const href = await atr(a, '[data-hoy-atardecer-como-llegar]', 'href')
   debe(/google\.com\/maps\/dir/.test(href ?? '') && /travelmode=walking/.test(href ?? ''), 'H13', '[Cómo llegar] al sitio, a pie')
   await captura(a, 'H13_atardecer', '[data-hoy-atardecer]')
@@ -369,7 +370,7 @@ await sec(async () => {
   const siguientePrimera = await paradasDe(a, 1)
   const m = (await txt(a, '[data-hoy-manana]')) ?? ''
   debe(/MAÑANA/i.test(m) && m.includes(siguientePrimera[0].name.slice(0, 10)), 'H13', `con la primera parada de mañana (${m.slice(0, 80)})`)
-  debe(/empiezas a las|sales a las/i.test(m), 'H13', 'y la hora de empezar o de salir (HOY2: «Sales a las…» con mayúscula en la tarjeta oscura)')
+  debe(/empiezas (a las|por)|sales a las/i.test(m), 'H13', 'y la hora de empezar o de salir (HOY2: «Sales a las…» con mayúscula en la tarjeta oscura)')
   await captura(a, 'H13_manana', '[data-hoy-manana]')
   // con zona: «sales a las…»; con una entrada de mañana: «turno en… a las…» y el consejo
   const zona = await a.evaluar(`(async () => {
@@ -377,7 +378,8 @@ await sec(async () => {
     return (r?.zonas_alojamiento ?? []).find((z) => z.coordinates)?.id ?? null
   })()`)
   await ir(a, { dia: 0, min: 21 * 60, mut: `r.accommodationZone = ${JSON.stringify(zona)}; numberedStopsOf(r.days[0]).forEach((s) => { s.checkedInAt = '2026-10-17T10:00:00Z' }); numberedStopsOf(r.days[1])[0].time = '09:00'` })
-  debe(/sales a las \d{1,2}:\d{2}/i.test((await txt(a, '[data-hoy-manana]')) ?? ''), 'H13', `con zona: «sales a las…» (${await txt(a, '[data-hoy-manana]')})`)
+  // (V73) El día normal dice «Empiezas por X»; «Sales a las…» solo en una excursión con reserva.
+  debe(/Empiezas por .+|sales a las \d{1,2}:\d{2}/i.test((await txt(a, '[data-hoy-manana]')) ?? ''), 'H13', `con zona: «Empiezas por…» (${await txt(a, '[data-hoy-manana]')})`)
 })
 
 /* ───────────── 6. H14 y H14b: hoy vuelves a casa (Roma) ───────────── */
@@ -388,15 +390,16 @@ await sec(async () => {
     r.planVuelta = { activo: true, medio: 'avion', hora: ${JSON.stringify(vuelo)}, tarjeta: { titulo: 'Hoy vuelves a casa', texto: 'Tu vuelo sale a las ' + ${JSON.stringify(vuelo)} + '.', desde_tu_zona: null, ver_como_ir: { texto: 'Ver cómo ir', abre: 'ficha_de_vuelta' }, explorar: { texto: 'Si te sobra tiempo', boton: 'Ver qué hay cerca', abre: 'explorar_monumentos', cerca_de_mi: true }, despedida: 'Hasta pronto.', madrugada: false } }`
   const ultimo = await ev(`${R}.getState().route.days.length - 1`)
   await ir(a, { dia: ultimo, min: 9 * 60, mut: mutVuelta('18:05') })
-  debe(await hay(a, '[data-hoy-vuelves-h14="con-pase"]'), 'H14', 'una sola tarjeta «Hoy vuelves a casa» con pase')
-  const t = (await txt(a, '[data-hoy-vuelves-h14]')) ?? ''
-  debe(/HOY VUELVES A CASA/i.test(t) && /Tu vuelo sale a las 18:05/.test(t), 'H14', `«Tu vuelo sale a las 18:05» (${t.slice(0, 60)})`)
-  debe(/Tienes el día libre hasta las \d{1,2}:\d{2}\./.test(t), 'H14', `«Tienes el día libre hasta las…» (${t})`)
-  debe(/Al aeropuerto: \d+ min/.test(t), 'H14', 'el trayecto al aeropuerto')
+  // (V70) Con pase el día de vuelta es la tarjeta de vuelta de la V70 (VUELO · SALIR · AEROPUERTO); la antigua `data-hoy-vuelves-h14` solo queda sin pase (H14b).
+  debe((await hay(a, '[data-hoy-vuelta-tarjeta]')) && !(await hay(a, '[data-hoy-vuelves-h14]')), 'H14', 'una sola tarjeta «Hoy vuelves a casa» con pase')
+  const t = (await txt(a, '[data-hoy-vuelta-tarjeta]')) ?? ''
+  debe(/HOY VUELVES A CASA/i.test(t) && /VUELO[\s\S]*18:05/.test(t), 'H14', `«VUELO … 18:05» (${t.slice(0, 60)})`)
+  debe(/SALIR\s+\d{1,2}:\d{2}/.test(t), 'H14', `«SALIR hh:mm» (hasta qué hora tienes el día, V70) (${t})`)
+  debe(/AEROPUERTO\s+\d+ min/.test(t), 'H14', 'el trayecto al aeropuerto (caja AEROPUERTO, V70)')
   debe(/Cómo llegar al aeropuerto/.test(t), 'H14', '[Cómo llegar al aeropuerto]')
   debe(!/Devuelve el coche/.test(t), 'H14', 'en Roma, sin lo del coche')
   // la cuenta única: lo mismo que la tarjeta de DÍAS
-  const hasta = /hasta las (\d{1,2}:\d{2})/.exec(t)?.[1]
+  const hasta = /SALIR\s+(\d{1,2}:\d{2})/.exec(t)?.[1]
   const cuenta = await a.evaluar(`(async () => {
     const { datosDelDiaDeVuelta } = await import('/src/lib/diaDeVuelta.ts'); const { medioOf } = await import('/src/lib/arrivalReturn.ts')
     const r = ${R}.getState().route
@@ -471,13 +474,13 @@ await sec(async () => {
     const vuelta = diasLz.findIndex((d) => d.vuelta)
     if (vuelta >= 0) {
       await ir(a, { dia: vuelta, min: 9 * 60 })
-      const v = (await txt(a, '[data-hoy-vuelves-h14]')) ?? ''
+      const v = (await txt(a, '[data-hoy-vuelta-tarjeta]')) ?? ''
       debe(v.length > 0, 'H14', 'el día de vuelta de Lanzarote lleva la tarjeta «Hoy vuelves a casa»')
-      debe(/Tu vuelo sale a las 18:05/.test(v), 'H14', `Lanzarote: «Tu vuelo sale a las 18:05» (${v.slice(0, 70)})`)
+      debe(/VUELO[\s\S]*18:05/.test(v), 'H14', `Lanzarote: «VUELO … 18:05» (${v.slice(0, 70)})`)
       debe(/Devuelve el coche en la T1/.test(v), 'H14', 'Lanzarote: «Devuelve el coche en la T1»')
-      debe(/en coche/.test(v), 'H14', 'Lanzarote: el trayecto al aeropuerto en coche')
+      debe(/SALIR\s+\d{1,2}:\d{2}\s+Hacia el aeropuerto/.test(v), 'H14', 'Lanzarote: cuándo salir hacia el aeropuerto (en coche, V70)')
       debe(!ROMA_EN_LANZAROTE.test(v), 'H14', 'sin nombres de Roma')
-      await captura(a, 'H14_lanzarote_vuelta', '[data-hoy-vuelves-h14]')
+      await captura(a, 'H14_lanzarote_vuelta', '[data-hoy-vuelta-tarjeta]')
     }
   }
 })

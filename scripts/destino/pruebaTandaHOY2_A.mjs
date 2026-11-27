@@ -97,13 +97,16 @@ const diasDe = (a) => a.evaluar(`(async () => ${R}.getState().route.days.map((d)
 /** Los bloques de HOY en el orden en que salen en pantalla (por la posición en el DOM). */
 const ordenDeBloques = (a) =>
   a.evaluar(`(() => {
-    const sels = { cabecera: '[data-hoy-parada-cabecera],[data-hoy-cabecera]', avisos: '[data-hoy-avisos]', principal: '[data-hoy-siguiente],[data-hoy-por-la-manana],[data-hoy-bienvenida],[data-hoy-vuelves-h14],[data-hoy-todo-visto]', hueco: '[data-hoy-hueco-que-hago-ahora]', cerca: '[data-cerca-de-ti]', tuDia: '[data-hoy-tu-dia]', sobra: '[data-hoy-sobra-tiempo]', pendientes: '[data-hoy-pendientes]' }
+    const sels = { cabecera: '[data-hoy-parada-cabecera],[data-hoy-cabecera]', avisos: '[data-hoy-avisos]', principal: '[data-hoy-siguiente],[data-hoy-por-la-manana],[data-hoy-bienvenida],[data-hoy-llegada-tarjeta],[data-hoy-vuelta-tarjeta],[data-hoy-vuelves-h14],[data-hoy-todo-visto]', hueco: '[data-hoy-hueco-que-hago-ahora]', cerca: '[data-cerca-de-ti]', tuDia: '[data-hoy-tu-dia]', sobra: '[data-hoy-sobra-tiempo]', pendientes: '[data-hoy-pendientes]' }
     const raiz = document.querySelector('[data-hoy-v2]')
     const todos = Array.from(raiz.querySelectorAll('*'))
     const out = []
     for (const [k, s] of Object.entries(sels)) { const e = raiz.querySelector(s); if (e) out.push([k, todos.indexOf(e)]) }
     return out.sort((x, y) => x[1] - y[1]).map((x) => x[0])
   })()`)
+/** (V54) Los avisos de arriba (`FilaDeAviso`) se van deslizándolos hacia arriba (más de 30 px): un toque que empieza en su centro y acaba 60 px más arriba. */
+const deslizar = (a, sel) =>
+  a.evaluar(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); if (!e) return false; const r = e.getBoundingClientRect(); const x = r.left + r.width / 2, y = r.top + r.height / 2; const t = (yy) => new Touch({ identifier: 1, target: e, clientX: x, clientY: yy }); e.dispatchEvent(new TouchEvent('touchstart', { bubbles: true, cancelable: true, touches: [t(y)], changedTouches: [t(y)] })); e.dispatchEvent(new TouchEvent('touchend', { bubbles: true, cancelable: true, touches: [], changedTouches: [t(y - 60)] })); return true })()`)
 /** La captura de TODO el scroll de HOY (390 de ancho): se estira la ventana a lo que mide el contenido y se vuelve a 844. */
 const capturaEntera = async (a, nombre) => {
   // (las hojas de «Guarda un recuerdo» y los avisos de abajo salen al marcar paradas a mano en la prueba: se quitan para la captura)
@@ -139,7 +142,7 @@ await sec(async () => {
   const sin = leer('src/components/route/hoy/HoySinPase.tsx')
   debe(/tarjetasDeHoy2\(destino\)/.test(sin) && !/TARJETAS_DE_HOY/.test(sin), 'sin_pase', 'HoySinPase: la lista nueva (`tarjetasDeHoy2`)')
   const avisos = leer('src/components/route/hoy/AvisosDelTiempo.tsx') + leer('src/components/route/today/RainAlert.tsx') + leer('src/components/route/hoy/JuegoCerca.tsx') + leer('src/components/route/hoy/FueraDeRuta.tsx') + leer('src/components/route/hoy/TarjetaDeLaPrueba.tsx')
-  debe((avisos.match(/CruzDeAviso|data-hoy-aviso-x/g) ?? []).length >= 6, 'x', 'la X (`CruzDeAviso`) en los avisos del tiempo, la lluvia de Roma, el reto, fuera de ruta y el día de prueba')
+  debe((avisos.match(/FilaDeAviso|CruzDeAviso|data-hoy-aviso-x/g) ?? []).length >= 6, 'x', 'cada aviso (tiempo, lluvia de Roma, reto, fuera de ruta, día de prueba) sale como `FilaDeAviso` (se va deslizándolo hacia arriba; V54) o con su X')
 })
 
 /* ───────────── 1. Roma, antes de nada: la lista nueva sin pase (se hace con otro Chrome luego) ───────────── */
@@ -168,7 +171,7 @@ await sec(async () => {
   debe(!ROMA_EN_LANZAROTE.test((await txt(a, '[data-hoy-v2]')) ?? ''), 'LZ', 'Lanzarote, martes 10: ni un nombre de Roma')
   // Tu día: franjas, sin horas
   const franjas = await a.evaluar("Array.from(document.querySelectorAll('[data-hoy-franja]')).map((e) => e.getAttribute('data-hoy-franja'))")
-  debe(franjas[0] === 'manana' && franjas.includes('tarde') && franjas.every((f, i) => i === 0 || ['manana', 'mediodia', 'tarde', 'noche'].indexOf(f) > ['manana', 'mediodia', 'tarde', 'noche'].indexOf(franjas[i - 1])), 'tu_dia', `«Tu día» por franjas, en orden (${franjas.join(', ')})`)
+  debe(franjas.length >= 2 && franjas.includes('tarde') && franjas.every((f, i) => i === 0 || ['manana', 'mediodia', 'tarde', 'noche'].indexOf(f) > ['manana', 'mediodia', 'tarde', 'noche'].indexOf(franjas[i - 1])), 'tu_dia', `«Tu día» por franjas, en orden (V73: lo que ya pasó sale, así que ya no empieza siempre por la mañana) (${franjas.join(', ')})`)
   const lista = (await txt(a, '[data-hoy-lista]')) ?? ''
   const horas = lista.match(HORA_EN_TEXTO) ?? []
   const hechoRes = await a.evaluar("Array.from(document.querySelectorAll('[data-hoy-lista] [data-hoy-fila-hora]')).map((e) => e.getAttribute('data-hoy-fila-hora'))")
@@ -217,7 +220,7 @@ await sec(async () => {
   await ir(a, { dia: idxMartes, min: 10 * 60, tiempo: LLUVIA })
   await a.esp(1500)
   const av = await a.evaluar("Array.from(document.querySelectorAll('[data-aviso-tiempo]')).map((e) => e.getAttribute('data-aviso-tiempo'))")
-  const nAvisos = await cuantos(a, '[data-hoy-avisos] [data-hoy-aviso-x]')
+  const nAvisos = await cuantos(a, '[data-hoy-avisos] [data-aviso-tiempo]')
   debe(av.length >= 1, 'avisos', `con lluvia, nubes y viento hay avisos del tiempo (${av.join(', ')})`)
   const masTxt = await txt(a, '[data-hoy-aviso-mas]')
   const visibles = av.length
@@ -230,13 +233,13 @@ await sec(async () => {
   }
   const ordenAvisos = await ordenDeBloques(a)
   debe(ordenAvisos.indexOf('avisos') < ordenAvisos.indexOf('principal'), 'orden', 'los avisos van encima de la tarjeta principal')
-  debe(nAvisos >= 1, 'x', `cada aviso lleva su X (${nAvisos})`)
+  debe(nAvisos >= 1, 'x', `cada aviso del tiempo es una fila que se va deslizándola hacia arriba (V54: ya sin X) (${nAvisos})`)
   await capturaEntera(a, '05_lz_martes10_avisos_tiempo')
   const antes = await cuantos(a, '[data-aviso-tiempo]')
-  await clic(a, '[data-aviso-tiempo] [data-hoy-aviso-x]')
+  await deslizar(a, '[data-aviso-tiempo]')
   await a.esp(600)
   const despues = await cuantos(a, '[data-aviso-tiempo]')
-  debe(despues < antes || (masTxt && despues <= antes), 'x', `la X cierra el aviso (${antes} → ${despues})`)
+  debe(despues < antes || (masTxt && despues <= antes), 'x', `deslizarlo hacia arriba cierra el aviso (${antes} → ${despues})`)
   // el que se cierra no vuelve ese día (se vuelve a montar HOY sin borrar lo cerrado)
   const idCerrado = antes
   await ir(a, { dia: idxMartes, min: 10 * 60, tiempo: LLUVIA, limpiar: false })
@@ -283,16 +286,19 @@ await sec(async () => {
 
   // ── Completa 8: el día de llegada (domingo 8) ──
   await ir(a, { dia: idxDomingo, min: 8 * 60 })
-  debe(await hay(a, '[data-hoy-bienvenida]'), 'llegada', 'Completa 8: la tarjeta de bienvenida')
+  debe(await hay(a, '[data-hoy-llegada-tarjeta]'), 'llegada', 'Completa 8 (V62): la tarjeta de llegada')
   const cab8 = (await txt(a, '[data-hoy-cabecera]')) ?? ''
   debe(/Bienvenido a Lanzarote/.test(cab8) && /llegada a Lanzarote/i.test(cab8), 'llegada', `«Bienvenido a Lanzarote» (${cab8})`)
-  const b8 = (await txt(a, '[data-hoy-bienvenida]')) ?? ''
-  debe(/Aterrizas a las 9:30/.test(b8), 'llegada', `con el vuelo: «Aterrizas a las 9:30» (${b8.slice(0, 80)})`)
-  debe(/Recoge tu coche en el aeropuerto/.test(b8), 'llegada', 'Recoge tu coche en el aeropuerto')
-  debe(/Empiezas hacia las \d{1,2}:\d{2}/.test(b8), 'llegada', `la hora útil de la LL: «Empiezas hacia las…» (${b8.match(/Empiezas hacia las \d{1,2}:\d{2}/)?.[0]})`)
-  const href8 = await a.evaluar("document.querySelector('[data-hoy-bienvenida-coche]')?.href ?? null")
-  debe(/google\.com\/maps/.test(href8 ?? '') && /Alquiler/i.test(decodeURIComponent(href8 ?? '')), 'llegada', '[Cómo llegar al coche de alquiler] abre Maps')
-  debe(/Cómo llegar al coche de alquiler/.test(b8), 'llegada', 'el botón dice «Cómo llegar al coche de alquiler»')
+  const b8 = (await txt(a, '[data-hoy-llegada-tarjeta]')) ?? ''
+  debe(/VUELO[\s\S]*0?9:30/.test(b8), 'llegada', `con el vuelo: «VUELO … 09:30» (${b8.slice(0, 160)})`)
+  debe(/COCHE[\s\S]*Recóge?lo al llegar/.test(b8), 'llegada', `COCHE · Recógelo al llegar (V62) (${b8.slice(0, 160)})`)
+  debe(/Empieza en .+/.test(b8) && /HOTEL[\s\S]*\d+ min en coche/.test(b8), 'llegada', `la tarjeta cuenta el trayecto al hotel y por dónde empieza el día (V62) (${b8.slice(0, 200)})`)
+  debe(/Cómo llegar/.test(b8), 'llegada', 'el botón [Cómo llegar …] de la tarjeta (V62)')
+  // Tras [He aterrizado] sale el enlace a Maps del coche de alquiler (V62).
+  await clic(a, '[data-hoy-he-aterrizado]')
+  await a.esp(900)
+  const href8 = await a.evaluar("document.querySelector('[data-hoy-llegada-coche]')?.href ?? null")
+  debe(/google\.com\/maps/.test(href8 ?? ''), 'llegada', `tras [He aterrizado], el coche de alquiler abre Maps (V62) (${href8})`)
   const ord8 = await ordenDeBloques(a)
   debe(ord8[0] === 'cabecera' && ord8.includes('principal') && ord8.indexOf('tuDia') > ord8.indexOf('principal') && ord8.indexOf('cerca') > ord8.indexOf('tuDia'), 'orden', `el día de llegada sigue el orden (${ord8.join(' · ')})`)
   debe(!ROMA_EN_LANZAROTE.test((await txt(a, '[data-hoy-v2]')) ?? ''), 'LZ', 'domingo 8: ni un nombre de Roma')
@@ -300,15 +306,16 @@ await sec(async () => {
   // en cuanto llega la hora útil, empieza la primera parada
   await ir(a, { dia: idxDomingo, min: 13 * 60 })
   // HOY2 (C, 5-nov): antes → ahora → decisión de Eric: a las 13:00 del domingo salía la tarjeta de la primera parada → a esa hora toca la comida (13:03), y la tarjeta de arriba es «Tu restaurante está a N minutos» (Completa 4); las dos valen.
-  debe(!(await hay(a, '[data-hoy-bienvenida]')) && (await hay(a, '[data-hoy-siguiente],[data-hoy-por-la-manana],[data-hoy-comida]')), 'llegada', 'pasada la hora útil, la tarjeta de la primera parada (o la de la comida, si ya toca comer)')
+  // (V62) La tarjeta de llegada ya no se va con la hora útil: se queda hasta que se ve una parada; debajo, la de la primera parada (o la de la comida, si ya toca comer).
+  debe((await hay(a, '[data-hoy-llegada-tarjeta]')) && (await hay(a, '[data-hoy-siguiente],[data-hoy-por-la-manana],[data-hoy-comida]')), 'llegada', 'pasada la hora útil, la tarjeta de llegada sigue hasta que se vea una parada y debajo sale la primera parada (o la comida) (V62)')
 
   // ── Completa 9: el último día ──
   if (idxVuelta >= 0) {
     await ir(a, { dia: idxVuelta, min: 9 * 60 })
     const cab9 = (await txt(a, '[data-hoy-cabecera]')) ?? ''
     debe(/Hoy vuelves a casa/.test(cab9) && /último día/i.test(cab9), 'ultimo', `Completa 9: «ÚLTIMO DÍA · Hoy vuelves a casa» (${cab9})`)
-    const v9 = (await txt(a, '[data-hoy-vuelves-h14]')) ?? ''
-    debe(/Tu vuelo sale a las 18:05/.test(v9) && /Tienes el día libre hasta las/.test(v9) && /Devuelve el coche en la T1/.test(v9), 'ultimo', `con los datos de la LL (${v9.slice(0, 100)})`)
+    const v9 = (await txt(a, '[data-hoy-vuelta-tarjeta]')) ?? ''
+    debe(/VUELO[\s\S]*18:05/.test(v9) && /SALIR\s+\d{1,2}:\d{2}/.test(v9) && /Devuelve el coche en la T1/.test(v9), 'ultimo', `con los datos de la LL (V70: VUELO · SALIR · AEROPUERTO) (${v9.slice(0, 160)})`)
     debe(/Cómo llegar al aeropuerto/.test(v9), 'ultimo', '[Cómo llegar al aeropuerto]')
     const ord9 = await ordenDeBloques(a)
     debe(ord9[0] === 'cabecera' && ord9.indexOf('principal') < ord9.indexOf('tuDia'), 'orden', `el último día: la tarjeta de vuelta va ANTES de «Tu día» (${ord9.join(' · ')})`)
@@ -377,8 +384,8 @@ await sec(async () => {
   await capturaEntera(r, '11_roma_por_llegar')
   // Roma, día de llegada: sin coche
   await ir(r, { dia: 0, min: 6 * 60, mut: `r.arrivalFlightTime = '09:30'; r.days[0].arrivalDay = { ...(r.days[0].arrivalDay ?? {}), es_dia_1: true }` })
-  const bR = (await txt(r, '[data-hoy-bienvenida]')) ?? ''
-  debe(/Aterrizas a las 9:30/.test(bR) && !/coche/i.test(bR) && !(await hay(r, '[data-hoy-bienvenida-coche]')), 'llegada', `Roma: «Aterrizas a las…» y sin coche ni [Cómo llegar al coche de alquiler] (${bR.slice(0, 90)})`)
+  const bR = (await txt(r, '[data-hoy-llegada-tarjeta]')) ?? ''
+  debe(/VUELO[\s\S]*0?9:30/.test(bR) && !/coche/i.test(bR) && !(await hay(r, '[data-hoy-llegada-coche]')), 'llegada', `Roma (V62): «VUELO … 09:30» y sin coche ni caja COCHE (${bR.slice(0, 120)})`)
   debe(/Bienvenido a Roma/.test((await txt(r, '[data-hoy-cabecera]')) ?? ''), 'llegada', 'Roma: «Bienvenido a Roma»')
   await capturaEntera(r, '12_roma_llegada')
   r.cerrar()
@@ -412,11 +419,11 @@ await sec(async () => {
   if (await hay(g, '[data-franja-prueba]')) {
     debe((await hay(g, '[data-hoy-v2]')) && (await hay(g, '[data-cerca-de-ti="con-pase"]')), 'prueba', 'el día de prueba: «Cerca de ti» abierto (`con-pase`)')
     debe((await cuantos(g, '[data-candado]')) === 0 && (await cuantos(g, '[data-hoy-v2] [data-candado-dentro]')) === 0, 'prueba', 'el día de prueba: ni un solo candado en HOY')
-    debe((await cuantos(g, '[data-hoy-franja-x],[data-hoy-avisos] [data-hoy-aviso-x]')) >= 1, 'x', 'la franja del día de prueba lleva su X')
+    debe((await cuantos(g, '[data-franja-prueba]')) >= 1, 'x', 'la franja del día de prueba es una fila de aviso (V66: se va deslizándola hacia arriba)')
     await capturaEntera(g, '14_dia_de_prueba')
-    await clic(g, '[data-franja-prueba] [data-hoy-aviso-x]')
+    await deslizar(g, '[data-franja-prueba]')
     await g.esp(500)
-    debe(!(await hay(g, '[data-franja-prueba]')), 'x', 'la X cierra la franja del día de prueba')
+    debe(!(await hay(g, '[data-franja-prueba]')), 'x', 'deslizarla hacia arriba cierra la franja del día de prueba')
   }
   g.cerrar()
 })

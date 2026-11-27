@@ -1030,6 +1030,9 @@ export interface Route {
   departureRetraso?: { antes: string | null; para: string } | null
   /** Hora de salida de Roma "HH:MM", puesta por el viajero en RESERVAS (de pago): la lee el motor (`body.vuelta`). null/undefined = sin registrar. */
   departureFlightTime?: string | null
+  /** (V76) Las ESCALAS: los otros tramos de la ida (los de antes del último) y de la vuelta (los de después del primero). Ver `src/lib/escalasYUnion.ts`. Ausente = sin escalas (los viajes de antes). */
+  arrivalEscalas?: import('./escalasYUnion').TramoDeEscala[] | null
+  departureEscalas?: import('./escalasYUnion').TramoDeEscala[] | null
   /** El medio de la vuelta si es distinto del de la ida (mismos ids que transport_option: 'flight', 'train'…); ausente = el mismo. */
   returnTransportOptionId?: string | null
   /** El punto de llegada y el de salida elegidos en la ficha (ids de _llegada.json: 'fco', 'cia'…); ausente = el primero. */

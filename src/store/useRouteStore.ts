@@ -585,6 +585,8 @@ interface RouteStoreState {
   setLegCodigo: (kind: 'arrival' | 'departure', codigo: string | null) => void
   /** La aerolínea, compañía o naviera de la ida o la vuelta (Tanda 6y5); vacío o null la quita. */
   setLegCompania: (kind: 'arrival' | 'departure', compania: string | null) => void
+  /** (V76) Las escalas de la ida o de la vuelta (los otros tramos); lista vacía las quita. Ver `src/lib/escalasYUnion.ts`. */
+  setEscalas: (kind: 'arrival' | 'departure', escalas: import('../lib/escalasYUnion').TramoDeEscala[]) => void
   /** «¿Dónde lo has comprado?» del seguro (`seguro`), la tarjeta (`tarjeta`) o la eSIM (`esim-{país}`); vacío lo quita (Tanda 6y4). */
   setDondeComprado: (clave: string, texto: string | null) => void
   /** El precio de la eSIM de un país (clave: código de país en minúsculas); null lo quita. */
@@ -1988,6 +1990,12 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
   setLegCodigo: (kind, codigo) => set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalCodigo' : 'departureCodigo']: codigo?.trim() ? codigo.trim().slice(0, 20) : null } } : state)),
 
   setLegCompania: (kind, compania) => set((state) => (state.route ? { route: { ...state.route, [kind === 'arrival' ? 'arrivalCompania' : 'departureCompania']: compania?.trim() ? compania.trim().slice(0, 40) : null } } : state)),
+  setEscalas: (kind, escalas) =>
+    set((state) => {
+      if (!state.route) return state
+      const limpias = escalas.slice(0, 3).map((e) => ({ compania: e.compania.trim().slice(0, 40), codigo: e.codigo.trim().slice(0, 20), salida: e.salida && /^\d{1,2}:\d{2}$/.test(e.salida) ? e.salida : null, llegada: e.llegada && /^\d{1,2}:\d{2}$/.test(e.llegada) ? e.llegada : null, de: e.de.trim().slice(0, 60), a: e.a.trim().slice(0, 60) }))
+      return { route: { ...state.route, [kind === 'arrival' ? 'arrivalEscalas' : 'departureEscalas']: limpias.length > 0 ? limpias : null } }
+    }),
   setDondeComprado: (clave, texto) =>
     set((state) => {
       const next = { ...state.dondeComprado }
@@ -2135,8 +2143,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
             route: {
               ...state.route,
               ...(kind === 'arrival'
-                ? { arrivalFlightTime: null, arrivalPointId: null, arrivalPrecio: null, arrivalCodigo: null, arrivalCompania: null, arrivalOtroPunto: null, arrivalOtraHora: null }
-                : { departureFlightTime: null, departurePointId: null, departurePrecio: null, departureCodigo: null, departureCompania: null, departureOtroPunto: null, departureOtraHora: null, departureFechaVista: null }),
+                ? { arrivalFlightTime: null, arrivalPointId: null, arrivalPrecio: null, arrivalCodigo: null, arrivalCompania: null, arrivalOtroPunto: null, arrivalOtraHora: null, arrivalEscalas: null }
+                : { departureFlightTime: null, departurePointId: null, departurePrecio: null, departureCodigo: null, departureCompania: null, departureOtroPunto: null, departureOtraHora: null, departureEscalas: null, departureFechaVista: null }),
             },
           }
         : state,

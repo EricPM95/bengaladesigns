@@ -42,6 +42,8 @@ export interface Reservation {
   noMueve?: boolean
   /** (V69, «Revisa las horas») Se guardó igualmente aunque sus horas no cuadran (antes de aterrizar, o a la vez que otra reserva): queda en RESERVAS con su línea naranja y NO se mete en el día como si cupiera. */
   revisarHoras?: boolean
+  /** (V76) Un tren o autobús unido a la LLEGADA (del aeropuerto al alojamiento) o a la VUELTA (al aeropuerto): se ve dentro de «Llegada y vuelta» y en la tarjeta de llegada o de vuelta de HOY, no en el bloque «Tren». */
+  unidaALlegada?: 'arrival' | 'departure' | null
   aviso?: string | null
   /** Tanda 10N §8: en un viaje compartido, a quién cubre la entrada (ids de `Persona`; el dueño siempre dentro). Sin él (las de antes de compartir): «solo para mí», solo el dueño. */
   paraQuien?: string[] | null
@@ -58,6 +60,8 @@ export interface Reservation {
   coche?: string | null
   asiento?: string | null
   lugar?: string | null
+  /** (V76) Solo en ferry, tren y autobús: el id de la excursión de la ruta a la que se UNIÓ al guardarlo («¿Es para tu excursión a La Graciosa?» › [Sí, unirlo]). Cuenta como la reserva de esa excursión y se ve dentro de su ficha. */
+  unidaA?: string | null
 }
 
 /**
@@ -244,14 +248,17 @@ export function buildExcursionRow(route: Route, reservations: Reservation[]): Ex
 }
 
 /** Todas las excursiones de la ruta (una por día de excursión), cada una con su reserva si ya la tiene. Las fichas de «x de N listo» salen de aquí: una por excursión. */
-export function excursionesDeLaRuta(route: Route, reservations: Reservation[]): { day: DayPlan; excursion: Excursion; reservation: Reservation | null }[] {
+/** (V76) `unidas`: los ferris, trenes o autobuses unidos a esa excursión (`unidaA`), por hora; `hecha`: la excursión tiene su reserva O alguno unido (cuenta como la reserva de esa excursión en «X de N reservas listas»). */
+export function excursionesDeLaRuta(route: Route, reservations: Reservation[]): { day: DayPlan; excursion: Excursion; reservation: Reservation | null; unidas: Reservation[]; hecha: boolean }[] {
   const vistas = new Set<string>()
-  const filas: { day: DayPlan; excursion: Excursion; reservation: Reservation | null }[] = []
+  const filas: { day: DayPlan; excursion: Excursion; reservation: Reservation | null; unidas: Reservation[]; hecha: boolean }[] = []
   for (const day of route.days) {
     const excursion = excursionDeUnDia(day)
     if (!excursion || vistas.has(excursion.id)) continue
     vistas.add(excursion.id)
-    filas.push({ day, excursion, reservation: reservations.find((item) => item.kind === 'excursion' && item.refId === excursion.id) ?? null })
+    const reservation = reservations.find((item) => item.kind === 'excursion' && item.refId === excursion.id) ?? null
+    const unidas = reservations.filter((item) => item.unidaA === excursion.id).sort((x, y) => (x.time ?? '').localeCompare(y.time ?? ''))
+    filas.push({ day, excursion, reservation, unidas, hecha: Boolean(reservation) || unidas.length > 0 })
   }
   return filas
 }

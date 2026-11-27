@@ -7,6 +7,7 @@ import { ESTILO_PREGUNTA } from '../../ui/PersonasCuadradas'
 import { HojaAbajo } from './HojaAbajo'
 import { LineaDelPase } from '../../pase/Candado'
 import type { NombreIcono } from '../../../lib/iconos'
+import { escalaCompleta, escalaVacia, etiquetaDeTramo, MAX_ESCALAS, type TramoDeEscala } from '../../../lib/escalasYUnion'
 
 /**
  * LA HOJA DEL VUELO (Tanda 10N9; `Piezas/Reservas Cada Uno` 02 y 02b), la misma para quien pone el suyo (invitado) y para el administrador: las pestañas «Ida» y «Vuelta» (siempre así, sin día ni hora, con un ✓ si ese lado está puesto),
@@ -86,7 +87,12 @@ export function HojaDelVuelo({
   guardaSiempre = false,
   aviso,
   tarjeta,
+  escalas,
+  onEscalas,
 }: {
+  /** (V76, R8) Las escalas de la ida y de la vuelta (los otros tramos) y cómo se cambian: «+ Añadir escala» añade un tramo con compañía, número, de dónde a dónde y las dos horas. Sin esto no hay escalas en la hoja. */
+  escalas?: { ida: TramoDeEscala[]; vuelta: TramoDeEscala[] }
+  onEscalas?: (lado: 'ida' | 'vuelta', lista: TramoDeEscala[]) => void
   titulo?: string
   textoGuardar?: string
   lados: { ida: LadoDeHoja; vuelta: LadoDeHoja }
@@ -124,7 +130,8 @@ export function HojaDelVuelo({
   // Cada lado que se va a guardar con punto obligatorio y sin punto frena el botón.
   const faltaPunto = (['ida', 'vuelta'] as const).find((k) => puesto(k) && lados[k].puntoObligatorio && lados[k].puntos.length > 0 && !borrador[k].punto) ?? null
   const hayAlgo = puesto('ida') || puesto('vuelta')
-  const puedeGuardar = hayAlgo && !faltaPunto && !faltaHora
+  const escalaSinCompletar = escalas ? (['ida', 'vuelta'] as const).some((k) => lados[k].activo && escalas[k].some((e) => !escalaCompleta(e))) : false
+  const puedeGuardar = hayAlgo && !faltaPunto && !faltaHora && !escalaSinCompletar
   const guardar = () => {
     if (!puedeGuardar) return
     const salida = (k: 'ida' | 'vuelta'): LadoGuardado => ({ hora: borrador[k].hora ?? '', punto: borrador[k].punto, fecha: borrador[k].fecha, puesto: puesto(k), codigo: borrador[k].codigo, compania: borrador[k].compania, otroPunto: borrador[k].otroPunto, otraHora: borrador[k].otraHora, localizador: borrador[k].localizador, terminal: borrador[k].terminal, asiento: borrador[k].asiento, coche: borrador[k].coche })
@@ -137,6 +144,11 @@ export function HojaDelVuelo({
       {faltaPunto && (
         <p className="mb-2 text-center text-[12.5px] text-text/60" data-vuelo-falta-punto>
           Elige primero {lados[faltaPunto].etiquetaPunto === 'Aeropuerto' ? 'el aeropuerto' : lados[faltaPunto].etiquetaPunto === 'Puerto' ? 'el puerto' : 'la estación'} {faltaPunto === 'ida' ? 'de la ida' : 'de la vuelta'}
+        </p>
+      )}
+      {!faltaPunto && !faltaHora && escalaSinCompletar && (
+        <p className="mb-2 text-center text-[12.5px] text-text/60" data-vuelo-falta-escala>
+          Completa la escala: de dónde, a dónde y las dos horas
         </p>
       )}
       {!faltaPunto && faltaHora && (
@@ -352,7 +364,59 @@ export function HojaDelVuelo({
         </div>
         </>
       )}
+      {escalas && onEscalas && l.extras && <EscalasDeLaHoja lado={lado} lista={escalas[lado]} onCambiar={(lista) => onEscalas(lado, lista)} />}
       {extra && <div className="mt-6 flex flex-col gap-5" data-mi-vuelo-extra>{extra}</div>}
     </HojaAbajo>
+  )
+}
+
+/**
+ * (V76, R8) «+ Añadir escala»: cada escala es otro tramo del vuelo con compañía, número, de dónde, a dónde y las horas de salida y de llegada (la rueda de siempre, `CampoDeHora`: el ✓ guarda la que se ve).
+ * En la IDA, las escalas son los tramos de ANTES del de arriba (el que llega al destino); en la VUELTA, los de DESPUÉS del de arriba (el que sale del destino).
+ */
+function EscalasDeLaHoja({ lado, lista, onCambiar }: { lado: 'ida' | 'vuelta'; lista: TramoDeEscala[]; onCambiar: (lista: TramoDeEscala[]) => void }) {
+  const kind = lado === 'ida' ? 'arrival' : 'departure'
+  const cambia = (i: number, c: Partial<TramoDeEscala>) => onCambiar(lista.map((e, j) => (j === i ? { ...e, ...c } : e)))
+  const input = 'h-12 w-full min-w-0 rounded-[14px] border bg-[#FFFDF8] px-3.5 text-[15px] font-medium text-text outline-none placeholder:font-normal placeholder:text-text/35 focus:border-text/50'
+  const claseCaja = 'flex h-[54px] w-full items-center justify-between rounded-[15px] border bg-[#FFFDF8] px-3.5 text-left'
+  const total = lista.length + 1
+  return (
+    <div className="mt-5 flex flex-col gap-3" data-escalas={lado}>
+      <p className="m-0 text-[12.5px] leading-[1.35]" style={{ color: 'rgba(28,34,48,.62)' }}>
+        {lista.length === 0 ? (lado === 'ida' ? '¿Tu vuelo de ida hace escala? Lo de arriba es el último tramo, el que llega al destino.' : '¿Tu vuelo de vuelta hace escala? Lo de arriba es el primer tramo, el que sale del destino.') : lado === 'ida' ? 'Los tramos de abajo van ANTES del de arriba, que es el que llega al destino.' : 'Los tramos de abajo van DESPUÉS del de arriba, que es el que sale del destino.'}
+      </p>
+      {lista.map((e, i) => (
+        <div key={i} data-escala={i} className="flex flex-col gap-3 rounded-[18px] p-3.5" style={{ background: '#FBF3E2', border: '1px solid rgba(181,138,46,.35)' }}>
+          <div className="flex items-center justify-between">
+            <span style={{ font: "700 11px 'Geist Mono',monospace", letterSpacing: '.14em', color: '#6F4E37' }} data-escala-titulo>
+              {etiquetaDeTramo(kind, lado === 'ida' ? i + 1 : i + 2, total)}
+            </span>
+            <button type="button" onClick={() => onCambiar(lista.filter((_, j) => j !== i))} data-escala-quitar className="zona-toque text-[13px] font-semibold underline underline-offset-2" style={{ color: 'oklch(0.52 0.19 25)' }}>
+              Quitar la escala
+            </button>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <input value={e.compania} onChange={(ev) => cambia(i, { compania: ev.target.value })} maxLength={40} autoComplete="off" aria-label="Aerolínea de la escala" placeholder="Aerolínea" data-escala-compania className={input} style={{ borderColor: 'rgba(28,34,48,.12)' }} />
+            <input value={e.codigo} onChange={(ev) => cambia(i, { codigo: ev.target.value })} maxLength={20} autoComplete="off" aria-label="Número de vuelo de la escala" placeholder="Nº de vuelo" data-escala-codigo className={input} style={{ borderColor: 'rgba(28,34,48,.12)' }} />
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <input value={e.de} onChange={(ev) => cambia(i, { de: ev.target.value })} maxLength={60} autoComplete="off" aria-label="De dónde sale la escala" placeholder="De dónde" data-escala-de className={input} style={{ borderColor: 'rgba(28,34,48,.12)' }} />
+            <input value={e.a} onChange={(ev) => cambia(i, { a: ev.target.value })} maxLength={60} autoComplete="off" aria-label="A dónde llega la escala" placeholder="A dónde" data-escala-a className={input} style={{ borderColor: 'rgba(28,34,48,.12)' }} />
+          </div>
+          <div data-escala-salida>
+            <CampoDeHora valor={e.salida} onChange={(h) => cambia(i, { salida: h })} titulo="Hora de salida" etiqueta="Sale a las" ejemplo="08:30" quitable={false} className={claseCaja} datos={`escala-${i}-salida`} />
+          </div>
+          <div data-escala-llegada>
+            <CampoDeHora valor={e.llegada} onChange={(h) => cambia(i, { llegada: h })} titulo="Hora de llegada" etiqueta="Llega a las" ejemplo="10:45" quitable={false} className={claseCaja} datos={`escala-${i}-llegada`} />
+          </div>
+        </div>
+      ))}
+      {lista.length < MAX_ESCALAS && (
+        <button type="button" onClick={() => onCambiar([...lista, escalaVacia()])} data-anadir-escala={lado} className="zona-toque flex h-12 w-full items-center justify-center gap-2 rounded-full border bg-transparent text-[14.5px] font-semibold" style={{ borderColor: '#B58A2E', color: '#6E5018' }}>
+          <Icono nombre="anadir" size={15} grosor={2.4} />
+          Añadir escala
+        </button>
+      )}
+    </div>
   )
 }

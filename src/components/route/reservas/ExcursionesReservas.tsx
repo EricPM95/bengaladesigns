@@ -33,6 +33,9 @@ import { usePreguntaDeDia } from './PreguntaDeDiaDelDocumento'
 import { paginaEnMemoria, pedirPaginaDeDestino, type ActividadDeDestino } from '../../../lib/paginaDestino'
 import { TarjetaDeActividad } from '../DestinationDetailModal'
 import { TodasLasActividades } from './TodasLasActividades'
+import { TarjetaDeReservaExtra } from './OtrasReservas'
+import { nombreDeLaExcursion } from '../../../lib/reservasUnidas'
+import type { ReservaExtra } from '../../../lib/reservasExtra'
 
 /** Una excursión de la lista de «¿Qué excursión tienes?»: su foto pequeña (o el color), el nombre y «Día completo» / «Medio día». */
 function FilaExcursion({ excursion, onPick }: { excursion: Excursion; onPick: () => void }) {
@@ -151,7 +154,9 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
     if (grupo.esInvitado) useMisReservas.getState().anadir(nueva)
     else useRouteStore.setState((state) => ({ reservations: state.reservations.map((otra) => (otra.id === reserva.id ? nueva : otra)) }))
   }
-  const pendientes = deLaRuta.filter((x) => !x.reservation)
+  // (V76) Un ferry, tren o autobús UNIDO a la excursión cuenta como su reserva (`hecha`): ya no sale su tarjeta de [Reservar excursión].
+  const pendientes = deLaRuta.filter((x) => !x.hecha)
+  const soloConTransporte = deLaRuta.filter((x) => !x.reservation && x.unidas.length > 0)
 
   return (
     <>
@@ -162,8 +167,8 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
             titulo="Excursiones y actividades"
             datos="excursiones"
             onClick={() => setDesplegadoUsuario(!desplegado)}
-            estado={hayDiaDeExcursion ? (deLaRuta.every((x) => x.reservation) ? 'Listo' : `${deLaRuta.filter((x) => x.reservation).length} de ${deLaRuta.length} reservada${deLaRuta.length === 1 ? '' : 's'}`) : 'Ninguna en tu ruta'}
-            hecho={!hayDiaDeExcursion || deLaRuta.every((x) => x.reservation)}
+            estado={hayDiaDeExcursion ? (deLaRuta.every((x) => x.hecha) ? 'Listo' : `${deLaRuta.filter((x) => x.hecha).length} de ${deLaRuta.length} reservada${deLaRuta.length === 1 ? '' : 's'}`) : 'Ninguna en tu ruta'}
+            hecho={!hayDiaDeExcursion || deLaRuta.every((x) => x.hecha)}
             abierto={desplegado}
             className="px-0.5"
           />
@@ -189,6 +194,19 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
             />
           )
         })}
+        {/* (V76, R5) La excursión por tu cuenta con su ferry, tren o autobús UNIDO: la ficha de la excursión y, dentro, un billete por reserva (ida y vuelta pueden ser dos). */}
+        {soloConTransporte.map(({ day, excursion, unidas }) => (
+          <div key={excursion.id} data-excursion-unida={excursion.id} className="flex flex-col gap-3 rounded-[22px] p-3.5" style={{ background: '#FFFDF8', border: '1px solid rgba(181,138,46,.4)' }}>
+            <div className="flex flex-col gap-1 px-0.5">
+              <span style={ROTULO}>Excursión · por tu cuenta</span>
+              <span data-excursion-unida-nombre style={{ font: "400 26px/1.05 'Instrument Serif',serif" }}>{nombreDeLaExcursion(excursion)}</span>
+              <span className="text-[13px] font-semibold text-accent-green">Reservada ✓ · {enTuRuta(route, day).replace(/^En tu ruta /, '')}</span>
+            </div>
+            {(unidas as ReservaExtra[]).map((r) => (
+              <TarjetaDeReservaExtra key={r.id} route={route} reserva={r} />
+            ))}
+          </div>
+        ))}
         {añadidas.length > 0 && (
           <span data-seccion-reservadas style={ROTULO}>
             Reservadas · {añadidas.length}
@@ -229,6 +247,10 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
                 reserva={reserva}
                 extra={reserva.noMueve ? <VolverExcursionARuta route={route} reserva={reserva} excursion={excursion} /> : undefined}
               />
+              {/* (V76) Si además lleva ferry, tren o autobús unido, va dentro de su ficha, debajo. */}
+              {(deLaRuta.find((x) => x.excursion.id === reserva.refId)?.unidas ?? []).map((r) => (
+                <TarjetaDeReservaExtra key={r.id} route={route} reserva={r as ReservaExtra} />
+              ))}
             </div>
           )
         })}

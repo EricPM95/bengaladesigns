@@ -12,10 +12,10 @@ import { tripModes } from './arrivalReturn'
  * No es para Reorganizar: la hoja solo sale al guardar. «Guardarla igualmente» no se prohíbe (la app avisa, no prohíbe).
  */
 export interface RevisionDeHoras {
-  caso: 'vuelo' | 'reservas'
+  caso: 'vuelo' | 'reservas' | 'parada'
   texto: string
   /** El botón de la IZQUIERDA (dorado): lleva a lo OTRO (el vuelo; la otra reserva). */
-  otro: { etiqueta: string } & ({ tipo: 'vuelo'; mitad: 'arrival' | 'departure' } | { tipo: 'reserva'; reserva: Reservation })
+  otro: { etiqueta: string } & ({ tipo: 'vuelo'; mitad: 'arrival' | 'departure' } | { tipo: 'reserva'; reserva: Reservation } | { tipo: 'dia'; dayId: string })
   /** El botón de la derecha (blanco): vuelve a la hoja para cambiar la reserva que se estaba guardando. */
   esta: string
 }

@@ -34,6 +34,12 @@ import { CajaDeDato } from './PiezasDesignReservas'
 import { BuscarVuelos } from './BuscarVuelos'
 import { HojaPrecio } from './HojaPrecio'
 import { quitarAvisoDeDocumento, useAvisoDeDocumento } from '../../../lib/avisoDeDocumento'
+import { escalasDe, etiquetaDeTramo, etiquetaDeUnion, unidasA, type SitioDeLlegada } from '../../../lib/escalasYUnion'
+import type { Reservation } from '../../../lib/bookings'
+import type { ReservaExtra } from '../../../lib/reservasExtra'
+import { useReservasParaMi } from '../../../hooks/useEntradasDelGrupo'
+import { TarjetaDeEscala } from './TarjetasDeEscala'
+import { TarjetaDeReservaExtra } from './OtrasReservas'
 
 const ETIQUETA_PUNTO: Record<string, string> = { avion: 'Aeropuerto', tren: 'Estación', bus: 'Estación', ferry: 'Puerto', coche: 'Punto' }
 const capitalizar = (texto: string) => texto.charAt(0).toUpperCase() + texto.slice(1)
@@ -71,6 +77,9 @@ export function HojaVueloDelAdmin({
   const setLegOtroPunto = useRouteStore((s) => s.setLegOtroPunto)
   const setLegOtraHora = useRouteStore((s) => s.setLegOtraHora)
   const setCuentasEntre = useRouteStore((s) => s.setCuentasEntre)
+  const setEscalas = useRouteStore((s) => s.setEscalas)
+  // (V76, R8) Las escalas se editan en la hoja y se guardan con el vuelo (un solo botón).
+  const [escalas, setEscalasHoja] = useState(() => ({ ida: escalasDe(route, 'arrival'), vuelta: escalasDe(route, 'departure') }))
   const setPagadoPorDe = useRouteStore((s) => s.setPagadoPorDe)
   const tripId = useSyncStore((s) => s.activeTripId)
   const yoId = useViajeCompartido((s) => s.gente.find((p) => p.esYo)?.id ?? null)
@@ -157,6 +166,8 @@ export function HojaVueloDelAdmin({
         </div>
       }
       ladoInicial={ladoInicial === 'arrival' ? 'ida' : 'vuelta'}
+      escalas={escalas}
+      onEscalas={(l, lista) => setEscalasHoja((previo) => ({ ...previo, [l]: lista }))}
       extra={dinero.bloque('vuelo')}
       onClose={onClose}
       onGuardar={(gIda, gVuelta) => {
@@ -173,6 +184,10 @@ export function HojaVueloDelAdmin({
           else if (punto && leg.point?.id !== punto.id) avisos.push({ que: 'punto', mitad: leg.kind })
         }
         onGuardar(cambios, avisos)
+        // (V76) Las escalas de cada lado puesto (con la hora de su tramo de siempre guardada).
+        for (const [leg, lista] of [[ida, escalas.ida], [vuelta, escalas.vuelta]] as const) {
+          if (leg.mode !== 'coche') setEscalas(leg.kind, lista)
+        }
         // Lo de más: referencia, aerolínea, el otro punto y su hora, y el dinero (todo el vuelo a la vez).
         for (const [leg, g] of [[ida, gIda], [vuelta, gVuelta]] as const) {
           if (leg.mode === 'coche' || !g.puesto) continue
@@ -228,7 +243,7 @@ function hoyIso(): string {
  * el código en pequeño con «Toca para ampliar» (a pantalla completa en blanco) o, si aún no hay, [Añadir tarjeta de embarque] / [Añadir tu billete]. B2c: con la Ida ya pasada, se queda en una línea con la llegada
  * («Jueves 26 · 11:25 · Fiumicino») y al tocarla se abre.
  */
-function MitadConBillete({ route, leg, ciudad, onCambiar, onQuitar, onAnadirTarjeta, onCambioDeVuelo }: { route: Route; leg: LegState; ciudad: string; onCambiar: () => void; onQuitar: () => void; onAnadirTarjeta: (kind: LegKind) => void; onCambioDeVuelo: EnCambioDeVuelo }) {
+function MitadConBillete({ route, leg, ciudad, onCambiar, onQuitar, onAnadirTarjeta, onCambioDeVuelo, rotulo }: { rotulo?: string; route: Route; leg: LegState; ciudad: string; onCambiar: () => void; onQuitar: () => void; onAnadirTarjeta: (kind: LegKind) => void; onCambioDeVuelo: EnCambioDeVuelo }) {
   const esIda = leg.kind === 'arrival'
   const { billete } = useBillete(leg.kind, leg.time)
   const [ampliado, setAmpliado] = useState(false)
@@ -255,7 +270,7 @@ function MitadConBillete({ route, leg, ciudad, onCambiar, onQuitar, onAnadirTarj
           <CabeceraDeMitad leg={leg} fecha={diaEntero(leg.dateIso) || fecha} resto={[leg.time, leg.point ? puntoCorto(leg.point) : ''].filter(Boolean).join(' · ')} onCambiar={onCambiar} onToggle={() => setPlegadaAbierta(true)} pasada />
         </div>
       ) : (
-        <TarjetaBillete avisoDeFecha={avisoDeFecha ? { texto: avisoDeFecha, onCorrecta: () => quitarAvisoDeDocumento(tripIdAviso, leg.kind) } : null} leg={leg} trayecto={trayecto} fecha={fecha} billete={billete} duracion={duracion} horaFuera={horaFuera} onCambiar={onCambiar} onQuitar={onQuitar} onAnadirTarjeta={() => onAnadirTarjeta(leg.kind)} onAmpliar={() => setAmpliado(true)} onDatos={() => setDatosAbiertos(true)} onToggle={pasada ? () => setPlegadaAbierta(false) : undefined} />
+        <TarjetaBillete avisoDeFecha={avisoDeFecha ? { texto: avisoDeFecha, onCorrecta: () => quitarAvisoDeDocumento(tripIdAviso, leg.kind) } : null} leg={leg} trayecto={trayecto} fecha={fecha} billete={billete} duracion={duracion} horaFuera={horaFuera} rotulo={rotulo} onCambiar={onCambiar} onQuitar={onQuitar} onAnadirTarjeta={() => onAnadirTarjeta(leg.kind)} onAmpliar={() => setAmpliado(true)} onDatos={() => setDatosAbiertos(true)} onToggle={pasada ? () => setPlegadaAbierta(false) : undefined} />
       )}
       {datosAbiertos && <HojaDatosDelBillete leg={leg} billete={billete} onClose={() => setDatosAbiertos(false)} onCambioDeVuelo={onCambioDeVuelo} />}
       {ampliado && billete?.codigo && (
@@ -266,11 +281,11 @@ function MitadConBillete({ route, leg, ciudad, onCambiar, onQuitar, onAnadirTarj
 }
 
 /** Una mitad en la tarjeta guardada: con billete (avión, tren, autobús, barco), o la línea de coche, o «Falta la ida». */
-export function MitadGuardada({ route, leg, ciudad, onCambiar, onQuitar, onAnadirTarjeta, onCambioDeVuelo }: { route: Route; leg: LegState; ciudad: string; onCambiar: () => void; onQuitar: () => void; onAnadirTarjeta: (kind: LegKind) => void; onCambioDeVuelo: EnCambioDeVuelo }) {
+export function MitadGuardada({ route, leg, ciudad, onCambiar, onQuitar, onAnadirTarjeta, onCambioDeVuelo, rotulo }: { /** (V76) «IDA · 2 DE 2» cuando el vuelo tiene escalas. */ rotulo?: string; route: Route; leg: LegState; ciudad: string; onCambiar: () => void; onQuitar: () => void; onAnadirTarjeta: (kind: LegKind) => void; onCambioDeVuelo: EnCambioDeVuelo }) {
   const esIda = leg.kind === 'arrival'
   const fecha = leg.dateIso ? capitalizar(fechaLarga(leg.dateIso)) : `Día ${leg.dayNumber}`
   const coche = leg.mode === 'coche'
-  if (leg.done && !coche) return <MitadConBillete route={route} leg={leg} ciudad={ciudad} onCambiar={onCambiar} onQuitar={onQuitar} onAnadirTarjeta={onAnadirTarjeta} onCambioDeVuelo={onCambioDeVuelo} />
+  if (leg.done && !coche) return <MitadConBillete rotulo={rotulo} route={route} leg={leg} ciudad={ciudad} onCambiar={onCambiar} onQuitar={onQuitar} onAnadirTarjeta={onAnadirTarjeta} onCambioDeVuelo={onCambioDeVuelo} />
   return (
     <div data-mitad={leg.kind} data-mitad-hecha={leg.done ? '1' : '0'} className="mx-3.5 mb-3 flex flex-col gap-1 rounded-[18px] px-3.5 pb-3.5 pt-3" style={{ background: '#FBF1D8', border: '1px solid rgba(181,138,46,.3)' }}>
       <div className="flex items-center justify-between gap-2">
@@ -356,6 +371,8 @@ export function LlegadaYVuelta({
   const ida = legOf(route, info, 'arrival')
   const vuelta = legOf(route, info, 'departure')
   const flujo = useFlujoDelBillete({ route, info, onCambioDeVuelo })
+  const reservasDeMiViaje = useReservasParaMi()
+  const setEscalas = useRouteStore((state) => state.setEscalas)
   const pedirArchivo = flujo.pedirArchivo
   const ciudad = route.days[0]?.city ?? route.destination
   const hecho = ida.done && vuelta.done
@@ -403,6 +420,24 @@ export function LlegadaYVuelta({
     const n = quienes.map((p) => (p.esYo ? 'Tú' : nombreDe(p) || 'Alguien'))
     return n.length <= 1 ? (n[0] ?? '') : `${n.slice(0, -1).join(', ')} y ${n[n.length - 1]}`
   })()
+  // (V76, R8b) Cada tramo de un vuelo con escala es su tarjeta («IDA · 1 DE 2», «IDA · 2 DE 2»); la de siempre es el tramo que toca el destino (el último de la ida, el primero de la vuelta). Sin escalas, nada cambia.
+  const mitadConEscalas = (leg: LegState) => {
+    const escalas = leg.done && leg.mode !== 'coche' ? escalasDe(route, leg.kind) : []
+    const total = escalas.length + 1
+    const esIda = leg.kind === 'arrival'
+    const principal = <MitadGuardada key="principal" rotulo={escalas.length > 0 ? etiquetaDeTramo(leg.kind, esIda ? total : 1, total) : undefined} route={route} leg={leg} ciudad={ciudad} onCambiar={() => abrirHoja(leg.kind)} onQuitar={() => quitar(leg)} onAnadirTarjeta={pedirArchivo} onCambioDeVuelo={onCambioDeVuelo} />
+    const tarjetas = escalas.map((e, i) => (
+      <TarjetaDeEscala key={`escala-${i}`} route={route} leg={leg} indice={i} total={total} n={esIda ? i + 1 : i + 2} tramo={e} onCambiar={() => abrirHoja(leg.kind)} onQuitar={() => setEscalas(leg.kind, escalas.filter((_, j) => j !== i))} />
+    ))
+    return esIda ? [...tarjetas, principal] : [principal, ...tarjetas]
+  }
+  // (V76, R11c) Un tren o autobús unido a la llegada o a la vuelta, debajo de su vuelo: la tarjeta de billete con «TREN AL CENTRO» / «TREN AL AEROPUERTO» y sus tres iconos.
+  const sitioDeLaMitad = (m: LegState): SitioDeLlegada => (m.mode === 'ferry' ? 'puerto' : m.mode === 'avion' ? 'aeropuerto' : 'estación')
+  const unida = (r: Reservation, kind: LegKind) => (
+    <div key={r.id} className="mx-3.5 mb-3" data-unida-a={kind}>
+      <TarjetaDeReservaExtra route={route} reserva={r as ReservaExtra} rotulo={etiquetaDeUnion(r.kind === 'bus' ? 'bus' : 'tren', kind, sitioDeLaMitad(kind === 'arrival' ? ida : vuelta))} />
+    </div>
+  )
   const quitar = (leg: LegState) => {
     const teniaHora = Boolean(leg.time)
     quitarConDeshacer(`${leg.kind === 'arrival' ? 'Ida' : 'Vuelta'} quitada del viaje`, () => removeLeg(leg.kind))
@@ -442,8 +477,10 @@ export function LlegadaYVuelta({
             <CabeceraBloque icono={iconoDeMedio(ida.mode)} titulo="Llegada y vuelta" estado={hecho ? 'Listo' : etiqueta} hecho={hecho} abierto={desplegado} onClick={() => setDesplegadoUsuario(!desplegado)} atributos={{ 'data-llegada-cabecera': '' }} className="px-4 pb-3 pt-4" />
             {desplegado && (
               <>
-            <MitadGuardada route={route} leg={ida} ciudad={ciudad} onCambiar={() => abrirHoja('arrival')} onQuitar={() => quitar(ida)} onAnadirTarjeta={pedirArchivo} onCambioDeVuelo={onCambioDeVuelo} />
-            <MitadGuardada route={route} leg={vuelta} ciudad={ciudad} onCambiar={() => abrirHoja('departure')} onQuitar={() => quitar(vuelta)} onAnadirTarjeta={pedirArchivo} onCambioDeVuelo={onCambioDeVuelo} />
+            {mitadConEscalas(ida)}
+            {unidasA(reservasDeMiViaje, 'arrival').map((r) => unida(r, 'arrival'))}
+            {mitadConEscalas(vuelta)}
+            {unidasA(reservasDeMiViaje, 'departure').map((r) => unida(r, 'departure'))}
             {hayVuelo && g.gente.length >= 2 && g.esAdmin && (
               <div className="flex flex-col gap-2.5 px-4 pb-3 pt-1" data-en-este-vuelo>
                 <span className="flex items-center justify-between text-text/55" style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase' }}>

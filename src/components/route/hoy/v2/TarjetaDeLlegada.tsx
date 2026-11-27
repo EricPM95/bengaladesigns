@@ -18,6 +18,12 @@ import { BOTON_CLARO, BOTON_ORO } from '../../../ui/botonesOro'
 import { IconoDeDocumento } from '../../reservas/BotonesDeReserva'
 import { AnadirDocumentoDeHoy } from '../../reservas/FlujoDelBillete'
 import { CodigoPantallaCompleta } from '../../reservas/TarjetaBillete'
+import { FilaDeUnion } from './FilaDeUnion'
+import { useTrenUnido } from '../../../../hooks/useTrenUnido'
+import { useBilletesDeExcursiones } from '../../../../hooks/useBilleteExcursion'
+import { excursionConCodigo } from '../../../../store/useBilleteStore'
+import { useReservasFocusStore } from '../../../../store/useReservasFocusStore'
+import { tramoQueToca, tramosDeLaMitad } from '../../../../lib/escalasYUnion'
 import { useAlojamientoDelViaje } from '../../alojamiento/useAlojamientoDelViaje'
 import type { MitadDeHoy } from '../llegadaVuelta'
 import { CajaDeParada, NOMBRE_SOBRE_FOTO, PILDORA_FOTO, TARJETA_PARADA, useAhoraMin } from './ParadaHoy'
@@ -99,7 +105,19 @@ export function TarjetaDeLlegada({ route, day, dateIso, mitad, paradas, llegadoP
   const enCoche = esDestinoDeCoche(route.destination)
   const hayCoche = !propio && enCoche && (Boolean(coche?.provider) || route.answers.coche === 'alquiler' || route.transportContext?.vehicle_ownership === 'rental')
   const ciudad = mitad.destino || route.destination
-  const hayQr = Boolean(guardado?.codigo && (guardado.codigo.dibujo || guardado.codigo.imagen))
+  // (V76) Con escalas, la tarjeta enseña el ÚLTIMO tramo (el de la ida: lo de siempre) y el QR es el del tramo que toca a esta hora (el primero hasta que aterriza, luego el siguiente). Con un tren o autobús unido, su fila con su QR.
+  const trenUnido = useTrenUnido('arrival')
+  const billetesEscala = useBilletesDeExcursiones()
+  const tramos = tramosDeLaMitad(route, 'arrival', { salida: route.arrivalOtraHora ?? null, llegada: route.arrivalFlightTime ?? null, compania: route.arrivalCompania ?? '', codigo: route.arrivalCodigo ?? '', desde: '', hasta: '' })
+  const tramoDeHoy = tramos.length > 1 && !llegado ? tramoQueToca(tramos, ahoraMin) : null
+  const escalaDeHoy = tramoDeHoy && !tramoDeHoy.principal ? tramoDeHoy : null
+  const billeteDeEscala = escalaDeHoy ? billetesEscala.de(escalaDeHoy.clave) : null
+  const hayQr = escalaDeHoy ? excursionConCodigo(billeteDeEscala) : Boolean(guardado?.codigo && (guardado.codigo.dibujo || guardado.codigo.imagen))
+  const codigoDeHoy = escalaDeHoy ? (billeteDeEscala?.codigo ?? null) : (guardado?.codigo ?? null)
+  const irAReservas = () => {
+    useRouteStore.getState().setMode('bookings')
+    useReservasFocusStore.getState().pedir('llegada', 'arrival')
+  }
   const retraso = route.arrivalRetraso && route.arrivalRetraso.para === route.arrivalFlightTime && route.arrivalRetraso.antes && route.arrivalRetraso.antes !== route.arrivalRetraso.para ? route.arrivalRetraso.antes : null
   // En coche propio no hay reserva: la hora de «He salido tarde» es solo un recuerdo de HOY.
   const horaEstimada = propio && route.arrivalRetraso ? route.arrivalRetraso.para : null
@@ -187,7 +205,7 @@ export function TarjetaDeLlegada({ route, day, dateIso, mitad, paradas, llegadoP
           </span>
           {billete && (
             <span className="absolute right-3.5 top-3">
-              <IconoDeDocumento grande hay={hayQr} tipo="qr" onAbrir={() => setAmpliado(true)} onAnadir={() => setVezAnadir((v) => v + 1)} etiqueta={hayQr ? 'Ver el código en grande' : `Añade tu ${modo === 'avion' ? 'tarjeta de embarque' : 'billete'}`} datos="billete-llegada" />
+              <IconoDeDocumento grande hay={hayQr} tipo="qr" onAbrir={() => setAmpliado(true)} onAnadir={() => (escalaDeHoy ? irAReservas() : setVezAnadir((v) => v + 1))} etiqueta={hayQr ? 'Ver el código en grande' : `Añade tu ${modo === 'avion' ? 'tarjeta de embarque' : 'billete'}`} datos="billete-llegada" />
             </span>
           )}
           <span data-hoy-llegada-titulo className="absolute inset-x-[18px] bottom-3.5 text-left" style={NOMBRE_SOBRE_FOTO}>
@@ -236,6 +254,7 @@ export function TarjetaDeLlegada({ route, day, dateIso, mitad, paradas, llegadoP
               ))}
             </div>
           )}
+          {trenUnido && <FilaDeUnion reserva={trenUnido} mitad="arrival" />}
           <div data-hoy-cajas className="grid gap-2" style={columnas(cajasDeAbajo.length)}>
             {cajasDeAbajo.map((c) => (
               <CajaDeParada key={c.dato} dato={c.dato} trazo={c.trazo} etiqueta={c.etiqueta} grande={c.grande} sub={c.sub} />
@@ -286,9 +305,9 @@ export function TarjetaDeLlegada({ route, day, dateIso, mitad, paradas, llegadoP
         />
       )}
       {vezAnadir > 0 && <AnadirDocumentoDeHoy key={vezAnadir} route={route} kind="arrival" mode={modo} />}
-      {ampliado && guardado?.codigo && (
+      {ampliado && codigoDeHoy && (
         <CodigoPantallaCompleta
-          codigo={guardado.codigo}
+          codigo={codigoDeHoy}
           titulo={`${ciudadDeSalida(route)} → ${billete?.codigoRoma ?? ciudad}`}
           cuando={[diaTexto, route.arrivalOtraHora].filter(Boolean).join(' · ')}
           pie={[guardado.asiento ? `Asiento ${guardado.asiento}` : null].filter(Boolean).join(' · ')}
