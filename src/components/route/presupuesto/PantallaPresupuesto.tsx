@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { useLoSuyoDelViaje } from '../../../hooks/useLoSuyoDelViaje'
 import { useHuecoAlFinal } from '../../propuesta/BotonDePropuesta'
 import { createPortal } from 'react-dom'
@@ -14,6 +14,7 @@ import { Icono } from '../../ui/Icono'
 import type { Route } from '../../../lib/types'
 import { AddReservationSheet, type ReservationTarget } from '../reservas/AddReservationSheet'
 import { HojaPrecio } from '../reservas/HojaPrecio'
+import { esReservaExtra } from '../../../lib/reservasExtra'
 import { HojaAbajo, ojoStyle } from '../reservas/HojaAbajo'
 import { useGastosDelViaje } from '../../../hooks/useGastosDelViaje'
 import { useCuentasDelGrupo } from '../../../hooks/useCuentasDelGrupo'
@@ -27,6 +28,9 @@ import { cuentaDelViaje, esFamilia, nombreDeLaCuentaComun } from '../../../lib/c
 import { bloquesDeLoMio, partesDeUnaPersona, type ParteDeUnGasto } from '../../../lib/miCuenta'
 import { useGastosCompartidos } from '../../../store/useGastosCompartidos'
 import type { GastoCompartido } from '../../../lib/gastosCompartidos'
+
+// (V75) La hoja de las reservas nuevas (ferry, tren, autobús, otra): carga perezosa.
+const HojaReservaExtra = lazy(() => import('../reservas/HojaReservaExtra'))
 
 /** El color y el icono de cada bloque (la barra de la tarjeta oscura, el cuadradito de cada bloque y los puntos de debajo). */
 const ESTILO: Record<BloqueId, { color: string; fondo: string; tinta: string; icono: NombreIcono }> = {
@@ -322,7 +326,9 @@ export function PantallaPresupuesto() {
       case 'reserva': {
         const reserva = reservations.find((candidata) => candidata.id === hoja.reservationId)
         if (!reserva) return null
-        const target: ReservationTarget = { kind: reserva.kind, refId: reserva.refId, name: reserva.name, placeNames: reserva.placeNames, excursion: reserva.excursionData ?? null, existing: reserva }
+        // (V75) El ferry, el tren, el autobús y «otra» abren su propia hoja (la del lápiz de su tarjeta), no la de las entradas.
+        if (esReservaExtra(reserva)) return <Suspense fallback={null}><HojaReservaExtra tipo={reserva.kind} editar={reserva.id} onClose={cerrarHoja} /></Suspense>
+        const target: ReservationTarget = { kind: reserva.kind as 'entrada' | 'excursion', refId: reserva.refId, name: reserva.name, placeNames: reserva.placeNames, excursion: reserva.excursionData ?? null, existing: reserva }
         return <AddReservationSheet route={route} target={target} onClose={cerrarHoja} />
       }
       case 'llegada':

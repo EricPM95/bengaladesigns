@@ -82,7 +82,7 @@ function avisoDeReserva(route: Route, reservations: Reservation[], days: DayPlan
   const ids = new Set(days.map((day) => day.id))
   for (const reservation of reservations) {
     const day = dayOfReservation(route, reservation)
-    if (!day || !ids.has(day.id) || reservation.kind === 'excursion') continue
+    if (!day || !ids.has(day.id) || reservation.kind !== 'entrada') continue // (V75) las extras (ferry, tren, autobús, otra) no fijan el día
     return `Tienes una reserva ${elDia(route, day.dayNumber)} (${reservation.name}, ${reservation.time}): no puedes mover este día`
   }
   return null

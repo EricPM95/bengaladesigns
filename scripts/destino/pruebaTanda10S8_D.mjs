@@ -104,7 +104,7 @@ async function pasada(version) {
     debe(e1.cabeceraTexto === `Entradas y Free Tour ${e1.pildora}`, 'E1 cabecera', `la cabecera sin línea de texto bajo el título (${e1.cabeceraTexto})`)
     debe(e1.lapices.length === 1 && e1.lapices.every(([w, h]) => w === 44 && h === 44), 'E1 lapices', `un solo lápiz (10S9, 1-nov: antes dos → ahora uno sin documento → decisión de Eric) de 44 × 44 (${JSON.stringify(e1.lapices)})`)
     // (V74) V64 §7: la papelera es un círculo de 38 px (el de Design); el toque sigue en 44 por `zona-toque`.
-    debe(e1.papelera.length === 1 && e1.papelera[0][0] === 38 && e1.papelera[0][1] === 38, 'E1 papelera', `la papelera de 38 × 38 (el toque sigue en 44) (${JSON.stringify(e1.papelera)})`)
+    debe(e1.papelera.length === 1 && e1.papelera[0][0] === 44 && e1.papelera[0][1] === 44, 'E1 papelera', `(V75) la papelera de 44 × 44 (círculo de 30, arriba a la derecha) (${JSON.stringify(e1.papelera)})`)
     debe(e1.boton === 'Sube tu entrada', 'E1 boton', `[+ Sube tu entrada] (V45: de borde) (${e1.boton})`)
     debe(/\d{2}:\d{2}$/.test((e1.hora ?? '').trim()) && /09:15/.test(e1.hora ?? ''), 'E1 hora', 'la hora en el cuadro azul noche')
     debe(!/Desde el PDF/.test(e1.texto) && !/personas/.test(e1.texto), 'E1 texto', 'sin «Desde el PDF…» ni «personas»')
@@ -161,6 +161,7 @@ async function pasada(version) {
 
     /* — Quitar la entrada con la papelera — */
     await ev(`document.querySelector(${JSON.stringify(fila(base.nombre) + ' [data-papelera]')})?.click(); true`)
+    await ev("document.querySelector('[data-eliminar-confirmar]')?.click(); true") // (V75) la papelera ahora pide confirmar: [Sí, eliminar]
     await a.esp(1200)
     const quedan = await R(`return st().reservations.filter((x) => x.refId === ${JSON.stringify(base.nombre)}).length`)
     debe(quedan === 0, 'papelera', 'la papelera quita la entrada (con su Deshacer)')
@@ -175,7 +176,7 @@ async function pasada(version) {
     const a1 = await alojInfo()
     debe(a1.estado === 'Listo', 'A1 listo', `«Listo» en cuanto el hotel está puesto, sin reserva (${a1.estado})`)
     debe(a1.cabecera === 'Alojamiento Listo', 'A1 cabecera', `cabecera sin línea de texto bajo el título (${a1.cabecera})`)
-    debe(a1.lapices.length === 1 && a1.lapices.every(([w, h]) => w === 44 && h === 44) && a1.papelera.length === 1 && a1.papelera[0][0] === 38, 'A1 botones', `un solo lápiz (10S9, 1-nov: antes dos → ahora uno sin documento → decisión de Eric; V74: el icono del documento va aparte) y la papelera de 38 × 38 (el toque sigue en 44) (${JSON.stringify([a1.lapices, a1.papelera])})`)
+    debe(a1.lapices.length === 1 && a1.lapices.every(([w, h]) => w === 44 && h === 44) && a1.papelera.length === 1 && a1.papelera[0][0] === 44, 'A1 botones', `un solo lápiz (10S9, 1-nov: antes dos → ahora uno sin documento → decisión de Eric; V74: el icono del documento va aparte) y la papelera de 38 × 38 (el toque sigue en 44) (${JSON.stringify([a1.lapices, a1.papelera])})`)
     debe(a1.boton === 'Añade tu reserva' && a1.candado === (sin ? '1' : '0'), 'candado', sin ? '[Añadir tu reserva] lleva el candado sin pase' : '[Añadir tu reserva] NO lleva candado con pase')
     debe(/Hotel Palatino/.test(a1.texto) && /NOCHES|noches/i.test(a1.noches ?? '') && /→/.test(a1.fechas ?? ''), 'A1 contenido', `nombre, fechas con flecha y noches en su cuadro (${a1.fechas} · ${a1.noches})`)
     debe(!/Eliminar alojamiento|Cambiar los datos|Desde el PDF/.test(a1.texto), 'A1 limpio', 'sin «Eliminar alojamiento» ni «Desde el PDF…»')
@@ -223,6 +224,7 @@ async function pasada(version) {
 
     /* — La papelera quita el alojamiento — */
     await ev(`document.querySelector('[data-blk="aloj"] [data-papelera="alojamiento"]')?.click(); true`)
+    await ev("document.querySelector('[data-eliminar-confirmar]')?.click(); true") // (V75) la papelera ahora pide confirmar: [Sí, eliminar]
     await a.esp(1200)
     const hay = await R(`return Boolean(st().accommodationSelections[route().days[0].id])`)
     debe(hay === false, 'papelera', 'la papelera quita el alojamiento y su reserva (con su Deshacer)')

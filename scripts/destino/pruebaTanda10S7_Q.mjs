@@ -25,7 +25,8 @@ const avisosDeReact = []
 const { M, ponerVersion, limpiar } = await prepararSSR('scripts/destino/_10s7_q_entrada.tsx')
 const errorDeSSR = console.error // (ya con el filtro de `_ssr.mjs`: lo que le llegue aquí es lo que SÍ saldría por pantalla)
 console.error = (...a) => {
-  avisosDeReact.push(String(a[0]))
+  // (V75) `_ssr.mjs` quita ese aviso concreto (es de framer-motion en el servidor, no de la app); este registro también debe verlo ya filtrado: antes lo apuntaba ANTES de que el filtro lo quitara y la comprobación 8 fallaba siempre.
+  if (!(typeof a[0] === 'string' && a[0].startsWith('Warning: useLayoutEffect does nothing on the server'))) avisosDeReact.push(String(a[0]))
   errorDeSSR(...a)
 }
 const { createElement, renderToStaticMarkup, useRouteStore, useAddFlowStore, moverParadaAOtroDia, ponerParadaEnElDia, dondeQueda, placeReservedEntrance, TarjetaReservada, TarjetaPorReservar } = M

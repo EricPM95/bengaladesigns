@@ -29,6 +29,10 @@ interface ReservasFocusState {
   /** (V22) La tarjeta de «Útil para el viaje» que pidió una ficha del resumen (el seguro, la eSIM de un país): baja a ella y la abre. */
   utilPedida: string | null
   limpiarUtil: () => void
+  /** (V75) «+ Añadir una reserva» › Entrada / Excursión o tour: abre la hoja de siempre de ese bloque (el buscador de la entrada; la lista de excursiones). */
+  hojaPedida: { tipo: 'entrada' | 'excursion'; id: number } | null
+  pedirHoja: (tipo: 'entrada' | 'excursion') => void
+  limpiarHoja: () => void
   pedir: (bloque: BloqueReservasId, mitad?: 'arrival' | 'departure', soloBloque?: boolean, tarjeta?: string) => void
   pedirExcursion: (excursion: Excursion, dayId: string) => void
   limpiarExcursion: () => void
@@ -40,6 +44,9 @@ export const useReservasFocusStore = create<ReservasFocusState>((set) => ({
   excursionPedida: null,
   utilPedida: null,
   limpiarUtil: () => set({ utilPedida: null }),
+  hojaPedida: null,
+  pedirHoja: (tipo) => set({ hojaPedida: { tipo, id: Date.now() } }),
+  limpiarHoja: () => set({ hojaPedida: null }),
   pedir: (bloque, mitad, soloBloque, tarjeta) => set({ pedido: { bloque, mitad, soloBloque, id: Date.now() }, utilPedida: tarjeta ?? null }),
   pedirExcursion: (excursion, dayId) => set({ pedido: { bloque: 'excursiones', id: Date.now() }, excursionPedida: { excursion, dayId, id: Date.now() } }),
   limpiarExcursion: () => set({ excursionPedida: null }),

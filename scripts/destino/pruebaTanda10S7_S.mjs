@@ -183,7 +183,7 @@ try {
   await abrirBloque()
   fs.mkdirSync(SALIDA, { recursive: true })
   // antes → ahora → decisión de Eric (10S8, 31-oct): la tarjeta «reservada» verde con su botón del código aparte → la tarjeta crema de Design (E1/E2: el código pequeño ES el botón; [Añadir tu entrada] sin la ayuda «Desde el PDF…»).
-  const fila = () => ev(`(() => { const f = document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"]'); const b = f?.querySelector('[data-entrada-billete]'); return f ? { estado: b?.getAttribute('data-entrada-billete') ?? null, texto: (f.innerText ?? '').replace(/\\s+/g, ' '), botonesTarjeta: Array.from(f.querySelectorAll('[data-lapiz],[data-papelera],[data-entrada-codigo-pequeno]')).map((x) => (x.getAttribute('data-entrada-codigo-pequeno') != null ? 'CODIGO' : x.getAttribute('data-lapiz') ?? x.getAttribute('data-papelera'))), codigoPequeno: Boolean(f.querySelector('[data-entrada-codigo-pequeno] img')), anadir: f.querySelector('[data-anadir-doc]')?.textContent.trim() ?? null, ayuda: f.querySelector('[data-entrada-ayuda]')?.textContent ?? null } : null })()`)
+  const fila = () => ev(`(() => { const f = document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"]'); const b = f?.querySelector('[data-entrada-billete]'); return f ? { estado: b?.getAttribute('data-entrada-billete') ?? null, texto: (f.innerText ?? '').replace(/\\s+/g, ' '), botonesTarjeta: Array.from(f.querySelectorAll('[data-lapiz],[data-papelera],[data-icono-documento="si"]')).map((x) => (x.getAttribute('data-icono-documento') != null ? 'CODIGO' : x.getAttribute('data-lapiz') ?? x.getAttribute('data-papelera'))), codigoPequeno: Boolean(f.querySelector('[data-icono-documento="si"]')), anadir: f.querySelector('[data-anadir-doc]')?.textContent.trim() ?? null, ayuda: f.querySelector('[data-entrada-ayuda]')?.textContent ?? null } : null })()`)
 
   // — E1: la entrada reservada sin billete —
   let f1 = await fila()
@@ -224,7 +224,7 @@ try {
   await ev(`document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"]')?.scrollIntoView({ block: 'center' }); true`)
   await a.esp(500)
   f1 = await fila()
-  debe(f1 && f1.estado === 'con-billete' && /Localizador ABC123/.test(f1.texto) && /Toca para ampliar/.test(f1.texto) && f1.codigoPequeno, 'E2', `con billete: «Localizador ABC123» y el código pequeño con «Toca para ampliar» (${JSON.stringify(f1)})`)
+  debe(f1 && f1.estado === 'con-billete' && /Localizador ABC123/i.test(f1.texto) && f1.codigoPequeno, 'E2', `con billete: «Localizador ABC123» (caja LOCALIZADOR, V65) y el QR dorado arriba (V65: ya no hay código pequeño con «Toca para ampliar» en la tarjeta; sigue en HOY) (${JSON.stringify(f1)})`)
   // antes → ahora → decisión de Eric (10S8, 31-oct): ya no hay botón del código aparte: el código pequeño lo abre.
   debe(f1 && f1.botonesTarjeta.includes('CODIGO') && f1.botonesTarjeta.includes('entrada-arriba'), 'L2', `la tarjeta lleva el código y el lápiz (${JSON.stringify(f1?.botonesTarjeta)})`)
   await a.captura(path.join(SALIDA, '10s7_entradas_billete_03_e2.jpg')).catch(() => {})
@@ -237,14 +237,14 @@ try {
 
   // — E3: pantalla completa, desde el código pequeño y desde el botón de L2 —
   const grande = () => ev(`(() => { const d = document.querySelector('[data-billete-pantalla-completa]'); const i = d?.querySelector('img'); return d ? { w: Math.round(i?.getBoundingClientRect().width ?? 0), titulo: d.querySelector('[data-billete-grande-titulo]')?.textContent, cuando: d.querySelector('[data-billete-grande-cuando]')?.textContent, pie: d.querySelector('[data-billete-grande-pie]')?.textContent, fondo: getComputedStyle(d).backgroundColor } : null })()`)
-  await ev(`document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"] [data-entrada-codigo-pequeno]')?.click(); true`)
+  await ev(`document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"] [data-icono-documento="si"]')?.click(); true`)
   await a.esp(600)
   let g = await grande()
   debe(g && g.w >= 250 && g.titulo === NOMBRE && /^\p{L}+ \d+ · 09:00$/u.test(g.cuando ?? '') && g.pie === 'Localizador ABC123' && /255, 255, 255/.test(g.fondo), 'E3 / L2', `el botón del código de L2 abre el código a pantalla completa: nombre, día y hora, «Localizador ABC123», fondo blanco (${JSON.stringify(g)})`)
   await a.captura(path.join(SALIDA, '10s7_entradas_billete_04_e3.jpg')).catch(() => {})
   await ev(`document.querySelector('[data-billete-cerrar]')?.click(); true`)
   await a.esp(300)
-  await ev(`document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"] [data-entrada-codigo-pequeno]')?.click(); true`)
+  await ev(`document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"] [data-icono-documento="si"]')?.click(); true`)
   await a.esp(600)
   g = await grande()
   debe(g && g.w >= 250 && g.pie === 'Localizador ABC123', 'E3', `el código pequeño «Toca para ampliar» también abre la pantalla completa (${JSON.stringify(g)})`)
@@ -255,7 +255,7 @@ try {
 
   // — Sin internet: el código se ve igual —
   await a.cdp('Network.emulateNetworkConditions', { offline: true, latency: 0, downloadThroughput: 0, uploadThroughput: 0 })
-  await ev(`document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"] [data-entrada-codigo-pequeno]')?.click(); true`)
+  await ev(`document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"] [data-icono-documento="si"]')?.click(); true`)
   await a.esp(600)
   g = await grande()
   debe(g && g.w >= 250 && g.pie === 'Localizador ABC123', 'sin internet', `sin conexión, el código se abre igual (${JSON.stringify(g)})`)
@@ -316,6 +316,7 @@ try {
   await abrirBloque()
   // antes → ahora → decisión de Eric (10S8, 31-oct): «Quitar tu billete» → la papelera quita la entrada entera con su billete.
   await ev(`document.querySelector('[data-entrada-fila="' + ${JSON.stringify(NOMBRE)} + '"] [data-papelera]')?.click(); true`)
+    await ev("document.querySelector('[data-eliminar-confirmar]')?.click(); true") // (V75) la papelera ahora pide confirmar: [Sí, eliminar]
   await a.esp(600)
   f1 = await fila()
   // antes → ahora → decisión de Eric (10S8, 31-oct): la papelera quita la reserva y su billete.

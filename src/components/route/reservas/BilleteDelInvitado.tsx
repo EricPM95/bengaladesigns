@@ -7,6 +7,7 @@ import { useSyncStore } from '../../../store/useSyncStore'
 import { diaEntero } from '../../../lib/billete'
 import { CodigoPantallaCompleta, ImagenDelCodigo } from './TarjetaBillete'
 import { BotonAnadirDocumento, PapeleraRoja, claveDocumentoDeMedio } from './BotonesDeReserva'
+import { queEliminarTramo } from '../../../lib/queEliminar'
 
 /**
  * EL BILLETE DE QUIEN NO ES EL ADMINISTRADOR (10S5): debajo de su tarjeta «Llegada y vuelta», para su ida y su vuelta, [Añadir tarjeta de embarque] (o su billete), el mismo billete privado que el del administrador
@@ -48,7 +49,10 @@ function UnTramo({ kind, tramo, medio, yoId }: { kind: LegDelBillete; tramo: MiT
   const datos = [billete?.asiento ? `Asiento ${billete.asiento}` : null, billete?.coche ? `Coche ${billete.coche}` : null, billete?.terminal ? `Terminal ${billete.terminal}` : null, billete?.localizador ? `Localizador ${billete.localizador}` : null].filter(Boolean)
   return (
     <div className="flex flex-col gap-2 border-t border-dotted pt-3" style={{ borderColor: 'rgba(28,34,48,.28)' }} data-billete-invitado={kind}>
-      <span style={{ font: "600 13.5px 'Geist'" }}>{esIda ? 'Tu ida' : 'Tu vuelta'}</span>
+      <span className="-my-1 flex items-center justify-between gap-2">
+        <span style={{ font: "600 13.5px 'Geist'" }}>{esIda ? 'Tu ida' : 'Tu vuelta'}</span>
+        {billete && <PapeleraRoja onClick={() => quitar(tripId, kind)} etiqueta={`Quitar mi ${nombre}`} que={queEliminarTramo(medio, esIda)} datos={`invitado-${kind}`} atributos={{ 'data-eliminar': 'derecha' }} />}
+      </span>
       {datos.length > 0 && <span className="text-[13px] text-text/70" data-billete-invitado-datos>{datos.join(' · ')}</span>}
       {conCodigo && billete?.codigo ? (
         <button type="button" onClick={() => setAmpliado(true)} data-billete-codigo-pequeno className="flex items-center gap-3.5 text-left">
@@ -61,7 +65,6 @@ function UnTramo({ kind, tramo, medio, yoId }: { kind: LegDelBillete; tramo: MiT
         <BotonAnadirDocumento texto={leyendo ? 'Leyendo…' : medio === 'avion' ? 'Añadir tarjeta de embarque' : 'Añadir tu billete'} clave={claveDocumentoDeMedio(medio)} onAnadir={() => archivo.current?.click()} datos={`invitado-${kind}`} />
       )}
       {aviso && <span role="status" className="text-[12.5px] text-text/70" data-billete-aviso>{aviso}</span>}
-      {billete && <PapeleraRoja onClick={() => quitar(tripId, kind)} etiqueta={`Quitar mi ${nombre}`} datos={`invitado-${kind}`} atributos={{ 'data-eliminar': 'derecha' }} />}
       <input ref={archivo} type="file" accept="application/pdf,image/*" hidden data-billete-archivo onChange={(e) => void alElegir(e.target.files?.[0])} />
       {ampliado && billete?.codigo && (
         <CodigoPantallaCompleta codigo={billete.codigo} titulo={esIda ? 'Tu ida' : 'Tu vuelta'} cuando={[diaEntero(tramo.fecha), tramo.hora].filter(Boolean).join(' · ')} pie={[billete.asiento ? `Asiento ${billete.asiento}` : null, tramo.codigo ? `${medio === 'avion' ? 'Vuelo' : 'Tren'} ${tramo.codigo.toUpperCase()}` : null].filter(Boolean).join(' · ')} onClose={() => setAmpliado(false)} />

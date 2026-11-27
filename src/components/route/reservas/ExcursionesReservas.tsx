@@ -83,6 +83,13 @@ export function ExcursionesReservas({ route, info, abierto = false }: { route: R
   const grupo = useEntradasDelGrupo()
   
   const [lista, setLista] = useState(false)
+  // (V75) «+ Añadir una reserva» › Excursión o tour: abre «¿Qué excursión tienes?» de siempre.
+  const hojaPedida = useReservasFocusStore((state) => state.hojaPedida)
+  useEffect(() => {
+    if (hojaPedida?.tipo !== 'excursion') return
+    setLista(true)
+    useReservasFocusStore.getState().limpiarHoja()
+  }, [hojaPedida])
   const [target, setTarget] = useState<ReservationTarget | null>(null)
   // (V66, 3.1) Un documento de OTRO día del viaje: se pregunta antes de mover la reserva.
   const { preguntar: preguntarDia, hoja: hojaDeDia } = usePreguntaDeDia()

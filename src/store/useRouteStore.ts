@@ -1040,6 +1040,8 @@ export const useRouteStore = create<RouteStoreState>((set, get) => ({
       return g.ok
     }
     set((state) => ({ reservations: [...state.reservations.filter((other) => !(other.kind === reservation.kind && other.refId === reservation.refId)), reservation] }))
+    // (V75) Ferry, tren, autobús y «otra» solo viven en RESERVAS (y en el presupuesto): no tocan la ruta ni piden nada al motor.
+    if (reservation.kind === 'ferry' || reservation.kind === 'tren' || reservation.kind === 'bus' || reservation.kind === 'otra') return
     const route = get().route
     if (!route) return
     // (V69, «Revisa las horas») Guardada igualmente con las horas que no cuadran: queda en RESERVAS y NO se mete en el día como si cupiera.

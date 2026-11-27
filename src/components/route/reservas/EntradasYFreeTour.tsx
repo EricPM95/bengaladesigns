@@ -19,6 +19,7 @@ import { esParaVarios } from '../../../lib/entradasPorPersona'
 import { useBilletesDeEntradas } from '../../../hooks/useBilleteEntrada'
 import { useBilleteStore, type BilleteDeEntrada } from '../../../store/useBilleteStore'
 import { OtraReservaBuscador } from './OtraReservaBuscador'
+import { useReservasFocusStore } from '../../../store/useReservasFocusStore'
 import { esReservaLibre } from '../../../lib/otraReserva'
 import { AddReservationSheet, type ReservationTarget } from './AddReservationSheet'
 import { Icono } from '../../ui/Icono'
@@ -105,6 +106,13 @@ export function EntradasYFreeTour({ route, info, abierto }: { route: Route; info
   const grupo = useEntradasDelGrupo()
   const reservations = useReservasParaMi()
   const [buscando, setBuscando] = useState(false)
+  // (V75) «+ Añadir una reserva» › Entrada: abre el buscador de siempre.
+  const hojaPedida = useReservasFocusStore((state) => state.hojaPedida)
+  useEffect(() => {
+    if (hojaPedida?.tipo !== 'entrada') return
+    setBuscando(true)
+    useReservasFocusStore.getState().limpiarHoja()
+  }, [hojaPedida])
   const [target, setTarget] = useState<ReservationTarget | null>(null)
   // (V66, 3.1) Un documento de OTRO día del viaje: se pregunta antes de mover la reserva.
   const { preguntar: preguntarDia, hoja: hojaDeDia } = usePreguntaDeDia()

@@ -165,6 +165,8 @@ export function fechaDeDiaJuliano(dia: number, anio?: number): string {
 // ── 2. Imágenes y código ────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 const MAX_LADO = 2000
 const MAX_PAGINAS = 4
+/** (V75 §5b) Las páginas que se leen de un documento con varias entradas (el servidor lee hasta 20 entradas en la misma lectura). */
+const MAX_PAGINAS_VARIAS = 20
 
 function lienzo(w: number, h: number): HTMLCanvasElement {
   const c = document.createElement('canvas')
@@ -173,7 +175,8 @@ function lienzo(w: number, h: number): HTMLCanvasElement {
   return c
 }
 
-async function paginasDe(archivo: File): Promise<HTMLCanvasElement[]> {
+/** (V75 §5b) `todas`: un documento con VARIAS entradas se lee entero (hasta 20 páginas, las que cabe en una lectura); con más de 8 páginas se bajan a 1400 px para no llenar la memoria del móvil. Sin `todas`, las 4 primeras de siempre. */
+async function paginasDe(archivo: File, todas = false): Promise<HTMLCanvasElement[]> {
   if (archivo.type === 'application/pdf' || /\.pdf$/i.test(archivo.name)) {
     const [pdfjs, worker] = await Promise.all([import('pdfjs-dist'), import('pdfjs-dist/build/pdf.worker.min.mjs?url')])
     pdfjs.GlobalWorkerOptions.workerSrc = worker.default
@@ -181,10 +184,12 @@ async function paginasDe(archivo: File): Promise<HTMLCanvasElement[]> {
     const doc = await tarea.promise
     const salida: HTMLCanvasElement[] = []
     try {
-      for (let n = 1; n <= Math.min(doc.numPages, MAX_PAGINAS); n++) {
+      const tope = todas ? MAX_PAGINAS_VARIAS : MAX_PAGINAS
+      const ladoMax = todas && doc.numPages > 8 ? 1400 : MAX_LADO
+      for (let n = 1; n <= Math.min(doc.numPages, tope); n++) {
         const pagina = await doc.getPage(n)
         const base = pagina.getViewport({ scale: 1 })
-        const escala = Math.min(3, MAX_LADO / Math.max(base.width, base.height))
+        const escala = Math.min(3, ladoMax / Math.max(base.width, base.height))
         const vista = pagina.getViewport({ scale: Math.max(1.5, escala) })
         const c = lienzo(vista.width, vista.height)
         const ctx = c.getContext('2d')
@@ -342,6 +347,34 @@ async function paraElServidor(archivo: File, paginas: HTMLCanvasElement[]): Prom
   return { media_type: 'image/jpeg', data: sal.toDataURL('image/jpeg', 0.85).split(',')[1] }
 }
 
+/**
+ * (V75 §5b) Un PDF de más de ~4,5 MB no cabe tal cual en la petición: antes se mandaba solo la imagen de su página 1 y en «Subir todas a la vez» solo se leía esa. Ahora se manda CADA página por separado, como su propia imagen jpeg reducida
+ * (1600 px; si todas juntas pasan de ~7 MB se bajan el lado y la calidad hasta que quepan), dentro de la MISMA lectura: una sola llamada al servidor, que cuenta como UNA del cupo del día.
+ */
+async function paginasParaElServidor(paginas: HTMLCanvasElement[]): Promise<Array<{ media_type: string; data: string }>> {
+  let lado = 1600
+  let calidad = 0.85
+  let adjuntos: Array<{ media_type: string; data: string }> = []
+  for (let vuelta = 0; vuelta < 5; vuelta++) {
+    adjuntos = []
+    let total = 0
+    for (const c of paginas) {
+      const e = Math.min(1, lado / Math.max(c.width, c.height))
+      const sal = lienzo(c.width * e, c.height * e)
+      const ctx = sal.getContext('2d')
+      if (!ctx) continue
+      ctx.drawImage(c, 0, 0, sal.width, sal.height)
+      const data = sal.toDataURL('image/jpeg', calidad).split(',')[1]
+      total += data.length
+      adjuntos.push({ media_type: 'image/jpeg', data })
+    }
+    if (total <= 9_000_000) break // ~6,7 MB de imagen (el servidor admite 10 MB en total)
+    lado = Math.round(lado * 0.8)
+    calidad = Math.max(0.55, calidad - 0.1)
+  }
+  return adjuntos
+}
+
 /** Lo que contesta el servidor: los datos, o el aviso que hay que enseñar si no pudo leer (o `null` si falló sin más: el texto de siempre). */
 interface RespuestaServidor<T> {
   datos: T | null
@@ -353,8 +386,11 @@ async function leerEnServidor<T = LecturaServidor>(archivo: File, paginas: HTMLC
   if (archivo.size > MAX_ARCHIVO_LECTURA_BYTES) return { datos: null, aviso: AVISO_ARCHIVO_GRANDE }
   // (La sesión se pide al cargar el cliente de Supabase solo ahora, no al importar este archivo: así las pruebas del lector en Node, sin Vite, siguen funcionando.)
   const sesion = await import('./supabaseClient').then((m) => m.supabase?.auth.getSession()).then((r) => r?.data.session ?? null).catch(() => null)
-  const adjunto = await paraElServidor(archivo, paginas)
-  if (!adjunto) return { datos: null, aviso: null }
+  // (V75 §5b) Varias entradas en un PDF grande: todas sus páginas, cada una como su imagen, en la misma lectura (`files`); lo demás, un solo archivo como siempre.
+  const esPdfGrande = (archivo.type === 'application/pdf' || /\.pdf$/i.test(archivo.name)) && archivo.size > 4_500_000
+  const todasLasPaginas = tipo === 'entradas_varias' && esPdfGrande && paginas.length > 1 ? await paginasParaElServidor(paginas) : null
+  const adjunto = todasLasPaginas ? null : await paraElServidor(archivo, paginas)
+  if (!adjunto && !todasLasPaginas?.length) return { datos: null, aviso: null }
   const control = new AbortController()
   const reloj = setTimeout(() => control.abort(), opciones.esperaServidorMs ?? 40_000)
   try {
@@ -362,7 +398,7 @@ async function leerEnServidor<T = LecturaServidor>(archivo: File, paginas: HTMLC
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...(sesion?.access_token ? { Authorization: `Bearer ${sesion.access_token}` } : {}) },
       signal: control.signal,
-      body: JSON.stringify({ file: adjunto, mode: opciones.modo, year_hint: opciones.anioPorDefecto, ...(tipo ? { tipo } : {}) }),
+      body: JSON.stringify({ ...(todasLasPaginas ? { files: todasLasPaginas } : { file: adjunto }), mode: opciones.modo, year_hint: opciones.anioPorDefecto, ...(tipo ? { tipo } : {}) }),
     })
     if (r.ok) return { datos: (await r.json()) as T, aviso: null }
     // 401 sin sesión · 403 sin pase · 429 límite del día · 413 demasiado grande: el servidor trae su texto; si no, el de siempre.
@@ -741,7 +777,7 @@ export async function leerEntradasVarias(archivo: File, opciones: OpcionesLeerBi
   try {
     let paginas: HTMLCanvasElement[] = []
     try {
-      paginas = await paginasDe(archivo)
+      paginas = await paginasDe(archivo, true) // (V75 §5b) todas las páginas (hasta 20), no solo las 4 primeras
     } catch {
       paginas = []
     }

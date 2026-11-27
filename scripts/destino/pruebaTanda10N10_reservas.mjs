@@ -362,6 +362,8 @@ try {
     for (let i = 0; i < 30 && g.disabled; i++) await new Promise((r) => setTimeout(r, 300))
     g.click()
     await new Promise((r) => setTimeout(r, 1200))
+    // (V69 §2) antes la entrada se guardaba y movía los días sola → ahora sale antes la hoja «Cambiar los días / Solo mover la entrada» (decisión de Eric, V69): la prueba elige [Cambiar los días], que es lo que pasaba antes.
+    if (document.querySelector('[data-mover-dias-cambiar]')) { document.querySelector('[data-mover-dias-cambiar]').click(); await new Promise((r) => setTimeout(r, 1200)) }
     Array.from(document.querySelectorAll('button')).find((b) => /^De acuerdo$/.test((b.textContent || '').trim()))?.click()
     await new Promise((r) => setTimeout(r, 2500))
     return true

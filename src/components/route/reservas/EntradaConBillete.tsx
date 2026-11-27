@@ -3,6 +3,7 @@ import { leerEntrada, type DatosEntradaLeida } from '../../../lib/billeteLeer'
 import type { BilleteDeEntrada } from '../../../store/useBilleteStore'
 import { entradaConCodigo } from '../../../store/useBilleteStore'
 import { CodigoPantallaCompleta } from './TarjetaBillete'
+import { queEliminarEntrada } from '../../../lib/queEliminar'
 import type { Persona } from '../../../store/useViajeCompartido'
 import { AvisoDeDocumentoDeReserva, BotonAnadirDocumento, IconoDeDocumento, LapizDeReserva, PapeleraRoja } from './BotonesDeReserva'
 import { CajaDia, CajaHora, TarjetaCrema, Trazo } from './PiezasDesignReservas'
@@ -188,6 +189,7 @@ export function TarjetaEntradaDesign({
           <span className="flex flex-none items-center">
             <IconoDeDocumento hay={conCodigo} onAbrir={() => setAmpliado(docs[0] ?? null)} datos="entrada" />
             <LapizDeReserva onClick={onLapizArriba} etiqueta="Cambiar el sitio, el día y la hora" datos="entrada-arriba" />
+            {onQuitar && <PapeleraRoja onClick={onQuitar} etiqueta="Quitar la entrada" que={queEliminarEntrada(nombre)} datos="entrada" />}
           </span>
         )}
       </div>
@@ -210,12 +212,6 @@ export function TarjetaEntradaDesign({
         {conCodigo && <BloqueDelCodigo datos="entrada" documentos={docs} paraTodos={paraTodosEf} onAmpliar={(d) => setAmpliado(d)} faltan={uso.modo === 'porPersona' ? uso.lista.filter((x) => !docConCodigo(x.doc)).map((x) => ({ clave: x.personaId, nombre: x.nombre })) : []} onSubir={onSubirVarias} />}
         {!conCodigo && ((!soloVer && onLeida) || onSubirVarias) && <BotonAnadirEntrada borde onLeida={onLeida} año={año} datos="entrada-sin-codigo" onAMano={onLapizDatos} alPulsar={onSubirVarias} />}
         {extra}
-        {!soloVer && onQuitar && (
-          <>
-            
-            <PapeleraRoja onClick={onQuitar} etiqueta="Quitar la entrada" datos="entrada" />
-          </>
-        )}
       </div>
       {ampliado && <CodigoPantallaCompleta codigo={ampliado.codigo} titulo={nombre} cuando={cuando} pie={ampliado.tuya === false && ampliado.nombre ? `Entrada de ${ampliado.nombre}` : billete?.localizador ? `Localizador ${billete.localizador.toUpperCase()}` : ''} onClose={() => setAmpliado(null)} />}
     </TarjetaCrema>

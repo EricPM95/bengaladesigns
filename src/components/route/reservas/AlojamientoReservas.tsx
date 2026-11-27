@@ -9,6 +9,7 @@ import { estanciasDelViaje, precioDeAlojamiento, zonaDeAlojamientoElegida } from
 import { CabeceraBloque, ICONOS } from './BloqueReservas'
 import { BloqueClaro, CajaDeDato, CajaDia, CajaNoches, FilaIcono, ParaQuienDesign, RejillaDeDatos, TarjetaCrema } from './PiezasDesignReservas'
 import { IconoDeDocumento, LapizDeReserva, PapeleraRoja } from './BotonesDeReserva'
+import { queEliminarAlojamiento } from '../../../lib/queEliminar'
 import { fechaCorta } from '../../../lib/nombreDeDia'
 import { Icono } from '../../ui/Icono'
 import { LineaDelPase } from '../../pase/Candado'
@@ -161,6 +162,7 @@ export function AlojamientoReservas({
                             <span className="flex flex-none items-center">
                               {esAdmin && hotel && <IconoDeDocumento hay={Boolean(reserva)} tipo="reserva" onAbrir={abrirDatos} datos="aloj" />}
                               <LapizDeReserva onClick={() => abrirTuAlojamiento(segmentDayId)} etiqueta="Cambiar el alojamiento" datos="aloj-arriba" />
+                              {hotel && <PapeleraRoja etiqueta="Quitar el alojamiento" que={queEliminarAlojamiento()} datos="alojamiento" onClick={() => quitarConDeshacer('Alojamiento quitado del viaje', () => setHotel(segmentDayId, null))} />}
                             </span>
                           </div>
                           {(lineaFechas || nochesCaja > 0) && (
@@ -235,7 +237,6 @@ export function AlojamientoReservas({
                           <AvisoDeDocumentoDeReserva clave={`aloj:${segmentDayId}`} documento="documento_alojamiento" onSubir={subirOtra} onEscribir={abrirDatos} />
                           {pago && (elegida || direccion) && <BotonComoLlegarAlojamiento direccion={direccion} variante="design" />}
                           {hotel && botonAnadir}
-                          {hotel && <PapeleraRoja etiqueta="Quitar el alojamiento" datos="alojamiento" onClick={() => quitarConDeshacer('Alojamiento quitado del viaje', () => setHotel(segmentDayId, null))} />}
                         </div>
                       </TarjetaCrema>
                     )

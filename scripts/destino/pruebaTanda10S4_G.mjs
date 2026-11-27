@@ -115,7 +115,7 @@ async function pasada(version) {
     await a.esp(500)
     ll = await bloque('llegada')
     debe(ll.mitades === 2, 'abrir', `tocar la cabecera abre Llegada y vuelta: ida y vuelta (${ll.mitades})`)
-    debe(/Precio total · 110/.test(ll.precioVuelo ?? ''), 'precio', `el precio está dentro: «${ll.precioVuelo}» (10S8, 31-oct: antes «Precio · 110 €» → ahora «Precio total · 110 €» con la ida y la vuelta → decisión de Eric (10S8, 31-oct))`)
+    debe(/110/.test(ll.precioVuelo ?? ''), 'precio', `el precio está dentro: «${ll.precioVuelo}» (V64 §4: antes «Precio total · 110 €» → ahora la caja PRECIO con «110 €», de la ida y la vuelta juntas)`)
     debe((await ev("document.querySelectorAll('[data-blk=\"llegada\"] [data-lapiz]').length")) >= 3, 'cambiar', '(10S8, 31-oct) antes «Cambiar» en texto en la ida, la vuelta y el precio → ahora un lápiz en cada uno (Design) → decisión de Eric (10S8, 31-oct)')
     debe(!/Barcelona/.test(ll.cabecera.join(' ')), 'sin-linea', 'abierto, la cabecera sigue sin la línea de debajo del título')
     const elim = ll.eliminar // (10S8, 31-oct: antes «Eliminar vuelo» en texto → ahora la papelera roja abajo a la derecha, mismo `data-eliminar`)

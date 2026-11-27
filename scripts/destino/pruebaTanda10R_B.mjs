@@ -106,7 +106,7 @@ async function pasada(version) {
     debe(/07:30/.test(e1.hora ?? '') && /\d/.test(e1.dia ?? ''), 'E1 cajas', `el día y la hora en sus dos cuadros (${(e1.dia ?? '').trim()} · ${(e1.hora ?? '').trim()})`)
     debe(e1.lapices.length === 1 && e1.lapices.every(([w, h]) => w === 44 && h === 44), 'E1 lapices', `un solo lápiz (10S9, 1-nov: antes dos → ahora uno sin documento → decisión de Eric) de 44 × 44 (${JSON.stringify(e1.lapices)})`)
     // (V74) V64 §7: la papelera es un círculo de 38 px (el de Design); el toque sigue en 44 por `zona-toque`.
-    debe(e1.papelera.length === 1 && e1.papelera[0][0] === 38 && e1.papelera[0][1] === 38, 'E1 papelera', `la papelera roja de 38 × 38 (el toque sigue en 44) (${JSON.stringify(e1.papelera)})`)
+    debe(e1.papelera.length === 1 && e1.papelera[0][0] === 44 && e1.papelera[0][1] === 44, 'E1 papelera', `(V75) la papelera roja de 44 × 44 (círculo de 30, arriba a la derecha) (${JSON.stringify(e1.papelera)})`)
     debe(/98,26 €|98.26 €|€ ?98/.test(e1.texto), 'E1 precio', `el precio en su fila (${e1.texto.slice(0, 140)})`)
     debe(/Piazza della Repubblica/.test(e1.texto), 'E1 punto', 'el punto de encuentro en su fila')
     debe(e1.boton === 'Sube tu reserva' && e1.candado === (sin ? '1' : '0'), 'candado', sin ? '[+ Sube tu reserva] lleva el candado dorado sin pase' : '[+ Sube tu reserva] sin candado con pase')
@@ -182,6 +182,7 @@ async function pasada(version) {
 
     /* — La papelera — */
     await ev(`document.querySelector(${JSON.stringify(fila + ' [data-papelera]')})?.click(); true`)
+    await ev("document.querySelector('[data-eliminar-confirmar]')?.click(); true") // (V75) la papelera ahora pide confirmar: [Sí, eliminar]
     await a.esp(1200)
     const quedan = await R("return st().reservations.filter((x) => x.refId === 'pompeya_sorrento').length")
     debe(quedan === 0, 'papelera', 'la papelera quita la excursión (con su Deshacer)')

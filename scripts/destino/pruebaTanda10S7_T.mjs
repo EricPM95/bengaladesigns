@@ -348,6 +348,7 @@ async function pasada(version) {
     /* ── 6. Eliminar alojamiento se lleva la reserva ── */
     await abrirBloque()
     await ev("document.querySelector('[data-blk=\"aloj\"] [data-papelera=\"alojamiento\"]')?.click(); true")
+    await ev("document.querySelector('[data-eliminar-confirmar]')?.click(); true") // (V75) la papelera ahora pide confirmar: [Sí, eliminar]
     await a.esp(900)
     debe((await hotelDelStore()) === null, 'eliminar', '«Eliminar alojamiento» quita el hotel y su reserva (con su Deshacer)')
 

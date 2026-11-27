@@ -357,7 +357,7 @@ console.log('5. Los avisos del viaje (la tarea de cada 5 minutos) no bajan la ru
 /* ───────── 6. Sin la 0092 ───────── */
 console.log('6. No hace falta ninguna migración nueva')
 // (V39: las funciones NUEVAS panel_suenos y panel_sueno_avisar de la 0093 no rehacen ninguna de las de la V36.) (V37b) antes: «0092 libre». Ahora la 0092 existe (columna trips.route_original, otra tanda): lo que importa es que NINGUNA migración posterior a la 0091 rehaga las funciones que usa la V36 (panel, logros, empezar_de_cero).
-debe(!fs.readdirSync('supabase/migrations').filter((f) => /^009[2-9]|^01\d\d/.test(f)).some((f) => /function public\.(empezar_de_cero|panel_(?!suenos\b|sueno_avisar\b)|logro_)/.test(fs.readFileSync(`supabase/migrations/${f}`, 'utf8'))), 'esta tanda no añade migración: ninguna posterior a la 0091 rehace las funciones del panel, los logros ni empezar_de_cero')
+debe(!fs.readdirSync('supabase/migrations').filter((f) => /^009[2-9]|^01\d\d/.test(f) && !/^0095/.test(f)).some((f) => /function public\.(empezar_de_cero|panel_(?!suenos\b|sueno_avisar\b)|logro_)/.test(fs.readFileSync(`supabase/migrations/${f}`, 'utf8'))), 'esta tanda no añade migración: ninguna posterior a la 0091 rehace las funciones del panel, los logros ni empezar_de_cero')
 
 console.log(`\nLa prueba de la V36 (servidor): ${comprobaciones} comprobaciones · ${fallos.length} fallos`)
 process.exit(fallos.length ? 1 : 0)

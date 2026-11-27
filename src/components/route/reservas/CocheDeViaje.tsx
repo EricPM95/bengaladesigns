@@ -2,6 +2,8 @@ import { useEffect, useState, type CSSProperties } from 'react'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { useExploreAperturaStore } from '../../../store/useExploreAperturaStore'
 import { quitarConDeshacer } from '../../../store/useAddFlowStore'
+import { IconoDeDocumento, LapizDeReserva, PapeleraRoja } from './BotonesDeReserva'
+import { queEliminarCoche } from '../../../lib/queEliminar'
 import { useViajeCompartido, nombreDe } from '../../../store/useViajeCompartido'
 import { adaptarDiasDeCoche } from '../../../lib/adaptarVuelos'
 import { buildCarRentalLink } from '../../../lib/vehicleRentalLinks'
@@ -159,9 +161,17 @@ export function CocheDeViaje({ abierto = false }: { abierto?: boolean }) {
             </div>
             {rentalBooking && (
               <>
-                <span data-coche-reserva style={{ font: "500 14px/1.4 'Geist'", color: 'rgba(28,34,48,.8)' }}>
-                  {[rentalBooking.provider, rentalBooking.coche, precioGuardado(rentalBooking) ? precioEnVista(precioGuardado(rentalBooking) as Importe) : null].filter(Boolean).join(' · ')}
-                </span>
+                {/* (V75 §5) Los iconos de la tarjeta guardada arriba a la derecha: el icono de la reserva (dorado si tiene su código de reserva; gris con «+» si falta; el coche no guarda un archivo, así que tocarlo abre la hoja de los datos), el lápiz y la papelera. */}
+                <div className="-my-1.5 flex items-center gap-2" data-coche-reserva-fila>
+                  <span data-coche-reserva className="min-w-0 flex-1" style={{ font: "500 14px/1.4 'Geist'", color: 'rgba(28,34,48,.8)' }}>
+                    {[rentalBooking.provider, rentalBooking.coche, precioGuardado(rentalBooking) ? precioEnVista(precioGuardado(rentalBooking) as Importe) : null].filter(Boolean).join(' · ')}
+                  </span>
+                  <span className="-mr-2.5 flex flex-none items-center">
+                    <IconoDeDocumento hay={Boolean(rentalBooking.codigo)} tipo="reserva" onAbrir={() => abrirHoja(null)} onAnadir={() => abrirHoja(null)} datos="coche" />
+                    <LapizDeReserva onClick={() => abrirHoja(null)} etiqueta="Cambiar la reserva del coche" datos="coche-arriba" />
+                    <PapeleraRoja onClick={() => quitarConDeshacer('Alquiler quitado del viaje', () => setRentalVehicleBooking(null))} etiqueta="Quitar la reserva del coche" que={queEliminarCoche()} datos="coche" />
+                  </span>
+                </div>
                 {(rentalBooking.lugarRecogida || rentalBooking.lugarDevolucion) && (
                   <span data-coche-lugares style={{ font: "400 13px/1.4 'Geist'", color: 'rgba(28,34,48,.6)' }}>
                     {[rentalBooking.lugarRecogida ? `Recoges: ${rentalBooking.lugarRecogida}` : null, rentalBooking.lugarDevolucion ? `Devuelves: ${rentalBooking.lugarDevolucion}` : null].filter(Boolean).join(' · ')}

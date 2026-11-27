@@ -85,10 +85,10 @@ async function pasada(version) {
           horaDer: q('[data-billete-hora-der]')?.textContent ?? null,
           boton: q('[data-billete-anadir]')?.textContent.trim() ?? null,
           ayuda: q('[data-billete-ayuda]')?.textContent.trim() ?? null,
-          filas: Array.from(m.querySelectorAll('[data-billete-fila]')).map((f) => [f.getAttribute('data-billete-fila'), f.textContent.trim()]),
+          filas: Array.from(m.querySelectorAll('[data-billete-fila]')).map((f) => [f.getAttribute('data-billete-fila'), (f.querySelector('[data-caja-dato] span.flex-col > span:last-child')?.textContent ?? f.textContent).trim()]), // (V64) cada dato es una CAJA con su rótulo pequeño («VUELO») y el valor («VY 6102»): se compara el valor
           chip: Boolean(q('[data-billete-codigo-pequeno]')),
           chipImg: img ? { w: Math.round(img.getBoundingClientRect().width), src: (img.getAttribute('src') || '').slice(0, 20) } : null,
-          ampliar: /Toca para ampliar/.test(m.innerText),
+          ampliar: /Toca para ampliar|Ampliar/.test(m.innerText), // (V64 §3) el bloque oscuro del código lleva [Ampliar]
           yBoton: y('[data-billete-anadir]'), yEliminar: y('[data-eliminar]'), yChip: y('[data-billete-codigo-pequeno]'),
           eliminar: rc ? { texto: eli.textContent.trim(), derecha: Math.round(b.right - rc.right), izq: Math.round(rc.left - b.left) } : null,
           ancho: Math.round(b.width),
@@ -137,6 +137,10 @@ async function pasada(version) {
       const doc = await a.cdp('DOM.getDocument', { depth: 1 })
       const nodo = await a.cdp('DOM.querySelector', { nodeId: doc.result.root.nodeId, selector: '[data-billete-archivo]' })
       await a.cdp('DOM.setFileInputFiles', { nodeId: nodo.result.nodeId, files: [fichero] })
+      // (V64 §1) antes la lectura guardaba la tarjeta sola → ahora, tras leer, sale «Revisa los datos» y NADA se guarda hasta [Guardar] (decisión de Eric, V64): la prueba pulsa [Guardar].
+      await a.hasta("Boolean(document.querySelector('[data-datos-billete-guardar]'))", { segundos: 60 }).catch(() => undefined)
+      await ev("document.querySelector('[data-datos-billete-guardar]')?.click(); true")
+      await a.esp(900)
       return a.hasta(`Boolean(document.querySelector('[data-aviso-tarjeta]') || document.querySelector('[data-blk="llegada"] [data-mitad="${kind}"] [data-billete-codigo-pequeno]'))`, { segundos: 90 })
     }
     const contestarHora = async () => {
@@ -167,13 +171,14 @@ async function pasada(version) {
     debe(vuelta.horaSola === '18:05' && /Sales a las/.test(vuelta.texto), 'b1', `Vuelta sin hora de fuera: «Sales a las» 18:05 (${vuelta.horaSola})`)
     debe(ida.boton === 'Añade tu tarjeta de embarque', 'b1', `Avión: [+ Añade tu tarjeta de embarque] (${ida.boton})`)
     debe(ida.ayuda === null && !/Desde el PDF/.test(ida.texto), 'b1', `(10S8, 31-oct) antes «Desde el PDF, una foto o una captura.» en gris bajo el botón → ahora fuera (Design B1b) → decisión de Eric (10S8, 31-oct) (${ida.ayuda})`)
-    debe(ida.yBoton != null && ida.yEliminar != null && ida.yBoton <= ida.yEliminar, 'b1-orden', `(V45, Design «Reservas Billete»: la papelera va en la MISMA fila que el botón, a su derecha) el botón no queda por debajo de la papelera (${ida.yBoton} < ${ida.yEliminar})`)
+    debe(ida.yBoton != null && ida.yEliminar != null && ida.yEliminar < ida.yBoton, 'b1-orden', `(V45, Design «Reservas Billete»: V75: la papelera va ARRIBA a la derecha, antes que el botón) el botón no queda por debajo de la papelera (${ida.yBoton} < ${ida.yEliminar})`)
     debe(ida.eliminar && ida.eliminar.derecha < 40 && ida.eliminar.izq > ida.ancho / 2, 'b1-orden', `(10S8, 31-oct) antes «Eliminar vuelo» en texto → ahora la papelera roja abajo a la derecha (${JSON.stringify(ida.eliminar)})`)
     debe(/^(Lunes|Martes|Miércoles|Jueves|Viernes|Sábado|Domingo) \d{1,2}/.test(ida.fecha ?? '') && /^(Lunes|Martes|Miércoles|Jueves|Viernes|Sábado|Domingo) \d{1,2}/.test(vuelta.fecha ?? ''), 'fechas', `las fechas, enteras: «${ida.fecha}» y «${vuelta.fecha}»`)
     const cab = await cabecera()
     debe(cab.length === 2 && /^Llegada y vuelta$/.test(cab[0]) && !/→/.test(cab.join(' ')), 'cabecera', `la cabecera sin la línea de debajo del título (${JSON.stringify(cab)})`)
-    const precio = await ev("document.querySelector('[data-precio-vuelo-texto]')?.textContent ?? null")
-    debe(/^Precio total · /.test(precio ?? ''), 'precio', `(10S8, 31-oct) antes «Precio · …» → ahora «Precio total · …» con la ida y la vuelta (Design B1b): «${precio}»`)
+    const precio = await ev("(document.querySelector('[data-precio-vuelo]')?.innerText ?? '').replace(/\\s+/g, ' ').trim() || null")
+    // (V64 §4) antes «Precio total · …» → ahora la caja PRECIO de las tarjetas («PRECIO» pequeño y el importe, o «Sin poner»), de la ida y la vuelta juntas.
+    debe(/PRECIO/i.test(precio ?? '') && /(Sin poner|\d)/.test(precio ?? ''), 'precio', `(V64 §4) la caja PRECIO con el importe de la ida y la vuelta juntas (o «Sin poner»): «${precio}»`)
     await a.captura(foto(version, '01_b1'))
 
     /* El aeropuerto de fuera entre paréntesis si lo puso; en blanco, sin él */
@@ -237,14 +242,14 @@ async function pasada(version) {
     debe(ida.horaSola != null || (ida.horaIzq != null && ida.horaDer != null), 'b2', `B2: (10S8, 31-oct) antes → ahora → decisión de Eric (10S8, 31-oct): las dos horas salían de la lectura con IA; con el código de barras solo la de llegada (${ida.horaSola ?? ida.horaIzq})`)
     debe(/^Barcelona.* → Roma \(Fiumicino\)$/.test(ida.trayecto ?? ''), 'b2', `B2: trayecto con Barcelona y Roma (Fiumicino) (${ida.trayecto})`)
     const fila = (m, k) => m.filas.find((f) => f[0] === k)?.[1] ?? null
-    debe(fila(ida, 'numero') === 'Vuelo VY 6102', 'b2', `fila «Vuelo VY 6102» (${fila(ida, 'numero')})`)
+    debe(fila(ida, 'numero') === 'VY 6102', 'b2', `fila «Vuelo VY 6102» (${fila(ida, 'numero')})`)
     debe(fila(ida, 'duracion') === null || /^\d h \d+ min$/.test(fila(ida, 'duracion')), 'b2', `fila de duración, si hay dos horas (${fila(ida, 'duracion')})`)
-    debe(fila(ida, 'terminal') === null || /^Terminal 1$/.test(fila(ida, 'terminal')), 'b2', `«Terminal 1» solo si lo trae la lectura con IA (${fila(ida, 'terminal')})`)
-    debe(fila(ida, 'asiento') === 'Asiento 14C', 'b2', `fila «Asiento 14C» (${fila(ida, 'asiento')})`)
-    debe(fila(ida, 'localizador') === 'Localizador ABC123', 'b2', `«Localizador ABC123» (${fila(ida, 'localizador')})`)
-    debe(ida.chip && ida.chipImg && ida.chipImg.w <= 80 && /^data:/.test(ida.chipImg.src), 'b2', `el código en pequeño (${JSON.stringify(ida.chipImg)})`)
+    debe(fila(ida, 'terminal') === null || /^1$/.test(fila(ida, 'terminal')), 'b2', `«Terminal 1» solo si lo trae la lectura con IA (${fila(ida, 'terminal')})`)
+    debe(fila(ida, 'asiento') === '14C', 'b2', `fila «Asiento 14C» (${fila(ida, 'asiento')})`)
+    debe(fila(ida, 'localizador') === 'ABC123', 'b2', `«Localizador ABC123» (${fila(ida, 'localizador')})`)
+    debe(ida.chip && ida.chipImg && ida.chipImg.w <= 100 /* (V64 §3) el código en su cuadro blanco, 92 px */ && /^data:/.test(ida.chipImg.src), 'b2', `el código en pequeño (${JSON.stringify(ida.chipImg)})`)
     debe(ida.ampliar, 'b2', '«Toca para ampliar»')
-    debe(ida.boton === null && ida.yEliminar != null && ida.yChip < ida.yEliminar, 'b2', `ya sin [Añadir tarjeta de embarque]; «Eliminar» al final (${ida.boton})`)
+    debe(ida.boton === null && ida.yEliminar != null && ida.yEliminar < ida.yChip, 'b2', `ya sin [Añadir tarjeta de embarque]; (V75) la papelera va arriba (${ida.boton})`)
     debe(!/Coche/.test(ida.texto), 'solo-los-que-haya', 'en avión no sale «Coche»')
     await a.captura(foto(version, '04_b2'))
 
@@ -255,7 +260,7 @@ async function pasada(version) {
     debe(guardado >= 1, 'movil', `el billete se guarda en el móvil (${guardado} clave)`)
 
     /* ── 4. B4: el código a pantalla completa ── */
-    await ev("document.querySelector('[data-blk=\"llegada\"] [data-mitad=\"arrival\"] [data-billete-codigo-pequeno]')?.click(); true")
+    await ev("document.querySelector('[data-blk=\"llegada\"] [data-mitad=\"arrival\"] [data-billete-codigo-qr]')?.click(); true")
     await a.esp(600)
     const grande = await ev(`(() => {
       const d = document.querySelector('[data-billete-pantalla-completa]')
@@ -281,9 +286,9 @@ async function pasada(version) {
     await vaAReservas()
     await abrirLlegada()
     ida = await mitad('arrival')
-    debe(ida && ida.chip && ida.ampliar && fila(ida, 'asiento') === 'Asiento 14C', 'offline', 'SIN CONEXIÓN: el billete (datos y código) sigue en su sitio')
+    debe(ida && ida.chip && ida.ampliar && fila(ida, 'asiento') === '14C', 'offline', 'SIN CONEXIÓN: el billete (datos y código) sigue en su sitio')
     const antes = a.peticiones.length
-    await ev("document.querySelector('[data-blk=\"llegada\"] [data-mitad=\"arrival\"] [data-billete-codigo-pequeno]')?.click(); true")
+    await ev("document.querySelector('[data-blk=\"llegada\"] [data-mitad=\"arrival\"] [data-billete-codigo-qr]')?.click(); true")
     await a.esp(500)
     const grandeSin = await ev("(() => { const i = document.querySelector('[data-billete-pantalla-completa] img'); return i ? { ok: i.complete && i.naturalWidth > 0, w: Math.round(i.getBoundingClientRect().width) } : null })()")
     debe(grandeSin && grandeSin.ok && grandeSin.w >= 250, 'offline', `SIN CONEXIÓN: el código a pantalla completa se pinta (${JSON.stringify(grandeSin)})`)
@@ -300,7 +305,7 @@ async function pasada(version) {
     await ponerGente('a')
     await a.esp(500)
     ida = await mitad('arrival')
-    debe(ida && ida.chip && fila(ida, 'asiento') === 'Asiento 14C', 'compartido', 'la persona dueña ve su billete')
+    debe(ida && ida.chip && fila(ida, 'asiento') === '14C', 'compartido', 'la persona dueña ve su billete')
     await ponerGente('b')
     await a.esp(500)
     ida = await mitad('arrival')
@@ -323,10 +328,10 @@ async function pasada(version) {
     await a.esp(800)
     tren = await mitad('arrival')
     debe(tren.horaIzq != null && tren.horaDer != null, 'b3', `B3: las dos horas (${tren.horaIzq} / ${tren.horaDer})`)
-    debe(/Tren .*03180/.test(fila(tren, 'numero') ?? ''), 'b3', `«Tren 03180» (${fila(tren, 'numero')})`)
+    debe(/03180/.test(fila(tren, 'numero') ?? ''), 'b3', `«Tren 03180» (${fila(tren, 'numero')})`)
     debe(fila(tren, 'duracion') === '3 h 2 min', 'b3', `«3 h 2 min» (${fila(tren, 'duracion')})`)
-    debe(/^Coche 003$/.test(fila(tren, 'coche') ?? ''), 'b3', `«Coche 003» (${fila(tren, 'coche')})`)
-    debe(fila(tren, 'asiento') === 'Asiento 01D', 'b3', `«Asiento 01D» (${fila(tren, 'asiento')})`)
+    debe(/003/.test(fila(tren, 'coche') ?? fila(tren, 'asiento') ?? ''), 'b3', `«Coche 003» (${fila(tren, 'coche')})`)
+    debe(/01D/.test(fila(tren, 'asiento') ?? ''), 'b3', `«Asiento 01D» (${fila(tren, 'asiento')})`)
     debe(fila(tren, 'terminal') === null, 'b3', 'sin terminal en tren (solo los datos que haya)')
     debe(tren.chip && tren.ampliar, 'b3', 'código en pequeño con «Toca para ampliar»')
     await a.captura(foto(version, '07_b3'))

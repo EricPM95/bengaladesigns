@@ -222,26 +222,37 @@ export function registrarLeerBillete(app, deps) {
   app.post('/api/read-ticket', puerta, cuerpo, async (req, res) => {
     const uid = req.usuarioLectura.id
     const devolver = () => liberar(uid, req.lecturaEnTabla)
-    const { file, mode, year_hint: yearHint, tipo } = req.body ?? {}
+    const { file, files, mode, year_hint: yearHint, tipo } = req.body ?? {}
     const esEntrada = tipo === 'entrada'
     const esExcursion = tipo === 'excursion' // 10R §4: el billete de una excursión
     const esAlojamiento = tipo === 'alojamiento'// 10S7 §5: la reserva de un hotel (server/billete/lecturaAlojamiento.js)
     const esCoche = tipo === 'coche' // 6-nov: la reserva de un coche de alquiler (server/billete/lecturaCoche.js)
     const esVarias = tipo === 'entradas_varias' // V65: un documento con varias entradas, una por persona
-    const hayArchivo = file && typeof file.data === 'string' && ['image/png', 'image/jpeg', 'image/webp', 'application/pdf'].includes(file.media_type)
+    const archivoValido = (f) => f && typeof f.data === 'string' && ['image/png', 'image/jpeg', 'image/webp', 'application/pdf'].includes(f.media_type)
+    // (V75 §5b) Un PDF grande con varias entradas llega como una imagen por página (`files`, hasta 20): UNA sola lectura (la puerta ya apuntó una), con todas las páginas en la misma llamada.
+    const paginasSueltas = esVarias && Array.isArray(files) ? files.slice(0, 20) : null
+    const hayArchivo = paginasSueltas ? paginasSueltas.length > 0 && paginasSueltas.every((f) => archivoValido(f) && f.media_type !== 'application/pdf') : archivoValido(file)
     if (!hayArchivo) {
       await devolver()
       res.status(400).json({ error: 'Falta el archivo del billete.' })
       return
     }
-    if (bytesDeBase64(file.data) > MAX_ARCHIVO_BYTES) {
+    if ((paginasSueltas ? paginasSueltas.reduce((t, f) => t + bytesDeBase64(f.data), 0) : bytesDeBase64(file.data)) > MAX_ARCHIVO_BYTES) {
       await devolver()
       res.status(413).json({ error: TEXTO_GRANDE, codigo: 'grande' })
       return
     }
     try {
       const intro = `Año por defecto: ${Number.isInteger(yearHint) ? yearHint : new Date().getFullYear()}.${esEntrada || esAlojamiento || esExcursion || esCoche || esVarias ? '' : ['avion', 'tren', 'bus', 'ferry'].includes(mode) ? ` Es un billete de ${{ avion: 'avión', tren: 'tren', bus: 'autobús', ferry: 'barco' }[mode]}.` : ''}`
-      const contenido = [
+      const contenido = paginasSueltas
+        ? [
+            ...paginasSueltas.flatMap((f, i) => [
+              { type: 'text', text: `Página ${i + 1} de ${paginasSueltas.length}:` },
+              { type: 'image', source: { type: 'base64', media_type: f.media_type, data: f.data } },
+            ]),
+            { type: 'text', text: `${intro} Las páginas del documento llegan como imágenes separadas, en orden: el número de «pagina» de cada codigo_caja es el de su imagen (1 a ${paginasSueltas.length}).` },
+          ]
+        : [
         file.media_type === 'application/pdf'
           ? { type: 'document', source: { type: 'base64', media_type: file.media_type, data: file.data } }
           : { type: 'image', source: { type: 'base64', media_type: file.media_type, data: file.data } },

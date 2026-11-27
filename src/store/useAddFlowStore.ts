@@ -123,6 +123,11 @@ export function openDayAfterExcursion(dayId: string): void {
 export function mensajeDeQuitar(reservation: Pick<Reservation, 'kind' | 'refId'> | undefined): string {
   if (!reservation) return 'Reserva quitada del viaje'
   if (reservation.kind === 'excursion') return 'Excursión quitada del viaje'
+  // (V75) Las nuevas de «+ Añadir una reserva».
+  if (reservation.kind === 'ferry') return 'Ferry quitado del viaje'
+  if (reservation.kind === 'tren') return 'Tren quitado del viaje'
+  if (reservation.kind === 'bus') return 'Autobús quitado del viaje'
+  if (reservation.kind === 'otra') return 'Reserva quitada del viaje'
   if (reservation.refId === FREE_TOUR_REF) return 'Free Tour quitado del viaje'
   return 'Entrada quitada del viaje'
 }

@@ -10,13 +10,14 @@ import { BotonAnadirDocumento, LineaNaranjaDeDocumento, IconoDeDocumento, LapizD
 import { CajaDeDato } from './PiezasDesignReservas'
 import { DORADO } from '../../ui/botonesOro'
 import { puntoCorto } from '../../../lib/arrivalReturn'
+import { queEliminarTramo } from '../../../lib/queEliminar'
 
 /**
  * LA MITAD DEL VUELO (O DEL TREN…) EN RESERVAS, con su billete (Tanda 10S5 §4; 10S8 §3, `Piezas/Billete Reservas` B1b a B3). Todo lo del billete es de esta persona (se guarda en su móvil y se ve sin internet). Por bloques:
  *   1. El día y las horas: «IDA · Jueves 26 noviembre» con su lápiz (abre la hoja del vuelo), la hora grande (sin tarjeta, «Llegas a las 11:25»; con ella, las dos horas) y el trayecto.
  *   2. Los datos (solo con tarjeta o con datos puestos): vuelo, duración, terminal, asiento, localizador, con su lápiz («Datos del vuelo»).
  *   3. El código en pequeño con «Toca para ampliar»; o, sin él, [Añadir tarjeta de embarque] (con el candado sin pase). Sin duración calculada, sin «Desde el PDF…» y sin «Cambiar los datos».
- *   4. Abajo a la derecha, la papelera roja que quita ese lado.
+ *   4. (V75) La papelera roja que quita ese lado va ARRIBA a la derecha, tras el QR y el lápiz.
  */
 const PUNTEADA = '1px dotted rgba(28,34,48,.28)'
 
@@ -64,7 +65,7 @@ export interface CajaDelBillete {
   /** El trazo del icono (los de Design). */
   d: string
 }
-const D_CAJAS = {
+export const D_CAJAS = {
   compania: 'M4 8h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM9 8V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 13h18',
   vuelo: 'M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z',
   tren: 'M7 3h10a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3zM4 11h16M8 21l2-3M16 21l-2-3M8.5 14.5h.01M15.5 14.5h.01',
@@ -121,7 +122,7 @@ function CodigoDibujado({ codigo, tam }: { codigo: CodigoDelBillete; tam: number
 }
 
 /** La cabecera de una mitad: «IDA» / «VUELTA», el día y el lápiz de arriba (la hoja del vuelo). `onToggle`: la Ida plegada (B2c) se abre y se cierra tocando su línea. */
-export function CabeceraDeMitad({ leg, fecha, resto, onCambiar, onToggle, pasada, documento }: { /** (V45 §1) El QR junto al lápiz: gris con «+» si falta la tarjeta, dorado si está (al tocarlo, en grande). */ documento?: { hay: boolean; onAbrir: () => void }; leg: Pick<LegState, 'kind' | 'mode'>; fecha: string; /** (B2c) Lo que va tras el día en la línea plegada: «11:25 · Fiumicino». */ resto?: string; onCambiar: () => void; onToggle?: () => void; pasada?: boolean }) {
+export function CabeceraDeMitad({ leg, fecha, resto, onCambiar, onToggle, pasada, documento, onQuitar }: { /** (V75) La papelera, la tercera tras el QR y el lápiz. */ onQuitar?: () => void; /** (V45 §1) El QR junto al lápiz: gris con «+» si falta la tarjeta, dorado si está (al tocarlo, en grande). */ documento?: { hay: boolean; onAbrir: () => void }; leg: Pick<LegState, 'kind' | 'mode'>; fecha: string; /** (B2c) Lo que va tras el día en la línea plegada: «11:25 · Fiumicino». */ resto?: string; onCambiar: () => void; onToggle?: () => void; pasada?: boolean }) {
   const esIda = leg.kind === 'arrival'
   const contenido = (
     <>
@@ -129,7 +130,7 @@ export function CabeceraDeMitad({ leg, fecha, resto, onCambiar, onToggle, pasada
         <Icono nombre={iconoDeMedio(leg.mode)} size={12} />
         {esIda ? 'IDA' : 'VUELTA'}
       </span>
-      <span className="min-w-0 flex-1" style={{ font: "600 14px 'Geist'", color: INK, textAlign: 'left' }} data-mitad-fecha>
+      <span className={resto ? "min-w-0 flex-1" : "min-w-0 flex-auto whitespace-nowrap"} style={{ font: "600 14px 'Geist'", color: INK, textAlign: 'left' }} data-mitad-fecha>
         {fecha}
         {resto ? <span data-mitad-resumen> · {resto}</span> : null}
       </span>
@@ -138,15 +139,16 @@ export function CabeceraDeMitad({ leg, fecha, resto, onCambiar, onToggle, pasada
   return (
     <div className="flex items-center gap-2.5" data-mitad-cabecera={leg.kind}>
       {onToggle ? (
-        <button type="button" onClick={onToggle} aria-expanded={!pasada} data-mitad-plegable={leg.kind} className="flex min-w-0 flex-1 items-center gap-2.5 border-none bg-transparent p-0">
+        <button type="button" onClick={onToggle} aria-expanded={!pasada} data-mitad-plegable={leg.kind} className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2.5 gap-y-1 border-none bg-transparent p-0">
           {contenido}
         </button>
       ) : (
-        <span className="flex min-w-0 flex-1 items-center gap-2.5">{contenido}</span>
+        <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2.5 gap-y-1">{contenido}</span>
       )}
       <span className="-my-2 -mr-2.5 flex flex-none items-center">
         {documento && <IconoDeDocumento hay={documento.hay} onAbrir={documento.onAbrir} datos={`vuelo-${leg.kind}`} />}
         <LapizDeReserva onClick={onCambiar} etiqueta={`Cambiar ${esIda ? 'la ida' : 'la vuelta'}`} datos={`mitad-${leg.kind}`} atributos={{ 'data-cambiar-mitad': '' }} />
+        {onQuitar && <PapeleraRoja onClick={onQuitar} etiqueta={`Quitar ${esIda ? 'la ida' : 'la vuelta'}`} que={queEliminarTramo(leg.mode, esIda)} datos={`mitad-${leg.kind}`} atributos={{ 'data-eliminar': 'derecha' }} />}
       </span>
     </div>
   )
@@ -198,7 +200,7 @@ export function TarjetaBillete({
   const horas = horaFuera ? (esIda ? [horaFuera, leg.time] : [leg.time, horaFuera]) : null
   return (
     <div data-mitad={leg.kind} data-mitad-hecha="1" data-billete-privado={conCodigo ? 'con-codigo' : 'sin-codigo'} className="mx-3.5 mb-3 flex flex-col gap-3 rounded-[20px] px-4 py-3.5" style={{ background: '#FBF3E2', border: '1px solid rgba(181,138,46,.35)' }}>
-      <CabeceraDeMitad leg={leg} fecha={fecha} onCambiar={onCambiar} onToggle={onToggle} documento={{ hay: conCodigo, onAbrir: onAmpliar }} />
+      <CabeceraDeMitad leg={leg} fecha={fecha} onCambiar={onCambiar} onToggle={onToggle} documento={{ hay: conCodigo, onAbrir: onAmpliar }} onQuitar={onQuitar} />
 
       {horas ? (
         <div className="flex items-center gap-2" data-billete-horas>
@@ -272,15 +274,9 @@ export function TarjetaBillete({
           </div>
         </>
       ) : (
-        // (V53 §4) [+ Añade tu tarjeta de embarque] ocupa su fila; la papelera va ABAJO A LA DERECHA, como en todas las tarjetas de RESERVAS (ya no en la fila del botón).
+        // (V53 §4) [+ Añade tu tarjeta de embarque] ocupa su fila; la papelera (V75) ya no va abajo: está arriba, tras el QR y el lápiz.
         <div style={{ borderTop: cajas.length === 0 ? PUNTEADA : undefined, paddingTop: cajas.length === 0 ? 12 : 0 }}>
           <BotonAnadirDocumento estilo="borde" texto={botonTexto} clave={claveDocumentoDeMedio(leg.mode)} onAnadir={onAnadirTarjeta} datos={`vuelo-${leg.kind}`} aMano={onDatos} />
-        </div>
-      )}
-
-      {(
-        <div className="flex justify-end" style={conCodigo ? { borderTop: PUNTEADA, paddingTop: 12 } : undefined}>
-          <PapeleraRoja enLinea onClick={onQuitar} etiqueta={`Quitar ${esIda ? 'la ida' : 'la vuelta'}`} datos={`mitad-${leg.kind}`} atributos={{ 'data-eliminar': 'derecha' }} />
         </div>
       )}
     </div>

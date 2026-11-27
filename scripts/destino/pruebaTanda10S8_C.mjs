@@ -92,7 +92,7 @@ async function pasada(version) {
         if (!m) return null
         const bm = m.getBoundingClientRect()
         const q = (s) => m.querySelector(s)
-        const dim = (e) => { if (!e) return null; const r = e.getBoundingClientRect(); return { w: Math.round(r.width), h: Math.round(r.height), derecha: Math.round(bm.right - r.right), abajo: Math.round(bm.bottom - r.bottom), y: Math.round(r.top) } }
+        const dim = (e) => { if (!e) return null; const r = e.getBoundingClientRect(); return { w: Math.round(r.width), h: Math.round(r.height), derecha: Math.round(bm.right - r.right), abajo: Math.round(bm.bottom - r.bottom), arriba: Math.round(r.top - bm.top), y: Math.round(r.top) } }
         const papelera = q('[data-papelera]')
         const boton = q('[data-anadir-doc]')
         return {
@@ -107,11 +107,11 @@ async function pasada(version) {
           candadoDibujado: Boolean(boton?.parentElement.querySelector('[data-candado-redondo]')),
           ayuda: q('[data-billete-ayuda]')?.textContent ?? null,
           cambiarDatos: Boolean(q('[data-billete-cambiar-datos]')),
-          filas: Array.from(m.querySelectorAll('[data-billete-fila]')).map((f) => [f.getAttribute('data-billete-fila'), f.textContent.trim()]),
+          filas: Array.from(m.querySelectorAll('[data-billete-fila]')).map((f) => [f.getAttribute('data-billete-fila'), (f.querySelector('[data-caja-dato] span.flex-col > span:last-child')?.textContent ?? f.textContent).trim()]), // (V64) cada dato es una CAJA con su rótulo pequeño y el valor: se compara el valor
           filaNumero: dim(q('[data-billete-fila="numero"] span:last-child')),
           filaNumeroLineas: (() => { const e = q('[data-billete-fila="numero"] span:last-child'); if (!e) return null; const lh = parseFloat(getComputedStyle(e).lineHeight) || 18; return Math.round(e.getBoundingClientRect().height / lh) })(),
           chip: Boolean(q('[data-billete-codigo-pequeno]')),
-          ampliar: /Toca para ampliar/.test(m.innerText),
+          ampliar: /Toca para ampliar|Ampliar/.test(m.innerText), // (V64 §3) el bloque oscuro del código lleva [Ampliar]
           papelera: dim(papelera),
           papeleraColor: papelera ? getComputedStyle(papelera.querySelector('svg')).color : null,
           lapizArriba: dim(q('[data-cambiar-mitad]')),
@@ -138,7 +138,7 @@ async function pasada(version) {
     debe(ida.boton === 'Añade tu tarjeta de embarque' && vuelta.boton === 'Añade tu tarjeta de embarque', 'boton', `cada lado con su [+ Añade tu tarjeta de embarque] (V45: de borde) (${ida.boton} · ${vuelta.boton})`)
     debe(sin ? ida.candado === '1' && vuelta.candado === '1' && ida.candadoDibujado && vuelta.candadoDibujado : ida.candado === '0' && vuelta.candado === '0' && !ida.candadoDibujado && !vuelta.candadoDibujado, 'candado', sin ? 'sin pase: el candado dorado en su círculo azul noche en los dos botones' : 'con pase: nunca candado')
     debe(ida.papelera && vuelta.papelera && ida.papelera.w === 44 && ida.papelera.h === 44 && vuelta.papelera.w === 44, 'papelera', `cada lado con su papelera de 44 x 44 (${JSON.stringify(ida.papelera)})`)
-    debe(ida.papelera && ida.papelera.derecha <= 24 && ida.papelera.abajo <= 56, 'papelera', `(V45, Design «Reservas Billete»: va en la MISMA fila que [+ Añade tu tarjeta…], por encima de la línea del pase) la papelera abajo a la derecha (${JSON.stringify(ida.papelera)})`)
+    debe(ida.papelera && ida.papelera.derecha <= 24 && ida.papelera.arriba <= 70, 'papelera', `(V75, Design R12: antes abajo, en la fila de [+ Añade tu tarjeta…]) la papelera ARRIBA a la derecha, tras el QR y el lápiz (${JSON.stringify(ida.papelera)})`)
     debe(/^oklch\(0\.52 0\.19 25\)$/.test(ida.papeleraColor ?? ''), 'papelera', `la papelera en rojo (${ida.papeleraColor})`)
     debe(!/Eliminar vuelo|Quitar entrada|Eliminar alojamiento/.test(ida.texto + vuelta.texto), 'papelera', 'fuera «Eliminar vuelo»')
     debe(ida.lapizArriba && ida.lapizArriba.w === 44 && ida.lapizArriba.h === 44 && vuelta.lapizArriba.w === 44, 'lapices', `el lápiz de arriba, 44 x 44 (${JSON.stringify(ida.lapizArriba)})`)
@@ -155,7 +155,7 @@ async function pasada(version) {
     const cab = await cabecera()
     debe(cab.length === 2 && cab[0] === 'Llegada y vuelta' && !/→/.test(cab.join(' ')), 'cabecera', `la cabecera sin línea bajo el título, con el estado (${JSON.stringify(cab)})`)
     let precio = await precioFila()
-    debe(precio && /^Precio total · /.test(precio.texto ?? ''), 'precio', `el precio abajo del todo: «${precio?.texto}»`)
+    debe(precio && /180/.test(precio.texto ?? '') /* (V64 §4) la caja PRECIO: el importe, sin «Precio total · » */, 'precio', `el precio abajo del todo: «${precio?.texto}»`)
     debe(precio && precio.despuesDeVuelta && precio.ultimaFila, 'precio', 'debajo de la Vuelta y en su fila, lo último del bloque')
     debe(precio && precio.lapiz && precio.lapiz.w === 44 && precio.lapiz.h === 44, 'lapices', 'el lápiz del precio, 44 x 44')
     await cap('01_b1b')
@@ -178,7 +178,7 @@ async function pasada(version) {
     await ruta("st.removeFlightLeg('departure')")
     await a.esp(600)
     precio = await precioFila()
-    debe(precio && /^Precio · /.test(precio.texto ?? ''), 'precio', `solo con la ida: «Precio · …» (${precio?.texto})`)
+    debe(precio && /180/.test(precio.texto ?? '') /* (V64 §4) la caja PRECIO */, 'precio', `solo con la ida: «Precio · …» (${precio?.texto})`)
     await cap('03_b1d_solo_ida')
     await ruta("st.guardarVueloDelAdmin({ departure: { time: '18:05', pointId: 'cia' } }); st.setLegOtroPunto('departure', 'El Prat'); st.setLegOtraHora('departure', '20:35'); st.setLegCodigo('departure', 'VY 6105'); st.setLegPrecio('arrival', { amount: 180, currency: 'EUR' })")
     await a.esp(600)
@@ -195,7 +195,7 @@ async function pasada(version) {
     await a.esp(800)
     await cerrarHojas()
     precio = await precioFila()
-    debe(precio && /^Precio total · .*215/.test(precio.texto ?? ''), 'precio', `guardado el precio: «${precio?.texto}»`)
+    debe(precio && /215/.test(precio.texto ?? '') /* (V64 §4) la caja PRECIO */, 'precio', `guardado el precio: «${precio?.texto}»`)
     const guardado = await ev("(() => { const r = window.__ruta.getState().route; return [r.arrivalPrecio?.amount ?? null, r.departurePrecio?.amount ?? null] })()")
     debe(guardado[0] === 215 && guardado[1] == null, 'precio', `el precio va a «Vuelo a Roma» (una sola vez: ${JSON.stringify(guardado)})`)
 
@@ -214,7 +214,7 @@ async function pasada(version) {
     vuelta = await mitad('departure')
     debe(ida.chip && ida.ampliar && vuelta.chip, 'b2', 'con la tarjeta: el código con «Toca para ampliar»')
     debe(ida.candado == null && ida.boton == null, 'b2', 'con la tarjeta ya no está el botón de añadir (ni su candado, también sin pase: lo guardado se ve)')
-    debe(ida.filas.some((f) => f[0] === 'numero' && f[1] === 'Vuelo VY 6102') && ida.filas.some((f) => f[0] === 'terminal') && ida.filas.some((f) => f[0] === 'asiento' && /14C/.test(f[1])) && ida.filas.some((f) => f[0] === 'localizador' && /ABC123/.test(f[1])), 'b2', `los datos en su fila (${JSON.stringify(ida.filas)})`)
+    debe(ida.filas.some((f) => f[0] === 'numero' && f[1] === 'VY 6102') && ida.filas.some((f) => f[0] === 'terminal') && ida.filas.some((f) => f[0] === 'asiento' && /14C/.test(f[1])) && ida.filas.some((f) => f[0] === 'localizador' && /ABC123/.test(f[1])), 'b2', `los datos en su fila (${JSON.stringify(ida.filas)})`)
     debe(ida.lapizDatos && ida.lapizDatos.w === 44 && ida.lapizDatos.h === 44, 'lapices', `el lápiz del bloque de datos, 44 x 44 (${JSON.stringify(ida.lapizDatos)})`)
     debe(ida.papelera && ida.papelera.w === 44 && ida.papelera.derecha <= 24, 'papelera', 'con tarjeta, la papelera sigue abajo a la derecha')
     debe(ida.filaNumeroLineas === 1, 'una-linea', `«Vuelo VY 6102» en UNA línea a 390 px (${ida.filaNumeroLineas})`)
@@ -224,7 +224,7 @@ async function pasada(version) {
     await a.cdp('Emulation.setDeviceMetricsOverride', { width: 375, height: 812, deviceScaleFactor: 1, mobile: true })
     await a.esp(900)
     ida = await mitad('arrival')
-    debe(ida.filaNumeroLineas === 1 && ida.filas.some((f) => f[1] === 'Vuelo VY 6102'), 'una-linea', `«Vuelo VY 6102» en una línea a 375 px (${ida.filaNumeroLineas} línea/s)`)
+    debe(ida.filaNumeroLineas === 1 && ida.filas.some((f) => f[1] === 'VY 6102'), 'una-linea', `«Vuelo VY 6102» en una línea a 375 px (${ida.filaNumeroLineas} línea/s)`)
     const titulo375 = await ev(`(() => { const t = Array.from(document.querySelectorAll('[data-blk] span')).find((s) => s.textContent.trim() === 'Entradas y Free Tour'); if (!t) return null; const lh = parseFloat(getComputedStyle(t).lineHeight) || 27; return Math.round(t.getBoundingClientRect().height / lh) })()`)
     debe(titulo375 == null || titulo375 === 1, 'una-linea', `el título «Entradas y Free Tour» en una línea a 375 px (${titulo375})`)
     await cap('06_375')
@@ -297,48 +297,54 @@ async function pasada(version) {
       await ruta("window.__billete.getState().quitar(null, 'arrival')")
       await ruta("st.guardarVueloDelAdmin({ arrival: { time: '11:25', pointId: 'fco' } })")
       await a.esp(500)
-      const subir = async (fichero) => {
+      const subir = async (fichero, { guardar = true } = {}) => {
+        // (V64) cambiar la hora desde «Revisa los datos» abre «¿Adaptamos tus días a tu vuelo?» (Reorganizar): se cierra antes de subir otro documento.
+        await ev("document.querySelectorAll('[role=dialog] button[aria-label=Cerrar]').forEach((b) => b.click()); true")
+        await a.esp(500)
         await click('[data-blk="llegada"] [data-mitad="arrival"] [data-anadir-doc]')
         await a.esp(300)
+        // (V64) sin pasar por [Subir foto o archivo] el selector no se vacía, y el mismo archivo dos veces seguidas no dispara el cambio: se vacía a mano.
+        await ev("(() => { const i = document.querySelector('[data-billete-archivo]'); if (i) i.value = ''; return true })()")
         const doc = await a.cdp('DOM.getDocument', { depth: 1 })
         const nodo = await a.cdp('DOM.querySelector', { nodeId: doc.result.root.nodeId, selector: '[data-billete-archivo]' })
         await a.cdp('DOM.setFileInputFiles', { nodeId: nodo.result.nodeId, files: [fichero] })
-        await a.esp(400)
+        // (V64 §1) antes la lectura guardaba la tarjeta sola → ahora sale «Revisa los datos» y no se guarda hasta [Guardar]: la prueba lo pulsa.
+        await a.hasta("Boolean(document.querySelector('[data-datos-billete-guardar]'))", { segundos: 60 }).catch(() => undefined)
+        if (guardar) await ev("document.querySelector('[data-datos-billete-guardar]')?.click(); true")
+        await a.esp(600)
       }
       // Hora distinta (la tarjeta dice 10:25, el vuelo 11:25).
+      // (V64 §1) antes → ahora → decisión de Eric (V64): antes salía la pregunta «¿Actualizamos la hora de tu vuelo?» con [Sí]/[No]; ahora la lectura abre «Revisa los datos» con la hora leída YA puesta en su casilla
+      // (se ve y se puede cambiar) y [Guardar] la aplica; cerrar sin guardar no cambia nada. Se mantienen las dos comprobaciones: la hora leída llega al vuelo solo al guardar, y sin guardar el vuelo se queda como estaba.
       await ev(`window.__lectura = ${JSON.stringify(lectura({ hora_llegada: '10:25' }))}; true`)
-      await subir(PNG)
-      await a.hasta("Boolean(document.querySelector('[data-aviso-tarjeta]'))", { segundos: 60 }).catch(() => undefined)
-      let av = await ev("(() => { const e = document.querySelector('[data-aviso-tarjeta]'); return e ? { tipo: e.getAttribute('data-aviso-tarjeta'), texto: e.querySelector('[data-aviso-tarjeta-texto]').textContent, si: Boolean(e.querySelector('[data-aviso-tarjeta-si]')), no: Boolean(e.querySelector('[data-aviso-tarjeta-no]')) } : null })()")
-      debe(av && av.tipo === 'hora' && av.texto === 'Tu tarjeta dice que llegas a las 10:25. ¿Actualizamos la hora de tu vuelo?' && av.si && av.no, 'pregunta-hora', `la pregunta de la hora: (${JSON.stringify(av)})`)
+      await subir(PNG, { guardar: false })
+      const revisa = await ev("(() => { const h = document.querySelector('[data-datos-billete-guardar]')?.closest('[role=dialog]'); return h ? h.innerText.replace(/\\s+/g, ' ') : null })()")
+      debe(revisa && /Revisa los datos/.test(revisa) && /10:25/.test(revisa), 'pregunta-hora', `la lectura abre «Revisa los datos» con la hora leída (10:25) ya puesta (${(revisa ?? '').slice(0, 80)})`)
       const sinCambio = await ev("window.__ruta.getState().route.arrivalFlightTime")
       debe(sinCambio === '11:25', 'pregunta-hora', `no cambia nada solo (${sinCambio})`)
-      ida = await mitad('arrival')
-      debe(ida.chip === true || ida.filas.some((f) => f[0] === 'localizador'), 'pregunta-hora', 'la tarjeta se guarda igual (el documento es suyo)')
       await cap('09_pregunta_hora')
-      await ev("document.querySelector('[data-aviso-tarjeta-si]')?.click(); true")
+      await ev("document.querySelector('[data-datos-billete-guardar]')?.click(); true")
       await a.esp(900)
       const horaNueva = await ev("window.__ruta.getState().route.arrivalFlightTime")
-      debe(horaNueva === '10:25', 'pregunta-hora', `[Sí, actualizar] guarda la hora (${horaNueva})`)
+      debe(horaNueva === '10:25', 'pregunta-hora', `[Guardar] aplica la hora leída (${horaNueva})`)
       ida = await mitad('arrival')
-      debe(ida.chip, 'pregunta-hora', 'y la tarjeta sigue a la vista con la hora nueva')
-      // «No»: la hora se queda.
+      debe(ida.chip === true || ida.filas.some((f) => f[0] === 'localizador'), 'pregunta-hora', 'la tarjeta se guarda (el documento es suyo) y sigue a la vista con la hora nueva')
+      // Cerrar sin guardar: la hora se queda.
       await ruta("window.__billete.getState().quitar(null, 'arrival'); st.guardarVueloDelAdmin({ arrival: { time: '11:25', pointId: 'fco' } })")
       await a.esp(500)
-      await subir(PNG)
-      await a.hasta("Boolean(document.querySelector('[data-aviso-tarjeta-no]'))", { segundos: 60 }).catch(() => undefined)
-      await ev("document.querySelector('[data-aviso-tarjeta-no]')?.click(); true")
+      await subir(PNG, { guardar: false })
+      await ev("(document.querySelector('[data-datos-billete-guardar]')?.closest('[role=dialog]')?.querySelector('button[aria-label=Cerrar]'))?.click(); true")
       await a.esp(600)
       const sigue = await ev("window.__ruta.getState().route.arrivalFlightTime")
-      debe(sigue === '11:25' && !(await ev("Boolean(document.querySelector('[data-aviso-tarjeta]'))")), 'pregunta-hora', `[No] deja la hora como estaba (${sigue})`)
+      debe(sigue === '11:25' && !(await ev("Boolean(document.querySelector('[data-datos-billete-guardar]'))")), 'pregunta-hora', `cerrar «Revisa los datos» sin guardar deja la hora como estaba (${sigue})`)
       // Fecha distinta.
       await ruta("window.__billete.getState().quitar(null, 'arrival')")
       await ev(`window.__lectura = ${JSON.stringify(lectura({ fecha: '2027-01-08', hora_llegada: '11:25' }))}; true`)
       await a.esp(400)
       await subir(PNG)
       await a.hasta("Boolean(document.querySelector('[data-aviso-tarjeta=\"fecha\"]'))", { segundos: 60 }).catch(() => undefined)
-      av = await ev("document.querySelector('[data-aviso-documento=\"fecha\"]')?.innerText.replace(/\\s+/g, ' ') ?? null")
-      debe(/^⚠ Esta tarjeta( de embarque)? es del viernes 8 y tu vuelo es el [a-záéíóú]+ \d+\. Revisa que sea la buena\s*Es correcta$/.test(av ?? ''), 'pregunta-fecha', `el aviso de la fecha, DENTRO de la tarjeta (V45 §6) (${av})`)
+      let av = await ev("document.querySelector('[data-aviso-documento=\"fecha\"]')?.innerText.replace(/\\s+/g, ' ') ?? null")
+      debe(/^⚠ Esta tarjeta( de embarque)? es del viernes 8 y tu vuelo es el [a-záéíóú]+ \d+\. (Revisa que sea la buena|Si no es la buena, súbela otra vez o cambia los datos a mano)\.?\s*(Es correcta|Cambiar)/.test(av ?? ''), 'pregunta-fecha', `el aviso de la fecha, DENTRO de la tarjeta (V45 §6) (${av})`)
       debe((await ev("window.__ruta.getState().route.arrivalFlightTime")) === '11:25', 'pregunta-fecha', 'sin cambiar nada solo')
       await cap('10_aviso_fecha')
       await ev("document.querySelector('[data-aviso-documento-correcta]')?.click(); true")
@@ -363,7 +369,7 @@ async function pasada(version) {
     await ev(`(() => { const b = window.__billete.getState(); b.poner(null, 'arrival', { horaRoma: '11:02', localizador: 'XYZ789', terminal: null, asiento: '01D', coche: '003', codigo: { texto: 'x', formato: 'qr', imagen: null, dibujo: ${JSON.stringify(DIBUJO)} }, codigoFuera: null, dueno: null }); return true })()`)
     await a.esp(700)
     ida = await mitad('arrival')
-    debe(ida.filas.some((f) => f[1] === 'Tren 03180') && ida.filas.some((f) => f[1] === 'Coche 003') && ida.filas.some((f) => /Asiento 01D/.test(f[1])), 'b3', `«Tren 03180», «Coche 003», «Asiento 01D» (${JSON.stringify(ida.filas)})`)
+    debe(ida.filas.some((f) => /03180/.test(f[1])) && ida.filas.some((f) => /003/.test(f[1])) && ida.filas.some((f) => /01D/.test(f[1])), 'b3', `«Tren 03180», «Coche 003», «Asiento 01D» (${JSON.stringify(ida.filas)})`)
     await cap('12_b3_tren')
   } finally {
     await a.cerrar()

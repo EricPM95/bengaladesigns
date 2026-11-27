@@ -7,6 +7,7 @@ import { Icono } from '../../ui/Icono'
 import { CandadoRedondo } from '../../pase/Candado'
 import { useRouteStore } from '../../../store/useRouteStore'
 import { BOTON_CLARO, BOTON_ORO, DORADO } from '../../ui/botonesOro'
+import { BotonHoja, DosBotonesHoja, Hoja } from '../../ui/Hoja'
 import { quitarAvisoDeDocumento, useAvisoDeDocumento } from '../../../lib/avisoDeDocumento'
 import { useSyncStore } from '../../../store/useSyncStore'
 
@@ -15,7 +16,7 @@ import { useSyncStore } from '../../../store/useSyncStore'
  *   · `BotonAnadirDocumento`: el botón dorado [Añadir tarjeta de embarque] / [Añadir tu billete] / [Añadir tu entrada] / [Añadir tu reserva]. SIN pase lleva el candado dorado en su círculo azul noche
  *     (arriba a la izquierda) y, al tocarlo, abre el aviso pequeño del pase con el texto que toque (`clave`, en `avisoPaseTextos.ts`) en vez de abrir el selector de archivos. CON pase, nunca candado.
  *     Mientras no se sabe si hay pase, ni candado ni aviso (se comporta como con pase; el servidor es quien manda).
- *   · `PapeleraRoja`: la papelera roja de 44 × 44 abajo a la derecha que sustituye a «Eliminar vuelo», «Eliminar alojamiento» y «Quitar entrada».
+ *   · `PapeleraRoja`: la papelera roja ARRIBA a la derecha (después del QR y el lápiz; V75), con su hoja de confirmar (`HojaEliminarReserva`).
  *   · `LapizDeReserva`: el lápiz (botón de 44 × 44 con el círculo azul noche de 30 y el lápiz dorado).
  */
 export type ClaveDocumento = 'documento_vuelo' | 'documento_tren' | 'documento_barco' | 'documento_entrada' | 'documento_excursion' | 'documento_alojamiento' | 'documento_coche'
@@ -73,24 +74,67 @@ export function BotonAnadirDocumento({
   )
 }
 
-/** La papelera roja de 44 × 44, abajo a la derecha de su tarjeta (rosa suave, la papelera en rojo). `etiqueta` es lo que lee el lector de pantalla («Quitar la ida»). */
-export function PapeleraRoja({ onClick, etiqueta, datos = 'papelera', atributos, enLinea = false }: { onClick: () => void; etiqueta: string; datos?: string; /** Dentro de una cabecera (junto a otros botones), no abajo a la derecha. */ enLinea?: boolean; /** Atributos `data-*` de más (las pruebas viejas buscan `data-eliminar`). */ atributos?: Record<string, string> }) {
+/**
+ * (V75 §5, R12 y D1-D2) LA PAPELERA ROJA, ARRIBA A LA DERECHA de toda tarjeta guardada, la TERCERA tras el QR y el lápiz (ya no va abajo): botón de 44 × 44 con el círculo rosa suave de 30 y la papelera en rojo.
+ * Al tocarla sale la hoja de abajo de D1: «¿Seguro que quieres eliminar {que}?», «Se borrará de tus reservas y no se puede deshacer.» y [Cancelar] / [Sí, eliminar] lado a lado; solo [Sí, eliminar] llama a `onClick` (lo que hacía la papelera de antes).
+ * `etiqueta` es lo que lee el lector de pantalla («Quitar la ida»); `que` es la frase del título, ya con su artículo («tu vuelo de ida», «tu entrada del Coliseo», «tu ferry a La Graciosa»).
+ */
+export function PapeleraRoja({ onClick, etiqueta, que = 'esta reserva', datos = 'papelera', atributos }: { onClick: () => void; etiqueta: string; que?: string; datos?: string; /** Atributos `data-*` de más (las pruebas viejas buscan `data-eliminar`). */ atributos?: Record<string, string>; /** (V75) Ya no hay variante de abajo: se admite y se ignora. */ enLinea?: boolean }) {
+  const [abierta, setAbierta] = useState(false)
   return (
-    <button
-      type="button"
-      onClick={(event) => {
-        event.stopPropagation()
-        onClick()
-      }}
-      aria-label={etiqueta}
-      data-papelera={datos}
-      {...atributos}
-      // (V64 §7) Abajo a la derecha, un poco más arriba: círculo de 38 px (el de Design; el toque sigue en 44 por `zona-toque`) y con menos margen por debajo y por encima: la tarjeta pierde ~16 px de alto.
-      className={`flex flex-none items-center justify-center rounded-full border-none ${enLinea ? 'h-11 w-11' : 'zona-toque -mb-1.5 -mt-1 h-[38px] w-[38px] self-end'}`}
-      style={{ background: 'oklch(0.52 0.19 25 / .14)', color: 'oklch(0.52 0.19 25)' }}
-    >
-      <Icono nombre="papelera" size={18} />
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation()
+          setAbierta(true)
+        }}
+        aria-label={etiqueta}
+        data-papelera={datos}
+        {...atributos}
+        className="flex h-11 w-11 flex-none items-center justify-center border-none bg-transparent p-0"
+      >
+        <span aria-hidden="true" className="flex h-[30px] w-[30px] items-center justify-center rounded-full" style={{ background: 'oklch(0.52 0.19 25 / .14)', color: 'oklch(0.52 0.19 25)' }}>
+          <Icono nombre="papelera" size={16} />
+        </span>
+      </button>
+      {abierta && (
+        <HojaEliminarReserva
+          que={que}
+          datos={datos}
+          onCancelar={() => setAbierta(false)}
+          onEliminar={() => {
+            setAbierta(false)
+            onClick()
+          }}
+        />
+      )}
+    </>
+  )
+}
+
+/** (V75 D1-D2) La hoja de confirmar el borrado de una reserva: una sola para todas las tarjetas (vuelo, alojamiento, entrada, excursión, coche, ferry, tren, autobús y otra). */
+export function HojaEliminarReserva({ que, datos = 'papelera', onCancelar, onEliminar }: { que: string; datos?: string; onCancelar: () => void; onEliminar: () => void }) {
+  return (
+    <Hoja onCerrar={onCancelar} titulo={`¿Seguro que quieres eliminar ${que}?`} datos={`eliminar-${datos}`}>
+      <span data-eliminar-aviso className="text-[14.5px] font-medium leading-[1.45]" style={{ color: 'rgba(28,34,48,.7)' }}>
+        Se borrará de tus reservas y no se puede deshacer.
+      </span>
+      <DosBotonesHoja>
+        <BotonHoja tipo="secundario" onClick={onCancelar} datos="eliminar-cancelar">
+          Cancelar
+        </BotonHoja>
+        <button
+          type="button"
+          onClick={onEliminar}
+          data-boton-hoja="eliminar-confirmar"
+          data-eliminar-confirmar=""
+          style={{ minHeight: 52, padding: '0 12px', borderRadius: 16, width: '100%', border: 'none', background: '#B83A3A', color: '#fff', font: "700 15px 'Geist'", boxShadow: '0 10px 16px -12px rgba(120,20,20,.8)', cursor: 'pointer' }}
+        >
+          Sí, eliminar
+        </button>
+      </DosBotonesHoja>
+    </Hoja>
   )
 }
 

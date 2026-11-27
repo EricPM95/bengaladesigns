@@ -9,6 +9,7 @@ import { Candado } from '../../pase/Candado'
 import { CodigoPantallaCompleta } from './TarjetaBillete'
 import { HojaAbajo } from './HojaAbajo'
 import { AvisoDeDocumentoDeReserva, BotonAnadirDocumento, IconoDeDocumento, LapizDeReserva, PapeleraRoja } from './BotonesDeReserva'
+import { queEliminarExcursion } from '../../../lib/queEliminar'
 import { CajaDeDato, CajaDia, CajaHora, TarjetaCrema, Trazo } from './PiezasDesignReservas'
 import { useDocumentosDeLaEntrada } from '../../../hooks/useDocumentosDeLaEntrada'
 import { conCodigo as docConCodigo } from '../../../lib/entradasPorPersona'
@@ -188,6 +189,7 @@ export function TarjetaExcursionDesign({
           <span className="flex flex-none items-center">
             <IconoDeDocumento hay={conCodigo} tipo="reserva" onAbrir={() => setAmpliado(docs[0] ?? null)} datos="excursion" />
             <LapizDeReserva onClick={onLapizArriba} etiqueta="Cambiar la excursión, el día y la hora" datos="excursion-arriba" />
+            {onQuitar && <PapeleraRoja onClick={onQuitar} etiqueta="Quitar la excursión" que={queEliminarExcursion(nombre)} datos="excursion" />}
           </span>
         )}
       </div>
@@ -219,12 +221,6 @@ export function TarjetaExcursionDesign({
         {!conCodigo && <BotonAnadirExcursion borde onLeida={onLeida} año={año} datos="excursion-sin-codigo" onAMano={onLapizDatos} alPulsar={onSubirVarias} />}
         <BotonComoLlegarPuntoDeEncuentro punto={puntoEncuentro} ciudad={ciudad} />
         {extra}
-        {onQuitar && (
-          <>
-            
-            <PapeleraRoja onClick={onQuitar} etiqueta="Quitar la excursión" datos="excursion" />
-          </>
-        )}
       </div>
       {ampliado && <CodigoPantallaCompleta codigo={ampliado.codigo} titulo={nombre} cuando={cuando} pie={ampliado.tuya === false && ampliado.nombre ? `Entrada de ${ampliado.nombre}` : billete?.localizador ? `Localizador ${billete.localizador.toUpperCase()}` : ''} onClose={() => setAmpliado(null)} />}
     </TarjetaCrema>

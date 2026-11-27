@@ -132,7 +132,7 @@ for (const fechas of [true, false]) {
   const hoja = fs.readFileSync('src/components/route/reservas/FreeTourSheet.tsx', 'utf8')
   debe(/isManualRoute\(route\) \? <FreeTourComoReserva/.test(hoja) && /AddReservationSheet/.test(hoja), '1 free tour', 'FreeTourSheet no abre la hoja de reserva en una ruta a mano')
   const hojaReserva = fs.readFileSync('src/components/route/reservas/AddReservationSheet.tsx', 'utf8')
-  debe(/addReservation\(reservation, target\.excursion \?\? null, freeTourEntry\)/.test(hojaReserva) && /precio: target\.refId === 'Free Tour' \? null/.test(hojaReserva), '1 free tour', 'la hoja de reserva no pasa los datos del Free Tour o le deja un precio')
+  debe(/addReservation\(reservation, target\.excursion \?\? null, freeTourEntry[,)]/.test(hojaReserva) && /precio: target\.refId === 'Free Tour' \? null/.test(hojaReserva), '1 free tour', 'la hoja de reserva no pasa los datos del Free Tour o le deja un precio')
   for (const f of ['src/components/route/ExplorePanel.tsx', 'src/components/route/freeDay/AddToTripScreen.tsx']) debe(/freeTourAvailable\(route\)/.test(fs.readFileSync(f, 'utf8')), '1 free tour', `${f} no ofrece el Free Tour con freeTourAvailable`)
   const reservas = fs.readFileSync('src/components/route/reservas/EntradasYFreeTour.tsx', 'utf8')
   // (10S4: antes → el «Añádela» del Free Tour a mano salía en «Ver n más» solo con isManualRoute → ahora «Ver n más» ya no existe y el Free Tour sale en «En tu ruta» con su «Añádela» siempre → decisión de Eric (10S4, 30-oct).)

@@ -74,7 +74,8 @@ export interface OpcionDeCambio {
 
 /** ¿Tiene el viajero una reserva (entrada, Free Tour o excursión) en ese día? */
 export function diaConReserva(route: Route, reservations: Reservation[], day: DayPlan): boolean {
-  return reservations.some((reservation) => dayOfReservation(route, reservation)?.id === day.id)
+  // (V75) Un ferry, un tren, un autobús o «otra» guardados no cuentan como una reserva del día: no mueven ni bloquean nada.
+  return reservations.some((reservation) => (reservation.kind === 'entrada' || reservation.kind === 'excursion') && dayOfReservation(route, reservation)?.id === day.id)
 }
 
 /** Menor = se pierde menos. */

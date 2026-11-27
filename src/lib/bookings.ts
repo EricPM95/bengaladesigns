@@ -15,7 +15,8 @@ import { claveDeSitio } from './sinSitiosRepetidos'
 /** Lo que el viajero ha reservado. Fijado: tiene fecha y hora, y nada del motor ni del viajero lo mueve (se quita y se vuelve a crear). */
 export interface Reservation {
   id: string
-  kind: 'entrada' | 'excursion'
+  /** (V75) `ferry`, `tren`, `bus` y `otra` son las reservas de «+ Añadir una reserva»: viven en la misma lista, no mueven la ruta y no cuentan en «X de N reservas listas» (ver `reservasExtra.ts`). */
+  kind: 'entrada' | 'excursion' | 'ferry' | 'tren' | 'bus' | 'otra'
   /** La fila a la que pertenece: el nombre de la entrada (el de los datos del destino o el de la parada) o el id de la excursión. */
   refId: string
   /** Lo que se lee: «Coliseo, Foro y Palatino», «Excursión a Pompeya y Sorrento». */
@@ -50,6 +51,13 @@ export interface Reservation {
   fueraDeRuta?: boolean
   /** (10N6, 1c) La parada tal como estaba al quitarla de la ruta, para devolverla a su día con «Volver a ponerla en su día». */
   paradaQuitada?: Stop | null
+  /** (V75) Solo en ferry, tren, autobús y otra: la naviera o compañía, de dónde y a dónde (puerto o estación), coche y asiento del tren, y el lugar de «otra». `returnTime` = la hora de llegada. */
+  compania?: string | null
+  origen?: string | null
+  destinoDeViaje?: string | null
+  coche?: string | null
+  asiento?: string | null
+  lugar?: string | null
 }
 
 /**

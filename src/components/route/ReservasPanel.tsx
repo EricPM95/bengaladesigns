@@ -25,6 +25,8 @@ import { EntradasYFreeTour } from './reservas/EntradasYFreeTour'
 import { ExcursionesReservas } from './reservas/ExcursionesReservas'
 import { UtilParaElViaje } from './reservas/UtilParaElViaje'
 import { CocheDeViaje } from './reservas/CocheDeViaje'
+import { AnadirReservaHost, BotonAnadirUnaReserva } from './reservas/AnadirReserva'
+import { OtrasReservasDelViaje } from './reservas/OtrasReservas'
 import { esDestinoDeCoche } from '../../lib/experienceCategoryBank'
 import { Icono } from '../ui/Icono'
 import { PiezaSegura } from '../PiezaSegura'
@@ -205,6 +207,19 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
               </PiezaSegura>
             )}
 
+            {/* (V75, R1a) El botón ancho «+ Añadir una reserva», justo debajo de «X de N reservas listas»; su hoja solo reparte (cada tipo abre SU hoja). */}
+            <PiezaSegura nombre="RESERVAS: Añadir una reserva">
+              <BotonAnadirUnaReserva />
+              <AnadirReservaHost
+                idaHecha={legs.arrival.done}
+                vueltaHecha={legs.departure.done}
+                unDestino={unDestino}
+                onVueloMulti={() => {
+                  if (segments[0]) setOpenCity(segments[0].id)
+                }}
+              />
+            </PiezaSegura>
+
             <div className="grid grid-cols-1 items-start gap-3.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
               <div className="flex min-w-0 flex-col gap-3.5">
                 {llegada}
@@ -261,7 +276,11 @@ export function ReservasPanel({ route, onClose, onCambioDeVuelo }: ReservasPanel
                   </PiezaSegura>
                 </div>
               )}
-              <div className={hayExcursiones ? 'contents' : 'md:col-span-2'}>
+              <div className={hayExcursiones ? 'flex min-w-0 flex-col gap-3.5' : 'flex flex-col gap-3.5 md:col-span-2'}>
+                {/* (V75, apartado 4) Los bloques de ferry, tren, autobús y otras reservas, al final de la lista y ANTES de «Útil para el viaje»; sin ninguna guardada no sale ninguno. */}
+                <PiezaSegura nombre="RESERVAS: Otras reservas">
+                  <OtrasReservasDelViaje route={route} />
+                </PiezaSegura>
                 {/* (LZ2b1, V73) El bloque del coche ya no va aquí: está debajo de «Entradas y Free Tour», arriba. */}
                 <PiezaSegura nombre="RESERVAS: Útil para el viaje">
                   <UtilParaElViaje route={route} pago={pago} />
