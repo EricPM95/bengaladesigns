@@ -1,7 +1,7 @@
 // La prueba de la tanda HOY2, agente A (5-nov-2026): HOY completa (Completa 1 a 10) y lo de después de cambiar (la ficha completa y «Si te sobra tiempo»).
 // Orden de los bloques · avisos por urgencia con su X · «Tu día» sin horas y por franjas · «Por llegar» con foto (sin mapa) · el día acabado · el de llegada · el último día · sin pase (HoySinPase con la lista nueva)
 // · el día de prueba sin candados · la ficha completa al tocar la tarjeta · «Si te sobra tiempo» abajo del todo.
-// Hace falta el servidor de la app (5173) y la API (8787, con DESTINOS_OCULTOS='-') YA encendidos; NO arranca ninguno.
+// Hace falta el servidor de la app (5173) y la API (8787, normal) YA encendidos; NO arranca ninguno.
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/pruebaTandaHOY2_A.mjs
 // Un solo Chrome, que se cierra al acabar. Salida: «N comprobaciones · M fallos». Capturas 390 de ancho, de TODO el scroll, en docs/dias/capturas_jutrip/hoy2_completa_*.jpg.
 import fs from 'node:fs'
@@ -135,8 +135,8 @@ await sec(async () => {
   debe(/conPase=\{pagoActivo\(\)\}/.test(hoy), 'prueba', 'HoyDuranteV2: «Cerca de ti» con `conPase={pagoActivo()}` (el día de prueba, sin candados)')
   debe(!/MapaDeLlegada|data-hoy-mapa-llegada/.test(parada) && /FotoDeLaParada/.test(parada), 'por_llegar', 'ParadaHoy: fuera `MapaDeLlegada`; la foto del lugar `FotoDeLaParada`')
   debe(!/HojaSobreEsteLugar/.test(hoy) && /FichaCompletaDeHoy/.test(hoy), 'ficha', 'HoyDuranteV2: tocar la tarjeta abre `FichaCompletaDeHoy`, no «Sobre este lugar»')
-  // V2 (antes → ahora → Design «Hoy Entero»): ANTES … ¿Qué hago ahora? › Cerca de ti › Tu día › Si te sobra tiempo; AHORA … reto del día › ¿Qué hago ahora? › Tu día › Cerca de ti › Tus fotos › Volver al alojamiento › Si te sobra tiempo › Lugares pendientes.
-  const nuevoOrden = ['{cabeceraDeHoy}', '{zonaDeAvisos}', '{principal}', '<RetoDelDia', 'data-hoy-hueco-que-hago-ahora', '<TuDia', '<CercaDeTiFila', '<TusFotosDeHoy', '<VolverAlAlojamiento', '<SiTeSobraTiempoHoy', '<LugaresPendientes']
+  // V2 (antes → ahora → Design «Hoy Entero»): ANTES … ¿Qué hago ahora? › Cerca de ti › Tu día › Si te sobra tiempo; AHORA … reto del día › ¿Qué hago ahora? › Tu día › Cerca de ti › Tus fotos › Volver al alojamiento › Lugares pendientes (V77: sin «Si te sobra tiempo»).
+  const nuevoOrden = ['{cabeceraDeHoy}', '{zonaDeAvisos}', '{principal}', '<RetoDelDia', 'data-hoy-hueco-que-hago-ahora', '<TuDia', '<CercaDeTiFila', '<TusFotosDeHoy', '<VolverAlAlojamiento', '<LugaresPendientes']
   const pos = nuevoOrden.map((t) => hoy.lastIndexOf(t))
   debe(pos.every((p, i) => p > 0 && (i === 0 || p > pos[i - 1])), 'orden', `HoyDuranteV2: el orden de los bloques en el código (${pos.join(' < ')})`)
   const sin = leer('src/components/route/hoy/HoySinPase.tsx')
@@ -327,36 +327,36 @@ await sec(async () => {
   // V2 (antes → ahora → Design «Hoy Entero»): ANTES «Si te sobra tiempo» llevaba lo saltado Y lo quitado por el motor (2 items, cada uno con [Recuperar] y [Pasar a otro día]);
   // AHORA «Si te sobra tiempo» solo lleva lo quitado/opcional (spareStops) y lo saltado va a «Lugares pendientes» (data-hoy-pendientes), el último bloque de HOY (el detalle y el cierre solo: pruebaV2Hoy).
   await ir(a, { dia: idxMartes, min: 9 * 60 + 30 })
-  debe(!(await hay(a, '[data-hoy-sobra-tiempo]')) && !(await hay(a, '[data-hoy-pendientes]')), 'sobra', 'sin nada saltado ni quitado, no sale «Si te sobra tiempo» ni «Lugares pendientes»')
+  // (V77) «Si te sobra tiempo» ya no existe: lo que el motor deja fuera (spareStops) y lo saltado van en UNA sola lista, «Lugares pendientes».
+  debe(!(await hay(a, '[data-hoy-sobra-tiempo]')) && !(await hay(a, '[data-hoy-pendientes]')), 'sobra', 'sin nada saltado ni quitado, no sale «Lugares pendientes» (ni nunca «Si te sobra tiempo»)')
   await ir(a, {
     dia: idxMartes,
     min: 9 * 60 + 30,
     mut: `const dd = r.days[${idxMartes}]; const ps = numberedStopsOf(dd); ps[1].saltada = true; const q = structuredClone(ps[ps.length - 1]); q.id = 'sobra-x'; q.name = 'Mirador de prueba'; q.spareReason = 'No cabía en tu tarde'; dd.spareStops = [q]`,
   })
-  debe((await hay(a, '[data-hoy-sobra-tiempo]')) && (await hay(a, '[data-hoy-pendientes]')), 'sobra', 'con algo quitado sale «Si te sobra tiempo» y con algo saltado «Lugares pendientes»')
+  debe(!(await hay(a, '[data-hoy-sobra-tiempo]')) && (await hay(a, '[data-hoy-pendientes]')), 'sobra', 'con algo quitado y algo saltado sale UNA sola lista, «Lugares pendientes», y ya no «Si te sobra tiempo»')
   const ordS = await ordenDeBloques(a)
-  debe(ordS.indexOf('sobra') > ordS.indexOf('tuDia') && ordS[ordS.length - 1] === 'pendientes' && ordS[ordS.length - 2] === 'sobra', 'sobra', `«Si te sobra tiempo» debajo de «Tu día» y «Lugares pendientes» al final de todo (${ordS.join(' · ')})`)
-  const rcSobra = await a.evaluar("(() => { const e = document.querySelector('[data-hoy-sobra-tiempo]'); const t = document.querySelector('[data-hoy-tu-dia]'); return { plegada: !document.querySelector('[data-hoy-sobra-lista]'), debajoDeTuDia: e.getBoundingClientRect().top > t.getBoundingClientRect().bottom - 1, n: e.getAttribute('data-hoy-sobra-tiempo') } })()")
-  debe(rcSobra.plegada && rcSobra.debajoDeTuDia && rcSobra.n === '1', 'sobra', `«Si te sobra tiempo» plegada, debajo de «Tu día» y solo con lo opcional (1) (${JSON.stringify(rcSobra)})`)
-  await clic(a, '[data-hoy-sobra-tiempo-cabecera]')
-  await a.esp(500)
-  debe((await cuantos(a, '[data-hoy-sobra-item]')) === 1 && (await cuantos(a, '[data-hoy-sobra-item="saltada"]')) === 0 && (await cuantos(a, '[data-hoy-sobra-item] [data-hoy-recuperar]')) === 1 && (await cuantos(a, '[data-hoy-sobra-item] [data-hoy-pasar-otro-dia]')) === 1, 'sobra', 'en «Si te sobra tiempo» solo lo quitado (no lo saltado), con [Recuperar] y [Pasar a otro día]')
+  debe(ordS.indexOf('pendientes') > ordS.indexOf('tuDia') && ordS[ordS.length - 1] === 'pendientes' && !ordS.includes('sobra'), 'sobra', `«Lugares pendientes» al final de todo y sin «Si te sobra tiempo» (${ordS.join(' · ')})`)
+  debe((await a.evaluar("document.querySelector('[data-hoy-pendientes]').getAttribute('data-hoy-pendientes')")) === '2', 'sobra', 'la cuenta de «Lugares pendientes» es 2 (lo saltado y lo que no cabía)')
   debe(!(await hay(a, '[data-hoy-fila-estado="saltada"]')), 'sobra', 'lo saltado ya no se queda tachado en «Tu día»')
   await clic(a, '[data-hoy-pendientes-cabecera]')
   await a.esp(500)
-  debe((await cuantos(a, '[data-hoy-pendiente="saltada"]')) === 1 && (await cuantos(a, '[data-hoy-pendiente] [data-hoy-pendiente-mas]')) === 1 && (await cuantos(a, '[data-hoy-pendiente] [data-hoy-pendiente-pasar]')) === 1, 'sobra', 'lo saltado está en «Lugares pendientes», con [Recuperar] y [Pasar a otro día]')
-  await capturaEntera(a, '10_lz_sobra_tiempo_abierta')
+  debe((await cuantos(a, '[data-hoy-pendiente="saltada"]')) === 1 && (await cuantos(a, '[data-hoy-pendiente="sin_tiempo"]')) === 1 && (await cuantos(a, '[data-hoy-pendiente] [data-hoy-pendiente-mas]')) === 2 && (await cuantos(a, '[data-hoy-pendiente] [data-hoy-pendiente-pasar]')) === 2, 'sobra', 'en «Lugares pendientes»: lo saltado y lo que no cabía, cada uno con su «···» y [Otro día]')
+  await capturaEntera(a, '10_lz_pendientes_unica_abierta')
   // V43 §7 (antes → ahora): [Recuperar hoy] está dentro del «···» de la fila.
   await clic(a, '[data-hoy-pendiente="saltada"] [data-hoy-pendiente-mas]')
   await a.esp(500)
   await clic(a, '[data-hoy-pendiente-recuperar]')
   await a.esp(600)
   const trasRec = await paradasDe(a, idxMartes)
-  debe(trasRec.every((s) => !s.saltada) && !(await hay(a, '[data-hoy-pendientes]')), 'sobra', '[Recuperar] devuelve lo saltado a su sitio y «Lugares pendientes» desaparece al quedarse vacía')
-  await clic(a, '[data-hoy-sobra-item="sobra"] [data-hoy-recuperar]')
+  debe(trasRec.every((s) => !s.saltada) && (await hay(a, '[data-hoy-pendientes]')), 'sobra', '[Recuperar hoy] devuelve lo saltado a su sitio y sigue lo que no cabía')
+  // (V77) [Añadir a hoy] (lo que hacía [Recuperar] de «Si te sobra tiempo») está en el «···» de lo que no cabía.
+  await clic(a, '[data-hoy-pendiente="sin_tiempo"] [data-hoy-pendiente-mas]')
+  await a.esp(500)
+  await clic(a, '[data-hoy-pendiente-anadir-hoy]')
   await a.esp(600)
   const trasRec2 = await paradasDe(a, idxMartes)
-  debe(trasRec2.some((s) => s.name === 'Mirador de prueba') && !(await hay(a, '[data-hoy-sobra-tiempo]')), 'sobra', '[Recuperar] de lo quitado lo añade al día y la lista desaparece cuando se queda vacía')
+  debe(trasRec2.some((s) => s.name === 'Mirador de prueba') && !(await hay(a, '[data-hoy-pendientes]')), 'sobra', '[Añadir a hoy] de lo que no cabía lo mete en el día y la lista desaparece cuando se queda vacía')
   // [Pasar a otro día] de lo saltado (ahora desde «Lugares pendientes»)
   await ir(a, { dia: idxMartes, min: 9 * 60 + 30, mut: `numberedStopsOf(r.days[${idxMartes}])[1].saltada = true` })
   await clic(a, '[data-hoy-pendientes-cabecera]')

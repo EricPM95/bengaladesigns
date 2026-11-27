@@ -17,6 +17,8 @@ import { IconoDeDocumento } from '../../reservas/BotonesDeReserva'
 import { CodigoPantallaCompleta } from '../../reservas/TarjetaBillete'
 import { iconoDeMedio } from '../../reservas/BloqueReservas'
 import { CajaDeParada, NOMBRE_SOBRE_FOTO, PILDORA_FOTO, TARJETA_PARADA } from './ParadaHoy'
+import { BloqueDeConsejos } from './ConsejosDelDia'
+import type { ConsejoDelDia } from '../../../../lib/consejosDelDia'
 
 /**
  * (V76; Design «Añadir una reserva» R9 y R10) HOY, EL FERRY (TREN, AUTOBÚS) QUE LLEVA UNA RESERVA, con el formato de la tarjeta de la parada (la misma de la llegada, V62): la imagen arriba con su etiqueta y su título, dos cajas y, debajo, UNA FILA POR BILLETE
@@ -96,7 +98,7 @@ function Cabecera({ etiqueta, titulo, foto }: { etiqueta: string; titulo: string
 const columnas = (n: number) => ({ gridTemplateColumns: `repeat(${Math.max(n, 2)}, minmax(0, 1fr))` }) as const
 
 /** R9: la excursión por tu cuenta, con su ferry (tren, autobús) unido. */
-export function TarjetaDeExcursionConTransporte({ route, day, excursion, unidas }: { route: Route; day: DayPlan; excursion: Excursion | null; unidas: ReservaExtra[] }) {
+export function TarjetaDeExcursionConTransporte({ route, day, excursion, unidas, consejos = [] }: { route: Route; day: DayPlan; excursion: Excursion | null; unidas: ReservaExtra[]; /** (V77, 13) Los consejos de la excursión (de los datos del destino), entre las cajas y los billetes. */ consejos?: ConsejoDelDia[] }) {
   const billetes = useBilletesDeExcursiones()
   const primero = unidas[0]
   if (!primero) return null
@@ -115,6 +117,7 @@ export function TarjetaDeExcursionConTransporte({ route, day, excursion, unidas 
           <CajaDeParada dato="salida" trazo={TRAZO.dia} etiqueta="SALIDA" grande={salida} sub={horaSinCero(primero.time)} />
           <CajaDeParada dato="excursion" trazo={TRAZO.maleta} etiqueta="EXCURSIÓN" grande={mediaJornada ? 'Medio día' : 'Día entero'} sub={`Con ${medio}`} />
         </div>
+        <BloqueDeConsejos consejos={consejos} cuando="la excursión" tono="claro" />
         {filas.map((f) => (
           <FilaDeBilleteHoy key={f.reserva.id} reserva={f.reserva} titulo={f.titulo} sub={f.sub} />
         ))}

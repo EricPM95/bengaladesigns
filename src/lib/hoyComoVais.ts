@@ -12,7 +12,7 @@ import type { Coordinates, DayPlan, Route, Stop } from './types'
  * (HOY2b, E, apartado 2; Eric, 5-nov) «¿CÓMO VAIS?» (pantalla 16) Y «CANSADOS» (16b). Todo puro (sin React ni almacén).
  *  · Cuándo sale: UNA vez al día, después de comer, si quedan 2 paradas o más: [Con fuerzas] / [Cansados]. Se apaga con «Sugerencias del compañero».
  *  · Cansados NUNCA se queda sin respuesta: sale la primera que se pueda, por este orden:
- *      (4) solo queda lo opcional → «¿Y si por hoy lo dejáis aquí?…» [Terminar el día] (pasa a «Si te sobra tiempo») / [Seguimos];
+ *      (4) solo queda lo opcional → «¿Y si por hoy lo dejáis aquí?…» [Terminar el día] (pasa a «Lugares pendientes») / [Seguimos];
  *      (1) hay algo flexible u opcional que quitar → «Vamos con calma»: quitarlo (la propuesta de siempre, con vista previa y Deshacer) y una pausa cerca, abierta ahora (un bar o café de «Cerca de ti › Comer»,
  *          o un mirador o una playa de nuestros datos); sin pausa, solo lo de quitar;
  *      (3) una reserva cerca y algo después → «Aguantad un poco: a las 15:00 tenéis la Cueva de los Verdes. Lo que queda después, ¿lo dejamos para otro día?» [Pasar a otro día];
@@ -37,7 +37,7 @@ export interface RespuestaCansados {
   pausa: Pausa | null
   /** La frase de arriba de cada caso. */
   texto: string
-  /** El nombre de lo que se queda para otro día o para «Si te sobra tiempo» (para la prueba y la nota). */
+  /** El nombre de lo que se queda para otro día o para «Lugares pendientes» (para la prueba y la nota). */
   quita: string[]
 }
 
@@ -107,7 +107,7 @@ export function fraseDePausa(pa: Pausa): string {
 
 type Quitado = { ops: Op[]; quitadas: Propuesta['quitadas']; aDia: string }
 
-/** Las operaciones para quitar `items` de hoy: lo opcional va a «Si te sobra tiempo»; lo demás, al primer día que admita paradas (a «Si te sobra tiempo» de ese día si no cabe). */
+/** Las operaciones para quitar `items` de hoy: lo opcional va a «Lugares pendientes»; lo demás, al primer día que admita paradas (a «Lugares pendientes» de ese día si no cabe). */
 function quitar(route: Route, day: DayPlan, ctx: Contexto, items: Item[]): Quitado {
   const despues = route.days.slice(route.days.findIndex((d) => d.id === day.id) + 1)
   const manana = despues.find((d) => diaAdmite(d))
@@ -138,14 +138,14 @@ function quitar(route: Route, day: DayPlan, ctx: Contexto, items: Item[]): Quita
 }
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
-/** «La Fundación pasa a mañana» / «El Jardín se queda en «Si te sobra tiempo»». */
+/** «La Fundación pasa a mañana» / «El Jardín se queda en «Lugares pendientes»». */
 function frasePasa(q: Quitado): string {
   const a = q.quitadas.filter((x) => x.destino === 'manana').map((x) => x.nombre)
   const b = q.quitadas.filter((x) => x.destino === 'manana_sobra').map((x) => x.nombre)
   const c = q.quitadas.filter((x) => x.destino === 'sobra').map((x) => x.nombre)
   const partes: string[] = []
   if (a.length) partes.push(`${unir(a)} pasa${a.length > 1 ? 'n' : ''} ${q.aDia}`)
-  if (b.length) partes.push(`${unir(b)} pasa${b.length > 1 ? 'n' : ''} a «Si te sobra tiempo» ${q.aDia.replace('a mañana', 'de mañana').replace(/^al /, 'del ')}`)
+  if (b.length) partes.push(`${unir(b)} pasa${b.length > 1 ? 'n' : ''} a «Lugares pendientes» ${q.aDia.replace('a mañana', 'de mañana').replace(/^al /, 'del ')}`)
   if (c.length) partes.push(`${unir(c)} pasa${c.length > 1 ? 'n' : ''} a «Lugares pendientes»`)
   return cap(partes.join(' y '))
 }

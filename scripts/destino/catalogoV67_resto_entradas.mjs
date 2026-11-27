@@ -1,6 +1,6 @@
 // V65 (agente de los apartados 2 y 3): SOLO capturas (no es una prueba) en modo iPhone (390x844) de «Las entradas de cada uno» (en el móvil de Eric y en el de Alicia, de una entrada y de una excursión) y comprobaciones de lectura/reparto. Un solo Chrome, que se cierra al acabar.
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/capturasV65_b1.mjs roma|lanza|design|logica [caso]
-// Casos: hoja_vacia hoja_eric hoja_alicia hoja_comun hoja_excursion (Lanzarote: L_hoja; la API con DESTINOS_OCULTOS='-').
+// Casos: hoja_vacia hoja_eric hoja_alicia hoja_comun hoja_excursion (Lanzarote: L_hoja; la API normal).
 import fs from 'node:fs'
 import path from 'node:path'
 import { abrirApp } from './_enLaApp.mjs'

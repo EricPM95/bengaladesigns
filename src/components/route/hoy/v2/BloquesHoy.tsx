@@ -1,18 +1,12 @@
-import { useMemo, useState, type ReactNode } from 'react'
+import { useMemo, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import type { DayPlan, Route, Stop } from '../../../../lib/types'
 import { shellFromStop } from '../../../../lib/mockDayDetail'
 import { buildCuratedStopDescription } from '../../../../lib/describeStopApi'
 import { hasRealCoordinates } from '../../../../lib/distanceMock'
-import { displayStopName, formatDuration } from '../../../../lib/format'
-import { useRouteStore } from '../../../../store/useRouteStore'
-import { pasarImprescindibleAOtroDia } from '../../../../lib/pasarImprescindible'
-import type { NoCabe } from '../../../../lib/adaptarVuelos'
-import { Icono } from '../../../ui/Icono'
+import { displayStopName } from '../../../../lib/format'
 import { elSitio } from '../../../../lib/articulos'
 import { StopDetailSheet, type DayStopRef } from '../../dayDetail/StopDetailSheet'
-import { HojaPasarAOtroDia } from '../saltar'
-import { ParadaFotoDeParada } from './ParadaFoto'
 
 
 /**
@@ -51,83 +45,6 @@ export function FichaCompletaDeHoy({ route, day, dateIso, parada, onCerrar }: { 
 }
 
 /* ------------------------------------------------------------------ */
-/* Si te sobra tiempo                                                   */
-/* ------------------------------------------------------------------ */
-
-interface ItemSobra {
-  stop: Stop
-  /** 'saltada' (la dejaste tú) o 'sobra' (el motor o un cambio la dejó fuera: «Si te sobra tiempo» de DÍAS). */
-  origen: 'saltada' | 'sobra'
-}
-
-/** Lo que va en «Si te sobra tiempo» de HOY: lo que ya estaba en la lista de DÍAS y lo saltado de hoy. */
-export function itemsDeSobraTiempo(day: DayPlan): ItemSobra[] {
-  const sobra = (day.spareStops ?? []).map((stop): ItemSobra => ({ stop, origen: 'sobra' }))
-  // (V2) Lo saltado ya no va aquí: está en «Lugares pendientes».
-  return sobra
-}
-
-export function SiTeSobraTiempoHoy({ route, day, dateIso }: { route: Route; day: DayPlan; dateIso: string }) {
-  const [abierta, setAbierta] = useState(false)
-  const [pasando, setPasando] = useState<ItemSobra | null>(null)
-  const setStopSaltada = useRouteStore((s) => s.setStopSaltada)
-  const addSpareStop = useRouteStore((s) => s.addSpareStop)
-  const moveStopToDay = useRouteStore((s) => s.moveStopToDay)
-  const items = itemsDeSobraTiempo(day)
-  if (items.length === 0) return null
-  // (V46) Solo los días POSTERIORES a hoy: nunca uno pasado ni el de hoy.
-  const dias = route.days.filter((d) => !d.isReturnLeg && d.dayType !== 'excursion' && d.interruptor?.mode !== 'excursion' && d.id !== day.id && d.dayNumber > day.dayNumber).map((d) => ({ id: d.id, dayNumber: d.dayNumber, city: d.city }))
-  const puedePasar = (it: ItemSobra) => dias.length > 0 && !it.stop.reservedId
-  const recuperar = (it: ItemSobra) => (it.origen === 'saltada' ? setStopSaltada(day.id, it.stop.id, false) : addSpareStop(day.id, it.stop.id))
-  const pasar = (it: ItemSobra, aDayId: string) => {
-    if (it.origen === 'saltada') moveStopToDay(it.stop.id, day.id, aDayId)
-    else pasarImprescindibleAOtroDia({ dayId: day.id, stopId: it.stop.id } as unknown as NoCabe, aDayId)
-    setPasando(null)
-  }
-  return (
-    <div data-hoy-sobra-tiempo={items.length} className="flex flex-none flex-col rounded-2xl" style={{ background: '#FFFDF8', border: '1px solid rgba(28,34,48,.1)' }}>
-      <button type="button" onClick={() => setAbierta((v) => !v)} aria-expanded={abierta} data-hoy-sobra-tiempo-cabecera className="flex min-h-12 items-center gap-2.5 px-4 text-left">
-        <span className="flex-1 text-[14px] font-medium text-[#1C2230]">
-          Si te sobra tiempo <span className="font-normal text-[#1C2230]/50">· {items.length === 1 ? '1 opcional' : `${items.length} opcionales`}</span>
-        </span>
-        <Icono nombre={abierta ? 'arriba' : 'abajo'} size={15} grosor={2} style={{ color: 'rgba(28,34,48,.5)' }} />
-      </button>
-      {abierta && (
-        <ul data-hoy-sobra-lista className="m-0 flex list-none flex-col divide-y p-0" style={{ borderTop: '1px solid rgba(28,34,48,.08)', borderColor: 'rgba(28,34,48,.08)' }}>
-          {items.map((it) => (
-            <li key={`${it.origen}-${it.stop.id}`} data-hoy-sobra-item={it.origen} className="flex flex-col gap-2 px-4 py-3">
-              <div className="flex items-center gap-3">
-                <ParadaFotoDeParada parada={it.stop} ciudad={day.city} dateIso={dateIso} vista={false} size={40} />
-                <div className="min-w-0 flex-1">
-                  <p className="m-0 text-[15px] font-semibold leading-[1.2] text-[#1C2230]">{displayStopName(it.stop.name)}</p>
-                  <p className="m-0 mt-0.5 text-[12px] leading-[1.35] text-[#1C2230]/60">
-                    {it.stop.durationMinutes > 0 ? `${formatDuration(it.stop.durationMinutes)} · ` : ''}
-                    {it.origen === 'saltada' ? 'La dejaste para luego' : (it.stop.spareReason ?? 'Para otro momento')}
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <button type="button" onClick={() => recuperar(it)} data-hoy-recuperar className="flex h-11 items-center gap-1.5 rounded-full border-[1.5px] px-3.5 text-[12.5px] font-semibold" style={{ borderColor: 'rgb(var(--accent))', color: 'rgb(var(--accent))' }}>
-                  <Icono nombre="recuperar" size={13} grosor={2} />
-                  Recuperar
-                </button>
-                {puedePasar(it) && (
-                  <button type="button" onClick={() => setPasando(it)} data-hoy-pasar-otro-dia className="flex h-11 items-center gap-1.5 rounded-full border border-[rgba(28,34,48,.18)] bg-white px-3.5 text-[12.5px] font-semibold text-[#1C2230]">
-                    <Icono nombre="dias" size={13} grosor={1.9} />
-                    Pasar a otro día
-                  </button>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-      {pasando && <HojaPasarAOtroDia dias={dias} ahora={day.dayNumber} onElegir={(id) => pasar(pasando, id)} onCerrar={() => setPasando(null)} />}
-    </div>
-  )
-}
-
-/* ------------------------------------------------------------------ */
 /* El día de llegada (Completa 8)                                       */
 /* ------------------------------------------------------------------ */
 
@@ -159,7 +76,7 @@ export function HastaAquiHoy() {
 export { TarjetaMananaOscura } from './TarjetaMananaOscura'
 
 /** La frase de cierre de la tarjeta del día acabado: «Hoy has visto el atardecer» con su sitio, o «Has terminado tu día». */
-export function fraseDeCierre(day: DayPlan, paradas: Stop[], /** (V73) El peso del sitio (0 = imprescindible; ver `pesoDe` en lib/masVisitas): para «Lo mejor:» los imprescindibles primero. Sin él, las primeras paradas. */ pesoDe?: (nombre: string) => number): { titulo: string; sub: string | null; atardecer: boolean; sitioAtardecer: string | null; hechas: number } {
+export function fraseDeCierre(day: DayPlan, paradas: Stop[], /** (V73) El peso del sitio (0 = imprescindible; ver `pesoDe` en lib/masVisitas): para «Lo mejor:» los imprescindibles primero. Sin él, las primeras paradas. */ pesoDe?: (nombre: string) => number, /** (V77 §2) El nombre corto del sitio para las frases que nombran varios (dato `nombre_corto`); null = sin nombre corto, va el entero. */ nombreCorto?: (nombre: string) => string | null): { titulo: string; sub: string | null; atardecer: boolean; sitioAtardecer: string | null; hechas: number } {
   const sol = paradas.find((s) => s.isSunset && s.checkedInAt && !s.saltada)
   const visitas = paradas.filter((s) => s.checkedInAt && !s.saltada && !(s.isBreak || s.isZoneWalk || s.isFreeWalk || s.isFreeTime || s.passThrough || s.isArrival))
   const hechas = paradas.filter((s) => s.checkedInAt && !s.saltada).length
@@ -168,7 +85,7 @@ export function fraseDeCierre(day: DayPlan, paradas: Stop[], /** (V73) El peso d
   // (V73 §2) La tarjeta NUNCA vacía: «Lo mejor:» con hasta 3 sitios de lo visto, los imprescindibles primero y, si no hay, las primeras paradas (el orden de la ruta, que ya es el de las horas).
   const imprescindibles = pesoDe ? visitas.filter((s) => pesoDe(s.name) === 0) : []
   const mejores = [...imprescindibles, ...visitas.filter((s) => !imprescindibles.includes(s))].slice(0, 3)
-  const lomejor = mejores.length > 0 ? `Lo mejor: ${unirLista(mejores.map((s) => elSitio(displayStopName(s.name).replace(/\s*\([^)]*\)/g, '').trim())))}.` : null
+  const lomejor = mejores.length > 0 ? `Lo mejor: ${unirLista(mejores.map((s) => nombreCorto?.(s.name) ?? elSitio(displayStopName(s.name).replace(/\s*\([^)]*\)/g, '').trim())))}.` : null
   const dejadas = paradas.some((s) => s.saltada) ? 'Lo que dejaste para luego está abajo, en «Lugares pendientes».' : null
   return { titulo: hechas === 1 ? 'Has hecho 1 parada hoy' : `Has hecho ${hechas} paradas hoy`, sub: [lomejor, dejadas].filter(Boolean).join(' ') || null, atardecer: false, sitioAtardecer: null, hechas }
 }

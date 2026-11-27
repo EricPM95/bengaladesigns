@@ -1,7 +1,7 @@
 // V75 (agente de los apartados 1 a 4): SOLO capturas (no es una prueba) en modo iPhone (390x844) de «+ Añadir una reserva», la hoja de las nueve casillas, el ferry/tren/otra, el bloque, borrar y «Vuelo» con la ida y con las dos.
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/capturasV75_a.mjs roma|lanza [caso]
 // Guarda docs/dias/V75_capturas/<id>_app.jpg (la app) y escribe docs/dias/V75_log_a_<modo>.json con el texto de cada pantalla.
-// Casos de Roma: R1a R2 R3 R3b R3h R4 R6 R7a R7b D1. De Lanzarote (la API con DESTINOS_OCULTOS='-'): L_R2 L_R3 L_R6.
+// Casos de Roma: R1a R2 R3 R3b R3h R4 R6 R7a R7b D1. De Lanzarote (la API normal): L_R2 L_R3 L_R6.
 import fs from 'node:fs'
 import path from 'node:path'
 import { abrirApp } from './_enLaApp.mjs'

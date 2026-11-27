@@ -76,7 +76,8 @@ import { VolverAlAlojamiento } from './VolverAlAlojamiento'
 import { puntoDelAlojamiento } from '../../../../lib/direccionAlojamiento'
 import { avisarAbajo } from '../../../../store/useAvisoDeAbajo'
 import { marcarDicho, yaDicho } from '../../../../lib/avisosUnaVez'
-import { AVISO_SALTADA, cerradasDeHoy, lugaresPendientes } from '../../../../lib/hoyPendientes'
+import { AVISO_SALTADA, cerradasDeHoy, pendientesDelViaje } from '../../../../lib/hoyPendientes'
+import { semanaDelDia } from '../../../../lib/tarjetasDePropuesta'
 import { AvisoDeHoy, CruzDeAviso, ZonaDeAvisos } from './AvisosHoy'
 import { AvisoPlanActualizadoGlobal, useContexto } from './CambiarPlan'
 import { useLogrosStore } from '../../../../store/useLogrosStore'
@@ -96,7 +97,7 @@ import { ComoVais } from './ComoVais'
 import { QueHagoAhora } from './QueHagoAhora'
 import { RetoDelDia } from './RetoDelDia'
 import { TarjetaDeCierre } from './TarjetaDeCierre'
-import { FichaCompletaDeHoy, HastaAquiHoy, SiTeSobraTiempoHoy, TarjetaBienvenida, TarjetaMananaOscura, fraseDeCierre } from './BloquesHoy'
+import { FichaCompletaDeHoy, HastaAquiHoy, TarjetaBienvenida, TarjetaMananaOscura, fraseDeCierre } from './BloquesHoy'
 import { DORADO } from '../../../ui/botonesOro'
 
 
@@ -278,7 +279,8 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const cerradas = conPaseOPrueba0 ? cerradasDeHoy({ day, horarioDe, ahoraMin: ahoraMinHoy, trayectoMin: trayectoMinDe }) : new Set<string>()
   const paradas = paradasDelDia
   const vigentes = paradas.filter((s) => !s.saltada)
-  const pendientes = lugaresPendientes({ route, day, cerradas: new Set<string>() })
+  // (V77) UNA sola lista: «Lugares pendientes» = lo saltado + lo que no dio tiempo + lo que el motor dejó fuera de un día («No cabía el lunes», antes «Si te sobra tiempo»). Es la misma lista que la de DÍAS (`pendientesDelViaje`). Se calcula en el móvil con la ruta que ya está en memoria: sin peticiones a Supabase.
+  const pendientes = pendientesDelViaje({ route, hoy: day, semana: (d) => semanaDelDia(route, d) })
   // (HOY2b 8b) Los horarios de lo que queda por hacer hoy: la tarjeta de la mañana y el aviso en directo.
   const ventanasTodas = useVentanasDeHoy(route, day, dateIso)
   // (V2b) Los avisos de horario solo hablan de lo que queda por hacer HOY: lo ya hecho, lo saltado y lo que ha pasado a «Lugares pendientes» por cerrado no cuenta (ni en la cuenta del ritmo).
@@ -508,7 +510,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
   const aTuAire = conPaseOPrueba && paradas.length === 0 && !esVuelta && !esLlegada
   const horaSolHoy = horaDelSol(day) ?? solDelDestino?.hora ?? null
   // (V73 §2) «Lo mejor:» sale de lo visto, los imprescindibles primero (los datos de importancia del destino).
-  const cierre = fraseDeCierre(day, paradas, (nombre) => pesoDe(nombre, datosDeImportancia))
+  const cierre = fraseDeCierre(day, paradas, (nombre) => pesoDe(nombre, datosDeImportancia), (nombre) => info.nombresCortosLista[nombre] ?? null)
 
   // ── La cabecera (Completa 1 a 9): arriba de todo, sola ──
   const cabeceraDeHoy = aTuAire ? (
@@ -806,9 +808,7 @@ export function HoyDuranteV2({ route, day, dateIso, pase }: { route: Route; day:
       {!esVuelta && !sinPase && !diaTerminado && <VolverAlAlojamiento route={route} desde={ubicacion ?? origenCerca} casa={zonaCoords} enCoche={enCoche} />}
       {tarjetaVuelve && !esVuelta && vuelveH14(true)}
 
-      {/* 7 · «Si te sobra tiempo», abajo del todo (la lista de DÍAS plegada, solo si hay algo) */}
-      <SiTeSobraTiempoHoy route={route} day={day} dateIso={dateIso} />
-      {/* 8 · «Lugares pendientes», al final de HOY (solo si hay) */}
+      {/* 7 · «Lugares pendientes», al final de HOY (solo si hay): desde V77 es la ÚNICA lista (ya no hay «Si te sobra tiempo») */}
       <LugaresPendientes route={route} day={day} dateIso={dateIso} pendientes={pendientes} />
 
       {fichas.hoja}

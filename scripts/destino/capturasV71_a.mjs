@@ -1,6 +1,6 @@
 // V71 (apartados 1 y 2): SOLO capturas (no es una prueba) en modo iPhone (390x844) de la secuencia de Eric en el viaje de prueba de Lanzarote (y en Roma). Un solo Chrome por vez, que se cierra al acabar. Por la cola:
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/capturasV71_a.mjs <caso> [antes|despues]
-// Casos de Lanzarote (la API con DESTINOS_OCULTOS='-'; el servidor de logros es el de mentira de desarrollo, con La Geria, El Golfo, Jameos y Timanfaya añadidos):
+// Casos de Lanzarote (la API normal; el servidor de logros es el de mentira de desarrollo, con La Geria, El Golfo, Jameos y Timanfaya añadidos):
 //   geria      La Geria: [Ya he llegado] → hoja del emblema; [He terminado] → NO vuelve a salir.
 //   golfo      El Golfo (última parada del día): [Ya he llegado], la foto, [He terminado]: ni segunda hoja ni nada raro.
 //   timanfaya  Timanfaya: el sonido de lo ganado suena CON su pantalla (no cuando contesta el servidor).

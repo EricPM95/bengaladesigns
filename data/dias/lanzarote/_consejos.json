@@ -1,0 +1,26 @@
+{
+ "formato": "consejos/1",
+ "_nota": "(V77, 13) Los consejos de cada excursión o día especial (ver data/dias/roma/_consejos.json: mismo formato). SOLO consejos con fuente; lo que no se pudo confirmar no se pone (el ferry de La Graciosa: no se encontró si acepta tarjeta, así que no hay consejo de efectivo).",
+ "grupos": [
+  {
+   "id": "graciosa",
+   "ids": ["DG", "la_graciosa"],
+   "titulos": ["graciosa"],
+   "consejos": [
+    { "icono": "calzado", "palabra": "Calzado cómodo", "frase": "sin calles asfaltadas, arena y tierra", "fuente": "Guías de La Graciosa (Ferryhopper, Viajeros Callejeros): la isla no tiene calles asfaltadas y las rutas a pie son de tierra y arena (27-nov-2026)" },
+    { "icono": "sombrero", "palabra": "Gorra y protector", "frase": "casi no hay sombra", "fuente": "Dato de Eric (V77): en La Graciosa casi no hay sombra. Ninguna guía consultada lo desmiente ni lo detalla" },
+    { "icono": "banador", "palabra": "Bañador", "frase": "hay playas de arena blanca", "fuente": "Guías de La Graciosa (Ferryhopper, Capture the Atlas): playas de arena blanca y aguas turquesa (27-nov-2026)" }
+   ]
+  },
+  {
+   "id": "papagayo",
+   "ids": ["D4"],
+   "titulos": ["papagayo"],
+   "consejos": [
+    { "icono": "protector", "palabra": "Sombrilla y protector", "frase": "casi no hay sombra", "fuente": "La Maleta Inquieta y Guide to Canary Islands (playas de Papagayo): muy poca sombra natural (27-nov-2026)" },
+    { "icono": "agua", "palabra": "Lleva agua", "frase": "la sombra es escasa", "fuente": "La Maleta Inquieta (guía de Papagayo 2026): recomienda llevar agua y sombrilla (27-nov-2026). No hay datos fiables de chiringuitos" },
+    { "icono": "coche", "palabra": "Pista de tierra", "frase": "mira si tu coche de alquiler la permite", "fuente": "La Maleta Inquieta (guía de Papagayo 2026): unos 6 km de pista sin asfaltar; los contratos de alquiler suelen prohibirlas (27-nov-2026)" }
+   ]
+  }
+ ]
+}

@@ -38,7 +38,6 @@ import { FreeTourSheet, freeTourAvailable } from '../reservas/FreeTourSheet'
 import { dayColorIndex, dayColorPastel, dayColorStrong } from '../../../lib/dayColors'
 import { KIND_ICON, PERIOD_WITH_HEADER, stopNumbersOf, type DayPeriod } from '../../../lib/stopKind'
 import { OnTheWayGroupCard, PeriodHeader, TrazoCard } from './TrazoCards'
-import { SpareStopsSection } from './SpareStopsSection'
 import { hasRealCoordinates } from '../../../lib/distanceMock'
 import { searchPlaces } from '../../../lib/mapboxGeocoding'
 import { dinnerWindowFor } from '../../../lib/todayMode'
@@ -294,7 +293,6 @@ export function DayDetailPanel({
 }: DayDetailPanelProps) {
   const seedDayStops = useRouteStore((state) => state.seedDayStops)
   const insertStopAt = useRouteStore((state) => state.insertStopAt)
-  const addSpareStop = useRouteStore((state) => state.addSpareStop)
   const convertDayType = useRouteStore((state) => state.convertDayType)
   const openAddFlow = useAddFlowStore((state) => state.openAddFlow)
   // Modo recomendación (cuentas parte 3): las paradas cambiadas por otra se pintan como una pareja.
@@ -1560,8 +1558,7 @@ export function DayDetailPanel({
           </DndContext>
           )}
 
-          {/* Tanda 6: lo que no cabía, plegado al final del día. */}
-          {muestraParadas && !soloLectura && <SpareStopsSection dayId={day.id} stops={day.spareStops ?? []} onAdd={(stopId) => addSpareStop(day.id, stopId)} />}
+          {/* (V77) «Si te sobra tiempo» ya no sale dentro del día: lo que no cabía vive en «Lugares pendientes» (al final de la lista de días). */}
 
           {/* Día libre sin paradas con su comida o su cena ya elegida: se ve igual. */}
           {dayType === 'manual' && day.meals.some((meal) => meal.chosenRestaurant) && (

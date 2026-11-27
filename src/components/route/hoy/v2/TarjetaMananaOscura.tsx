@@ -3,6 +3,7 @@ import { hasRealCoordinates } from '../../../../lib/distanceMock'
 import { avisoDeManana, type TipoAviso } from '../../../../lib/avisosDelTiempo'
 import { leerDatosDeExcursion, type DatosDeExcursion } from '../../../../lib/datosDelDiaEscrito'
 import type { LineaManana, MananaH13 } from '../../../../lib/hoyParada'
+import { excursionDeUnDia } from '../../../../lib/bookings'
 import { fetchHourlyRain } from '../../../../lib/rainForecast'
 import type { Route } from '../../../../lib/types'
 import { useReservasFocusStore } from '../../../../store/useReservasFocusStore'
@@ -11,6 +12,7 @@ import { BOTON_ORO } from '../../../ui/botonesOro'
 import { Icono, IconoRuta } from '../../../ui/Icono'
 import { ICONO as ICONO_TIEMPO, esDeLanzarote } from '../AvisosDelTiempo'
 import { TarjetaOscura } from '../piezas'
+import { BloqueDeConsejos, useConsejos } from './ConsejosDelDia'
 
 /**
  * (V73, «Hoy Al Acabar» AC1-AC3) «Mañana, viernes 27 · La Graciosa»: la tarjeta oscura de lo de mañana (solo cuando no queda nada por hacer hoy), con sus líneas con icono debajo del título.
@@ -62,7 +64,10 @@ export function TarjetaMananaOscura({ route, cuando, manana, dateIso }: { route:
   const primera = manana.primera ?? (datos?.traslado ? ({ icono: 'excursion', texto: datos.traslado } as LineaManana) : null)
   if (primera) filas.push({ clave: 'sales', icono: primera.icono, texto: primera.texto })
   if (manana.turno) filas.push({ clave: 'reserva', icono: 'reservas', texto: manana.turno })
-  const consejo = manana.consejo ?? (datos?.playa ? CONSEJO_PLAYA : null)
+  // (V77, 13) Los consejos del día (agua, calzado, sombrero…) del archivo del destino, en su bloque; si el día no los trae, queda el de antes (la playa).
+  const excursionDeMañana = dia ? excursionDeUnDia(dia) : null
+  const consejos = useConsejos(route.destination, [manana.diaEscritoId, excursionDeMañana?.id], [manana.titulo, dia?.curatedTitle, excursionDeMañana?.title])
+  const consejo = manana.consejo ?? (datos?.playa && consejos.length === 0 ? CONSEJO_PLAYA : null)
   if (consejo) filas.push({ clave: 'consejo', icono: 'tips', texto: consejo })
   if (tiempo) filas.push({ clave: 'tiempo', icono: tiempo.tipo, texto: tiempo.texto })
 
@@ -107,6 +112,7 @@ export function TarjetaMananaOscura({ route, cuando, manana, dateIso }: { route:
               ))}
             </div>
           )}
+          <BloqueDeConsejos consejos={consejos} cuando="mañana" tono="oscuro" />
           {manana.anadirReserva && (
             <button type="button" onClick={anadirReserva} data-hoy-manana-anadir-reserva className="flex h-12 items-center justify-center gap-1.5 rounded-2xl text-[14px] font-bold" style={BOTON_ORO}>
               <Icono nombre="anadir" size={15} grosor={2.2} />

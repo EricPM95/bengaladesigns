@@ -1,7 +1,7 @@
 // V76 (apartados 2 y 4) · Un tren o autobús UNIDO a la llegada o a la vuelta, y las ESCALAS del vuelo. PRUEBA DE LO QUE SE GUARDA Y SE VE.
 //   APP_URL=http://localhost:5173 API_URL=http://localhost:8787 node scripts/destino/_conCola.mjs node scripts/destino/pruebaV76_b.mjs [pura|roma|lanza]      (sin argumento: las tres partes)
 // Parte 1 (pura, SIN navegador): `src/lib/escalasYUnion.ts` y `reservasExtra.ts`, empaquetados con esbuild.
-// Parte 2 (Roma) y parte 3 (Lanzarote; exige la API con DESTINOS_OCULTOS='-'): un Chrome de prueba cada una, por la cola. No toca el Supabase de producción (cuentas=off, sin sesión).
+// Parte 2 (Roma) y parte 3 (Lanzarote; exige la API normal): un Chrome de prueba cada una, por la cola. No toca el Supabase de producción (cuentas=off, sin sesión).
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
@@ -18,6 +18,7 @@ const debe = (cond, regla, texto) => {
   if (!cond) fallos.push({ regla, texto })
 }
 const igual = (a, b) => JSON.stringify(a) === JSON.stringify(b)
+const min0 = (h) => Number(h.slice(0, 2)) * 60 + Number(h.slice(3))
 
 /* ═══ 1. La parte pura ═══ */
 async function partePura() {
@@ -45,6 +46,10 @@ async function partePura() {
   const vta = m.tramosDeLaMitad({ departureEscalas: [{ ...E, de: 'Madrid (MAD)', a: 'Barcelona (El Prat)', salida: '21:00', llegada: '22:15' }] }, 'departure', { salida: '19:30', llegada: '20:40', compania: 'Vueling', codigo: 'VY 6105', desde: 'Roma', hasta: 'Madrid (MAD)' })
   debe(vta.length === 2 && vta[0].principal === true && vta[1].principal === false && vta[1].n === 2 && vta[1].clave === 'escala:departure:0', 'tramos-vuelta', 'VUELTA: el de siempre es el 1 de 2 y la escala el 2 de 2')
   debe(igual(m.tramosDeLaMitad({}, 'arrival', princIda).map((t) => t.principal), [true]) && m.tramosDeLaMitad({}, 'arrival', princIda)[0].de === 1, 'tramos-sin-escalas', 'sin escalas hay un solo tramo (el de siempre)')
+  // (V77, 38) La escala, solo el dato: «Escala de 1 h 15 min en Madrid» (llegada del tramo 1 → salida del 2); sin horas, o con la salida «antes» que la llegada (otro día), sin línea.
+  debe(igual(m.lineasDeEscala(ida), ['Escala de ' + (min0(ida[1].salida) - min0(ida[0].llegada) === 75 ? '1 h 15 min' : '?') + ' en Madrid', null].slice(0, 1)), 'escala-dato', JSON.stringify(m.lineasDeEscala(ida)))
+  debe(igual(m.lineasDeEscala([{ salida: '08:00', llegada: '09:00', desde: 'A', hasta: 'Madrid (MAD)' }, { salida: '09:45', llegada: '11:00', desde: 'Madrid', hasta: 'B' }]), ['Escala de 45 min en Madrid']) && igual(m.lineasDeEscala([{ salida: '08:00', llegada: '09:00', desde: 'A', hasta: 'Madrid' }, { salida: '10:00', llegada: '11:00', desde: 'Madrid', hasta: 'B' }]), ['Escala de 1 h en Madrid']), 'escala-dato-formas', '45 min / 1 h')
+  debe(igual(m.lineasDeEscala([{ salida: '08:00', llegada: '22:00', desde: 'A', hasta: 'Madrid' }, { salida: '07:00', llegada: '09:00', desde: 'Madrid', hasta: 'B' }]), [null]) && igual(m.lineasDeEscala([{ salida: '08:00', llegada: null, desde: 'A', hasta: 'Madrid' }, { salida: '07:00', llegada: '09:00', desde: 'Madrid', hasta: 'B' }]), [null]) && igual(m.lineasDeEscala([{ salida: '08:00', llegada: '09:00', desde: 'A', hasta: '' }, { salida: '10:00', llegada: '11:00', desde: '', hasta: 'B' }]), [null]), 'escala-dato-sin-linea', 'otro día, sin hora o sin sitio: sin línea')
   // El tramo que toca a cada hora (para el QR de HOY).
   const min = (h) => Number(h.slice(0, 2)) * 60 + Number(h.slice(3))
   debe(m.tramoQueToca(ida, min('07:30')).n === 1 && m.tramoQueToca(ida, min('09:44')).n === 1, 'toca-ida-antes', 'ida: antes de que acabe la escala, toca la escala')
@@ -138,6 +143,7 @@ async function parteNavegador(lanza) {
     const t2 = '[data-tramo="IDA · 2 DE 2"]'
     debe((await existe(t1)) && (await existe(t2)), `${NOM}·tramos`, 'la ida son dos tarjetas: «IDA · 1 DE 2» e «IDA · 2 DE 2»')
     debe((await top(t1)) < (await top(t2)), `${NOM}·tramos-orden`, 'la escala (1 de 2) va encima del tramo que llega al destino (2 de 2)')
+    debe(/^Escala de 1 h [0-9]+ min en Madrid$/.test(await texto('[data-escala-dato]')) && (await top(t1)) < (await top('[data-escala-dato]')) && (await top('[data-escala-dato]')) < (await top(t2)), `${NOM}·escala-dato`, 'V77 (38): entre los dos tramos, «Escala de … en Madrid» (solo el dato)')
     debe((await texto(t1)).includes(ESC_IDA.salida) && (await texto(t1)).includes(ESC_IDA.llegada) && (await texto(t1)).includes('Barcelona (El Prat) → Madrid (MAD)') && (await texto(t1)).includes('IB 3921'), `${NOM}·tramo1-datos`, `el tramo 1 enseña horas, trayecto y vuelo: ${(await texto(t1)).slice(0, 120)}`)
     debe((await texto(t2)).includes(RUTA_ESC.arrivalOtraHora) && (await texto(t2)).includes(LLEGA) && (await texto(t2)).includes('Madrid (MAD) →') && (await texto(t2)).includes('VY 6102'), `${NOM}·tramo2-datos`, `el tramo 2 (el de siempre) enseña lo suyo: ${(await texto(t2)).slice(0, 120)}`)
     for (const [t, nombre] of [[t1, 'tramo 1'], [t2, 'tramo 2']]) {

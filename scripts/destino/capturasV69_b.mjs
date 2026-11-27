@@ -2,7 +2,7 @@
 // Un solo Chrome por vez, que se cierra al acabar. Por la cola:
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/capturasV69_b.mjs design|roma|lanza [caso]
 // Guarda docs/dias/V69_capturas/<id>_app.jpg (la app) y <id>_design.jpg (su dibujo de Design) y escribe docs/dias/V69_log_b_<modo>.json con el texto de cada pantalla.
-// Casos de Roma: E1 E2 A1a A1b A1c H1 H2 H3 V1 V2 (y V3 con varias personas). Lanzarote (la API con DESTINOS_OCULTOS='-'): L_E2 L_H1 L_V2.
+// Casos de Roma: E1 E2 A1a A1b A1c H1 H2 H3 V1 V2 (y V3 con varias personas). Lanzarote (la API normal): L_E2 L_H1 L_V2.
 // La API de Civitatis está apagada en el servidor: aquí se simula en el navegador `/api/civitatis/horas-rango` (como la V60) y se enciende el interruptor con `?civitatis=on`.
 import fs from 'node:fs'
 import path from 'node:path'

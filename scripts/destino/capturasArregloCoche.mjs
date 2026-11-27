@@ -1,5 +1,5 @@
 // Las capturas de móvil del REPASO del arreglo del formulario y de RESERVAS (6-nov): el bloque del coche sin y con reserva, el vuelo con [Buscar vuelos] y un trayecto en coche con «Rutas».
-// Necesita Vite 5173 y API 8787 con DESTINOS_OCULTOS='-'. Un solo Chrome, que se cierra al acabar.
+// Necesita Vite 5173 y API 8787 normal. Un solo Chrome, que se cierra al acabar.
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/capturasArregloCoche.mjs
 import path from 'node:path'
 import { abrirApp } from './_enLaApp.mjs'

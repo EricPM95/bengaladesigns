@@ -126,6 +126,24 @@ export function tramoQueToca(tramos: readonly TramoOrdenado[], ahoraMin: number)
   return tramos[tramos.length - 1]
 }
 
+/**
+ * (V77, 38) La escala, SOLO EL DATO y sin aviso: «Escala de 45 min en Madrid», entre los dos tramos en la tarjeta del vuelo. La duración es la llegada del tramo de antes hasta la salida del siguiente,
+ * del MISMO día: si falta alguna de las dos horas, el sitio o una hora cruza la medianoche (la salida «antes» que la llegada), no hay línea. Devuelve una por cada pareja de tramos seguidos (null = sin línea).
+ */
+export function lineasDeEscala(tramos: readonly Pick<TramoOrdenado, 'salida' | 'llegada' | 'desde' | 'hasta'>[]): (string | null)[] {
+  return tramos.slice(0, -1).map((t, i) => {
+    const llega = minutos(t.llegada)
+    const sale = minutos(tramos[i + 1].salida)
+    // «Madrid (MAD)» → «Madrid»: el código del aeropuerto no se dice en la frase.
+    const ciudad = (t.hasta || tramos[i + 1].desde || '').replace(/\s*\([^)]*\)\s*$/, '').trim()
+    if (llega == null || sale == null || sale < llega || !ciudad) return null
+    const m = sale - llega
+    const h = Math.floor(m / 60)
+    const duracion = h === 0 ? `${m} min` : m % 60 === 0 ? `${h} h` : `${h} h ${m % 60} min`
+    return `Escala de ${duracion} en ${ciudad}`
+  })
+}
+
 /** El billete que se pinta con la clave dada, de las claves de `excursiones`. */
 export const esClaveDeEscala = (clave: string): boolean => clave.startsWith('escala:')
 

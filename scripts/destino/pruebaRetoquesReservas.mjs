@@ -1,6 +1,6 @@
 // RETOQUES_TARJETAS 5c y 5e (6-nov): RESERVAS. El bloque del coche como los demás (mismo color, cerrado al entrar, «SÚPER RECOMENDADO») y todo lo que se reserva cuenta en «x de N listo»
 // (la ficha del coche y una ficha por cada excursión de la ruta, con el bloque «Excursiones»). Vale para todos los destinos: lo mismo en Lanzarote y en Roma.
-//   Necesita Vite 5173 y la API 8787 con DESTINOS_OCULTOS='-' (Lanzarote visible). Un solo Chrome, que se cierra al acabar:
+//   Necesita Vite 5173 y la API 8787 normal (Lanzarote visible). Un solo Chrome, que se cierra al acabar:
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/pruebaRetoquesReservas.mjs
 import fs from 'node:fs'
 import os from 'node:os'

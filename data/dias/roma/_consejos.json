@@ -1,0 +1,33 @@
+{
+ "formato": "consejos/1",
+ "_nota": "(V77, 13) Los consejos de cada excursión o día especial: 2 o 3 por grupo, cada uno con su tipo de icono (agua, calzado, banador, protector, sombrero, abrigo, efectivo, documento, ropa, coche) y su frase corta. Salen en MAÑANA («Consejos para mañana») y en la tarjeta de la excursión de HOY («Consejos para la excursión»). Un grupo se aplica a un día por su id (de excursión o de día escrito) o por una palabra de su título. SOLO consejos con fuente (campo `fuente`); lo que no se pudo confirmar no se pone. «abrigo» no va fijo: solo con pronóstico real de frío; «documento», solo si la web oficial lo pide. Se lee en carga perezosa (fuera del arranque).",
+ "grupos": [
+  {
+   "id": "pompeya",
+   "ids": ["pompeya_sorrento", "napoles_pompeya_tren"],
+   "titulos": ["pompeya"],
+   "consejos": [
+    { "icono": "agua", "palabra": "Lleva agua", "frase": "hay fuentes públicas dentro", "fuente": "Parco Archeologico di Pompei, «Visiting the excavations of Pompeii: useful tips to protect yourself against the heat»: hay varias fuentes de agua potable dentro de las excavaciones (mapa en las entradas) y recomienda llevar botellas pequeñas (https://pompeiisites.org/en/comunicati/visiting-the-excavations-of-pompeii-useful-tips-to-protect-yourself-against-the-heat/, 27-nov-2026)" },
+    { "icono": "calzado", "palabra": "Calzado cómodo", "frase": "se anda mucho por el yacimiento", "fuente": "Parco Archeologico di Pompei (pompeiisites.org, información al visitante): aconseja calzado cómodo (27-nov-2026)" },
+    { "icono": "sombrero", "palabra": "Gorra y protector", "frase": "hay muy poca sombra", "fuente": "Guías de viaje (Lonely Planet, Wikivoyage) y consejos contra el calor del propio parque: poca sombra en las excavaciones (27-nov-2026). La web oficial no habla de la sombra" }
+   ]
+  },
+  {
+   "id": "florencia",
+   "ids": ["florencia", "florencia_pisa"],
+   "titulos": ["florencia"],
+   "consejos": [
+    { "icono": "ropa", "palabra": "Hombros y rodillas cubiertos", "frase": "para entrar en el Duomo", "fuente": "Sitios de venta de entradas del Duomo (tickets-florence.it, headout) y guías de vestimenta en iglesias: hombros y rodillas cubiertos para entrar en la catedral, el baptisterio, el campanario y la cúpula. La FAQ oficial (tickets.duomo.firenze.it, «Dress Code») tiene el apartado pero no se pudo leer su texto (27-nov-2026)" }
+   ]
+  },
+  {
+   "id": "tivoli",
+   "ids": ["tivoli"],
+   "titulos": ["tivoli"],
+   "consejos": [
+    { "icono": "calzado", "palabra": "Calzado cómodo", "frase": "los jardines son amplios y con cuestas", "fuente": "Guía de reservas de Villa d'Este (jardines amplios y con colinas; fuente comercial, no oficial; 27-nov-2026)" },
+    { "icono": "agua", "palabra": "Lleva agua", "frase": "sobre todo en verano", "fuente": "La misma guía de reservas de Villa d'Este (27-nov-2026); no oficial" }
+   ]
+  }
+ ]
+}

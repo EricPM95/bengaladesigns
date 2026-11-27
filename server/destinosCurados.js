@@ -11,9 +11,9 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-/** Los destinos que solo ve el administrador (LZ1, 2-nov: Lanzarote, oculto hasta que Eric diga). Para abrirlo a todos: quitarlo de aquí (o `DESTINOS_OCULTOS=` vacío en el entorno). */
+/** Los destinos que solo ve el administrador. (V77, Eric 27-nov: Lanzarote se publica; por defecto NO hay ninguno oculto y un destino nuevo sale visible desde el principio. El mecanismo sigue: para esconder uno, `DESTINOS_OCULTOS=clave1,clave2` en el entorno.) */
 export const DESTINOS_OCULTOS = new Set(
-  process.env.DESTINOS_OCULTOS !== undefined ? process.env.DESTINOS_OCULTOS.split(',').map((x) => x.trim()).filter(Boolean) : ['lanzarote'],
+  process.env.DESTINOS_OCULTOS !== undefined ? process.env.DESTINOS_OCULTOS.split(',').map((x) => x.trim()).filter(Boolean) : [],
 )
 
 const leer = (ruta) => JSON.parse(readFileSync(ruta, 'utf8'))

@@ -122,7 +122,14 @@ for (const z of ZONAS) {
     for (const s of d.stops) debe(!GRANDES.has(s.site_id), `${etq}: un imprescindible grande (${s.name})`)
     debe(!d.meals.some((m) => m.time === 'dinner'), `${etq}: el día de vuelta no lleva cena`)
     if (hm(v) < hm('14:00')) debe(d.stops.length === 0 && d.return_day.tarjeta, `${etq}: vuelo temprano, solo el traslado con su tarjeta`)
-    if (hm(v) >= hm('15:00')) debe(d.stops.length > 0, `${etq}: con tiempo, la mañana no sale vacía`)
+    if (hm(v) >= hm('15:00')) {
+      // (V74) Con «instalarse» (20 min) la llegada de las 10:00 pasa de la fila C a la B y su día ya lleva lo que la vuelta del norte repetiría (Jardín de Cactus, Punta Mujeres): un sitio no se repite en el viaje, así que la mañana solo puede salir vacía si TODO lo de su fila ya se vio el día de la llegada.
+      const llegada = dia(6, 1, '2026-11-10', o)
+      const vistos = new Set((llegada?.stops ?? []).map((s) => s.place_name))
+      const fila = JSON.parse(fs.readFileSync('data/dias/lanzarote/_ll.json', 'utf8')).vuelta?.[z]?.[d.return_day.fila]
+      const candidatos = [...(fila?.manana ?? []), ...(fila?.tarde ?? [])].map((x) => x.lugar)
+      debe(d.stops.length > 0 || (candidatos.length > 0 && candidatos.every((l) => vistos.has(l))), `${etq}: con tiempo, la mañana no sale vacía (salvo que todo lo de su fila ya se viera el día de la llegada)`)
+    }
     for (const m of d.meals) for (const o2 of m.options ?? []) debe(abiertoEseDia(o2.name, semanaDe(d.date_iso)), `${etq}: ${o2.name} cerrado ese día`)
   }
 }

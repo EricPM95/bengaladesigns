@@ -34,7 +34,7 @@ import { CajaDeDato } from './PiezasDesignReservas'
 import { BuscarVuelos } from './BuscarVuelos'
 import { HojaPrecio } from './HojaPrecio'
 import { quitarAvisoDeDocumento, useAvisoDeDocumento } from '../../../lib/avisoDeDocumento'
-import { escalasDe, etiquetaDeTramo, etiquetaDeUnion, unidasA, type SitioDeLlegada } from '../../../lib/escalasYUnion'
+import { escalasDe, etiquetaDeTramo, etiquetaDeUnion, lineasDeEscala, tramosDeLaMitad, unidasA, type SitioDeLlegada } from '../../../lib/escalasYUnion'
 import type { Reservation } from '../../../lib/bookings'
 import type { ReservaExtra } from '../../../lib/reservasExtra'
 import { useReservasParaMi } from '../../../hooks/useEntradasDelGrupo'
@@ -429,7 +429,11 @@ export function LlegadaYVuelta({
     const tarjetas = escalas.map((e, i) => (
       <TarjetaDeEscala key={`escala-${i}`} route={route} leg={leg} indice={i} total={total} n={esIda ? i + 1 : i + 2} tramo={e} onCambiar={() => abrirHoja(leg.kind)} onQuitar={() => setEscalas(leg.kind, escalas.filter((_, j) => j !== i))} />
     ))
-    return esIda ? [...tarjetas, principal] : [principal, ...tarjetas]
+    const orden = esIda ? [...tarjetas, principal] : [principal, ...tarjetas]
+    if (escalas.length === 0) return orden
+    // (V77, 38) Entre dos tramos, SOLO EL DATO de la escala («Escala de 45 min en Madrid»), sin aviso; sin las dos horas, del mismo día, no hay línea.
+    const lineas = lineasDeEscala(tramosDeLaMitad(route, leg.kind, esIda ? { salida: leg.otraHora, llegada: leg.time, compania: '', codigo: '', desde: leg.otroPunto ?? '', hasta: '' } : { salida: leg.time, llegada: leg.otraHora, compania: '', codigo: '', desde: '', hasta: leg.otroPunto ?? '' }))
+    return orden.flatMap((el, i) => (i < lineas.length && lineas[i] ? [el, <p key={`dato-escala-${i}`} data-escala-dato className="mx-3.5 mb-3 text-center text-[12.5px] font-medium text-text-soft">{lineas[i]}</p>] : [el]))
   }
   // (V76, R11c) Un tren o autobús unido a la llegada o a la vuelta, debajo de su vuelo: la tarjeta de billete con «TREN AL CENTRO» / «TREN AL AEROPUERTO» y sus tres iconos.
   const sitioDeLaMitad = (m: LegState): SitioDeLlegada => (m.mode === 'ferry' ? 'puerto' : m.mode === 'avion' ? 'aeropuerto' : 'estación')

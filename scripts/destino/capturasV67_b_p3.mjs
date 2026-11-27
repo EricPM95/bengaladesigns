@@ -1,5 +1,5 @@
 // V67 (apartado 3, P3): SOLO captura (no es una prueba) de la secuencia de carga de la tarjeta del viaje en el Perfil (iPhone 390x844) con la red lenta (las fotos tardan): 1) al abrir, 2) a mitad de fundido, 3) con la foto.
-//   APP_URL=http://localhost:5173 node scripts/destino/capturasV67_b_p3.mjs <antes|despues>   (la API con DESTINOS_OCULTOS='-')
+//   APP_URL=http://localhost:5173 node scripts/destino/capturasV67_b_p3.mjs <antes|despues>   (la API normal)
 import fs from 'node:fs'
 import path from 'node:path'
 import { abrirApp } from './_enLaApp.mjs'

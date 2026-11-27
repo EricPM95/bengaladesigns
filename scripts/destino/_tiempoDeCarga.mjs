@@ -1,4 +1,4 @@
-// (Arreglo 6-nov, §3) Mide cuánto tarda «Trazando tu ruta…» y a dónde se va el tiempo, llamada a llamada (/api/...). Lanzarote vs Roma. Necesita Vite 5173 y API 8787 con DESTINOS_OCULTOS='-'.
+// (Arreglo 6-nov, §3) Mide cuánto tarda «Trazando tu ruta…» y a dónde se va el tiempo, llamada a llamada (/api/...). Lanzarote vs Roma. Necesita Vite 5173 y API 8787 normal.
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/_tiempoDeCarga.mjs [lanzarote|roma]
 import { abrirApp } from './_enLaApp.mjs'
 const cual = process.argv[2] ?? 'lanzarote'

@@ -1,6 +1,6 @@
 // V66 (apartados 1 y 2): SOLO capturas (no es una prueba) en modo iPhone (390x844) de la hoja del Emblema Oculto (E1) y de la tarjeta del atardecer (S1, S2, S3). Un solo Chrome por vez, que se cierra al acabar. Por la cola:
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/capturasV66_a.mjs design|roma|lanza [caso]
-// Guarda docs/dias/V66_capturas/<id>_app.jpg (la app) y <id>_design.jpg (su dibujo). Casos de Roma: E1 aviso S1 S2 S3. De Lanzarote (la API con DESTINOS_OCULTOS='-'): E1_lanza S2_lanza.
+// Guarda docs/dias/V66_capturas/<id>_app.jpg (la app) y <id>_design.jpg (su dibujo). Casos de Roma: E1 aviso S1 S2 S3. De Lanzarote (la API normal): E1_lanza S2_lanza.
 import fs from 'node:fs'
 import path from 'node:path'
 import { abrirApp } from './_enLaApp.mjs'

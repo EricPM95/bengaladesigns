@@ -1,5 +1,5 @@
 // La prueba de la tanda HOY2, agente C (5-nov-2026): «Quiero comer ahora» (24), «A la hora de comer» (Completa 4), «¿Qué hacemos con…?» (28), «Tu entrada corre peligro» (29 y 29b) y la lluvia (32 y 32b).
-// Hace falta el servidor de la app (5173) y la API (8787, con DESTINOS_OCULTOS='-' para ver Lanzarote como administrador) YA encendidos; NO arranca ninguno.
+// Hace falta el servidor de la app (5173) y la API (8787, normal para ver Lanzarote como administrador) YA encendidos; NO arranca ninguno.
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/pruebaTandaHOY2_C.mjs
 // Un solo Chrome, que se cierra al acabar. Salida: «N comprobaciones · M fallos». Capturas 390x844 (de TODO el scroll) en docs/dias/capturas_jutrip/hoy2_<tema>_<n>.jpg (el viaje de Eric en Lanzarote, martes 10).
 // Reloj de mentira y ubicación de mentira: los de pruebaTandaHOY1_A (`window.__horaFalsa`, `window.__pos`, `window.__perm`).

@@ -1,7 +1,7 @@
 // V76 (apartados 1 y 3) · UNIR UN FERRY / TREN / AUTOBÚS A UNA EXCURSIÓN (R5, R9) Y UNA RESERVA EXTRA SUELTA EN SU DÍA (R10).
 //   APP_URL=http://localhost:5173 API_URL=http://localhost:8787 node scripts/destino/_conCola.mjs node scripts/destino/pruebaV76_a.mjs [pura|roma|lanza]      (sin argumento: las tres partes)
 // Parte 1 (pura, SIN navegador): `src/lib/reservasUnidas.ts` y `excursionesDeLaRuta`, empaquetados con esbuild.
-// Parte 2 (Roma) y parte 3 (Lanzarote; exige la API con DESTINOS_OCULTOS='-'): un Chrome de prueba cada una, por la cola. No toca el Supabase de producción (cuentas=off, sin sesión).
+// Parte 2 (Roma) y parte 3 (Lanzarote; exige la API normal): un Chrome de prueba cada una, por la cola. No toca el Supabase de producción (cuentas=off, sin sesión).
 //   · el ferry se guarda con la hoja de siempre; sale «¿Es para tu excursión a …?»; [Sí] lo une (cuenta como hecha, va dentro de la ficha, no en un bloque aparte); ida y vuelta, dos billetes; [No] lo guarda aparte;
 //   · HOY, la tarjeta de la excursión: SALIDA · puerto, una fila por billete con su QR (dorado / gris con «+»), [Cómo llegar]; MAÑANA dice «Sales a las 10:00 · Ferry desde Órzola»;
 //   · un ferry que no es de excursión sale en HOY y en DÍAS en su día; si choca con una parada, «Revisa las horas» al guardar y el aviso de arriba de HOY; el día NO se mueve.

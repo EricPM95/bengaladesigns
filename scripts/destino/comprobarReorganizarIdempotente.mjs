@@ -3,7 +3,7 @@
 // (`propuestaDeVuelos`, la misma función del botón) y se vuelve a pedir sobre el resultado: no puede proponer NINGÚN día. Además, ninguna parada de ese día queda con el horario cerrado
 // (Panteón después de las 19:00…). Usa el servidor de la API en 8787 (no abre Vite ni navegador). Uso:
 //   node scripts/destino/comprobarReorganizarIdempotente.mjs [destino=Roma] [inicio=2026-11-27] [dias=4]
-// Sale con código 1 si algún caso falla. Lanzarote: `node … Lanzarote 2027-03-07 6` (con la API en DESTINOS_OCULTOS='-').
+// Sale con código 1 si algún caso falla. Lanzarote: `node … Lanzarote 2027-03-07 6` (con la API normal).
 import os from 'node:os'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'

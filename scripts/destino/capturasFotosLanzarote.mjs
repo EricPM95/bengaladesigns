@@ -1,4 +1,4 @@
-// Las capturas de móvil del REPASO de las fotos de Lanzarote: DÍAS del martes 10 y del jueves 12 del viaje de Eric, de arriba abajo. Necesita Vite 5173 y API 8787 con DESTINOS_OCULTOS='-'.
+// Las capturas de móvil del REPASO de las fotos de Lanzarote: DÍAS del martes 10 y del jueves 12 del viaje de Eric, de arriba abajo. Necesita Vite 5173 y API 8787 normal.
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/capturasFotosLanzarote.mjs
 import path from 'node:path'
 import { abrirApp } from './_enLaApp.mjs'

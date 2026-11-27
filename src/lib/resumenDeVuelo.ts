@@ -43,7 +43,7 @@ function desdeAviso(aviso: AvisoDelMotor, route: Route, indice: number): ItemDeR
 }
 
 /**
- * Las frases de la hoja, en este orden: lo de la llegada (su día, la madrugada, el día que se corre, el que se cae, el Free Tour, lo que queda en «Si te sobra tiempo»), lo de la vuelta (su última
+ * Las frases de la hoja, en este orden: lo de la llegada (su día, la madrugada, el día que se corre, el que se cae, el Free Tour, lo que queda en «Lugares pendientes»), lo de la vuelta (su última
  * mañana), los días que el viajero cambió a mano y, al borrar, «Tus días vuelven a ser enteros…». Solo habla de la mitad que ha cambiado (la zona cambia las dos). Vacío = nada que contar.
  * `mantenidos`: los días que el viajero cambió a mano y el rehacer dejó como estaban.
  */
@@ -63,7 +63,7 @@ export function construirResumen({ route, cambios, mantenidos }: { route: Route;
   const llegada = planLlegadaVeraz(route)
   if (mitades.has('arrival') && llegada) {
     ;(llegada.resumen ?? []).forEach((item, indice) => items.push(desdeResumen(item, route, indice)))
-    // Los avisos de la hoja (no los de la campana): el Free Tour puesto, lo que queda en «Si te sobra tiempo»…
+    // Los avisos de la hoja (no los de la campana): el Free Tour puesto, lo que queda en «Lugares pendientes»…
     ;(llegada.avisos ?? []).forEach((aviso, indice) => {
       if (!vaALaCampana(aviso)) items.push(desdeAviso(aviso, route, indice))
     })

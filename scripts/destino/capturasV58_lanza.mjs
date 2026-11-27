@@ -1,4 +1,4 @@
-// V58 Lanzarote: punto 1 (solo con la zona), 6 (km en coche, minutos y cierres, comida sin restaurantes). Solo observa y captura (iPhone 390x844). Exige la API con DESTINOS_OCULTOS='-'. Por la cola:
+// V58 Lanzarote: punto 1 (solo con la zona), 6 (km en coche, minutos y cierres, comida sin restaurantes). Solo observa y captura (iPhone 390x844). Exige la API normal. Por la cola:
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/capturasV58_lanza.mjs [sufijo=despues]
 import fs from 'node:fs'
 import path from 'node:path'

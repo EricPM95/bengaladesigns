@@ -1,5 +1,5 @@
 // La prueba de la tanda HOY2, agente B (5-nov-2026): [Cambiar plan] (22), «Voy con retraso» (23), saltar (25), pasar a otro día (26a/b/c), añadir un sitio cercano (27a/b), «Plan actualizado · Deshacer» (30) y «Volver a mi ruta original».
-// Hace falta el servidor de la app (5173) y la API (8787, con DESTINOS_OCULTOS='-' para ver Lanzarote como administrador) YA encendidos; NO arranca ninguno.
+// Hace falta el servidor de la app (5173) y la API (8787, normal para ver Lanzarote como administrador) YA encendidos; NO arranca ninguno.
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/pruebaTandaHOY2_B.mjs
 // Un solo Chrome, que se cierra al acabar. Salida: «N comprobaciones · M fallos». Capturas 390x844 en docs/dias/capturas_jutrip/hoy2_cambiar_*.jpg (el viaje de Eric en Lanzarote, martes 10).
 //

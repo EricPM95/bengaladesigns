@@ -33,7 +33,7 @@ const API = process.env.API_URL ?? 'http://localhost:8787'
 
 const { M, ponerVersion, limpiar } = await prepararSSR('scripts/destino/_tanda7_conexion_entrada.tsx')
 const {
-  createElement, renderToStaticMarkup, HojaResumenVuelo, NoticesSheet, useRouteStore, useAddFlowStore, quitarConDeshacer, useResumenVueloStore, useAvisosVueloStore, AvisosProbe, fetchArrivalInfo, datosParaMotor, llegadaVueltaDe,
+  createElement, renderToStaticMarkup, HojaResumenVuelo, NoticesSheet, useRouteStore, useAddFlowStore, quitarConDeshacer, cambiarConDeshacer, useResumenVueloStore, useAvisosVueloStore, AvisosProbe, fetchArrivalInfo, datosParaMotor, llegadaVueltaDe,
   construirResumen, textoDiaCambiadoATu, TEXTO_AL_BORRAR, rehacerPorCambioDeVuelo, terminarRehacer, cortarRehacerPorVuelo, conservarLoCambiadoAMano, avisosParaLaCampana, bloqueDeReservasDelAviso, claveDeLosAvisos,
   mapGeneratedRouteToRoute, nombreDeDia, pasarDiaARoma, anadirExcursionEnDiaNuevo, vueltaCambiada,
 } = M
@@ -234,7 +234,7 @@ console.log('2. La hoja del resumen')
   const corto = viaje({ dias: 2, extra: { arrivalFlightTime: '16:00', arrivalPointId: 'fco' } })
   r = await items(corto, [{ que: 'hora', mitad: 'arrival' }])
   t = r.items.map((i) => i.texto)
-  debe(t.includes('El Coliseo lo tienes en «Si te sobra tiempo» del martes 10: si reservas la entrada, te lo ponemos en el día.'), '2 Si te sobra tiempo', `frases: ${JSON.stringify(t)}`)
+  debe(t.includes('El Coliseo lo tienes en «Lugares pendientes» del martes 10: si reservas la entrada, te lo ponemos en el día.'), '2 Si te sobra tiempo', `frases: ${JSON.stringify(t)}`)
   // La vuelta: la última mañana, un día casi entero y solo el camino, con el lugar de cada medio.
   const filas = [
     ['flight', 'fco', '17:00', 'El sábado 14 tienes una última mañana por Roma antes de irte al aeropuerto.'],
@@ -427,8 +427,9 @@ console.log('5. Quitar el vuelo, «Deshacer» y el rehacer')
   poner(curada)
   useResumenVueloStore.setState({ hoja: null, pendiente: null })
   useAddFlowStore.setState({ toast: null })
+  // (V76/V61) Borrar una reserva ya no lleva [Deshacer] (quitarConDeshacer solo hace el cambio); lo que aún lleva [Deshacer] es cambiarConDeshacer, que devuelve la ruta ENTERA sin abrir ninguna hoja.
   // Quitar la vuelta con «Deshacer» y el rehacer aún en marcha.
-  quitarConDeshacer('Vuelta quitada del viaje', () => useRouteStore.getState().removeFlightLeg('departure'))
+  cambiarConDeshacer('Vuelta quitada del viaje', () => useRouteStore.getState().removeFlightLeg('departure'))
   debe(rehacerAntiguo({ que: 'quitar', mitad: 'departure' }) === true && llamadas.length === 1 && useRouteStore.getState().rehaciendoRuta === true, '5 rehacer', 'quitar el vuelo debe poner en marcha el rehacer')
   debe(useResumenVueloStore.getState().pendiente?.cambios.length === 1 && useResumenVueloStore.getState().pendiente.generacion === useRouteStore.getState().rehacerGeneracion, '5 pendiente', 'el rehacer debe quedar anotado con su generación')
   debe(typeof useAddFlowStore.getState().toast?.alDeshacer === 'function', '5 Deshacer corta', 'el aviso «Deshacer» debe llevar el corte del rehacer')
@@ -440,7 +441,7 @@ console.log('5. Quitar el vuelo, «Deshacer» y el rehacer')
   poner(curada)
   useAddFlowStore.setState({ toast: null })
   const diasAntes = JSON.stringify(curada.days)
-  quitarConDeshacer('Vuelta quitada del viaje', () => useRouteStore.getState().removeFlightLeg('departure'))
+  cambiarConDeshacer('Vuelta quitada del viaje', () => useRouteStore.getState().removeFlightLeg('departure'))
   rehacerAntiguo({ que: 'quitar', mitad: 'departure' })
   const generacion = useRouteStore.getState().rehacerGeneracion
   const rehecha = { ...useRouteStore.getState().route, days: useRouteStore.getState().route.days.map((d) => ({ ...d, stops: [] })) }

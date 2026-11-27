@@ -1,5 +1,5 @@
 // V74 (34): Lanzarote, el ÚLTIMO día en HOY con el vuelo de vuelta puesto y SIN Reorganizar: la hora de salir al aeropuerto sale del motor de coche (se calcula una vez).
-// SOLO capturas (iPhone 390x844). La API con DESTINOS_OCULTOS='-'. Por la cola:
+// SOLO capturas (iPhone 390x844). La API normal. Por la cola:
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/capturasV74_lanza.mjs [antes|despues]
 // «antes» = sin pedir el plan de la vuelta (`window.__sinPlanDeVuelta`, solo en desarrollo): HOY solo dice «Devuelve el coche en la T1». Guarda docs/dias/V74_capturas/lanza_ultimo_dia_<fase>.jpg.
 import fs from 'node:fs'

@@ -1,6 +1,6 @@
 // V73 (apartados 4, 5 y 5b): SOLO capturas (no es una prueba) en modo iPhone (390x844) de MAÑANA, el botón del alojamiento y el bloque «Coche» de RESERVAS. Un solo Chrome por vez, que se cierra al acabar. Por la cola:
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/capturasV73_b.mjs lanza|roma <caso>
-// Casos de Lanzarote (la API con DESTINOS_OCULTOS='-'): sinreserva, conreserva, porlibre, normal, viento, lluvia, reservas. De Roma: normal, alojamiento.
+// Casos de Lanzarote (la API normal): sinreserva, conreserva, porlibre, normal, viento, lluvia, reservas. De Roma: normal, alojamiento.
 // Guarda docs/dias/V73_capturas/<modo>_<caso>_app.jpg y escribe docs/dias/V73_log_b_<modo>_<caso>.json con el texto de la pantalla.
 import fs from 'node:fs'
 import path from 'node:path'

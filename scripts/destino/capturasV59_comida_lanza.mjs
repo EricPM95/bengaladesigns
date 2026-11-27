@@ -1,4 +1,4 @@
-// V59 §3 Lanzarote (en coche): la tarjeta de la comida (con restaurante, ya en el restaurante y sin restaurante). Solo observa y captura (iPhone 390x844). Exige la API con DESTINOS_OCULTOS='-'. Por la cola:
+// V59 §3 Lanzarote (en coche): la tarjeta de la comida (con restaurante, ya en el restaurante y sin restaurante). Solo observa y captura (iPhone 390x844). Exige la API normal. Por la cola:
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/capturasV59_comida_lanza.mjs
 import fs from 'node:fs'
 import path from 'node:path'

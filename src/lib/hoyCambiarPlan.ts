@@ -13,7 +13,7 @@ import type { ChosenRestaurant, Coordinates, DayPlan, Route, Stop } from './type
  *
  * Reglas (Eric, 5-nov):
  *  · Reservas y turnos (lo FIJO), nunca se tocan.
- *  · Prioridad para absorber un retraso: primero lo opcional (opcionales de Lanzarote y «Si te sobra tiempo»), luego lo flexible (nivel 3), luego lo principal (resto de nivel 2). Lo imprescindible
+ *  · Prioridad para absorber un retraso: primero lo opcional (opcionales de Lanzarote y «Lugares pendientes»), luego lo flexible (nivel 3), luego lo principal (resto de nivel 2). Lo imprescindible
  *    (imprescindibles, joyas, el atardecer del día), SOLO preguntando: es la última propuesta y solo sale si no hay otra.
  *  · Siempre el cambio MÁS PEQUEÑO: la mínima cantidad de paradas y de la clase más baja posible.
  *  · Al viajero, sin minutos: «Vas con algo de retraso. Buscamos el ajuste más pequeño…».
@@ -289,7 +289,7 @@ export interface Propuesta {
   ops: Op[]
   /** Toca algo imprescindible: solo se ofrece preguntando (el botón dice «Sí, hazlo»). */
   pregunta?: boolean
-  /** Pasar a otro día / añadir: cabe sin tocar nada (a), cabe quitando algo (b) o no cabe (c, «Si te sobra tiempo»). */
+  /** Pasar a otro día / añadir: cabe sin tocar nada (a), cabe quitando algo (b) o no cabe (c, «Lugares pendientes»). */
   caso?: 'a' | 'b' | 'c'
   /** (V43 §6) El aviso que sale al aplicarla, con [Deshacer]: qué ha pasado. */
   avisoTexto?: string
@@ -397,12 +397,12 @@ export function colocarEnDia(day: DayPlan, stop: Stop, ctx: Contexto, opciones: 
       salida.push({ caso: 'b', ops, sale: e.it.stop, hora: n.time })
     }
   }
-  // c) No cabe: al final del día, en «Si te sobra tiempo».
+  // c) No cabe: al final del día, en «Lugares pendientes».
   salida.push({ caso: 'c', ops: [{ t: 'sobra_meter', dia: day.id, stop: { ...paraOtroDia(stop), spareReason: 'La pasaste desde otro día.' } }] })
   return salida
 }
 
-/** Pasar una parada a otro día (el viajero elige el día; sale uno de los tres casos). La primera es la mejor; `Ver otra opción` baja a «Si te sobra tiempo». */
+/** Pasar una parada a otro día (el viajero elige el día; sale uno de los tres casos). La primera es la mejor; `Ver otra opción` baja a «Lugares pendientes». */
 export function proponerPasarADia(p: { route: Route; day: DayPlan; stop: Stop; destinoId: string; ctx: Contexto }): { propuestas: Propuesta[]; razon?: 'fija' | 'sin_dia' } {
   const { route, day, stop, ctx } = p
   const destino = route.days.find((d) => d.id === p.destinoId)
@@ -419,23 +419,23 @@ export function proponerPasarADia(p: { route: Route; day: DayPlan; stop: Stop; d
     const f = items.find((it) => it.fija)
     return f ? { titulo: `tus reservas del ${dest}`, detalle: 'Las horas fijas no se tocan.' } : { titulo: `lo importante del ${dest}`, detalle: 'Lo imprescindible no se toca.' }
   }
-  // (V43 §4) Solo la MEJOR forma en ESE día (cabe · cabe quitando algo flexible · al final, en «Si te sobra tiempo»): el viajero no ve [Ver otra opción], sino [Elegir otro día].
+  // (V43 §4) Solo la MEJOR forma en ESE día (cabe · cabe quitando algo flexible · al final, en «Lugares pendientes»): el viajero no ve [Ver otra opción], sino [Elegir otro día].
   const propuestas = colocarEnDia(destino, stop, ctx).slice(0, 1).map((c): Propuesta => {
     const quitadas = c.sale ? [{ id: c.sale.id, nombre: nombre(c.sale), clase: claseDe(c.sale, ctx.fijasDe(destino), ctx.datos), destino: 'otro' as const }] : []
-    const resumenDia: NonNullable<Propuesta['resumen']> = [{ icono: 'mover', texto: c.caso === 'c' ? `${n} va al final del ${dest}, en «Si te sobra tiempo»` : `${n} pasa al ${dest}` }, ...(c.sale ? [{ icono: 'quitar' as const, texto: `${nombre(c.sale)} pasa a «Si te sobra tiempo»` }] : []), { icono: 'ok', texto: `Sigue igual: el resto de tu ${hoy}` }]
+    const resumenDia: NonNullable<Propuesta['resumen']> = [{ icono: 'mover', texto: c.caso === 'c' ? `${n} va al final del ${dest}, en «Lugares pendientes»` : `${n} pasa al ${dest}` }, ...(c.sale ? [{ icono: 'quitar' as const, texto: `${nombre(c.sale)} pasa a «Lugares pendientes»` }] : []), { icono: 'ok', texto: `Sigue igual: el resto de tu ${hoy}` }]
     const iso = ctx.fechaDe?.(destino) ?? null
     const semanaCorta = iso ? ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'][new Date(`${iso}T12:00:00Z`).getUTCDay()] : `DÍA`
     const numero = iso ? String(Number(iso.slice(8, 10))) : String(destino.dayNumber)
     const iDespues = c.despuesDe ? delDia(destino).findIndex((s) => s.id === c.despuesDe?.id) : -1
     const mitad = Math.max(1, Math.ceil(delDia(destino).length / 2))
-    const cuando = c.caso === 'c' ? `Al final del ${dest.replace(/ \d+$/, '')} · «Si te sobra tiempo»` : iDespues >= mitad ? 'Por la tarde' : 'Por la mañana'
+    const cuando = c.caso === 'c' ? `Al final del ${dest.replace(/ \d+$/, '')} · «Lugares pendientes»` : iDespues >= mitad ? 'Por la tarde' : 'Por la mañana'
     const tarjetaDia = { nombre: n, fotoUrl: stop.photoUrl || stop.fixedPhotoUrl || '', cuando, semanaCorta, numero, destino: dest, diaDeHoy: ctx.etiquetaDia(day), parada: stop, ciudad: day.city }
     const base = { tarjetaDia, tipo: 'otro_dia' as const, caso: c.caso, boton: `Pasarlo al ${dest}`, resumen: resumenDia, quitadas, corridas: 0, intactas: items.filter((it) => it.fija).map((it) => it.stop.id), ops: [sacar, ...c.ops] }
     if (c.caso === 'a')
       return { ...base, id: `otro-dia-a-${destino.id}`, intro: `Podemos pasarte ${n} al ${dest}${c.despuesDe ? `, después de ${nombre(c.despuesDe)}` : ''}.`, cambia: { titulo: `${n} pasa al ${dest}`, detalle: c.despuesDe ? `Entra después de ${nombre(c.despuesDe)}.` : 'Entra al empezar el día.' }, mantiene: { titulo: `el resto de tu ${hoy}`, detalle: 'Sin cambios.' } }
     if (c.caso === 'b')
-      return { ...base, id: `otro-dia-b-${destino.id}`, intro: `Para meter ${n} el ${dest}, tendríamos que quitar ${nombre(c.sale as Stop)}.`, cambia: { titulo: `entra ${n}, sale ${nombre(c.sale as Stop)}`, detalle: `${nombre(c.sale as Stop)} es flexible: la dejamos en «Si te sobra tiempo».` }, mantiene: mantieneDia() }
-    return { ...base, id: `otro-dia-c-${destino.id}`, intro: `No cabe en tus otros días sin estropearlos. Si te hace ilusión, lo dejamos al final del ${dest}, como «Si te sobra tiempo».`, cambia: { titulo: `${n}, al final del ${dest}`, detalle: 'Va aparte, en «Si te sobra tiempo».' }, mantiene: { titulo: 'todo lo demás', detalle: 'Tu ruta sigue igual.' } }
+      return { ...base, id: `otro-dia-b-${destino.id}`, intro: `Para meter ${n} el ${dest}, tendríamos que quitar ${nombre(c.sale as Stop)}.`, cambia: { titulo: `entra ${n}, sale ${nombre(c.sale as Stop)}`, detalle: `${nombre(c.sale as Stop)} es flexible: la dejamos en «Lugares pendientes».` }, mantiene: mantieneDia() }
+    return { ...base, id: `otro-dia-c-${destino.id}`, intro: `No cabe en tus otros días sin estropearlos. Si te hace ilusión, lo dejamos al final del ${dest}, como «Lugares pendientes».`, cambia: { titulo: `${n}, al final del ${dest}`, detalle: 'Va aparte, en «Lugares pendientes».' }, mantiene: { titulo: 'todo lo demás', detalle: 'Tu ruta sigue igual.' } }
   })
   return { propuestas }
 }
@@ -467,7 +467,7 @@ export interface OpcionDeDia {
   visitas: number
 }
 
-/** Todos los días POSTERIORES a hoy que admiten paradas, con cómo encaja la parada en cada uno (cabe, quitando algo flexible, o al final en «Si te sobra tiempo»). */
+/** Todos los días POSTERIORES a hoy que admiten paradas, con cómo encaja la parada en cada uno (cabe, quitando algo flexible, o al final en «Lugares pendientes»). */
 export function opcionesDeDia(p: { route: Route; day: DayPlan; stop: Stop; ctx: Contexto; dias?: DayPlan[] }): OpcionDeDia[] {
   const { route, day, stop, ctx } = p
   const lista = p.dias ?? route.days
@@ -773,7 +773,7 @@ export function proponerRetraso(p: { route: Route; day: DayPlan; paradaId: strin
           : aDiaQ.length
             ? 'Ese día cabe sin llenarlo y está abierto.'
             : soloOpc.length
-              ? 'Es opcional: queda en «Si te sobra tiempo».'
+              ? 'Es opcional: queda en «Lugares pendientes».'
               : 'Todo cabe: no quitamos nada.'
     const mantiene = mantieneDe(items, ctx)
     const cambiaTitulo = pregunta ? `Dejamos ${unir(quitadas.map((q) => q.nombre))}` : titulo
@@ -1046,7 +1046,7 @@ export function proponerAnadir(p: { route: Route; day: DayPlan; stop: Stop; ctx:
         }
         const nombres = quitadas.map((x) => x.nombre)
         const aMan = quitadas.some((x) => x.destino !== 'sobra')
-        salida.push({ id: k, tipo: 'anadir', caso: 'b', intro: `Para incluir ${n}, tendríamos que mover ${unir(nombres)}.`, cambia: { titulo: `${unir(nombres)} pasa${nombres.length > 1 ? 'n' : ''} ${aMan ? 'a la mañana de mañana' : 'a «Si te sobra tiempo»'}`, detalle: `Así ${n} entra hoy.` }, mantiene: { titulo: 'tus reservas', detalle: 'Las horas fijas no se tocan.' }, ops, quitadas, corridas: sim.nuevas.size, intactas: items.filter((it) => it.fija).map((it) => it.stop.id) })
+        salida.push({ id: k, tipo: 'anadir', caso: 'b', intro: `Para incluir ${n}, tendríamos que mover ${unir(nombres)}.`, cambia: { titulo: `${unir(nombres)} pasa${nombres.length > 1 ? 'n' : ''} ${aMan ? 'a la mañana de mañana' : 'a «Lugares pendientes»'}`, detalle: `Así ${n} entra hoy.` }, mantiene: { titulo: 'tus reservas', detalle: 'Las horas fijas no se tocan.' }, ops, quitadas, corridas: sim.nuevas.size, intactas: items.filter((it) => it.fija).map((it) => it.stop.id) })
       }
     }
   }

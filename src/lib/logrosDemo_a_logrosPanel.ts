@@ -47,8 +47,8 @@ function cargarFuentes(): Promise<Fuentes> {
       dias: { roma: roma.dias, lanzarote: lanzarote.dias },
       fotos: { roma: { sin: roma.sin }, lanzarote: { sin: lanzarote.sin } },
       portadas: { roma: roma.portada, lanzarote: lanzarote.portada },
-      publicos: ['roma'],
-      ocultos: ['lanzarote'],
+      publicos: ['roma', 'lanzarote'],
+      ocultos: [],
       avisos: [],
       ajustes: ajustesJson,
     }

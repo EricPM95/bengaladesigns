@@ -1,5 +1,5 @@
 // V67 (apartado 3, L2): SOLO mira el día de llegada de Lanzarote (aterriza 9:30, vuelta 18:05, Costa Teguise, domingo 8-nov-2026). No es una prueba.
-//   APP_URL=http://localhost:5173 node scripts/destino/capturasV67_b_l2.mjs [antes|despues]   (la API con DESTINOS_OCULTOS='-')
+//   APP_URL=http://localhost:5173 node scripts/destino/capturasV67_b_l2.mjs [antes|despues]   (la API normal)
 import fs from 'node:fs'
 import path from 'node:path'
 import { abrirApp } from './_enLaApp.mjs'

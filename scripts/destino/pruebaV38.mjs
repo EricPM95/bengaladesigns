@@ -1,7 +1,7 @@
 // La prueba de la Tanda V38 (22-nov): avisos de cerrado con el día real, DÍAS (asa a la izquierda), «Crear mi propio día» (mapa en el destino, sin comida ni cena, «Añadir lugares»), iconos del filtro en el mapa,
 // título de la hoja de fechas, sorpresas por reclamar y ficha de los logros de viajero del Resumen. Es un ENVOLTORIO: corre cada parte (una a una, nunca dos Chrome a la vez) y suma sus fallos.
 //   node scripts/destino/pruebaV38.mjs   ·   node scripts/destino/pruebaV38.mjs parte=avisos   (avisos, dias o resumen)
-// Las partes de pantalla piden el Vite en 5173 y la API en 8787 con DESTINOS_OCULTOS=ninguno (Lanzarote visible).
+// Las partes de pantalla piden el Vite en 5173 y la API en 8787 normal (Lanzarote visible).
 import { spawnSync } from 'node:child_process'
 
 const PARTES = [

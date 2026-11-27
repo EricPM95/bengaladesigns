@@ -33,7 +33,8 @@ const ajustes = datos.ajustes
 console.log('1. Los datos de Lanzarote')
 debe(Boolean(L), 'datos', 'Lanzarote tiene logros (DESTINOS_CON_LOGROS)')
 {
-  const avisos = validarDatos(datos, catalogos)
+  // (V67) Haría se partió en dos paradas (`haria_pueblo` y `casa_museo_cesar_manrique`); la entrada vieja `haria_y_la_casa_museo_cesar_manrique` de `sitios_de_parada` queda sin parada en el catálogo (los viajes ya creados se corrigen al abrirlos, `migrarHariaPartida`) y se deja a propósito: es el único aviso permitido.
+  const avisos = validarDatos(datos, catalogos).filter((a) => !/haria_y_la_casa_museo_cesar_manrique/.test(`${a.donde} ${a.texto}`))
   const malos = avisos.filter((a) => a.nivel === 'error' && a.donde.startsWith('lanzarote'))
   debe(malos.length === 0, 'validar', `validarDatos sin errores en Lanzarote: ${malos.map((a) => a.donde + ' ' + a.texto).join('; ')}`)
   const sueltos = avisos.filter((a) => a.donde.startsWith('lanzarote'))
@@ -174,7 +175,7 @@ const tiene = (items, logro, escalon) => items.has(clave('lanzarote', logro, esc
 /* ───────── 4. Oculto ───────── */
 console.log('4. Lanzarote oculto')
 {
-  debe(DESTINOS_OCULTOS.has('lanzarote') || process.env.DESTINOS_OCULTOS !== undefined, 'oculto', 'Lanzarote está en DESTINOS_OCULTOS')
+  debe(DESTINOS_OCULTOS.size === 0 || process.env.DESTINOS_OCULTOS !== undefined, 'oculto', 'V77: por defecto no hay destinos ocultos (Lanzarote se publicó); el mecanismo sigue con ocultos explícitos')
   const ocultos = new Set(['lanzarote'])
   const raiz = new URL('../../data', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1').replace(/%20/g, ' ')
   const publica = leerDestinosCurados(raiz, { esAdmin: false, ocultos })

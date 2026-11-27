@@ -185,10 +185,10 @@ async function pasada(version) {
     await ev("document.querySelector('[data-eliminar-confirmar]')?.click(); true") // (V75) la papelera ahora pide confirmar: [Sí, eliminar]
     await a.esp(1200)
     const quedan = await R("return st().reservations.filter((x) => x.refId === 'pompeya_sorrento').length")
-    debe(quedan === 0, 'papelera', 'la papelera quita la excursión (con su Deshacer)')
+    debe(quedan === 0, 'papelera', 'la papelera quita la excursión (sin Deshacer: V77, 30)')
     const hayBillete = await ev("(async () => { const S = await import('/src/store/useBilleteStore.ts'); return Boolean(S.useBilleteStore.getState().datos.excursiones?.pompeya_sorrento) })()")
     debe(hayBillete === false, 'papelera', 'y se lleva su billete')
-    debe(await ev("Array.from(document.querySelectorAll('button')).some((b) => /Deshacer/.test(b.textContent || ''))"), 'papelera', 'sale «Deshacer»')
+    debe(!(await ev("Array.from(document.querySelectorAll('button')).some((b) => /Deshacer/.test(b.textContent || ''))")), 'papelera', '(V77, 30) borrar una reserva NO lleva «Deshacer»')
   } finally {
     a.cerrar()
   }

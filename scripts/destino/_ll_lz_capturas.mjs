@@ -1,5 +1,5 @@
 // Capturas 390x844 de la tanda LL (Lanzarote): los 6 días del viaje de Eric (llegada 08:25 el dom 8-nov, vuelta 19:40 el vie 13-nov, Costa Teguise, alquiler, con pase),
-// un día de llegada de la fila C y otro de la fila F. Un Chrome por la cola; la API con DESTINOS_OCULTOS='-' y el Vite estable en 5173.
+// un día de llegada de la fila C y otro de la fila F. Un Chrome por la cola; la API normal y el Vite estable en 5173.
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/_ll_lz_capturas.mjs
 import fs from 'node:fs'
 import path from 'node:path'

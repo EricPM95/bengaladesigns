@@ -1,6 +1,6 @@
 // La prueba de la Tanda V18: EXPLORAR (temas como botones, Bodegas con 3 sitios), pantallas de logros al instante, «Mi colección» del mismo tamaño,
 // el día de excursión (Design E1 a E5), los dos botones flotantes iguales, el pase en verde y el nombre «Dia 2 Lunes».
-//   (API con DESTINOS_OCULTOS='-' en 8787 y Vite recién arrancado en 5173)   node scripts/destino/_conCola.mjs node scripts/destino/pruebaV18.mjs
+//   (API normal en 8787 y Vite recién arrancado en 5173)   node scripts/destino/_conCola.mjs node scripts/destino/pruebaV18.mjs
 import fs from 'node:fs'
 import { abrirApp } from './_enLaApp.mjs'
 import { etiquetasDeExcursion, textoDeRutaPorDestino } from '../../src/lib/excursionEtiquetas.ts'

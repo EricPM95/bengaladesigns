@@ -96,7 +96,7 @@ console.log('2. El mapa de la primera pantalla')
 const raizDatos = 'data'
 {
   const lista = leerDestinosCurados(raizDatos)
-  debe(lista.length === 1 && lista[0].clave === 'roma' && lista[0].nombre === 'Roma' && lista[0].iso === 'it', 'destinos', 'hoy, de los datos, solo sale Roma')
+  debe(lista.map((d) => d.clave).sort().join() === 'lanzarote,roma' && lista.find((d) => d.clave === 'roma').nombre === 'Roma' && lista.find((d) => d.clave === 'roma').iso === 'it', 'destinos', 'hoy, de los datos, salen Roma y Lanzarote (V77: Lanzarote ya no está oculto)')
   // Con otro destino curado de mentira (en una carpeta de datos de prueba) sale también; si le falta algo de lo que hace «curado», no.
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'jutrip-datos-'))
   const poner = (ruta, texto = '{}') => {
@@ -122,14 +122,15 @@ const raizDatos = 'data'
   debe(prueba.map((d) => d.clave).join() === 'mentira,roma', 'destinos', `con uno de mentira salen los dos, y los que no están completos (sin pase, sin pin, con un archivo roto) no (${prueba.map((d) => d.clave).join()})`)
   fs.rmSync(tmp, { recursive: true, force: true })
   const r = await fetch(`${API}/api/destinos-curados`).then((x) => x.json())
-  debe(r.ok && r.destinos.length === 1 && r.destinos[0].nombre === 'Roma' && Math.abs(r.destinos[0].lat - 41.9) < 0.1, 'destinos', 'el servidor da la misma lista: GET /api/destinos-curados')
+  const romaApi = r.destinos?.find((d) => d.clave === 'roma')
+  debe(r.ok && r.destinos.map((d) => d.clave).sort().join() === 'lanzarote,roma' && romaApi?.nombre === 'Roma' && Math.abs(romaApi.lat - 41.9) < 0.1, 'destinos', 'el servidor da la misma lista, sin ser administrador: GET /api/destinos-curados (Roma y Lanzarote)')
 }
 {
   const dispositivo = await abrirApp('http://localhost:5173', { ruta: '/?cuentas=off' })
   for (let i = 0; i < 120 && !(await dispositivo.evaluar("Boolean(document.querySelector('[data-primera-pantalla]'))").catch(() => false)); i++) await dispositivo.esp(500)
   await dispositivo.esp(3000)
   const pines = await dispositivo.evaluar("Array.from(document.querySelectorAll('[data-pin]')).map((e) => e.getAttribute('data-pin'))")
-  debe(pines.length === 1 && pines[0] === 'Roma', 'mapa', `en el mapa solo sale Roma (${pines.join()})`)
+  debe(pines.length === 2 && pines.includes('Roma') && pines.includes('Lanzarote'), 'mapa', `en el mapa salen Roma y Lanzarote (${pines.join()})`)
   const trazado = await dispositivo.evaluar("(document.querySelector('[data-mapa-primera] svg path')?.getAttribute('d') ?? '').length")
   debe(trazado > 20000, 'mapa', `la silueta de la tierra está dibujada (${trazado} caracteres de trazado)`)
   // Nada a internet para dibujar el mapa: solo la propia app y las tipografías de la página. (El buscador del origen sí pide a Mapbox, pero solo al escribir.)
@@ -155,11 +156,12 @@ const raizDatos = 'data'
   for (let i = 0; i < 120 && !(await conMentira.evaluar("Boolean(document.querySelector('[data-primera-pantalla]'))").catch(() => false)); i++) await conMentira.esp(500)
   await conMentira.esp(2500)
   const pines2 = await conMentira.evaluar("Array.from(document.querySelectorAll('[data-pin]')).map((e) => e.getAttribute('data-pin')).sort()")
-  debe(pines2.join() === 'Cancún,Roma' || pines2.includes('Roma'), 'mapa', `con un destino curado de mentira (Cancún) sale también (${pines2.join()})`)
+  // (La comprobación era ya esta de antes —Cancún sale en la fila de DESTINO, pero su pin no siempre—: se deja igual, solo con lo que importa del mapa.)
+  debe(pines2.includes('Roma'), 'mapa', `con un destino curado de mentira (Cancún) sale también (${pines2.join()})`)
   await conMentira.evaluar("(() => { const e = document.querySelector('[data-campo-destino]'); e.click(); e.focus(); return true })()")
   await conMentira.esp(1200)
   const tarjetas = await conMentira.evaluar("Array.from(document.querySelectorAll('[data-destino-card]')).map((e) => e.getAttribute('data-destino-card')).sort()")
-  debe(tarjetas.join() === 'Cancún,Roma', 'mapa', `y también se puede elegir de la fila de DESTINO (${tarjetas.join()})`)
+  debe(tarjetas.includes('Cancún') && tarjetas.includes('Roma'), 'mapa', `y también se puede elegir de la fila de DESTINO (${tarjetas.join()})`)
   conMentira.cerrar()
 }
 {

@@ -5,7 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { HojaResumenVuelo } from '../../src/components/route/reservas/HojaResumenVuelo'
 import { NoticesSheet } from '../../src/components/layout/NoticesSheet'
 import { useRouteStore } from '../../src/store/useRouteStore'
-import { useAddFlowStore, quitarConDeshacer } from '../../src/store/useAddFlowStore'
+import { useAddFlowStore, quitarConDeshacer, cambiarConDeshacer } from '../../src/store/useAddFlowStore'
 import { useResumenVueloStore } from '../../src/store/useResumenVueloStore'
 import { useAvisosVueloStore } from '../../src/store/useAvisosVueloStore'
 import { useAppNotices } from '../../src/hooks/useAppNotices'
@@ -28,7 +28,7 @@ function AvisosProbe() {
 }
 
 export {
-  createElement, renderToStaticMarkup, HojaResumenVuelo, NoticesSheet, useRouteStore, useAddFlowStore, quitarConDeshacer, useResumenVueloStore, useAvisosVueloStore, AvisosProbe, fetchArrivalInfo, datosParaMotor, llegadaVueltaDe,
+  createElement, renderToStaticMarkup, HojaResumenVuelo, NoticesSheet, useRouteStore, useAddFlowStore, quitarConDeshacer, cambiarConDeshacer, useResumenVueloStore, useAvisosVueloStore, AvisosProbe, fetchArrivalInfo, datosParaMotor, llegadaVueltaDe,
   construirResumen, textoDiaCambiadoATu, TEXTO_AL_BORRAR, conFechasDeLosDias, textoDeLaVuelta, rehacerPorCambioDeVuelo, terminarRehacer, cortarRehacerPorVuelo, conservarLoCambiadoAMano, avisosParaLaCampana, bloqueDeReservasDelAviso,
   claveDeLosAvisos, mapGeneratedRouteToRoute, nombreDeDia, pasarDiaARoma, anadirExcursionEnDiaNuevo, vueltaCambiada,
 }

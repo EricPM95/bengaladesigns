@@ -83,7 +83,10 @@
     "cocina": "producto de la isla (cabra, pescado local, verduras), con parrilla Josper. Unos 45 € por persona.",
     "horario": "comidas todos los días de 13:00 a 16:00; cenas desde las 17:30 o las 18:00 hasta las 22:00 (Michelin).",
     "reserva": "sí, y sobre todo el sábado.",
-    "cierra_dias": []
+    "cierra_dias": [],
+    "lat": 29.146568,
+    "lng": -13.4993787,
+    "coord_fuente": "Guía Michelin, ficha de Tacande (Plaza del Castillo 5, Haría): coordenadas del punto de búsqueda de cercanos, que usa su posición (27-nov-2026). Aproximada: confirmar"
    },
    {
     "rol": "alternativa",
@@ -163,7 +166,10 @@
      1,
      2,
      3
-    ]
+    ],
+    "lat": 29.0602328,
+    "lng": -13.5604902,
+    "coord_fuente": "OpenStreetMap (Nominatim): Ikarus, Plaza de Clavijo y Fajardo, Teguise (27-nov-2026)"
    }
   ],
   "D3_cena": [
@@ -207,7 +213,10 @@
     "cierra_dias": [],
     "revisa_horario": [
      1
-    ]
+    ],
+    "lat": 28.8585431,
+    "lng": -13.8141875,
+    "coord_fuente": "Restaurant Guru (enlace de Google Maps de su ficha): Av. Marítima 159F, Playa Blanca (27-nov-2026)"
    },
    {
     "rol": "alternativa",
@@ -259,7 +268,10 @@
     "cocina": "pescado, marisco y arroces de la Reserva Marina. €€ según Michelin; Repsol habla de menús desde más de 60 €.",
     "horario": "todos los días de 13:00 a 21:30 (Michelin).",
     "reserva": "sí; suele estar lleno.",
-    "cierra_dias": []
+    "cierra_dias": [],
+    "lat": 29.1182114,
+    "lng": -13.56399,
+    "coord_fuente": "OpenStreetMap (Nominatim): Restaurante El Risco, 30, Calle Montaña Clara, Caleta de Famara (27-nov-2026)"
    },
    {
     "rol": "alternativa",
@@ -268,7 +280,10 @@
     "cocina": "pescado a la brasa y arroces. Precio sin confirmar.",
     "horario": "sin confirmar.",
     "cierra_dias": [],
-    "revisa_horario": true
+    "revisa_horario": true,
+    "lat": 29.1180305,
+    "lng": -13.5639027,
+    "coord_fuente": "OpenStreetMap (Nominatim): Costa Famara, Caleta de Famara (calle Aparejo, a unos 20 m de la Montaña Clara 28 del documento) (27-nov-2026)"
    }
   ],
   "D5_cena": [
@@ -278,7 +293,10 @@
     "direccion": "lanzarote.com da C/ Montaña Clara, 26; Mapstr da C/ Salvavidas, 48. Teléfono 928 528 788.",
     "cocina": "canaria moderna, con marisco y arroces. €€.",
     "horario": "de lunes a sábado de 12:00 a 22:00 y domingo de 12:00 a 21:30.",
-    "cierra_dias": []
+    "cierra_dias": [],
+    "lat": 29.1184626,
+    "lng": -13.5649958,
+    "coord_fuente": "OpenStreetMap (Nominatim): Restaurante Sol, calle Salvavidas, Caleta de Famara (la dirección de Mapstr del documento) (27-nov-2026)"
    },
    {
     "rol": "alternativa",
@@ -395,6 +413,37 @@
     "cocina": "tradicional, moderna y de tapas. €€.",
     "horario": "sin confirmar: un listado (Planomato) da de miércoles a lunes de 13:00 a 23:00 y cierra los martes.",
     "cierra_dias": [],
+    "revisa_horario": true,
+    "lat": 28.9623017,
+    "lng": -13.5466127,
+    "coord_fuente": "OpenStreetMap (Nominatim): Cala, Avenida César Manrique, Arrecife (27-nov-2026)"
+   },
+   {
+    "rol": "otra",
+    "nombre": "La Chalana del Charco",
+    "nota": "(Charco de San Ginés)",
+    "direccion": "Av. César Manrique, 15 (esquina calle Braulio de León, 2), Arrecife. Teléfono 682 34 92 69.",
+    "lat": 28.96217448,
+    "lng": -13.54626361,
+    "coord_fuente": "Restaurant Guru (enlace de Google Maps de su ficha): La Chalana del Charco (27-nov-2026)",
+    "cocina": "sin confirmar (restaurante del Charco de San Ginés).",
+    "horario": "sin confirmar: Restaurant Guru da todos los días de 11:30 a 00:30 excepto los miércoles, que cierra (27-nov-2026).",
+    "cierra_dias": [],
+    "revisa_horario": true
+   },
+   {
+    "rol": "otra",
+    "nombre": "Charco Vivo",
+    "nota": "(antigua Casa Ginory; solo de día)",
+    "direccion": "Calle Juan de Quesada, 9, Arrecife. Teléfono 928 81 19 10.",
+    "lat": 28.9619362,
+    "lng": -13.5440793,
+    "coord_fuente": "OpenStreetMap (Nominatim): Charco Vivo, calle Juan de Quesada, Arrecife (27-nov-2026)",
+    "cocina": "bar-restaurante de comidas del día; sin confirmar.",
+    "horario": "sin confirmar: Planomato da de lunes a viernes de 07:30 a 16:00 o 16:30 y cierra el domingo (el sábado no lo dice).",
+    "cierra_dias": [
+     0
+    ],
     "revisa_horario": true
    },
    {
@@ -497,7 +546,10 @@
      0,
      3,
      6
-    ]
+    ],
+    "lat": 28.9999799,
+    "lng": -13.4898175,
+    "coord_fuente": "OpenStreetMap (Nominatim): Sebe, Avenida Islas Canarias, Costa Teguise (27-nov-2026)"
    },
    {
     "nombre": "La Bohemia",

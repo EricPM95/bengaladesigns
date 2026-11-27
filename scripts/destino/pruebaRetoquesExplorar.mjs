@@ -1,6 +1,6 @@
 // RETOQUES_TARJETAS §5b y §5d (agente B): EXPLORAR de Lanzarote — categorías con foto e icono, y el mapa, los filtros y «En tu ruta» con sus números de verdad.
 //   API_URL=http://localhost:8787 APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/pruebaRetoquesExplorar.mjs
-// La API tiene que enseñar Lanzarote (DESTINOS_OCULTOS='-'). El apartado del navegador usa un Chrome por la cola y se salta si no hay APP_URL.
+// La API tiene que enseñar Lanzarote (Lanzarote ya es visible). El apartado del navegador usa un Chrome por la cola y se salta si no hay APP_URL.
 import fs from 'node:fs'
 import path from 'node:path'
 

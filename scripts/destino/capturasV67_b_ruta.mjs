@@ -1,5 +1,5 @@
 // V67 (apartado 3, P2/P3): SOLO capturas (no es una prueba) en iPhone 390x844 de RUTA (la tarjeta del viaje y su fila de botones) y del Perfil (la tarjeta del viaje con foto).
-//   APP_URL=http://localhost:5173 node scripts/destino/capturasV67_b_ruta.mjs <etiqueta: antes|despues> [lanza|roma]   (Lanzarote: la API con DESTINOS_OCULTOS='-')
+//   APP_URL=http://localhost:5173 node scripts/destino/capturasV67_b_ruta.mjs <etiqueta: antes|despues> [lanza|roma]   (Lanzarote: la API normal)
 import fs from 'node:fs'
 import path from 'node:path'
 import { abrirApp } from './_enLaApp.mjs'

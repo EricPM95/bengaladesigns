@@ -1365,6 +1365,18 @@ export function planListasTrip(args) {
         const item = base[c]
         return { lista: [...resto.slice(0, iRn + 1), ...mover.map((it) => (it.kind === 'stop' ? { ...it, franja: R.franja } : it)), ...resto.slice(iRn + 1)], sobra: null, nota: { id: item.id, lugar: item.titulo ?? item.lugar, sitio: item.lugar, que: 'orden', causa: `no cabe antes de ${R.lugar} (a las ${R.hora}): pasa detrás de la reserva, en su orden` } }
       }
+      // (V77, 17, Eric) Un Free Tour RESERVADO a las 10:00 (o antes de las 10:30) va primero de la mañana: solo un desayuno puede ir antes. Lo que había delante pasa detrás del tour, en su orden (nada se quita).
+      {
+        const tourDeManana = out.find((it) => it.tipo === 'tour' && !it.llegada && it.hora && it.franja === 'manana' && toMin(it.hora) <= 10 * 60 + 30 && esReservaFija(it))
+        if (tourDeManana) {
+          for (let k = 0; k < 14; k++) {
+            const r = pasarDetras(out, tourDeManana.id)
+            if (!r) break
+            out = r.lista
+            log.push({ ...r.nota, causa: `el Free Tour de las ${tourDeManana.hora} va primero de la mañana: ${r.nota.lugar} pasa detrás, en su orden` })
+          }
+        }
+      }
       for (let guard = 0; guard < 40; guard++) {
         const sim = simular(out)
         const tardeEn = sim.findIndex((it) => it.tarde > 0 && (esReservaFija(it) || (it.llegada && esReservaFija(out.find((o) => o.id === it.de) ?? {}))) && !imposibles.has(it.llegada ? it.de : it.id))

@@ -1,6 +1,6 @@
 // V53: SOLO capturas (no es una prueba) en modo iPhone (390x844). Un solo Chrome por vez, que se cierra al acabar cada parte. Por la cola:
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/capturasV53.mjs [parte]
-// Partes: hoy (6, 3, 2) · reservas (4, 7a) · reorganizar (7b, 3, 2, 1) · dias (5, Roma) · lanza (5 y 6 en Lanzarote; necesita la API con DESTINOS_OCULTOS='-')
+// Partes: hoy (6, 3, 2) · reservas (4, 7a) · reorganizar (7b, 3, 2, 1) · dias (5, Roma) · lanza (5 y 6 en Lanzarote; necesita la API normal)
 import fs from 'node:fs'
 import path from 'node:path'
 import { abrirApp } from './_enLaApp.mjs'

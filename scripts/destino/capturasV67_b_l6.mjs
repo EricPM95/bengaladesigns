@@ -1,5 +1,5 @@
 // V67 (apartado 3, L6): SOLO captura (no es una prueba) en iPhone 390x844 de HOY en Lanzarote con un mirador/playa de día pasada la puesta de sol (19:00) y, de contraste, a las 12:00.
-//   APP_URL=http://localhost:5173 node scripts/destino/capturasV67_b_l6.mjs   (la API con DESTINOS_OCULTOS='-')
+//   APP_URL=http://localhost:5173 node scripts/destino/capturasV67_b_l6.mjs   (la API normal)
 import fs from 'node:fs'
 import path from 'node:path'
 import { abrirApp } from './_enLaApp.mjs'

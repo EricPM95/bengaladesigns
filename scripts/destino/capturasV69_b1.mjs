@@ -1,6 +1,6 @@
 // V69 (apartado 1b, todas las hojas de propuesta): SOLO capturas (no es una prueba), modo iPhone 390x844, un Chrome que se cierra al acabar.
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/capturasV69_b1.mjs <viento|nubes|lluvia>
-// Lanzarote (domingo 8 de noviembre, HOY), el aviso del tiempo → [Ver cambio] → la hoja de propuesta. Hace falta la API con `DESTINOS_OCULTOS='-'` (Lanzarote está oculto).
+// Lanzarote (domingo 8 de noviembre, HOY), el aviso del tiempo → [Ver cambio] → la hoja de propuesta. Hace falta la API normal` (Lanzarote está oculto).
 import fs from 'node:fs'
 import path from 'node:path'
 import { abrirApp } from './_enLaApp.mjs'

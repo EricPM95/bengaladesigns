@@ -5,6 +5,7 @@ import { TuExcursionEnHoy } from '../hoy/TuExcursionEnHoy'
 import { TarjetaDeExcursionConTransporte } from '../hoy/v2/TarjetaDeTransporteHoy'
 import { unidasAUnaExcursion } from '../../../lib/reservasUnidas'
 import { excursionDeUnDia } from '../../../lib/bookings'
+import { BloqueDeConsejos, useConsejos } from '../hoy/v2/ConsejosDelDia'
 
 /**
  * HOY el día de excursión (Tanda 6g, punto 6): sale la excursión, su nombre y su hora de salida, con el código si está confirmada. Nada más. Si es de medio día, después salen los lugares
@@ -21,10 +22,12 @@ export function TodayExcursion({ route, day }: { route: Route; day: DayPlan }) {
   const afterwards = day.stops.filter((stop) => !stop.isNightExperience)
   // (V76, R9) La excursión por tu cuenta con su ferry, tren o autobús UNIDO: la tarjeta de la excursión con una fila por billete (SALIDA · Órzola…). Sin excursión organizada (sin reserva propia), sustituye a la tarjeta de siempre.
   const excursionDelDia = excursion ?? excursionDeUnDia(day)
+  // (V77, 13) «Consejos para la excursión» (Design «Consejos del día», C2), de los datos del destino; sin ellos, no sale.
+  const consejos = useConsejos(route.destination, [day.diaEscritoId, excursionDelDia?.id], [day.curatedTitle, excursionDelDia?.title])
   const unidas = excursionDelDia ? unidasAUnaExcursion(reservations, excursionDelDia.id) : []
   return (
     <div className="mx-4 space-y-3">
-      {unidas.length > 0 && <TarjetaDeExcursionConTransporte route={route} day={day} excursion={excursionDelDia} unidas={unidas} />}
+      {unidas.length > 0 && <TarjetaDeExcursionConTransporte route={route} day={day} excursion={excursionDelDia} unidas={unidas} consejos={consejos} />}
       {(unidas.length === 0 || reservation) && (
       <div className="rounded-2xl border border-text/[.08] bg-bg-card p-4 shadow-[0_1px_2px_rgba(28,34,48,.05)]">
         <p className="font-mono text-[10.5px] font-medium uppercase tracking-[.14em] text-accent">Excursión del día</p>
@@ -45,6 +48,7 @@ export function TodayExcursion({ route, day }: { route: Route; day: DayPlan }) {
           </p>
         )}
         {reservation && <p className="mt-2 text-[13px] font-medium text-accent-green">✓ Reservada{reservation.locator ? ` · ${reservation.locator}` : ''}</p>}
+        {unidas.length === 0 && consejos.length > 0 && <div className="mt-3"><BloqueDeConsejos consejos={consejos} cuando="la excursión" tono="claro" /></div>}
       </div>
       )}
       {/* (10R §4) Con el pase: «Tu excursión» con su código y [Cómo llegar al punto de encuentro]. */}

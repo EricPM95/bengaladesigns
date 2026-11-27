@@ -231,7 +231,7 @@ export function proponerAdelantar(p: { route?: Route; /** «Elegir otro día». 
   const resultado: Propuesta[] = []
   propuestas.forEach((original, i) => {
     let pr = original
-    // Lo que tiene horario no se manda «a la tarde» (se podría pasar su cierre): pasa a «Si te sobra tiempo», que es lo seguro.
+    // Lo que tiene horario no se manda «a la tarde» (se podría pasar su cierre): pasa a «Lugares pendientes», que es lo seguro.
     const aSobra = pr.quitadas.filter((q) => q.destino === 'otro' && conHorario.has(q.id))
     if (aSobra.length > 0) {
       const ids = new Set(aSobra.map((q) => q.id))

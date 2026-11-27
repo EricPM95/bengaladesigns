@@ -1,6 +1,6 @@
 // V64 (apartados 4-7): SOLO capturas (no es una prueba) en modo iPhone (390x844). Un solo Chrome por vez, que se cierra al acabar. Por la cola:
 //   APP_URL=http://localhost:5173 node scripts/destino/capturasV64_b.mjs roma|lanza|design [caso]
-// Casos de Roma: LV (Llegada y vuelta), LV2 (con la vuelta sin poner), D5a (alojamiento con 3 noches), D6 (hoja de zona), PAP (la papelera). De Lanzarote (API con DESTINOS_OCULTOS='-'): LZ (alojamiento y zona).
+// Casos de Roma: LV (Llegada y vuelta), LV2 (con la vuelta sin poner), D5a (alojamiento con 3 noches), D6 (hoja de zona), PAP (la papelera). De Lanzarote (API normal): LZ (alojamiento y zona).
 // Guarda docs/dias/V64_capturas/<id>_app.jpg y <id>_design.jpg.
 import fs from 'node:fs'
 import path from 'node:path'

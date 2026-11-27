@@ -1,4 +1,4 @@
-// LZ2b1 (agente B): LA APP de Lanzarote. Sin navegador. Con la API en 8787 (solo si enseña Lanzarote: DESTINOS_OCULTOS='-') comprueba también por HTTP.
+// LZ2b1 (agente B): LA APP de Lanzarote. Sin navegador. Con la API en 8787 comprueba también por HTTP.
 //   node scripts/destino/pruebaTandaLZ2b1_B.mjs
 // Comprueba: «Dónde aparcar» en la ficha (y nunca transporte), «Cerca de ti» con gasolineras y aparcamientos, EXPLORAR con las 7 categorías, sin la pregunta del coche en el formulario,
 // el interruptor «Coche de alquiler | Mi coche» de RESERVAS (misma ruta y mismos trayectos con los dos) y que ningún texto de Roma sale en un viaje a Lanzarote.
@@ -132,7 +132,7 @@ try {
     const rp = dia1p.j?.day?.llegada_aeropuerto?.recoger_coche_min
     debe(ra >= 30 && ra <= 45 && rp === 20, 'H9', `el día 1: recoger el coche ${ra} min (alquiler, de 30 a 45) y ${rp} min (propio, 20)`)
   } else {
-    console.log('(la API no enseña Lanzarote —está oculto—: se salta la parte por HTTP; arráncala con DESTINOS_OCULTOS=- para pasarla)')
+    console.log('(la API no enseña Lanzarote: se salta la parte por HTTP)')
   }
 } catch {
   console.log('(la API no responde: se salta la parte por HTTP)')

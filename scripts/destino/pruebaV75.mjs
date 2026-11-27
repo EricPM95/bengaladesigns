@@ -1,7 +1,7 @@
 // V75 · «+ Añadir una reserva», ferry / tren / autobús / otra, sus bloques, los tres iconos y borrar con la hoja. PRUEBA DE LO QUE SE GUARDA Y SE BORRA.
 //   APP_URL=http://localhost:5173 API_URL=http://localhost:8787 node scripts/destino/_conCola.mjs node scripts/destino/pruebaV75.mjs [pura|roma|lanza]      (sin argumento: las tres partes)
 // Parte 1 (pura, SIN navegador): las funciones de `src/lib/reservasExtra.ts` y `src/lib/queEliminar.ts`, empaquetadas con esbuild.
-// Parte 2 (Roma) y parte 3 (Lanzarote; exige la API con DESTINOS_OCULTOS='-'): un Chrome de prueba cada una, por la cola. No toca el Supabase de producción (cuentas=off, sin sesión).
+// Parte 2 (Roma) y parte 3 (Lanzarote; exige la API normal): un Chrome de prueba cada una, por la cola. No toca el Supabase de producción (cuentas=off, sin sesión).
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'

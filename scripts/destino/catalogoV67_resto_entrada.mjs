@@ -1,6 +1,6 @@
 // V65 (agente del apartado 1 y la parte visual del 2): SOLO capturas (no es una prueba) en modo iPhone (390x844) de la tarjeta guardada de la entrada y de la excursión. Un solo Chrome, que se cierra al acabar.
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/capturasV65_a1.mjs roma|lanza [caso]
-// Casos: D7a D7b D7c D7d D7d2 D7d_alicia comun solo libre excursion excursion_sin (Lanzarote: L_entrada L_excursion; la API con DESTINOS_OCULTOS='-').
+// Casos: D7a D7b D7c D7d D7d2 D7d_alicia comun solo libre excursion excursion_sin (Lanzarote: L_entrada L_excursion; la API normal).
 import fs from 'node:fs'
 import path from 'node:path'
 import { abrirApp } from './_enLaApp.mjs'

@@ -1,7 +1,7 @@
 // V64 (agente de los apartados 1 a 3): SOLO capturas (no es una prueba) en modo iPhone (390x844) de «añadir un documento», «Revisa los datos», la línea naranja y las tarjetas del vuelo y del tren en RESERVAS. Un solo Chrome por vez, que se cierra al acabar. Por la cola:
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/capturasV64_a1.mjs roma|lanza|design [caso]
 // Guarda docs/dias/catalogo/_tmp/<id>_app.jpg (la app) y <id>_design.jpg (su dibujo de Design) y escribe docs/dias/catalogo/_tmp/log_doc_a1_<modo>.json con el texto de cada pantalla.
-// Casos de Roma: D1_vuelo D1_tren D1_entrada D2 D3 D5 B1 B2 B3 hoy. De Lanzarote (la API con DESTINOS_OCULTOS='-'): L_D1 L_B1.
+// Casos de Roma: D1_vuelo D1_tren D1_entrada D2 D3 D5 B1 B2 B3 hoy. De Lanzarote (la API normal): L_D1 L_B1.
 import fs from 'node:fs'
 import path from 'node:path'
 import { abrirApp } from './_enLaApp.mjs'

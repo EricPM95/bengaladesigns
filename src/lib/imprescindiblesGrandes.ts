@@ -1,6 +1,6 @@
 /**
  * (Tanda 10S8, apartado 0b) Los imprescindibles GRANDES: los únicos que tienen su propio aviso («El Coliseo no cabe el jueves.» + [Pasarlo a otro día]) cuando un día adaptado al vuelo no
- * los deja caber. Los demás imprescindibles que no caben van juntos en UNA línea («Y 4 sitios más pasan a “Si te sobra tiempo”.» + [Ver]).
+ * los deja caber. Los demás imprescindibles que no caben van juntos en UNA línea («Y 4 sitios más pasan a “Lugares pendientes”.» + [Ver]).
  *
  * LA LISTA, POR DESTINO, ESTÁ AQUÍ y solo aquí: para otro destino se añade su clave (el nombre del destino sin tildes, en minúsculas) con trozos de nombre (sin tildes, en minúsculas).
  * Un destino que no esté en la lista no tiene «grandes» y todos sus imprescindibles avisan uno a uno, como en la 10S7c.
@@ -29,7 +29,7 @@ export function repartirNoCaben<T extends { nombre: string; imprescindible?: boo
   return { grandes, resto }
 }
 
-/** «Y 4 sitios más pasan a “Si te sobra tiempo”.» (singular: «Y 1 sitio más pasa a “Si te sobra tiempo”.») */
+/** «Y 4 sitios más pasan a “Lugares pendientes”.» (singular: «Y 1 sitio más pasa a “Lugares pendientes”.») */
 export function textoYMasSitios(cuantos: number): string {
-  return cuantos === 1 ? 'Y 1 sitio más pasa a “Si te sobra tiempo”.' : `Y ${cuantos} sitios más pasan a “Si te sobra tiempo”.`
+  return cuantos === 1 ? 'Y 1 sitio más pasa a “Lugares pendientes”.' : `Y ${cuantos} sitios más pasan a “Lugares pendientes”.`
 }

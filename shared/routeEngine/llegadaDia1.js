@@ -756,7 +756,7 @@ function finalizar(x) {
     if (!entradaDe || entradasAvisadas.has(entradaDe.nombre)) continue
     entradasAvisadas.add(entradaDe.nombre)
     const corto = x.nombreCorto(entradaDe.nombre)
-    avisos.push({ tipo: 'sitio_en_si_te_sobra', lugar: entradaDe.nombre, dayNumber: d.dia ?? 1, campana: false, botones: ['de_acuerdo'], texto: `${corto.charAt(0).toUpperCase()}${corto.slice(1)} lo tienes en «Si te sobra tiempo» del {dia:${d.dia ?? 1}}: si reservas la entrada, te lo ponemos en el día.` })
+    avisos.push({ tipo: 'sitio_en_si_te_sobra', lugar: entradaDe.nombre, dayNumber: d.dia ?? 1, campana: false, botones: ['de_acuerdo'], texto: `${corto.charAt(0).toUpperCase()}${corto.slice(1)} lo tienes en «Lugares pendientes» del {dia:${d.dia ?? 1}}: si reservas la entrada, te lo ponemos en el día.` })
   }
   // Lo que se deja fuera viaja con el día que lo recibe: `sobra_extra` (nunca restaurantes ni nocturnas: solo paradas).
   if (dejado.length > 0) {

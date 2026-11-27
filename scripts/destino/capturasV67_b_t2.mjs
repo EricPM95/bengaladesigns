@@ -1,5 +1,5 @@
 // V67 (apartado 3, T2): SOLO captura (no es una prueba) de DÍAS en Lanzarote (iPhone 390x844): el trayecto «En coche · 3 min · 1 km» en una línea con «+ Añadir parada».
-//   APP_URL=http://localhost:5173 node scripts/destino/capturasV67_b_t2.mjs   (la API con DESTINOS_OCULTOS='-')
+//   APP_URL=http://localhost:5173 node scripts/destino/capturasV67_b_t2.mjs   (la API normal)
 import fs from 'node:fs'
 import path from 'node:path'
 import { abrirApp } from './_enLaApp.mjs'

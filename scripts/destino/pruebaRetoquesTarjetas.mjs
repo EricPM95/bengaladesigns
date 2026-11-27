@@ -4,7 +4,7 @@
 //   3. La foto de la ficha, en grande.
 //   4. Los nombres cortos (solo lo que se ve) y las etiquetas del Faro.
 //   5. Después de la cena, nada; el aeropuerto solo el día de vuelta; [Ver restaurantes] sin restaurante.
-// Necesita el Vite estable (5173) y la API (8787) con DESTINOS_OCULTOS='-' para la parte del navegador (un solo Chrome, por la cola).
+// Necesita el Vite estable (5173) y la API (8787) normal para la parte del navegador (un solo Chrome, por la cola).
 //   APP_URL=http://localhost:5173 API_URL=http://localhost:8787 node scripts/destino/_conCola.mjs node scripts/destino/pruebaRetoquesTarjetas.mjs
 import fs from 'node:fs'
 import os from 'node:os'

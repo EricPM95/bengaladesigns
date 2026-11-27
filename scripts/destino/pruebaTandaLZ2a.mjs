@@ -54,7 +54,7 @@ const seg = coche.modes?.driving?.seconds ?? []
 debe(coche.points.length === 49 && seg.length === 49 && seg.every((fila, i) => fila.length === 49 && fila.every((v, j) => (i === j ? v === 0 : Number.isFinite(v) && v > 0))), 'la tabla de tiempos en coche está completa (49 × 49, sin huecos)')
 // Lanzarote oculto: ni en la lista pública ni en la de datos que llevan sus textos de Roma.
 const curados = fs.readFileSync('server/destinosCurados.js', 'utf8')
-debe(/DESTINOS_OCULTOS/.test(curados) && /'lanzarote'/.test(curados), 'Lanzarote está en la lista de destinos ocultos del servidor')
+debe(/DESTINOS_OCULTOS/.test(curados) && !curados.includes("['lanzarote']"), 'V77: el servidor sigue con el mecanismo de destinos ocultos, pero Lanzarote ya no está oculto por defecto')
 // Roma no cambia.
 const roma = leer('data/pipeline_v2/roma.json')
 debe(!JSON.stringify(roma).includes('Atlantic/Canary'), 'Roma no lleva nada de Lanzarote')

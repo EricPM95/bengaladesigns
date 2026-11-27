@@ -85,7 +85,7 @@ debe(r.next.spareStops.length === 6 || r.next.spareStops.length === 5, '2c', `to
 const reparto = lib.repartirNoCaben(r.noCaben, 'Roma')
 debe(reparto.grandes.map((x) => x.nombre).join() === 'Coliseo', '2d', `línea propia solo para el grande (${reparto.grandes.map((x) => x.nombre)})`)
 debe(reparto.resto.length === 4, '2e', `la línea «Y N…» cuenta 4: Panteón (imprescindible no grande) + 3 que no son imprescindibles (${reparto.resto.length})`)
-debe(lib.textoYMasSitios(reparto.resto.length) === 'Y 4 sitios más pasan a “Si te sobra tiempo”.', '2f', 'el texto: «Y 4 sitios más pasan a “Si te sobra tiempo”.»')
+debe(lib.textoYMasSitios(reparto.resto.length) === 'Y 4 sitios más pasan a “Lugares pendientes”.', '2f', 'el texto: «Y 4 sitios más pasan a “Lugares pendientes”.»')
 // Un destino sin lista de grandes: los imprescindibles, uno a uno; los que no lo son, siempre en la línea.
 const lisboa = lib.repartirNoCaben(r.noCaben, 'Lisboa')
 debe(lisboa.grandes.length === 2 && lisboa.resto.length === 3, '2g', 'sin lista de grandes: 2 imprescindibles con línea y 3 en «Y 3 sitios más…»')

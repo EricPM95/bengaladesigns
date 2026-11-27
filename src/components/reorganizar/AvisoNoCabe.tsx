@@ -40,7 +40,8 @@ export function AvisoNoCabe(): ReactNode {
     if (!dia) return
     const rutaStore = useRouteStore.getState()
     rutaStore.setMode('days')
-    rutaStore.setActiveDayId(dia.id)
+    // (V77) «Si te sobra tiempo» ya no existe: la lista única es «Lugares pendientes», al final de la lista de días.
+    rutaStore.setActiveDayId(null)
     useReorganizarStore.getState().verSobraTiempo(dia.id)
   }
   return (

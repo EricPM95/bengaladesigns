@@ -1,4 +1,4 @@
-// Prueba extremo a extremo por HTTP (LZ2a): API en 8787 arrancada con DESTINOS_OCULTOS='-'. node scripts/destino/_httpLZ2a.mjs
+// Prueba extremo a extremo por HTTP (LZ2a): API en 8787 arrancada normal. node scripts/destino/_httpLZ2a.mjs
 const B = 'http://localhost:8787'
 const post = async (r, b) => { const x = await fetch(B + r, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) }); let j = null; try { j = await x.json() } catch {} return { s: x.status, j } }
 const answers = (extra = {}) => ({ origin: 'Madrid', days: 6, companion: 'pareja', experiences: ['imprescindibles'], experiencesPositive: ['imprescindibles'], chronotype: 'normal', budgetLevel: 'medio', dateRange: { start: '2026-11-08', end: '2026-11-13' }, month: 11, season: 'invierno', ...extra })

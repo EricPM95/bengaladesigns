@@ -24,10 +24,20 @@ import { fechaDelDia } from './nombreDeDia'
 import { hasRealCoordinates, haversineMeters } from './distanceMock'
 import { esSoloDeDia, minutosDeLaHora } from './sitiosDeDia'
 import { atardecerDelDestino, horaDelSol } from './puestaDeSolYManana'
+import { FREE_TOUR_HORAS } from '../../shared/routeEngine/freeTourHoras.js'
 
 /** (V74) Lo máximo que se saca de un día para hacerle sitio a UNA parada importante: más sería rehacer el día (el cambio ya no sería el mínimo); si no cabe así, va a «Lugares pendientes». */
 const MAX_SACADOS = 8
 const MOTIVO_VUELO = 'Con tu vuelo no te da tiempo ese día.'
+
+/** (V77, 17) El Free Tour sin reserva solo sale a sus horas reales (10, 12, 15, 17, 19, 21: `freeTourHoras.js`), nunca a una hora que no existe (16:40): la primera hora real que no sea antes de `min` (minutos); null si ya no queda ninguna. */
+export function horaRealDelFreeTour(min: number): number | null {
+  for (const { hora } of FREE_TOUR_HORAS as { hora: string }[]) {
+    const m = Number(hora.slice(0, 2)) * 60 + Number(hora.slice(3, 5))
+    if (m >= min) return m
+  }
+  return null
+}
 
 /** El nombre de un sitio sin la nota entre paréntesis del final («Piazza Navona (noche)» = «Piazza Navona»): con él se emparejan los sitios de antes y de después. */
 export const claveDeSitio = (name: string): string => normalizaNombre(name.replace(/\s*\([^)]*\)\s*$/, ''))
@@ -38,6 +48,8 @@ const esFijo = (stop: Stop): boolean => Boolean(stop.reservedId || stop.reservat
 const esReserva = (stop: Stop): boolean => Boolean(stop.reservedId || (stop.reservationTime && !stop.isFreeTour))
 /** (V74) Un «de camino» (una calle, una fuente de paso: `passThrough`) no es una visita ni vale lo mismo: cuando algo tiene que salir de un día, sale el primero, sin preguntar ni avisar, y nunca va a «Lugares pendientes». */
 const esDeCamino = (stop: Stop): boolean => Boolean(stop.passThrough)
+/** (V77, 18) Lo que el motor de coche saca de un día porque acabaría tras el cierre de su sitio: su motivo empieza por «No cabe hoy:» (`cocheTrip.js › spare_stops`). */
+export const esPorCierre = (stop: Stop): boolean => /^No cabe hoy:/.test(stop.spareReason ?? '')
 
 /** Lo que pesa cada sitio del destino (el nivel del catálogo; 1 = imprescindible). Se pide una vez (queda en memoria); sin catálogo, todo pesa lo mismo y nada se quita de un día. */
 async function datosDeImportancia(destino: string): Promise<DatosDeImportancia> {
@@ -141,6 +153,28 @@ export async function cambioMinimo(route: Route, propuestos: DiaAdaptado[], opci
     trabajo.set(primero.id, { ...r1, spareStops: [...previos, ...(r1.spareStops ?? []), ...nuevas] })
   }
 
+  // 2b. (V77, 18) Una visita que el motor ha sacado de un día porque acabaría después de que cierre su sitio (y no se puede acortar a más de la mitad: «No cabe hoy: …») se pasa al MEJOR día donde quepa
+  // (abierto, a continuación de la última visita y antes de cenar); si no cabe en ninguno, se queda en «Lugares pendientes» con su motivo. Una reserva con hora no se mueve. Vale para cualquier día propuesto.
+  for (const day of route.days) {
+    const propuesto = quedan.get(day.id)
+    const actual = trabajo.get(day.id) as DayPlan
+    if (!propuesto || !actual.spareStops?.length) continue
+    const antesEnPendientes = new Set((day.spareStops ?? []).map((stop) => claveDeSitio(stop.name)))
+    const porCierre = actual.spareStops.filter((stop) => esPorCierre(stop) && !antesEnPendientes.has(claveDeSitio(stop.name)) && !esReserva(stop) && !esDeCamino(stop))
+    if (porCierre.length === 0) continue
+    await cargaDatosDeHorario(route.destination).catch(() => undefined)
+    const horarios = datosDeHorarioEnMemoria(route.destination)
+    const colocados = new Set<string>()
+    for (const stop of porCierre) {
+      const sitio = mejorDia(route, trabajo, day, stop, horarios, opciones.enCoche, hoy, null)
+      if (!sitio) continue
+      trabajo.set(sitio.dia.id, sitio.dia)
+      anotar(sitio.dia.id, stop.id)
+      colocados.add(stop.id)
+    }
+    if (colocados.size > 0) trabajo.set(day.id, { ...(trabajo.get(day.id) as DayPlan), spareStops: (trabajo.get(day.id) as DayPlan).spareStops?.filter((stop) => !colocados.has(stop.id)) })
+  }
+
   // 3. La red de seguridad: nada desaparece y nada se repite.
   const salida = garantizarNadaSeQuita(route, trabajo)
   const resultado: DiaAdaptado[] = []
@@ -218,7 +252,10 @@ function mejorDia(route: Route, trabajo: Map<string, DayPlan>, desde: DayPlan, s
     const alFinal = (d: DayPlan): { ultima: Stop; inicio: number } | null => {
       const ultima = diurnas(d).at(-1)
       if (!ultima) return null
-      const inicio = sube10((minDe(ultima.time) as number) + (ultima.durationMinutes || 0) + viajeMin(ultima, stop, enCoche))
+      const llega = sube10((minDe(ultima.time) as number) + (ultima.durationMinutes || 0) + viajeMin(ultima, stop, enCoche))
+      // (V77, 17) El Free Tour va a una de sus horas reales, no a la que sale por hueco.
+      const inicio = stop.isFreeTour ? horaRealDelFreeTour(llega) : llega
+      if (inicio == null) return null
       const cabe = inicio + duracion <= limiteDelDia(d) && !((abre != null && inicio < abre) || (cierra != null && inicio + duracion > cierra)) && !(sol != null && inicio + duracion > sol)
       return cabe ? { ultima, inicio } : null
     }
@@ -266,7 +303,9 @@ function mejorDia(route: Route, trabajo: Map<string, DayPlan>, desde: DayPlan, s
         if (!primera) return null
         const previa = ds[ds.indexOf(primera) - 1] ?? null
         const finPrevia = previa ? (minDe(previa.time) as number) + (previa.durationMinutes || 0) + viajeMin(previa, stop, enCoche) : 0
-        const inicioX = modo === 'inicio' ? Math.max(minDe(primera.time) as number, abre ?? 0) : sube10(Math.max(finComida, finPrevia))
+        const inicioBruto = modo === 'inicio' ? Math.max(minDe(primera.time) as number, abre ?? 0) : sube10(Math.max(finComida, finPrevia))
+        const inicioX = stop.isFreeTour ? horaRealDelFreeTour(inicioBruto) : inicioBruto
+        if (inicioX == null) return null
         if ((cierra != null && inicioX + duracion > cierra) || (abre != null && inicioX < abre) || (sol != null && inicioX + duracion > sol)) return null
         let finAnterior = inicioX + duracion
         let anterior: Stop = stop

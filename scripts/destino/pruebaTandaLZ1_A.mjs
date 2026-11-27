@@ -7,7 +7,8 @@ import path from 'node:path'
 import http from 'node:http'
 import express from 'express'
 import { build } from 'esbuild'
-import { leerDestinosCurados, registrarRutasDestinosCurados, DESTINOS_OCULTOS } from '../../server/destinosCurados.js'
+process.env.DESTINOS_OCULTOS = 'lanzarote' // (V77) Lanzarote ya no está oculto por defecto; esta prueba comprueba el MECANISMO de esconder un destino, con Lanzarote como ejemplo
+const { leerDestinosCurados, registrarRutasDestinosCurados, DESTINOS_OCULTOS } = await import('../../server/destinosCurados.js')
 import { findPipelineV2Key, respuestasConFreeTour } from '../../server/routeAlgorithm.js'
 import { datosDelDestino } from '../../server/civitatis/servicio.js'
 import { sunsetMinutesOn } from '../../shared/routeEngine/sunset.js'
@@ -69,12 +70,20 @@ for (const clave of ['roma', 'lanzarote']) {
   fs.writeFileSync(path.join(falso, 'logros', `${clave}.json`), JSON.stringify({ ciudad: clave === 'roma' ? 'Roma' : 'Lanzarote' }))
 }
 const nombres = (l) => l.map((d) => d.nombre)
-debe(DESTINOS_OCULTOS.has('lanzarote'), '3a', 'Lanzarote está en la lista de destinos ocultos')
+debe(DESTINOS_OCULTOS.has('lanzarote'), '3a', 'con DESTINOS_OCULTOS=lanzarote en el entorno, Lanzarote está en la lista de ocultos (el mecanismo sigue)')
 debe(JSON.stringify(nombres(leerDestinosCurados(falso))) === '["Roma"]', '3b', 'sin ser administrador: solo Roma')
 debe(JSON.stringify(nombres(leerDestinosCurados(falso, { esAdmin: true }))) === '["Lanzarote","Roma"]', '3c', 'el administrador ve también Lanzarote')
 debe(JSON.stringify(nombres(leerDestinosCurados(falso, { ocultos: new Set() }))) === '["Lanzarote","Roma"]', '3d', 'quitándolo de la lista de ocultos, lo ve todo el mundo (el día que Eric lo diga)')
 // la lista real de la app: Lanzarote no sale para quien no es administrador, esté o no escrito
-debe(!nombres(leerDestinosCurados(path.resolve('data'))).includes('Lanzarote'), '3e', 'la lista real de la app, sin administrador, no lleva Lanzarote')
+{
+  // la lista real de la app, SIN la variable de entorno (V77): Lanzarote sale para todos. Se mira en un proceso aparte, con el entorno limpio.
+  const { execFileSync } = await import('node:child_process')
+  const entorno = { ...process.env }
+  delete entorno.DESTINOS_OCULTOS
+  const sal = execFileSync(process.execPath, ['-e', "import('./server/destinosCurados.js').then((m) => console.log(JSON.stringify([m.DESTINOS_OCULTOS.size, m.leerDestinosCurados('data').map((d) => d.nombre)])))"], { env: entorno, cwd: path.resolve('.'), encoding: 'utf8' })
+  const [tam, lista] = JSON.parse(sal.trim().split(/\r?\n/).pop())
+  debe(tam === 0 && lista.includes('Lanzarote') && lista.includes('Roma'), '3e', 'la lista real de la app, sin administrador y sin variables: Roma y Lanzarote (V77)')
+}
 
 // la ruta de verdad, con un Express propio: la cabecera x-admin hace de «es administrador»
 const app = express()

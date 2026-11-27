@@ -90,8 +90,10 @@ function bookingsNow(): BookingsSnapshot {
  * la eSIM, la tarjeta o el coche de alquiler. Hace el cambio y deja el aviso corto de abajo con «Deshacer», que devuelve la ruta y TODO lo reservado tal cual estaba (precios incluidos).
  * Ningún sitio de la pantalla llama a las funciones de quitar del almacén sin pasar por aquí (lo comprueba `scripts/destino/pruebaFase6y4_reservas.mjs`).
  */
-export function quitarConDeshacer(message: string, change: () => void): void {
-  cambiarConDeshacer(message, change)
+// (V77, 30) Borrar una reserva NO lleva «Deshacer»: la hoja de confirmar ya dice la verdad («Se borrará de tus reservas y no se puede deshacer.», `HojaEliminarReserva`). Se hace el cambio y no sale
+// ningún aviso. El nombre se queda (todas las pantallas pasan por aquí y la prueba lo vigila); `_message` ya no se enseña. Quien quita un billete con código lo quita él mismo (`quitarEntrada`, `quitarExcursion`…).
+export function quitarConDeshacer(_message: string, change: () => void): void {
+  change()
 }
 
 /**

@@ -1,5 +1,5 @@
 // HOY3: vuelca a un archivo el viaje de Eric en Lanzarote (domingo 8-nov 08:25 → viernes 13-nov 19:40, Costa Teguise, coche de alquiler) tal como lo genera la app, para calcular su lista de avisos
-// con el módulo puro SIN Chrome. Un solo Chrome, que se cierra al acabar. NO arranca ningún servidor (hacen falta el Vite 5173 y la API 8787 con DESTINOS_OCULTOS='-').
+// con el módulo puro SIN Chrome. Un solo Chrome, que se cierra al acabar. NO arranca ningún servidor (hacen falta el Vite 5173 y la API 8787 normal).
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/_hoy3_volcarRutaEric.mjs
 import fs from 'node:fs'
 import path from 'node:path'

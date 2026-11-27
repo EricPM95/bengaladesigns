@@ -8,9 +8,9 @@
  *     último día a tus vuelos?» (`AlertaAdaptarVuelos`). «Sí, adaptarlos» pone esos días adaptados (SOLO esos: nunca la ruta entera, y con el mismo orden de días) con una franja
  *     «Hemos adaptado tus días a tus vuelos» y [Deshacer]. «Ahora no» no cambia nada (y el botón «Reorganizar» se queda en esos días). Si no cambiaría nada, no sale alerta.
  *  CÓMO SE ADAPTA CADA DÍA (sin tocar el motor): el motor solo sabe adaptar la LLEGADA rehaciendo la ruta entera (el día 1 pasa al día 2, se cae otro día…), así que el primer día no se rehace:
- *  se RECORTA (`recortarAlVuelo`): lo que quedaría antes de que llegues (llegada + lo que tarda el punto de llegada al centro) pasa a «Si te sobra tiempo», sin perder nada ni mover otro día. El día de
+ *  se RECORTA (`recortarAlVuelo`): lo que quedaría antes de que llegues (llegada + lo que tarda el punto de llegada al centro) pasa a «Lugares pendientes», sin perder nada ni mover otro día. El día de
  *  vuelta, si lo monta el motor, sí se rehace con él (`/api/rebuild-day`, que lo adapta bien solo). Si no hay día de vuelta, el último día se recorta: lo que quedaría después de salir hacia el
- *  aeropuerto (la hora del vuelo menos lo que hay que salir antes) pasa a «Si te sobra tiempo».
+ *  aeropuerto (la hora del vuelo menos lo que hay que salir antes) pasa a «Lugares pendientes».
  *  Los días que el viajero cambió a mano, los de excursión, los suyos y los añadidos no se tocan nunca. La alerta es de quien ha cambiado el vuelo: vive en su pantalla, no en el viaje.
  *  El botón «Reorganizar» (`diasQueCambian`) usa `diaAdaptadoAlVuelo`: en el primer y el último día mira el vuelo (nada antes de la llegada ni después de irse al aeropuerto).
  */
@@ -44,7 +44,7 @@ export interface DiaAdaptado {
   next: DayPlan
   /** Las paradas del día nuevo que no estaban donde están (para iluminarlas). */
   movidas: string[]
-  /** (10S7c) Los imprescindibles que no caben en este día con el vuelo (el motor los marca): «El Coliseo no cabe el jueves.» + [Pasarlo a otro día]. Ya están en «Si te sobra tiempo»: nunca se pierden. */
+  /** (10S7c) Los imprescindibles que no caben en este día con el vuelo (el motor los marca): «El Coliseo no cabe el jueves.» + [Pasarlo a otro día]. Ya están en «Lugares pendientes»: nunca se pierden. */
   noCaben?: NoCabe[]
 }
 
@@ -55,7 +55,7 @@ export interface NoCabe {
   nombre: string
   /** «jueves» (el motor, con fechas) o null (sin fechas: se dice «el día 1»). */
   weekday: string | null
-  /** (10R) false = no es un imprescindible: igualmente se dice que pasa a «Si te sobra tiempo» (en la línea de «Y N sitios más…»). Ausente = imprescindible. */
+  /** (10R) false = no es un imprescindible: igualmente se dice que pasa a «Lugares pendientes» (en la línea de «Y N sitios más…»). Ausente = imprescindible. */
   imprescindible?: boolean
 }
 
@@ -80,7 +80,7 @@ function esRutaDelMotor(route: Route): boolean {
 const enMinutos = (hora: string | null | undefined): number | null => (/^\d{1,2}:\d{2}$/.test(hora ?? '') ? parseTimeToMinutes(hora as string) : null)
 
 /**
- * RECORTA un día a la ventana del vuelo: lo que empieza antes de `desde` (llegada + traslado al centro) o acaba después de `hasta` (salida hacia el aeropuerto) pasa a «Si te sobra tiempo», sin perder nada.
+ * RECORTA un día a la ventana del vuelo: lo que empieza antes de `desde` (llegada + traslado al centro) o acaba después de `hasta` (salida hacia el aeropuerto) pasa a «Lugares pendientes», sin perder nada.
  * Nunca toca una parada con reserva ni la de la llegada; las comidas fuera de la ventana se quitan solo si el viajero no eligió restaurante. null = no cambia nada.
  */
 export function recortarAlVuelo(day: DayPlan, ventana: { desde: number | null; hasta: number | null }): DayPlan | null {
@@ -234,7 +234,7 @@ async function adaptarUnDia(route: Route, day: DayPlan, vuelo: DatosParaMotor, i
   // La salida solo recorta el último día de ciudad cuando no hay día de vuelta (con él, es el día de vuelta quien se va).
   const hasta = esUltimo && !hayDiaDeVuelta && salida !== null ? salida - tiempos.salirAntes : null
   if (desde === null && hasta === null) return null
-  // (10S7c) El motor adapta ESE día (modo aparte, `/api/adaptar-dia-vuelo`): mismas paradas, vueltas a ordenar y a poner en hora para que quepan las máximas; lo que no cabe, a «Si te sobra tiempo».
+  // (10S7c) El motor adapta ESE día (modo aparte, `/api/adaptar-dia-vuelo`): mismas paradas, vueltas a ordenar y a poner en hora para que quepan las máximas; lo que no cabe, a «Lugares pendientes».
   // Si el motor no responde, se recorta en el cliente como en la 10S7b (nada se queda sin adaptar por un fallo de red).
   const delMotor = await adaptarDiaConElMotor(route, day, { desde, hasta })
   if (delMotor !== undefined) return delMotor
@@ -292,7 +292,7 @@ export function aplicarAdaptacionDelMotor(day: DayPlan, respuesta: RespuestaAdap
     spareStops: [...(day.spareStops ?? []), ...nuevas],
     mealAfter: Object.keys(mealAfter).length > 0 ? mealAfter : undefined,
   }
-  // (10R §0b) TODAS las paradas de ese día que no caben (imprescindibles o no; no la llegada, que no es un sitio): nada pasa a «Si te sobra tiempo» sin que se diga.
+  // (10R §0b) TODAS las paradas de ese día que no caben (imprescindibles o no; no la llegada, que no es un sitio): nada pasa a «Lugares pendientes» sin que se diga.
   const fuera = new Map(respuesta.imprescindiblesFuera.map((fila) => [fila.id, fila]))
   const noCaben: NoCabe[] = [
     ...respuesta.imprescindiblesFuera.map((fila) => ({ dayId: day.id, dayNumber: day.dayNumber, stopId: fila.id, nombre: fila.name, weekday: fila.weekday ?? respuesta.weekday ?? null })),

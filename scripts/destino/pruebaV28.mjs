@@ -1,6 +1,6 @@
 // La prueba de la Tanda V28: la página del destino (5 hoteles de Lanzarote, sin etiquetas, fotos de los 12, actividades en carrusel con su foto pequeña), los enlaces exactos de las entradas y el trozo ENTERO en la colección por dentro.
 //   node scripts/destino/pruebaV28.mjs                                      (datos y reglas, sin servidores; con Vite en 5173 y la API en 8787 SIN destinos ocultos: también la app)
-// (Lanzarote está oculto en la API normal: para la parte de la app, la API con DESTINOS_OCULTOS= vacío.) Ninguna parte toca el Supabase de producción.
+// (Lanzarote está oculto en la API normal: para la parte de la app, la API normal.) Ninguna parte toca el Supabase de producción.
 import fs from 'node:fs'
 import { paginaDelDestino } from '../../server/paginaDestino.js'
 import { stampCivitatis } from '../../shared/affiliate/civitatis.js'

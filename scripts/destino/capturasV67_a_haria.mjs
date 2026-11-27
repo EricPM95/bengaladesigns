@@ -1,5 +1,5 @@
 // V67: SOLO captura (no es una prueba) en modo iPhone (390x844) de Haría en la ruta de Lanzarote: las dos paradas (el pueblo, sin horario; la Casa-Museo, con el suyo).
-//   (API con DESTINOS_OCULTOS='-')  APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/capturasV67_a_haria.mjs
+//   (API normal)  APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/capturasV67_a_haria.mjs
 // Un solo Chrome, que se cierra al acabar. Guarda docs/dias/V67_capturas/haria_app.jpg y escribe docs/dias/V67_log_haria.json.
 import fs from 'node:fs'
 import path from 'node:path'

@@ -111,7 +111,7 @@ export function tarjetasDePropuesta(p: Propuesta, route: Route): TarjetaDePropue
           const pos = entra.indice >= Math.max(1, Math.ceil(destino.stops.length / 2)) ? 'por la tarde' : 'por la mañana'
           principales.push({ ...base(op.stop, nombreDe(op.stop), ciudad), cuando: `Al ${nombreDelDia(route, destino)}, ${pos}`, destino: nombreDelDia(route, destino), ...cuadradoDelDia(route, destino) })
         } else if (sobra) {
-          principales.push(aPendientes(op.stop, 'A «Si te sobra tiempo»', ciudad))
+          principales.push(aPendientes(op.stop, 'A «Lugares pendientes»', ciudad))
         } else {
           principales.push({ ...base(op.stop, nombreDe(op.stop), ciudad), cuando: 'Se quita de tu viaje', quitar: true })
         }
@@ -127,7 +127,7 @@ export function tarjetasDePropuesta(p: Propuesta, route: Route): TarjetaDePropue
         break
       }
       case 'sobra_meter':
-        if (!sacadas.has(op.stop.id)) principales.push(aPendientes(op.stop, 'A «Si te sobra tiempo»', ciudad))
+        if (!sacadas.has(op.stop.id)) principales.push(aPendientes(op.stop, 'A «Lugares pendientes»', ciudad))
         break
       case 'campo': {
         const s = paradaDe(op)
@@ -211,7 +211,7 @@ export function franjaDePropuesta(p: Propuesta, route?: Route | null): string | 
 }
 
 /**
- * (V61; Design «Reorganizar Hoja» RO1, RO2 y RO3) LAS TARJETAS DE «REORGANIZAR»: UNA por cada sitio que cambia de verdad (de día, a «Si te sobra tiempo», quitado, o de hora más de 15 min), nunca con número de parada.
+ * (V61; Design «Reorganizar Hoja» RO1, RO2 y RO3) LAS TARJETAS DE «REORGANIZAR»: UNA por cada sitio que cambia de verdad (de día, a «Lugares pendientes», quitado, o de hora más de 15 min), nunca con número de parada.
  * Todo se calcula COMPARANDO el día de ahora con el día como quedaría (`despues`): sale igual de lo que devuelve el motor (`reconstruido`), del orden que da el servidor o de un día adaptado al vuelo.
  * Los sitios se emparejan por su nombre (al rehacer un día el motor cambia los ids). Con varios días, las tarjetas van agrupadas por día (cabecera «VIERNES 27»), cada una en el día al que va.
  * Pura (sin React ni almacén). Vale igual para Roma, Lanzarote y cualquier destino.
@@ -422,7 +422,7 @@ export function cambiosDeReorganizar(cambios: DiaDespues[], route: Route): Cambi
         ponerTarjeta(nuevos, deReserva(reserva, nuevos), false)
       }
     }
-    // Sitios nuevos en este día que no estaban en ninguno de los días que cambian (venían de «Si te sobra tiempo»): entran.
+    // Sitios nuevos en este día que no estaban en ninguno de los días que cambian (venían de «Lugares pendientes»): entran.
     for (const s of nuevos.stops.filter(esSitio)) {
       const k = clave(s)
       if (antesDe.has(k)) continue

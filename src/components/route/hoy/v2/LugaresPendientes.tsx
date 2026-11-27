@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useReorganizarStore } from '../../../../store/useReorganizarStore'
 import { CuadradoPendientes, IconoPendientes } from './IconoPendientes'
 import type { DayPlan, Route } from '../../../../lib/types'
 import { displayStopName } from '../../../../lib/format'
 import { esDestinoDeCoche } from '../../../../lib/experienceCategoryBank'
-import { etiquetaConNumero, mejorDiaPara } from '../../../../lib/hoyCambiarPlan'
+import { diaAdmite, etiquetaConNumero, mejorDiaPara } from '../../../../lib/hoyCambiarPlan'
 import type { Pendiente } from '../../../../lib/hoyPendientes'
 import { avisarAbajo } from '../../../../store/useAvisoDeAbajo'
 import { useRouteStore } from '../../../../store/useRouteStore'
@@ -32,6 +33,15 @@ const TINTA = '#1C2230'
 
 export function LugaresPendientes({ route, day, dateIso, pendientes, modo = 'hoy' }: { route: Route; day: DayPlan | null; dateIso: string | null; pendientes: Pendiente[]; modo?: 'hoy' | 'dias' }) {
   const [abierta, setAbierta] = useState(modo === 'dias')
+  const raiz = useRef<HTMLDivElement>(null)
+  // (V77) [Ver] de «Y N sitios más pasan a Lugares pendientes»: DÍAS abre esta lista y baja hasta ella.
+  const pedida = useReorganizarStore((s) => s.verSobraTiempoDe)
+  useEffect(() => {
+    if (modo !== 'dias' || !pedida) return
+    setAbierta(true)
+    useReorganizarStore.getState().verSobraTiempo(null)
+    window.setTimeout(() => raiz.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 150)
+  }, [pedida, modo])
   const [pasando, setPasando] = useState<Pendiente | null>(null)
   const [menu, setMenu] = useState<Pendiente | null>(null)
   const [resumen, setResumen] = useState(false)
@@ -68,6 +78,20 @@ export function LugaresPendientes({ route, day, dateIso, pendientes, modo = 'hoy
   const diaASobra = (p: Pendiente, deDayId: string) => {
     removeStop(deDayId, p.stop.id)
     useRouteStore.setState((actual) => (actual.route ? { route: { ...actual.route, days: actual.route.days.map((d) => (d.id === p.dayId ? { ...d, spareStops: [...(d.spareStops ?? []).filter((x) => x.id !== p.stop.id), p.stop] } : d)) } } : actual))
+  }
+  // (V77) [Añadir a hoy] de lo que antes era «Si te sobra tiempo» (lo que hacía [Recuperar]): entra en el día de hoy, al final de su franja y por su hora orientativa, y sale de la lista de pendientes. Con [Deshacer] vuelve.
+  const anadirAHoy = (p: Pendiente) => {
+    if (!day) return
+    const { id } = p.stop
+    if (p.dayId !== day.id) {
+      // Viene de la lista de otro día: pasa primero a la de hoy y de ahí al día (la misma función de siempre).
+      useRouteStore.setState((actual) => (actual.route ? { route: { ...actual.route, days: actual.route.days.map((d) => (d.id === p.dayId ? { ...d, spareStops: (d.spareStops ?? []).filter((x) => x.id !== id) } : d.id === day.id ? { ...d, spareStops: [...(d.spareStops ?? []).filter((x) => x.id !== id), p.stop] } : d)) } } : actual))
+    }
+    useRouteStore.getState().addSpareStop(day.id, id)
+    conDeshacer(`anadir:${id}`, `${displayStopName(p.stop.name)}, añadida a tu día`, () => {
+      removeStop(day.id, id)
+      useRouteStore.setState((actual) => (actual.route ? { route: { ...actual.route, days: actual.route.days.map((d) => (d.id === p.dayId ? { ...d, spareStops: [...(d.spareStops ?? []).filter((x) => x.id !== id), p.stop] } : d)) } } : actual))
+    })
   }
   const recuperar = (p: Pendiente) => {
     if (!day) return
@@ -141,7 +165,7 @@ export function LugaresPendientes({ route, day, dateIso, pendientes, modo = 'hoy
   const caben = reparto.filter((x) => x.mejor)
   const noCaben = reparto.filter((x) => !x.mejor)
   return (
-    <div data-hoy-pendientes={pendientes.length} data-pendientes-modo={modo} data-hoy-pendientes-estado={abierta ? 'abierta' : 'cerrada'} className="flex flex-none flex-col rounded-[22px]" style={{ background: '#FFFDF8', border: '1px solid rgba(181,138,46,.4)' }}>
+    <div ref={raiz} data-hoy-pendientes={pendientes.length} data-pendientes-modo={modo} data-hoy-pendientes-estado={abierta ? 'abierta' : 'cerrada'} className="flex flex-none flex-col rounded-[22px]" style={{ background: '#FFFDF8', border: '1px solid rgba(181,138,46,.4)' }}>
       <button type="button" onClick={() => setAbierta((v) => !v)} aria-expanded={abierta} data-hoy-pendientes-cabecera className="flex min-h-12 items-center gap-2.5 px-4 py-3.5 text-left">
         <IconoPendientes />
         <span style={{ font: "600 11.5px 'Geist Mono',monospace", letterSpacing: '.14em', color: '#6F4E37', textTransform: 'uppercase' }}>Lugares pendientes</span>
@@ -190,6 +214,9 @@ export function LugaresPendientes({ route, day, dateIso, pendientes, modo = 'hoy
           <HojaDelMenu etiqueta="Parada" titulo={displayStopName(menu.stop.name)} onCerrar={() => setMenu(null)} z={95}>
             {menu.motivo !== 'cerrada' && menu.origen !== 'sobra' && day && (
               <OpcionTarjeta tono="salvia" icono={ICONOS_OPCION.volver} titulo="Recuperar hoy" linea="Vuelve a ser una parada normal del día" datos="pendiente-recuperar" atributos={{ 'data-hoy-pendiente-recuperar': '1' }} onClick={() => { recuperar(menu); setMenu(null) }} />
+            )}
+            {menu.origen === 'sobra' && day && modo === 'hoy' && diaAdmite(day) && !menu.stop.reservedId && (
+              <OpcionTarjeta tono="salvia" icono={ICONOS_OPCION.volver} titulo="Añadir a hoy" linea="Entra en tu día de hoy" datos="pendiente-anadir-hoy" atributos={{ 'data-hoy-pendiente-anadir-hoy': '1' }} onClick={() => { anadirAHoy(menu); setMenu(null) }} />
             )}
             {menu.origen !== 'sobra' && (
               <OpcionTarjeta tono="arena" icono={ICONOS_OPCION.check} titulo="Ya lo visité" linea="Márcala como vista y quítala de pendientes" atributos={{ 'data-hoy-pendiente-visitado': '1' }} onClick={() => { visitado(menu); setMenu(null) }} />

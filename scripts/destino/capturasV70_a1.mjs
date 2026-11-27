@@ -1,7 +1,7 @@
 // V70 (apartado 1): SOLO capturas (no es una prueba) en modo iPhone (390x844) de la tarjeta de la vuelta de HOY. Un solo Chrome por vez, que se cierra al acabar. Por la cola:
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/capturasV70_a1.mjs roma|lanza|design [caso]
 // Guarda docs/dias/V70_capturas/<id>_app.jpg (la app) y <id>_design.jpg (su dibujo de Design) y escribe docs/dias/V70_log_a1_<modo>.json con el texto de cada pantalla.
-// Casos de Roma: VL1 VL1b VL1c VL2 VL3 VL3gps VL4b VL4 VL5. De Lanzarote (la API con DESTINOS_OCULTOS='-'): LZ1 LZ5.
+// Casos de Roma: VL1 VL1b VL1c VL2 VL3 VL3gps VL4b VL4 VL5. De Lanzarote (la API normal): LZ1 LZ5.
 import fs from 'node:fs'
 import path from 'node:path'
 import { abrirApp } from './_enLaApp.mjs'

@@ -1,4 +1,4 @@
-// Capturas 390x844 de la LZ2b1 (agente B): la ficha de Teguise, «Cerca de ti», EXPLORAR, el coche en RESERVAS (los dos modos) y la hoja de llegada con un vuelo. Un Chrome por la cola; la API con DESTINOS_OCULTOS='-'.
+// Capturas 390x844 de la LZ2b1 (agente B): la ficha de Teguise, «Cerca de ti», EXPLORAR, el coche en RESERVAS (los dos modos) y la hoja de llegada con un vuelo. Un Chrome por la cola; la API normal.
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/_lz2b1_B_capturas.mjs
 import fs from 'node:fs'
 import path from 'node:path'

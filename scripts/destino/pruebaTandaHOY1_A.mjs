@@ -1,5 +1,5 @@
 // La prueba de la tanda HOY1, agente A (4-nov-2026): la siguiente parada y sus estados (H1 a H6), la lista «TU DÍA» (H1, H4, H4b), el atardecer y mañana (H13) y «Hoy vuelves a casa» (H14, H14b).
-// Hace falta el servidor de la app (5173) y la API (8787, con DESTINOS_OCULTOS='-' para ver Lanzarote como administrador) YA encendidos; NO arranca ninguno.
+// Hace falta el servidor de la app (5173) y la API (8787, normal para ver Lanzarote como administrador) YA encendidos; NO arranca ninguno.
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/pruebaTandaHOY1_A.mjs
 // Un solo Chrome, que se cierra al acabar. Salida: «N comprobaciones · M fallos». Capturas 390x844 en docs/dias/capturas_jutrip/hoy1_a_*.jpg.
 //

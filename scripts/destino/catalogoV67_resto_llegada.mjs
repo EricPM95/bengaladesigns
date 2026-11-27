@@ -1,7 +1,7 @@
 // V62: SOLO capturas (no es una prueba) en modo iPhone (390x844) de la tarjeta de llegada de HOY. Un solo Chrome por vez, que se cierra al acabar. Por la cola:
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/capturasV62_llegada.mjs roma|lanza|design [caso]
 // Guarda docs/dias/catalogo/_tmp/<id>_app.jpg (la app) y <id>_design.jpg (su dibujo de Design) y escribe docs/dias/catalogo/_tmp/log_llegada_<modo>.json con el texto de cada pantalla.
-// Casos de Roma: L1 L1b L2 L3a L3 L4 L4b L5 L5b datos. De Lanzarote (la API con DESTINOS_OCULTOS='-'): L6 L7.
+// Casos de Roma: L1 L1b L2 L3a L3 L4 L4b L5 L5b datos. De Lanzarote (la API normal): L6 L7.
 import fs from 'node:fs'
 import path from 'node:path'
 import { abrirApp } from './_enLaApp.mjs'

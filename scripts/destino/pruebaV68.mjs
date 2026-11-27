@@ -1,6 +1,6 @@
 // La prueba de la TANDA V68: guardar una reserva para otro día, «Recuperar el día», nunca un sitio dos veces y que Reorganizar nunca quite nada (docs/dias/PROMPT_TANDA_V68.md, DECISIONES_V68.md).
 //   node scripts/destino/pruebaV68.mjs                      (Roma; hace falta la API en 8787 solo para la parte de Reorganizar)
-//   V68_LANZAROTE=1 node scripts/destino/pruebaV68.mjs      (además Reorganizar en Lanzarote: la API con DESTINOS_OCULTOS='-'; al acabar, déjala normal con _reiniciar_api.ps1)
+//   V68_LANZAROTE=1 node scripts/destino/pruebaV68.mjs      (además Reorganizar en Lanzarote: la API normal; al acabar, déjala normal con _reiniciar_api.ps1)
 //   V68_SIN_API=1 …                                         (solo la parte pura, sin API)
 // Parte pura (sin navegador ni servidor): 1. Roma: las 26 comprobaciones de _v68_puras.mjs (Coliseo+Foro a su hora, Vaticanos a las 15:00, Free Tour 10:00 y 15:00, recuperar, repetidos, resumen).
 // 2. Lanzarote: una reserva de un sitio y una entrada de dos sitios a otro día y a su hora; recuperar; nada repetido. 3. Los números de las paradas, en orden. 4. Reorganizar llama al guardián.
@@ -119,7 +119,7 @@ if (process.env.V68_SIN_API) console.log('5. (V68_SIN_API: Reorganizar con la AP
 else {
   await reorganizar('Roma', '2026-11-27', 4)
   if (process.env.V68_LANZAROTE) await reorganizar('Lanzarote', '2027-03-07', 6)
-  else console.log('   (Lanzarote en Reorganizar: solo con V68_LANZAROTE=1 y la API en DESTINOS_OCULTOS=\'-\')')
+  else console.log('   (Lanzarote en Reorganizar: solo con V68_LANZAROTE=1)')
 }
 
 console.log(`\nPrueba de la V68: ${comprobaciones} comprobaciones · ${fallos.length} fallos`)

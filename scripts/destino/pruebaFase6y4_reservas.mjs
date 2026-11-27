@@ -185,7 +185,7 @@ const lineasDe = (p) => p.bloques.flatMap((b) => b.lineas.map((l) => l.nombre))
   debe(avisoMixto === null || /tu entrada al Coliseo del día 3|Se quitará el día 3/.test(avisoMixto.text) || !/Coliseo/.test(avisoMixto.text), '1 sin fechas', `sin fechas el aviso dice cosa rara: ${avisoMixto?.text}`)
 }
 
-// ═══════════ 2. «Deshacer» al quitar cualquier reserva ═══════════
+// ═══════════ 2. Quitar cualquier reserva: SIN «Deshacer» (V77, 30: la hoja de confirmar dice la verdad, «no se puede deshacer») ═══════════
 {
   // Todo reservado a la vez.
   const base = conParadas(rutaMano(3), [['Coliseo'], ['Panteón'], []])
@@ -225,6 +225,8 @@ const lineasDe = (p) => p.bloques.flatMap((b) => b.lineas.map((l) => l.nombre))
     ['tarjeta', 'Tarjeta sin comisiones quitada del viaje', () => quitarConDeshacer('Tarjeta sin comisiones quitada del viaje', () => tienda().setN26Added(false))],
     ['coche de alquiler', 'Alquiler quitado del viaje', () => quitarConDeshacer('Alquiler quitado del viaje', () => tienda().setRentalVehicleBooking(null))],
   ]
+  // (V77, 30) Sin «Deshacer» la prueba devuelve el estado de antes a mano entre un caso y otro.
+  const restaurar = (json) => useRouteStore.setState(JSON.parse(json))
   const antes = foto()
   const presupuestoAntes = total(presupuestoDe())
   debe(JSON.parse(antes).reservations.length === 3 && JSON.parse(antes).route.days[1].stops.some((s) => s.isFreeTour), '2 base', 'la prueba no parte con las tres reservas y la parada del Free Tour')
@@ -234,30 +236,27 @@ const lineasDe = (p) => p.bloques.flatMap((b) => b.lineas.map((l) => l.nombre))
     const quitado = foto()
     const toast = useAddFlowStore.getState().toast
     debe(quitado !== antes, `2 ${tipo}`, `quitar ${tipo} no cambia nada`)
-    debe(toast?.message === mensaje && toast.previous != null, `2 ${tipo}`, `quitar ${tipo} no deja el aviso «${mensaje}» con «Deshacer» (${JSON.stringify(toast?.message)})`)
+    debe(toast == null, `2 ${tipo}`, `quitar ${tipo} deja un aviso con «Deshacer» (V77, 30: borrar no lo lleva): ${JSON.stringify(toast?.message ?? mensaje)}`)
     if (['entrada', 'excursión', 'alojamiento', 'transporte', 'seguro', 'eSIM', 'coche de alquiler', 'vuelo de ida', 'vuelo de vuelta'].includes(tipo)) debe(total(presupuestoDe()) !== presupuestoAntes, `2 ${tipo}`, `quitar ${tipo} no baja el presupuesto`)
     if (tipo === 'Free Tour') debe(!ahora().days.some((d) => d.stops.some((s) => s.isFreeTour)), `2 ${tipo}`, 'quitar el Free Tour a mano no quita su parada')
-    useAddFlowStore.getState().undo()
-    debe(foto() === antes, `2 ${tipo}`, `«Deshacer» tras quitar ${tipo} no devuelve todo idéntico`)
-    debe(useAddFlowStore.getState().toast == null, `2 ${tipo}`, `«Deshacer» tras quitar ${tipo} deja el aviso`)
-    debe(total(presupuestoDe()) === presupuestoAntes, `2 ${tipo}`, `«Deshacer» tras quitar ${tipo} no devuelve el presupuesto`)
+    restaurar(antes)
+    debe(foto() === antes && total(presupuestoDe()) === presupuestoAntes, `2 ${tipo}`, `la prueba no pudo devolver el estado tras quitar ${tipo}`)
   }
-  // Quitar dos cosas seguidas y deshacer solo la última: la primera sigue quitada.
+  // Quitar dos cosas seguidas: las dos quedan quitadas y no hay aviso.
   useAddFlowStore.setState({ toast: null })
   removeReservationWithUndo('res-col')
-  const trasPrimera = foto()
   quitarConDeshacer('Seguro quitado del viaje', () => tienda().setInsuranceBooking(null))
-  useAddFlowStore.getState().undo()
-  debe(foto() === trasPrimera, '2 seguidas', '«Deshacer» de la segunda también devuelve la primera')
+  debe(tienda().reservations.every((r) => r.id !== 'res-col') && tienda().insuranceBooking == null && useAddFlowStore.getState().toast == null, '2 seguidas', 'quitar dos cosas seguidas no las quita las dos sin aviso')
+  restaurar(antes)
   useAddFlowStore.setState({ toast: null })
   // La ruta nuestra: quitar una entrada reservada también avisa, y «Deshacer» la devuelve.
   const nuestra = { ...rutaMano(3), planMode: undefined }
   estado(nuestra, { reservations: [entrada('res-x', 'Panteón', ['Panteón'], sumaDias(INICIO, 1), '12:00', 7)] })
   const antesNuestra = foto()
   removeReservationWithUndo('res-x')
-  debe(useAddFlowStore.getState().toast?.message === 'Entrada quitada del viaje' && tienda().reservations.length === 0, '2 ruta nuestra', 'en la ruta nuestra quitar una entrada no deja el aviso')
-  useAddFlowStore.getState().undo()
-  debe(foto() === antesNuestra, '2 ruta nuestra', 'en la ruta nuestra «Deshacer» no devuelve la entrada')
+  debe(useAddFlowStore.getState().toast == null && tienda().reservations.length === 0, '2 ruta nuestra', 'en la ruta nuestra quitar una entrada la quita sin aviso (V77, 30)')
+  restaurar(antesNuestra)
+  debe(foto() === antesNuestra, '2 ruta nuestra', 'la prueba no pudo devolver el estado')
   useAddFlowStore.setState({ toast: null })
 
   // Todos los sitios de la pantalla que quitan una reserva pasan por la misma función con aviso.

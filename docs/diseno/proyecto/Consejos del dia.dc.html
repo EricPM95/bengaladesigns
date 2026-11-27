@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7DCC6}*{box-sizing:border-box}</style>
+</helmet>
+<div style="min-height:100vh;background:radial-gradient(ellipse 70% 30% at 50% 0%,#F1E8D6 0%,#E0D3BA 75%);padding:40px 48px 80px;font-family:'Geist',sans-serif;color:#1C2230;display:flex;flex-direction:column;gap:30px">
+  <div style="display:flex;flex-direction:column;gap:6px"><span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.16em;color:rgba(28,34,48,.55)">APP · HOY · CONSEJOS DEL DÍA</span><span style="font:400 40px/1 'Instrument Serif',serif">Un icono y una frase corta</span></div>
+  <div style="display:flex;flex-direction:column;gap:14px"><span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;color:#6F4E37">LOS 8 ICONOS</span>
+    <div style="display:flex;flex-wrap:wrap;gap:12px"><sc-for list="{{ icons }}" as="i" hint-placeholder-count="8"><div style="width:120px;padding:16px 8px 12px;border-radius:22px;background:#FFFDF8;border:1px solid rgba(181,138,46,.35);display:flex;flex-direction:column;align-items:center;gap:10px"><span style="width:56px;height:56px;border-radius:50%;background:#1C2230;display:flex;align-items:center;justify-content:center"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#F3D88F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="{{ i.d }}"></path><path d="{{ i.d2 }}"></path></svg></span><span style="font:700 13px 'Geist'">{{ i.n }}</span></div></sc-for></div></div>
+  <div style="display:grid;grid-template-columns:repeat(3,390px);gap:52px 44px;align-items:start;justify-content:start">
+  <sc-for list="{{ boards }}" as="b" hint-placeholder-count="3">
+    <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+      <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.08em;color:#6F4E37">{{ b.id }} · {{ b.cap }}</span>
+      <div style="position:relative;width:375px;height:812px;flex:none;border-radius:48px;overflow:hidden;background:#F8F1E2;box-shadow:0 0 0 10px #1C2230,0 0 0 11px #3a3f4a,0 40px 100px -20px rgba(60,40,10,.45)">
+        <span style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:112px;height:32px;border-radius:20px;background:#0E1118;z-index:60"></span>
+        <div style="position:absolute;left:0;right:0;top:56px;height:56px;padding:0 18px 0 20px;display:flex;align-items:center;justify-content:space-between"><span style="font:400 26px/1 'Instrument Serif',serif;letter-spacing:.32em;color:#B58A2E">JUTRIP</span><span style="width:36px;height:36px;border-radius:50%;background:#1C2230;box-shadow:0 0 0 2px #FBF3E2,0 0 0 3.5px #B58A2E"></span></div>
+        <div style="position:absolute;left:16px;right:16px;top:122px;border-radius:28px;background:#FFFDF8;border:1px solid rgba(28,34,48,.07);box-shadow:0 20px 34px -24px rgba(28,34,48,.5);overflow:hidden">
+          <div style="height:{{ b.ph }}px;position:relative;background:{{ b.bg }}"><span style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.14),rgba(0,0,0,0) 40%,rgba(0,0,0,.4))"></span><span style="position:absolute;left:18px;top:16px;font:600 11px 'Geist Mono',monospace;letter-spacing:.18em;color:#FFFDF8">{{ b.eye }}</span><span style="position:absolute;left:18px;right:18px;bottom:14px;font:400 32px/1 'Instrument Serif',serif;color:#FFFDF8;text-shadow:0 2px 12px rgba(0,0,0,.4)">{{ b.title }}</span></div>
+          <div style="padding:14px;display:flex;flex-direction:column;gap:12px">
+            <sc-if value="{{ b.boxes }}" hint-placeholder-val="{{ true }}"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><sc-for list="{{ b.boxes }}" as="x" hint-placeholder-count="2"><div style="display:flex;flex-direction:column;gap:5px;padding:11px 10px 12px;border-radius:18px;background:#F7F1E4"><span style="font:600 9.5px 'Geist Mono',monospace;letter-spacing:.08em;color:#6F4E37">{{ x.l }}</span><b style="font:700 15px/1.15 'Geist'">{{ x.v }}</b><span style="font:500 11px 'Geist';color:rgba(28,34,48,.6)">{{ x.s }}</span></div></sc-for></div></sc-if>
+            <div style="border-radius:20px;background:#FBF3E2;border:1px solid rgba(181,138,46,.4);padding:12px 12px 8px;display:flex;flex-direction:column;gap:2px">
+              <span style="font:600 10px 'Geist Mono',monospace;letter-spacing:.14em;color:#6F4E37;padding:0 2px 6px">CONSEJOS PARA {{ b.when }}</span>
+              <sc-for list="{{ b.tips }}" as="t" hint-placeholder-count="3"><div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-top:1px solid rgba(28,34,48,.07)"><span style="flex:none;width:40px;height:40px;border-radius:50%;background:#1C2230;display:flex;align-items:center;justify-content:center"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#F3D88F" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ t.d }}"></path><path d="{{ t.d2 }}"></path></svg></span><span style="font:600 14px/1.3 'Geist'">{{ t.a }}<span style="font-weight:500;color:rgba(28,34,48,.62)">: {{ t.b }}</span></span></div></sc-for>
+            </div>
+            <sc-if value="{{ b.btn }}" hint-placeholder-val="{{ false }}"><span style="height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font:700 15px 'Geist';background:linear-gradient(135deg,#F9EFCB,#EAD6A0 55%,#D8BD7C);color:#4A3510;border:1px solid rgba(181,138,46,.5)">{{ b.btn }}</span></sc-if>
+          </div>
+        </div>
+      </div>
+      <span style="font:400 14px/1.45 'Geist';color:rgba(28,34,48,.72);max-width:375px;text-wrap:pretty">{{ b.note }}</span>
+    </div>
+  </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const I={
+ agua:['M12 3.5C9 8 6.5 10.8 6.5 14.2a5.5 5.5 0 0 0 11 0C17.5 10.8 15 8 12 3.5z','M9.3 14.6a2.8 2.8 0 0 0 2.2 2.4'],
+ calzado:['M3 15.5V8l5 1.5 2.5 3.5H19a2 2 0 0 1 2 2v1H3z','M3 18.5h18M8 11.5l1.4-1.6M10.6 13l1.2-1.4'],
+ banador:['M5 6h14l-2 11H7z','M5 6c1.2 2.2 3.8 3 7 3s5.8-.8 7-3M9.5 17c.3-3 1-5 2.5-5s2.2 2 2.5 5'],
+ protector:['M8.5 3.5h5v3.2h-5z','M7 6.7h8a1.5 1.5 0 0 1 1.5 1.5V20H5.5V8.2A1.5 1.5 0 0 1 7 6.7zM8.2 12h5.6M11 9.7v4.6'],
+ sombrero:['M3.5 15.5c0-2.2 3.6-3.5 8.5-3.5s8.5 1.3 8.5 3.5-3.6 3-8.5 3-8.5-.8-8.5-3z','M7.8 12.4C8 8.4 9.7 6 12 6s4 2.4 4.2 6.4M8 12.2c2.6.9 5.4.9 8 0'],
+ abrigo:['M9 3.5L5.2 6 3.5 12l2.6 1v7.5h11.8V13l2.6-1-1.7-6L15 3.5c-.4 1.4-1.6 2.2-3 2.2s-2.6-.8-3-2.2z','M12 5.7V20.5M9.6 10.5h.01M9.6 14h.01'],
+ efectivo:['M3.5 8h17v8h-17z','M12 14.2a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4zM6.5 10.5h.01M17.5 13.5h.01'],
+ documento:['M7 3.5h7.5L18.5 8v12.5h-11.5z','M14.5 3.5V8h4M9.6 12h6M9.6 15h6M9.6 18h3.5']};
+const N={agua:'Agua',calzado:'Calzado',banador:'Bañador',protector:'Protector solar',sombrero:'Sombrero',abrigo:'Abrigo',efectivo:'Efectivo',documento:'Documento'};
+const T=(k,a,b)=>({d:I[k][0],d2:I[k][1],a,b});
+class Component extends DCLogic {
+  renderVals(){
+    return{icons:Object.keys(I).map(k=>({n:N[k],d:I[k][0],d2:I[k][1]})),boards:[
+      {id:'C1',cap:'Tarjeta «Mañana» · La Graciosa',eye:'MAÑANA · VIERNES 27',title:'La Graciosa',ph:130,bg:'linear-gradient(160deg,#8FD0D8,#2E8AA0 55%,#1C4A62)',when:'MAÑANA',boxes:[{l:'SALES',v:'8:10',s:'Ferry desde Órzola'},{l:'DÍA',v:'Entero',s:'Con ferry'}],tips:[T('banador','Bañador y protector','hay playa'),T('protector','Protector solar','casi no hay sombra'),T('efectivo','Lleva efectivo','el ferry no acepta tarjeta')],btn:'',note:'Dentro de la tarjeta «Mañana» de AC1-AC3: la lista va al final, antes de cerrar.'},
+      {id:'C2',cap:'Tarjeta de la excursión · Pompeya',eye:'EXCURSIÓN',title:'Pompeya',ph:130,bg:'linear-gradient(160deg,#E2B88A,#B8704A 55%,#5A3A2A)',when:'LA EXCURSIÓN',boxes:[{l:'RECOGIDA',v:'7:15',s:'En el hotel'},{l:'DURACIÓN',v:'10 h',s:'Comida no incluida'}],tips:[T('agua','Lleva agua','no hay fuentes dentro'),T('calzado','Calzado cómodo','piedras irregulares'),T('sombrero','Sombrero','casi no hay sombra')],btn:'Cómo llegar',note:'En la tarjeta de la excursión de HOY, entre las cajas y el botón.'},
+      {id:'C3',cap:'Un día de invierno en Roma',eye:'MARTES 13 · ROMA',title:'Hoy, Vaticano',ph:130,bg:'linear-gradient(160deg,#9DB4D8,#5A6EA0 55%,#2E3A5E)',when:'HOY',boxes:null,tips:[T('abrigo','Abrigo','por la mañana hace frío'),T('documento','Lleva tu documento','te lo piden al entrar')],btn:'Cómo llegar',note:'Con solo dos consejos, la tarjeta no necesita cajas.'}
+    ]};
+  }
+}
+</script>
+</body>
+</html>

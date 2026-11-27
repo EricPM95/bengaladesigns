@@ -1,6 +1,6 @@
 // V76 (apartados 2 y 4): SOLO capturas (no es una prueba) en modo iPhone (390x844): vuelo con escala (RESERVAS, hoja y HOY) y tren unido a la llegada y a la vuelta (pregunta, RESERVAS y HOY). Un solo Chrome, que se cierra al acabar. Por la cola:
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/capturasV76_b.mjs roma|lanza [caso]
-// Guarda docs/dias/V76_capturas/<id>_<modo>_app.jpg y docs/dias/V76_log_b_<modo>.json. Casos: E1 (R8b) E2 (R8, la hoja) E3 E3b (HOY con escala) U1 (R11, la pregunta) U2 (R11c) U3 (R11a) U4 (R11b) U5 (la pregunta de la vuelta). Lanzarote (la API con DESTINOS_OCULTOS='-'): E1 E2 E3.
+// Guarda docs/dias/V76_capturas/<id>_<modo>_app.jpg y docs/dias/V76_log_b_<modo>.json. Casos: E1 (R8b) E2 (R8, la hoja) E3 E3b (HOY con escala) U1 (R11, la pregunta) U2 (R11c) U3 (R11a) U4 (R11b) U5 (la pregunta de la vuelta). Lanzarote (la API normal): E1 E2 E3.
 import fs from 'node:fs'
 import path from 'node:path'
 import { abrir, QR_AZUL, QR_NEGRO, QR_ROJO } from './_montajeV76_b.mjs'

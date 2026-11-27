@@ -4827,6 +4827,9 @@ app.post('/api/destination-excursions', async (req, res) => {
     sitios_grandes: Array.isArray(data?.sitios_grandes?.lugares) ? data.sitios_grandes.lugares.map(({ nombre, del, el }) => ({ nombre, del, el })) : [],
     // Tanda 6y10: cuánto pesa cada sitio ('imprescindible' o 'nivel1'), para «Cambiar un día por la excursión» (qué día pierde menos). Dato del destino.
     importancia_por_sitio: importanciaDeSitios(data),
+    // (V77 §2) El nombre corto de cada sitio con nombre largo (campo `nombre_corto` de sus datos), para las frases y listas que nombran varios sitios («Lo mejor: Timanfaya, los Jameos y…»). Las tarjetas y fichas siguen con el nombre entero.
+    // Se pide con el resto de /api/destination-excursions: una vez al abrir el destino, ~0,3 KB.
+    nombres_cortos_lista: Object.fromEntries((data?.places ?? []).filter((place) => typeof place.nombre_corto === 'string' && place.nombre_corto).map((place) => [place.name, place.nombre_corto])),
     sin_entrada_por_sitio: sinEntradaPorSitio(data),
   }
   if (!data || (options.length === 0 && entradas.length === 0)) {

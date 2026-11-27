@@ -164,7 +164,7 @@ async function pasada(version) {
     await ev("document.querySelector('[data-eliminar-confirmar]')?.click(); true") // (V75) la papelera ahora pide confirmar: [Sí, eliminar]
     await a.esp(1200)
     const quedan = await R(`return st().reservations.filter((x) => x.refId === ${JSON.stringify(base.nombre)}).length`)
-    debe(quedan === 0, 'papelera', 'la papelera quita la entrada (con su Deshacer)')
+    debe(quedan === 0, 'papelera', 'la papelera quita la entrada (sin Deshacer: V77, 30)')
 
     /* ═══ Alojamiento ═══ */
     console.log(`B. Alojamiento ${quien}`)
@@ -227,7 +227,7 @@ async function pasada(version) {
     await ev("document.querySelector('[data-eliminar-confirmar]')?.click(); true") // (V75) la papelera ahora pide confirmar: [Sí, eliminar]
     await a.esp(1200)
     const hay = await R(`return Boolean(st().accommodationSelections[route().days[0].id])`)
-    debe(hay === false, 'papelera', 'la papelera quita el alojamiento y su reserva (con su Deshacer)')
+    debe(hay === false, 'papelera', 'la papelera quita el alojamiento y su reserva (sin Deshacer: V77, 30)')
   } finally {
     a.cerrar()
   }

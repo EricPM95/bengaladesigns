@@ -1,5 +1,5 @@
 // La prueba de la tanda HOY2b, agente D (5-nov-2026): los avisos de horario en HOY (y no en DÍAS), el Tempietto que pasa al mirador, «Guardar en mi galería», «A tu aire» (33), el atardecer sin parada con fotos (20b)
-// y la pestaña «Logros» con todo cerrado al abrir. Viaje de Eric en Lanzarote (martes 10 de noviembre). Hace falta el Vite (5173) y la API (8787, con DESTINOS_OCULTOS='-') YA encendidos; NO arranca ninguno.
+// y la pestaña «Logros» con todo cerrado al abrir. Viaje de Eric en Lanzarote (martes 10 de noviembre). Hace falta el Vite (5173) y la API (8787, normal) YA encendidos; NO arranca ninguno.
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/pruebaTandaHOY2b_D.mjs
 // Un solo Chrome, que se cierra al acabar. Salida: «N comprobaciones · M fallos». Capturas 390x844 de TODO el scroll en docs/dias/capturas_jutrip/hoy2b_<tema>_<n>.jpg.
 // (La pestaña Logros de Roma y Lanzarote la comprueba por dentro pruebaTandaLG1_A, puesta al día en esta tanda: antes → ahora → decisión de Eric, 5-nov.)

@@ -1,6 +1,6 @@
 // V57: SOLO capturas (no es una prueba) en modo iPhone (390x844). Un solo Chrome por vez, que se cierra al acabar. Por la cola:
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/capturasV57.mjs roma|lanza [caso]
-// Guarda docs/dias/V57_capturas/<nombre>.jpg y escribe docs/dias/V57_log_<destino>.json con el texto de cada pantalla. Lanzarote pide la API con DESTINOS_OCULTOS='-'.
+// Guarda docs/dias/V57_capturas/<nombre>.jpg y escribe docs/dias/V57_log_<destino>.json con el texto de cada pantalla. Lanzarote pide la API normal.
 import fs from 'node:fs'
 import path from 'node:path'
 import { abrirApp } from './_enLaApp.mjs'

@@ -1,6 +1,6 @@
 // PRUEBA DE LAS FOTOS DE LANZAROTE (6-nov). Sin navegador: lee los datos y llama a las funciones del servidor.
 //   node scripts/destino/pruebaFotosLanzarote.mjs
-//   (con la API en 8787 y DESTINOS_OCULTOS='-' comprueba además /api/place-photo de verdad; sin ella, se salta esa parte)
+//   (con la API en 8787 comprueba además /api/place-photo de verdad; sin ella, se salta esa parte)
 // 1. Las 27 de Eric están en su parada (por nombre y por id), sin crédito y con sus derechos; las 2 de reserva se guardan y no se usan.
 // 2. Ninguna foto apunta a un archivo que no existe (la grande, la _p, la portada, las de reserva).
 // 3. Toda parada de Lanzarote tiene foto NUESTRA o sale con el fondo de color: nunca la de Wikipedia ni la de Unsplash.

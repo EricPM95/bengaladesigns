@@ -1,4 +1,4 @@
-// V45 (24-nov-2026): RESERVAS (vuelo, alojamiento, entradas y excursiones) y los avisos de toda la app. Hace falta el Vite estable (5173) y la API (8787, con DESTINOS_OCULTOS='-' para Lanzarote) YA encendidos.
+// V45 (24-nov-2026): RESERVAS (vuelo, alojamiento, entradas y excursiones) y los avisos de toda la app. Hace falta el Vite estable (5173) y la API (8787, normal para Lanzarote) YA encendidos.
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/pruebaV45.mjs
 // Un solo Chrome por parte, que se cierra al acabar. Capturas 390x844 en docs/dias/V45_capturas/.
 //  1. Sin navegador: el servidor da `todas` (el carrusel primero y lo demás detrás, con su categoría); lo escrito (botones de borde, textos, la hoja sin documento, los avisos).

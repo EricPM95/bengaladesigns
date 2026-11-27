@@ -79,7 +79,7 @@ export function crearReglas(env) {
     const out = []
     for (const quitada of spare) {
       const nivel = nivelDe(quitada.lugar) ?? 3
-      if (nivel === 1 && !vistosAntes.has(quitada.lugar) && !quitada.camino_antes) out.push({ regla: 'imprescindible_quitado', clave: clave('imprescindible', quitada.lugar), texto: `«${quitada.lugar}» es un imprescindible y pasa a «Si te sobra tiempo» la primera vez` })
+      if (nivel === 1 && !vistosAntes.has(quitada.lugar) && !quitada.camino_antes) out.push({ regla: 'imprescindible_quitado', clave: clave('imprescindible', quitada.lugar), texto: `«${quitada.lugar}» es un imprescindible y pasa a «Lugares pendientes» la primera vez` })
       const mia = valorDe(quitada, nivelDe)
       for (const resto of items.filter(esParada)) {
         // (Un «de camino» no ocupa tiempo ni se quita para que quepa nada: no cuenta para la pirámide.)

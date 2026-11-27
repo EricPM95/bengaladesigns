@@ -1,5 +1,5 @@
 #!/bin/bash
-# CATALOGO V67 (HOY, Lanzarote): exige la API con DESTINOS_OCULTOS='-'. Solo capturas; UN Chrome cada vez, por la cola.
+# CATALOGO V67 (HOY, Lanzarote): exige la API normal. Solo capturas; UN Chrome cada vez, por la cola.
 cd "C:/Users/ERIC/Desktop/CLAUDE PROYECTS/APP RUTAS"
 export APP_URL=http://localhost:5173
 rm -f /tmp/cv67_lanza_fin.log

@@ -8,7 +8,7 @@
 //   5. Idempotente: la segunda pasada sobre el resultado no propone ningún día.
 // Usa la API en 8787 (no abre Vite ni navegador). Uso:
 //   node scripts/destino/comprobarReorganizarV68.mjs [destino=Roma] [inicio=2026-11-27] [dias=4]
-//   Lanzarote: `node scripts/destino/comprobarReorganizarV68.mjs Lanzarote 2027-03-07 6` (con la API en DESTINOS_OCULTOS='-').
+//   Lanzarote: `node scripts/destino/comprobarReorganizarV68.mjs Lanzarote 2027-03-07 6` (con la API normal).
 // Sale con código 1 si algún caso falla.
 import os from 'node:os'
 import path from 'node:path'

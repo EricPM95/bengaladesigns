@@ -79,6 +79,16 @@
        "modo": null,
        "doc": "El Golfo y el Charco de los Clicos: la laguna verde desde el mirador y el pueblo",
        "tiempo_de_playa": true
+      },
+      {
+       "tipo": "parada",
+       "lugar": "El Golfo y el Charco de los Clicos",
+       "modo": null,
+       "doc": "El atardecer en El Golfo (V77): parada propia al final del día, a la hora de la puesta de sol de ese día",
+       "titulo": "Atardecer en El Golfo",
+       "min": 30,
+       "llegar_sol_menos": 15,
+       "hasta_atardecer": true
       }
      ],
      "cena": {

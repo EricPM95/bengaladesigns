@@ -1,5 +1,5 @@
 // La prueba de la tanda HOY2b, agente E (5-nov-2026): «¿Qué hago ahora?» (17), «¿Cómo vais?» (16) y Cansados (16b), +15 / +30 min SIN mover la ruta y el reto del día (5) con su álbum de cromos con fotos.
-// Viaje de Eric en Lanzarote (martes 10 de noviembre) y un repaso en Roma. Hace falta el Vite (5173) y la API (8787, con DESTINOS_OCULTOS='-') YA encendidos; NO arranca ninguno.
+// Viaje de Eric en Lanzarote (martes 10 de noviembre) y un repaso en Roma. Hace falta el Vite (5173) y la API (8787, normal) YA encendidos; NO arranca ninguno.
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/pruebaTandaHOY2b_E.mjs
 // Un solo Chrome, que se cierra al acabar. Salida: «N comprobaciones · M fallos». Capturas 390x844 de TODO el scroll en docs/dias/capturas_jutrip/hoy2b_<tema>_<n>.jpg.
 // PARTE=puras: solo las cuentas sin pantalla (servidor y cliente), sin Chrome.

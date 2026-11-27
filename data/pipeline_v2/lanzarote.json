@@ -244,6 +244,7 @@
   {
    "id": "montanas_del_fuego",
    "name": "Montañas del Fuego (Timanfaya)",
+   "nombre_corto": "Timanfaya",
    "level": 1,
    "tier": "imprescindible",
    "zone": "centro_oeste",
@@ -321,6 +322,7 @@
   {
    "id": "jameos_del_agua",
    "name": "Jameos del Agua",
+   "nombre_corto": "los Jameos",
    "level": 1,
    "tier": "imprescindible",
    "zone": "norte",
@@ -677,6 +679,7 @@
   {
    "id": "la_geria_y_sus_bodegas",
    "name": "La Geria y sus bodegas",
+   "nombre_corto": "La Geria",
    "level": 1,
    "tier": "imprescindible",
    "zone": "centro",
@@ -1696,6 +1699,7 @@
   {
    "id": "las_grietas_montana_blanca",
    "name": "Las Grietas (Montaña Blanca)",
+   "nombre_corto": "Las Grietas",
    "level": 3,
    "zone": "centro",
    "coordinates": [

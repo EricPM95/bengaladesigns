@@ -1,4 +1,4 @@
-// La prueba del ARREGLO «no se puede crear un viaje a Lanzarote» (5-nov). Necesita la API con DESTINOS_OCULTOS='-' (Lanzarote visible, como para un administrador) y el Vite en 5173.
+// La prueba del ARREGLO «no se puede crear un viaje a Lanzarote» (5-nov). Necesita la API normal (Lanzarote visible, como para un administrador) y el Vite en 5173.
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/pruebaArregloCrearLanzarote.mjs
 import fs from 'node:fs'
 import path from 'node:path'

@@ -1,7 +1,7 @@
 // V73 (apartados 1, 2 y 3): SOLO capturas (no es una prueba) en modo iPhone (390x844) de HOY con el día acabado. Un solo Chrome por vez, que se cierra al acabar. Por la cola:
 //   APP_URL=http://localhost:5173 node scripts/destino/_conCola.mjs node scripts/destino/capturasV73_a1.mjs roma|lanza|design [caso]
 // Guarda docs/dias/V73_capturas/<id>_app.jpg (+ _app_abajo.jpg: la misma pantalla bajada) y <id>_design.jpg (AC1, AC2, AC3) y escribe docs/dias/V73_log_a1_<modo>.json con el texto de cada pantalla.
-// Casos: AC1 (sin atardecer, sin alojamiento, con reto), AC2 (con atardecer, con alojamiento, sin reto), AC3 (día normal; en Roma). Lanzarote: la API con DESTINOS_OCULTOS='-'.
+// Casos: AC1 (sin atardecer, sin alojamiento, con reto), AC2 (con atardecer, con alojamiento, sin reto), AC3 (día normal; en Roma). Lanzarote: la API normal.
 import fs from 'node:fs'
 import path from 'node:path'
 import { abrirApp } from './_enLaApp.mjs'
