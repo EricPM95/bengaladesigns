@@ -90,7 +90,7 @@ function Contenido({ datos, resaltar, volver }: { datos: PaginaDeDestinoDatos; r
         </div>
 
         <Titulo cuenta={`${n.colecciones_completas} de ${n.colecciones_total}`}>Colecciones</Titulo>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
+        <div data-colecciones-del-destino style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
           {datos.colecciones.map((c) => <TarjetaDeColeccion key={c.id} c={c} abrir={() => abrirFicha(`coleccion:${datos.destino}:${c.id}`)} pin={c.completa ? enVitrina(`${datos.destino}|coleccion|${c.id}`) : undefined} />)}
         </div>
 
@@ -161,13 +161,14 @@ function TarjetaDeColeccion({ c, abrir, pin }: { c: ColeccionDePagina; abrir: ()
     <button
       type="button"
       onClick={abrir}
-      style={{ position: 'relative', minHeight: 44, borderRadius: 18, background: c.completa ? '#FFFDF8' : '#F8F3EA', border: '1px solid rgba(28,34,48,.07)', padding: '10px 6px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, textAlign: 'center', cursor: 'pointer', color: 'inherit' }}
+      data-coleccion-de-pagina={c.id}
+      style={{ position: 'relative', minHeight: 44, borderRadius: 22, background: c.completa ? '#FFFDF8' : '#F8F3EA', border: '1px solid rgba(28,34,48,.07)', padding: '14px 8px 12px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, textAlign: 'center', cursor: 'pointer', color: 'inherit' }}
     >
       <span style={{ filter: hay ? 'none' : 'grayscale(1)', opacity: hay ? 1 : 0.45, display: 'flex' }}>
-        <Insignia coleccion={c.id} ganados={c.sitios.filter((x) => x.visto).map((x) => x.sitio)} completa={c.completa} tam={72} />
+        <Insignia coleccion={c.id} ganados={c.sitios.filter((x) => x.visto).map((x) => x.sitio)} completa={c.completa} tam={132} />
       </span>
-      <span style={{ font: "500 11px/1.2 'Geist'", textWrap: 'balance' }}>{c.nombre}</span>
-      <span style={{ font: "600 10px 'Geist Mono',monospace", color: c.completa ? 'oklch(0.42 0.09 150)' : hay ? 'oklch(0.48 0.17 5)' : 'rgba(28,34,48,.45)' }}>{c.completa ? '✓ Completa' : hay ? `${c.n} de ${c.total}` : 'Sin empezar'}</span>
+      <span style={{ font: "400 18px/1.08 'Instrument Serif',serif", textWrap: 'balance' }}>{c.nombre}</span>
+      <span style={{ font: "600 11px 'Geist Mono',monospace", color: c.completa ? 'oklch(0.42 0.09 150)' : hay ? 'oklch(0.48 0.17 5)' : 'rgba(28,34,48,.45)' }}>{c.completa ? '✓ Completa' : hay ? `${c.n} de ${c.total}` : 'Sin empezar'}</span>
       <span data-avance-de-coleccion aria-hidden="true" style={{ width: '80%', height: 3, borderRadius: 3, background: 'rgba(28,34,48,.1)', overflow: 'hidden' }}>
         <span style={{ display: 'block', height: '100%', width: `${c.total ? Math.round((c.n / c.total) * 100) : 0}%`, borderRadius: 3, background: c.completa ? 'oklch(0.5 0.1 150)' : 'oklch(0.48 0.17 5)' }} />
       </span>

@@ -19,6 +19,7 @@ const cargadores: { [T in Pantalla['t']]: Cargador<T> } = {
   previos: () => import('./DondeHasEstado'),
   pasaporte: () => import('./PasaporteScreen'),
   sorteo: () => import('./sorteo/PaginaDelSorteo'),
+  presumir: () => import('./TarjetaParaPresumir'),
 }
 const perezosas = Object.fromEntries(Object.entries(cargadores).map(([t, c]) => [t, lazyReintentable(c as () => Promise<{ default: ComponentType<{ pantalla: Pantalla }> }>)])) as unknown as Record<Pantalla['t'], ComponentType<{ pantalla: Pantalla }>>
 

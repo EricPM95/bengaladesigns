@@ -304,6 +304,17 @@ export function construirGanados({ datos, catalogos, items, cuentan = [], viajes
     return { id, nombre: m.nombre, ganada: Boolean(it), clave: it?.clave ?? null, fecha: it ? porClave.get(it.clave)?.fecha : null }
   })
   const exclusivos = vitrina.exclusivos.map((k) => porClave.get(k)).filter(Boolean)
+  // (V82) Los exclusivos que AÚN se pueden ganar (P2b): la edición de este año de cada destino que todavía no has visitado este año, con cómo y hasta cuándo. Los que ya no se pueden ganar (ediciones de años pasados, el Probador) NUNCA salen.
+  // Los de «solo en ocasiones especiales» (fundador, pionero) no tienen una fecha propia que enseñar, así que tampoco salen (DECISIONES_V82). Sin lecturas nuevas: sale de los datos y de lo ya ganado.
+  const exclusivosAbiertos = []
+  const defEdicion = visibles.find((x) => x.id === 'edicion_anio')
+  if (defEdicion) {
+    const anio = new Date(ahora).getUTCFullYear()
+    for (const d of Object.values(datos.destinos)) {
+      if (items.has(clave(d.clave, 'viajero:edicion_anio', String(anio)))) continue
+      exclusivosAbiertos.push({ clave: `abierto:edicion_anio:${d.clave}:${anio}`, def: 'edicion_anio', destino: d.clave, anio: String(anio), nombre: `${d.ciudad} ${anio}`, ciudad: d.ciudad, como: `Visita ${d.ciudad} en ${anio}`, hasta: `${anio}-12-31` })
+    }
+  }
 
   /* ── Por destino (y por países) ── */
   const vistos = datos.destinos
@@ -358,6 +369,7 @@ export function construirGanados({ datos, catalogos, items, cuentan = [], viajes
     viajero,
     maravillas,
     exclusivos,
+    exclusivos_abiertos: exclusivosAbiertos,
     por_destino: porDestino,
     paises,
     vitrina,

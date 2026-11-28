@@ -22,6 +22,8 @@ export type Pantalla =
   | { t: 'previos' }
   /** Mi pasaporte; `pagina` es el país o la vista que se abre. */
   | { t: 'pasaporte'; pagina?: string }
+  /** (V82) La tarjeta para presumir de la colección (P3, P3b): el número de logros, la medalla de las maravillas, todos los exclusivos y las cuatro cifras. */
+  | { t: 'presumir' }
   /** La página del sorteo anual (Tanda 10P): el premio, cuándo se sortea, quién entra y cómo se entra. Se abre desde el billete del Perfil y desde el aviso de la campana. */
   | { t: 'sorteo' }
 

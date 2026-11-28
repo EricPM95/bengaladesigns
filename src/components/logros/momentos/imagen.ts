@@ -20,7 +20,7 @@ export const ALTO = 1920
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
 
 /** Copia un nodo con todos sus estilos calculados, para pintarlo aislado (sin las hojas de estilo de la página). */
-function clonarConEstilos(origen: Element): Element {
+export function clonarConEstilos(origen: Element): Element {
   const copia = origen.cloneNode(false) as Element
   const calculado = getComputedStyle(origen)
   let css = ''

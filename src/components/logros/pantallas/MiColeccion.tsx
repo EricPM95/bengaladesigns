@@ -65,13 +65,13 @@ function Paginas({ datos, grupo, abrir }: { datos: MiColeccionDatos; grupo?: str
     <div ref={lista} style={{ flex: 1, minHeight: 0, display: 'flex', overflowX: 'auto', overflowY: 'hidden', overscrollBehaviorX: 'contain', scrollSnapType: 'x mandatory', scrollbarWidth: 'none' }}>
       {paginas.map((p, i) => (
         <div key={`${p.grupo}-${i}`} style={{ flex: 'none', width: '100%', scrollSnapAlign: 'start', padding: '4px 16px calc(env(safe-area-inset-bottom,0px) + 24px)', display: 'flex', alignItems: 'flex-start', overflowY: 'auto' }}>
-          <div style={{ flex: 1, borderRadius: 24, background: 'linear-gradient(160deg,#5A2230,#3A121C)', boxShadow: 'inset 0 0 0 1.5px rgba(243,213,154,.25),0 20px 40px -24px rgba(0,0,0,.6)', padding: '16px 14px 18px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 8, font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: '#F3D59A' }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: COLOR_DE_GRUPO[p.grupo] ?? '#F3D59A' }} />
+          <div data-pagina-de-coleccion={p.grupo} style={{ flex: 1, borderRadius: 28, background: 'radial-gradient(ellipse 120% 60% at 50% 0%,#232B52 0%,#141A3A 50%,#0C1024 100%)', boxShadow: 'inset 0 0 0 1.5px rgba(243,213,154,.18),0 20px 40px -24px rgba(10,13,28,.7)', padding: '16px 12px 18px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 4px', font: "600 11px 'Geist Mono',monospace", letterSpacing: '.16em', textTransform: 'uppercase', color: '#F3D59A' }}>
+              <span style={{ width: 9, height: 9, borderRadius: '50%', background: COLOR_DE_GRUPO[p.grupo] ?? '#F3D59A' }} />
               {p.nombre}
-              <span style={{ marginLeft: 'auto', font: "500 10px 'Geist Mono',monospace", color: 'rgba(243,213,154,.6)' }}>{`${i + 1} / ${paginas.length}`}</span>
+              <span data-pagina-n style={{ marginLeft: 'auto', font: "500 11px 'Geist Mono',monospace", color: 'rgba(243,213,154,.7)' }}>{`${i + 1} / ${paginas.length}`}</span>
             </span>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', alignContent: 'start', gap: '14px 8px', padding: '6px 2px', borderRadius: 18, background: 'repeating-linear-gradient(0deg,rgba(255,255,255,.012) 0 2px,transparent 2px 5px),#2E0E16' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', alignContent: 'start', gap: 10 }}>
               {p.logros.map((l) => <Hueco key={l.id} l={l} abrir={() => abrir(l)} />)}
             </div>
           </div>
@@ -91,24 +91,32 @@ function Hueco({ l, abrir }: { l: LogroDeColeccion; abrir: () => void }): ReactN
   const hay = conAvance(l)
   const pasos = l.avance && l.n_total === 1 ? l.avance.total : l.n_total
   const hechos = l.avance && l.n_total === 1 ? l.avance.n : l.n_ganados
-  const nombre = hay ? (l.nombre ?? l.nombre_logro ?? NOMBRE_DE_FAMILIA[l.id] ?? '') : 'Por conseguir'
-  const punto = Math.max(3, Math.min(5, Math.floor((84 - (pasos - 1) * 2) / Math.max(1, pasos))))
+  const nombre = hay ? (l.nombre ?? l.nombre_logro ?? NOMBRE_DE_FAMILIA[l.id] ?? '') : (l.nombre_logro ?? NOMBRE_DE_FAMILIA[l.id] ?? 'Por conseguir')
+  // (V82 N3) Cada logro en su hueco hundido, la medalla grande, su nombre y «1 de 4» con la barrita (la misma de «Todos mis logros»). Completo: «Conseguido»; sin nada: «Por conseguir».
+  const conPasos = pasos > 1 && hechos < pasos
+  const pct = pasos > 0 ? Math.round((Math.min(hechos, pasos) / pasos) * 100) : 0
   return (
-    <button type="button" onClick={abrir} style={{ minHeight: 44, border: 'none', background: 'transparent', padding: '6px 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
-      <span style={{ position: 'relative', width: 78, height: 78, borderRadius: '50%', background: 'radial-gradient(circle at 50% 60%,#1E070C,#2A0C14 70%)', boxShadow: 'inset 0 5px 10px rgba(0,0,0,.75),inset 0 -2px 3px rgba(243,213,154,.12),0 1px 0 rgba(243,213,154,.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <button type="button" data-hueco-de-coleccion={l.id} data-con-barrita={conPasos ? '1' : '0'} onClick={abrir} style={{ minHeight: 190, border: '1px solid rgba(243,213,154,.16)', borderRadius: 22, background: hay ? 'linear-gradient(180deg,rgba(255,253,248,.08),rgba(255,253,248,.025))' : 'rgba(0,0,0,.18)', padding: '12px 6px 12px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, cursor: 'pointer', color: 'inherit' }}>
+      <span style={{ position: 'relative', width: 116, height: 116, borderRadius: '50%', background: 'radial-gradient(circle at 50% 60%,#080B1A,#12183A 70%)', boxShadow: 'inset 0 5px 10px rgba(0,0,0,.75),0 1px 0 rgba(243,213,154,.16)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         {hay ? (
-          <span style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,.6))', display: 'flex' }}><ChapaDe l={l} tam={66} /></span>
+          <span style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,.6))', display: 'flex' }}><ChapaDe l={l} tam={104} /></span>
         ) : (
-          <span style={{ width: 58, height: 58, borderRadius: '50%', border: '1.5px dashed rgba(243,213,154,.28)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(243,213,154,.32)' }}>
+          <span style={{ width: 92, height: 92, borderRadius: '50%', border: '1.5px dashed rgba(243,213,154,.3)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(243,213,154,.4)' }}>
             <IconoDeHueco id={l.id} />
           </span>
         )}
       </span>
-      {/* (V18) Los puntitos de avance, SIEMPRE en una sola fila (más pequeños si son muchos) y con su hueco reservado aunque no haya: así todos los nombres quedan a la misma altura. */}
-      <span aria-hidden="true" data-puntos-de-avance={pasos > 1 ? pasos : 0} style={{ display: 'flex', gap: 2, flexWrap: 'nowrap', justifyContent: 'center', height: 5, maxWidth: 84 }}>
-        {pasos > 1 && Array.from({ length: pasos }, (_, k) => <span key={k} style={{ width: punto, height: punto, flex: 'none', borderRadius: '50%', background: k < hechos ? '#F3D59A' : 'rgba(243,213,154,.22)' }} />)}
-      </span>
-      <span style={{ font: "500 11px/1.2 'Geist'", color: hay ? '#FFF3D6' : 'rgba(243,213,154,.45)', textWrap: 'balance', textAlign: 'center' }}>{nombre}</span>
+      <span style={{ font: "400 17px/1.08 'Instrument Serif',serif", color: hay ? '#FFF3D6' : 'rgba(243,213,154,.55)', textWrap: 'balance', textAlign: 'center', padding: '0 4px' }}>{nombre}</span>
+      {conPasos && hay ? (
+        <>
+          <span aria-hidden data-barrita-de-coleccion style={{ width: '62%', height: 4, borderRadius: 4, background: 'rgba(255,253,248,.14)', overflow: 'hidden' }}>
+            <span style={{ display: 'block', height: '100%', width: `${pct}%`, background: '#F3D59A' }} />
+          </span>
+          <span data-avance-de-coleccion style={{ font: "600 10px 'Geist Mono',monospace", color: 'rgba(243,213,154,.85)' }}>{`${hechos} de ${pasos}`}</span>
+        </>
+      ) : (
+        <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.12em', textTransform: 'uppercase', color: hay ? '#F3D59A' : 'rgba(243,213,154,.45)' }}>{hay ? 'Conseguido' : 'Por conseguir'}</span>
+      )}
     </button>
   )
 }

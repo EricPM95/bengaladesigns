@@ -2,11 +2,12 @@ import { useState, type ReactNode } from 'react'
 import { guardarTitulo, useGanados, type FilaDeViajero, type Ganados, type ItemGanado } from './api'
 import { ChapaDeFila, DibujoDeItem } from './dibujo'
 import { cuandoDe, cuentaDeFila, etiquetaDe, GRUPO, MAYUS, NOMBRE_DE_GRUPO, textoSiguiente } from './formato'
+import { BOTON_ORO } from '../../../ui/botonesOro'
 import { HojaGrande, PieDeFicha, useVitrinaDe } from './FichaGrande'
 
 /**
  * LA FICHA DE UN LOGRO DE VIAJERO (T4; V72 F5): la MISMA hoja que la de una colección o una medalla (`HojaGrande`: X a la izquierda, vitrina a la derecha, pie fijo), con su dibujo, su nombre, cuánto lleva y
- * cuándo se ganó, con [Compartir], [Volver a ver] y «Es tu título». Lo que aún no se tiene sale en gris y dice cómo conseguirlo (nunca un emblema oculto: esos no llegan aquí). `clave` es la de lo ganado,
+ * cuándo se ganó, con [Compartir], [Volver a ver] y «Es tu título». Lo que aún no se tiene sale en gris y dice cómo conseguirlo (los emblemas ocultos, las maravillas y los exclusivos son de `FichaAzul`, N2). `clave` es la de lo ganado,
  * o `pendiente:<id del logro>` para un logro de viajero que aún no se tiene. Las colecciones y las medallas de ciudad las dibuja `FichaGrande`.
  */
 const COLOR_FICHA_VERDE = '#2F6B43'
@@ -39,7 +40,7 @@ export function FichaHoja({ g, clave, cerrar }: { g: Ganados; clave: string; cer
   }
 
   return (
-    <HojaGrande etiqueta={nombre} clave={clave} cerrar={cerrar} alta={false} vitrina={item?.balda ? vitrina : null} pie={ganado ? <PieDeFicha momento={momento} titulo={item?.titulable ? { es: esTitulo, ocupado, alternar: () => void ponerTitulo() } : null} /> : null}>
+    <HojaGrande etiqueta={nombre} clave={clave} cerrar={cerrar} alta={false} vitrina={item?.balda ? vitrina : null} pie={ganado ? <PieDeFicha momento={momento} titulo={item?.titulable ? { es: esTitulo, ocupado, alternar: () => void ponerTitulo() } : null} /> : <button type="button" data-entendido onClick={cerrar} style={{ ...BOTON_ORO, width: '100%', height: 52, border: 'none', borderRadius: 999, font: "700 15px 'Geist'", cursor: 'pointer' }}>Entendido</button>}>
       <span style={{ marginTop: 4, filter: ganado ? 'none' : 'grayscale(1)', opacity: ganado ? 1 : 0.5 }}>{item ? <DibujoDeItem item={item} tam={140} /> : fila ? <ChapaDeFila fila={fila} tam={140} /> : null}</span>
       <span style={{ font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase', color }}>{eye}</span>
       <span style={{ font: "400 28px/1.05 'Instrument Serif',serif", textWrap: 'balance' as never }}>{nombre}</span>
@@ -54,7 +55,10 @@ export function FichaHoja({ g, clave, cerrar }: { g: Ganados; clave: string; cer
           </span>
         </>
       ) : (
-        <span style={{ font: "500 13px 'Geist'", color: 'rgba(28,34,48,.65)' }}>{MAYUS(siguiente ?? fila?.como ?? '')}</span>
+        <>
+          <span style={{ alignSelf: 'stretch', textAlign: 'left', margin: '10px 0 0', font: "600 10px 'Geist Mono',monospace", letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(28,34,48,.55)' }}>Por conseguir</span>
+          <span data-por-conseguir-de-ficha style={{ alignSelf: 'stretch', textAlign: 'left', padding: '12px 14px', borderRadius: 16, background: '#F3ECDD', font: "600 14px/1.3 'Geist'", color: '#1C2230' }}>{MAYUS(siguiente ?? fila?.como ?? '')}</span>
+        </>
       )}
     </HojaGrande>
   )

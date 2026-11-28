@@ -74,3 +74,10 @@ export function textoSiguiente(f: FilaDeViajero): string | null {
   if (!f.siguiente) return null
   return `te ${f.siguiente.faltan === 1 ? 'falta 1' : `faltan ${f.siguiente.faltan}`} para ${f.siguiente.nombre}`
 }
+
+const MESES_LARGOS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+/** «2026-12-31» → «Hasta el 31 de diciembre». */
+export function hastaDe(f: string | null | undefined): string {
+  if (!f || !/^\d{4}-\d{2}-\d{2}/.test(f)) return ''
+  return `Hasta el ${Number(f.slice(8, 10))} de ${MESES_LARGOS[Number(f.slice(5, 7)) - 1]}`
+}

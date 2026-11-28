@@ -85,6 +85,18 @@ export interface VitrinaGanada {
   titulo: string | null
 }
 
+/** (V82) Un exclusivo que aún se puede ganar (P2b): cómo se consigue y hasta cuándo (AAAA-MM-DD). Los que ya no se pueden ganar no llegan nunca. */
+export interface ExclusivoAbierto {
+  clave: string
+  def: string
+  destino: string
+  anio: string
+  nombre: string
+  ciudad: string
+  como: string
+  hasta: string
+}
+
 export interface Ganados {
   ok: boolean
   total: number
@@ -93,6 +105,8 @@ export interface Ganados {
   viajero: { id: string; nombre: string; filas: FilaDeViajero[] }[]
   maravillas: { id: string; nombre: string; ganada: boolean; clave: string | null; fecha: string | null }[]
   exclusivos: ItemGanado[]
+  /** (V82) Los exclusivos que aún se pueden ganar (en silueta). Falta en lo guardado en el móvil antes de la V82: se trata como vacío. */
+  exclusivos_abiertos?: ExclusivoAbierto[]
   por_destino: DestinoGanado[]
   paises: PaisGanado[]
   vitrina: VitrinaGanada

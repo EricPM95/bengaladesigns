@@ -1,11 +1,12 @@
 import { useState, type ReactNode } from 'react'
 import { useFotoDeDestino } from '../destino/useFotoDeDestino'
-import { MedallaDeSiete, Sello, type GradoDeSello } from '../../dibujos'
+import { Sello, type GradoDeSello } from '../../dibujos'
 import { flagStripesGradient } from '../../../../lib/flagColors'
 import { useLogrosPantallas } from '../useLogrosPantallas'
-import { useHojasDeLogros, type DestinoGanado, type FilaDeViajero, type Ganados, type ItemGanado, type PaisGanado } from './api'
-import { ChapaDeFila, DibujoDeItem } from './dibujo'
-import { COLOR_DE_GRADO, FONDO_DE_GRADO, GRUPO, NOMBRE_DE_GRADO, fechaCorta } from './formato'
+import { useHojasDeLogros, type DestinoGanado, type FilaDeViajero, type Ganados, type PaisGanado } from './api'
+import { ChapaDeFila } from './dibujo'
+import { COLOR_DE_GRADO, FONDO_DE_GRADO, GRUPO, NOMBRE_DE_GRADO } from './formato'
+import { BloqueExclusivos, BloqueMaravillas, CabeceraDeColeccion } from './Escaparates'
 
 /**
  * «TODOS MIS LOGROS» (T1, T2): el resumen de arriba, «Por destino» con sus dos vistas (Destinos y Países), los logros de viajero por grupos con «Ver todo», Las 7 maravillas y los Exclusivos.
@@ -18,19 +19,10 @@ const DORADO = 'oklch(0.8 0.14 70)'
 export function TodosLista({ g, vistaInicial = 'destinos' }: { g: Ganados; vistaInicial?: 'destinos' | 'paises' }): ReactNode {
   const [vista, setVista] = useState<'destinos' | 'paises'>(vistaInicial)
   const abrirFicha = useHojasDeLogros((s) => s.abrirFicha)
-  const titulo = g.titulo ? g.items.find((i) => i.clave === g.titulo?.clave) : null
   const enVitrina = new Set([...Object.values(g.vitrina.baldas).flatMap((b) => b.huecos)])
   return (
     <main className="vt-oculto" data-todos style={{ flex: 1, minHeight: 0, overflowY: 'auto', scrollbarWidth: 'none', padding: '0 0 calc(env(safe-area-inset-bottom,0px) + 40px)', display: 'flex', flexDirection: 'column', gap: 22 }}>
-      <div style={{ margin: '0 16px', flex: 'none', borderRadius: 24, background: '#1C2230', color: '#FFFDF8', padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 14 }}>
-        <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <span style={{ font: "400 30px/1 'Instrument Serif',serif" }}>
-            {g.total} <span style={{ fontSize: 18, color: 'rgba(255,253,248,.7)' }}>{g.total === 1 ? 'logro conseguido' : 'logros conseguidos'}</span>
-          </span>
-          {g.titulo && <span data-titulo-del-resumen style={{ font: "500 13px 'Geist'", color: '#F3D59A' }}>{g.titulo.nombre}</span>}
-        </span>
-        {titulo && <DibujoDeItem item={titulo} tam={58} />}
-      </div>
+      <CabeceraDeColeccion g={g} />
 
       {g.por_destino.length > 0 && (
         <>
@@ -69,7 +61,7 @@ export function TodosLista({ g, vistaInicial = 'destinos' }: { g: Ganados; vista
             {grupo.nombre}
             <VerTodo grupo={grupo.id} pequeno style={{ marginLeft: 'auto' }} />
           </div>
-          <div className="vt-oculto" style={{ display: 'flex', gap: 8, overflowX: 'auto', overflowY: 'hidden', overscrollBehaviorX: 'contain', scrollSnapType: 'x mandatory', scrollPaddingInline: 20, scrollbarWidth: 'none', padding: '2px 20px 6px' }}>
+          <div className="vt-oculto" style={{ display: 'flex', gap: 8, overflowX: 'auto', overflowY: 'hidden', overscrollBehaviorX: 'contain', scrollSnapType: 'x mandatory', scrollPaddingInline: 20, scrollbarWidth: 'none', padding: '2px 20px 6px' }} data-fila-de-viajero>
             {grupo.filas.map((f) => (
               <TarjetaDeFila key={f.id} f={f} enVitrina={Boolean(f.clave && enVitrina.has(f.clave))} abrir={() => abrirFicha(f.clave ?? `pendiente:${f.id}`)} />
             ))}
@@ -79,19 +71,8 @@ export function TodosLista({ g, vistaInicial = 'destinos' }: { g: Ganados; vista
         </div>
       ))}
 
-      <span style={{ padding: '12px 20px 0', ...TITULO }}>Las 7 maravillas</span>
-      <SieteMaravillas g={g} />
-
-      {g.exclusivos.length > 0 && (
-        <>
-          <span style={{ padding: '12px 20px 0', ...TITULO }}>Exclusivos</span>
-          <div style={{ flex: 'none', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, padding: '0 16px' }}>
-            {g.exclusivos.map((x) => (
-              <ExclusivoDeLista key={x.clave} x={x} enVitrina={enVitrina.has(x.clave)} abrir={() => abrirFicha(x.clave)} />
-            ))}
-          </div>
-        </>
-      )}
+      <BloqueMaravillas g={g} />
+      <BloqueExclusivos g={g} enVitrina={enVitrina} />
     </main>
   )
 }
@@ -202,59 +183,28 @@ function PinDeVitrinaLista({ enVitrina, borde = '#FFFDF8' }: { enVitrina: boolea
 
 function TarjetaDeFila({ f, enVitrina, abrir }: { f: FilaDeViajero; enVitrina: boolean; abrir: () => void }): ReactNode {
   const color = GRUPO[f.grupo]?.color ?? '#1C2230'
-  // (V72) Sin el círculo de color; lo que llevas («2 de 3») y la barrita solo en las que aún no tienes y se cuentan por pasos (varios pasos o escalones; las de «sí o no», como «Navidad fuera de casa», solo el nombre) (lo que antes dibujaba el círculo gris).
-  const conPasos = !f.ganado && (f.objetivo > 1 || (f.con_escalones && f.cuenta !== null))
+  // (V82 N1) Más grande (156 px: se ven dos y la tercera asoma). Cada logro que CUENTA lleva «1 de 4» y su barrita (la misma de «Mi colección», N3); uno ya completo, «Conseguido»; el que no cuenta pasos, «Conseguido» o «Por conseguir».
+  const cuenta = f.objetivo > 1 || (f.con_escalones && f.cuenta !== null)
+  const conPasos = cuenta && !f.completo
   const p = f.objetivo > 0 ? Math.min(1, f.actual / f.objetivo) : 0
   return (
-    <button type="button" data-fila={f.id} aria-label={`${f.nombre}${f.ganado ? '' : ' (por conseguir)'}`} onClick={abrir} data-tarjeta-de-viajero style={{ flex: 'none', width: 120, minHeight: 196, scrollSnapAlign: 'start', position: 'relative', border: 'none', borderRadius: 20, background: '#FFFDF8', boxShadow: '0 0 0 1px rgba(28,34,48,.07)', padding: '14px 6px 12px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, cursor: 'pointer', color: '#1C2230' }}>
+    <button type="button" data-fila={f.id} data-ganado={f.ganado ? '1' : '0'} aria-label={`${f.nombre}${f.ganado ? '' : ' (por conseguir)'}`} onClick={abrir} data-tarjeta-de-viajero style={{ flex: 'none', width: 156, minHeight: 236, scrollSnapAlign: 'start', position: 'relative', border: 'none', borderRadius: 24, background: f.ganado ? '#FFFDF8' : '#F1EBDE', boxShadow: f.ganado ? '0 0 0 1.5px rgba(184,150,79,.55),0 16px 24px -18px rgba(110,80,24,.6)' : '0 0 0 1px rgba(28,34,48,.08)', padding: '16px 8px 14px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, cursor: 'pointer', color: '#1C2230' }}>
       {f.ganado && <PinDeVitrinaLista enVitrina={enVitrina} />}
-      <span data-medalla-de-viajero style={{ position: 'relative', width: 106, height: 106, flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <ChapaDeFila fila={f} tam={106} />
+      <span data-medalla-de-viajero style={{ position: 'relative', width: 126, height: 126, flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <ChapaDeFila fila={f} tam={126} />
       </span>
-      <span style={{ font: "500 11.5px/1.2 'Geist'", color: f.ganado ? '#1C2230' : 'rgba(28,34,48,.5)', textWrap: 'balance' as never, textAlign: 'center' }}>{f.nombre}</span>
-      {conPasos && (
+      <span style={{ font: `400 19px/1.08 'Instrument Serif',serif`, color: f.ganado ? '#1C2230' : 'rgba(28,34,48,.5)', textWrap: 'balance' as never, textAlign: 'center' }}>{f.nombre}</span>
+      {conPasos ? (
         <>
-          <span data-avance-de-viajero style={{ font: "600 10.5px 'Geist Mono',monospace", color }}>{`${Math.min(f.actual, f.objetivo)} de ${f.objetivo}`}</span>
-          <span aria-hidden style={{ width: '64%', height: 3, borderRadius: 3, background: 'rgba(28,34,48,.1)', overflow: 'hidden' }}>
+          <span data-avance-de-viajero style={{ font: "600 10.5px 'Geist Mono',monospace", color: 'rgba(28,34,48,.6)' }}>{`${Math.min(f.actual, f.objetivo)} de ${f.objetivo}`}</span>
+          <span aria-hidden data-barrita-de-viajero style={{ width: '70%', height: 4, borderRadius: 4, background: 'rgba(28,34,48,.1)', overflow: 'hidden' }}>
             <span style={{ display: 'block', height: '100%', width: `${Math.round(p * 100)}%`, background: color }} />
           </span>
         </>
+      ) : (
+        <span style={{ font: "600 10.5px 'Geist Mono',monospace", letterSpacing: '.1em', textTransform: 'uppercase', color: f.ganado ? 'oklch(0.45 0.1 150)' : 'rgba(28,34,48,.5)' }}>{f.ganado ? 'Conseguido' : 'Por conseguir'}</span>
       )}
     </button>
   )
 }
 
-function SieteMaravillas({ g }: { g: Ganados }): ReactNode {
-  const ganadas = g.maravillas.filter((m) => m.ganada)
-  const completa = ganadas.length === g.maravillas.length && g.maravillas.length > 0
-  return (
-    <div data-maravillas style={{ margin: '0 16px', flex: 'none', position: 'relative', borderRadius: 24, background: 'radial-gradient(circle at 30% 30%,#2A3150 0%,#121626 75%)', color: '#FFFDF8', padding: 14, display: 'flex', alignItems: 'center', gap: 12 }}>
-      {completa && (
-        <span aria-hidden style={{ position: 'absolute', top: 10, right: 10, width: 26, height: 26, borderRadius: '50%', background: VERDE, color: '#fff', boxShadow: '0 0 0 2px #1C2230', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M5 12.5l4.5 4.5L19 7.5" />
-          </svg>
-        </span>
-      )}
-      <MedallaDeSiete encendidas={ganadas.map((m) => m.id)} tam={128} />
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 5 }}>
-        {g.maravillas.map((m) => (
-          <span key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 7, font: "500 12px 'Geist'", color: m.ganada ? '#FFFDF8' : 'rgba(255,253,248,.5)' }}>
-            <span aria-hidden style={{ width: 16, height: 16, flex: 'none', borderRadius: '50%', background: m.ganada ? '#F3D59A' : 'transparent', border: m.ganada ? 'none' : '1.5px solid rgba(255,253,248,.25)', color: '#17120a', display: 'flex', alignItems: 'center', justifyContent: 'center', font: "700 9px 'Geist'" }}>{m.ganada ? '✓' : ''}</span>
-            {m.ganada && m.fecha ? `${m.nombre} · ${fechaCorta(m.fecha)}` : m.nombre}
-          </span>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function ExclusivoDeLista({ x, enVitrina, abrir }: { x: ItemGanado; enVitrina: boolean; abrir: () => void }): ReactNode {
-  return (
-    <button type="button" data-exclusivo={x.clave} onClick={abrir} style={{ position: 'relative', border: 'none', borderRadius: 24, background: '#1C2230', color: '#FFFDF8', padding: '14px 6px 12px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, textAlign: 'center', cursor: 'pointer', minHeight: 44 }}>
-      <PinDeVitrinaLista enVitrina={enVitrina} borde="#1C2230" />
-      <DibujoDeItem item={x} tam={124} />
-      <span style={{ font: "400 17px/1.1 'Instrument Serif',serif" }}>{x.nombre}</span>
-    </button>
-  )
-}

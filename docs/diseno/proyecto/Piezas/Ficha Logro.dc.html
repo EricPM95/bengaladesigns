@@ -17,13 +17,13 @@
   </div>
   <div style="flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:6px 18px 40px;display:flex;flex-direction:column;gap:14px">
     <div style="flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center">
-      <div style="position:relative;width:196px;height:178px;display:flex;align-items:center;justify-content:center"><span style="position:absolute;inset:6px 8px;border-radius:50%;background:radial-gradient(circle,rgba(243,216,143,.55),rgba(243,216,143,0) 68%)"></span>
-        <sc-if value="{{ isLanza }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Insignia Lanza Codigo" col="{{ col }}" set="{{ set }}" size="{{ 176 }}" hint-size="176px,176px"></dc-import></sc-if>
-        <sc-if value="{{ isRoma }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Insignia Lanza Codigo" col="{{ col }}" set="{{ set }}" size="{{ 176 }}" hint-size="176px,176px"></dc-import></sc-if>
-        <sc-if value="{{ isMed }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Sello Logro" grade="{{ grade }}" icon="{{ icon }}" shape="{{ shape }}" label="{{ label }}" size="{{ 176 }}" hint-size="176px,176px"></dc-import></sc-if>
-        <sc-if value="{{ isViaj }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Medalla Destino" stage="{{ stage }}" icon="path" icd="M8 21s-4.5-3.8-4.5-8a4.5 4.5 0 0 1 9 0c0 4.2-4.5 8-4.5 8zM16 21s-4.5-3.8-4.5-8a4.5 4.5 0 0 1 9 0c0 4.2-4.5 8-4.5 8zM8 12.6h.01M16 12.6h.01" size="{{ 176 }}" hint-size="176px,176px"></dc-import></sc-if>
+      <div style="position:relative;width:290px;height:252px;display:flex;align-items:center;justify-content:center"><span style="position:absolute;inset:6px 8px;border-radius:50%;background:radial-gradient(circle,rgba(243,216,143,.55),rgba(243,216,143,0) 68%)"></span>
+        <sc-if value="{{ isLanza }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Insignia Lanza Codigo" col="{{ col }}" set="{{ set }}" size="{{ 250 }}" hint-size="250px,250px"></dc-import></sc-if>
+        <sc-if value="{{ isRoma }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Insignia Lanza Codigo" col="{{ col }}" set="{{ set }}" size="{{ 250 }}" hint-size="250px,250px"></dc-import></sc-if>
+        <sc-if value="{{ isMed }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Sello Logro" grade="{{ grade }}" icon="{{ icon }}" shape="{{ shape }}" label="{{ label }}" size="{{ 250 }}" hint-size="250px,250px"></dc-import></sc-if>
+        <sc-if value="{{ isViaj }}" hint-placeholder-val="{{ false }}"><dc-import name="Piezas/Medalla Destino" stage="{{ stage }}" icon="path" icd="M8 21s-4.5-3.8-4.5-8a4.5 4.5 0 0 1 9 0c0 4.2-4.5 8-4.5 8zM16 21s-4.5-3.8-4.5-8a4.5 4.5 0 0 1 9 0c0 4.2-4.5 8-4.5 8zM8 12.6h.01M16 12.6h.01" size="{{ 250 }}" hint-size="250px,250px"></dc-import></sc-if>
       </div>
-      <span style="font:400 30px/1.05 'Instrument Serif',serif;text-wrap:balance">{{ title }}</span>
+      <span style="margin-top:-16px;position:relative;font:400 30px/1.05 'Instrument Serif',serif;text-wrap:balance;text-shadow:0 0 14px #FBF3E2,0 0 6px #FBF3E2">{{ title }}</span>
       <span style="font:600 11px 'Geist Mono',monospace;letter-spacing:.14em;color:{{ subC }}">{{ sub }}</span>
       <sc-if value="{{ need }}" hint-placeholder-val="{{ false }}"><span style="font:500 13.5px/1.35 'Geist';color:rgba(28,34,48,.62)">{{ need }}</span></sc-if>
     </div>

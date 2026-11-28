@@ -84,6 +84,31 @@ export function useVitrinaDe(g: Ganados, item: ItemGanado | null): { enVitrina: 
   return { enVitrina, ocupado, alternar }
 }
 
+/**
+ * LA PASTILLA DE LA VITRINA (V82 §2): SIEMPRE arriba a la derecha de toda ficha, con el mismo aspecto: «+ Llevar a mi vitrina» / «✓ En tu vitrina». Solo se ofrece en lo CONSEGUIDO (nunca en una colección a medias ni en lo que aún no se tiene).
+ * `fija`: lo que vive siempre en la vitrina sin que se elija (las 7 maravillas y los exclusivos, del pedestal y la balda de exclusivos): la misma pastilla en «✓ En tu vitrina», sin botón porque no hay nada que elegir.
+ */
+export function PastillaDeVitrina({ vitrina, fija = false }: { vitrina?: { enVitrina: boolean; ocupado: boolean; alternar: () => void } | null; fija?: boolean }): ReactNode {
+  const puesto = fija || Boolean(vitrina?.enVitrina)
+  const contenido = (
+    <>
+      <span style={{ width: 32, height: 32, borderRadius: '50%', background: puesto ? VERDE : NARANJA, color: puesto ? '#FFFFFF' : '#17120A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d={puesto ? 'M5 12.5l4.5 4.5L19 7.5' : 'M12 5v14M5 12h14'} />
+        </svg>
+      </span>
+      {puesto ? 'En tu vitrina' : 'Llevar a mi vitrina'}
+    </>
+  )
+  const estilo = { height: 44, padding: '0 14px 0 5px', borderRadius: 999, border: '1px solid rgba(28,34,48,.08)', background: '#FFFDF8', display: 'flex', alignItems: 'center', gap: 8, font: "700 13px 'Geist'", color: '#1C2230', boxShadow: '0 4px 12px -8px rgba(28,34,48,.4)' } as const
+  if (fija || !vitrina) return <span data-vitrina-de-ficha="puesto" data-vitrina-fija style={estilo}>{contenido}</span>
+  return (
+    <button type="button" data-vitrina-de-ficha={vitrina.enVitrina ? 'puesto' : 'libre'} aria-label={vitrina.enVitrina ? 'Quitar de mi vitrina' : 'Llevar a mi vitrina'} disabled={vitrina.ocupado} onClick={vitrina.alternar} style={{ ...estilo, cursor: 'pointer' }}>
+      {contenido}
+    </button>
+  )
+}
+
 /** La hoja: fondo que oscurece, tirador, X a la izquierda, vitrina a la derecha, el cuerpo que se desliza y el pie fijo. */
 export function HojaGrande({ etiqueta, clave, cerrar, vitrina, alta = true, pie, children }: { etiqueta: string; clave: string; cerrar: () => void; vitrina?: { enVitrina: boolean; ocupado: boolean; alternar: () => void } | null; alta?: boolean; pie?: ReactNode; children: ReactNode }): ReactNode {
   return (
@@ -94,16 +119,7 @@ export function HojaGrande({ etiqueta, clave, cerrar, vitrina, alta = true, pie,
           <TiradorDeHoja />
           <div style={{ height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 12px 0 10px' }}>
             <CruzDeHoja onCerrar={cerrar} enLinea estilo={{ marginRight: 0, marginTop: 0 }} />
-            {vitrina && (
-              <button type="button" data-vitrina-de-ficha={vitrina.enVitrina ? 'puesto' : 'libre'} aria-label={vitrina.enVitrina ? 'Quitar de mi vitrina' : 'Llevar a mi vitrina'} disabled={vitrina.ocupado} onClick={vitrina.alternar} style={{ height: 44, padding: '0 14px 0 5px', borderRadius: 999, border: '1px solid rgba(28,34,48,.08)', background: '#FFFDF8', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', font: "700 13px 'Geist'", color: '#1C2230', boxShadow: '0 4px 12px -8px rgba(28,34,48,.4)' }}>
-                <span style={{ width: 32, height: 32, borderRadius: '50%', background: vitrina.enVitrina ? VERDE : NARANJA, color: vitrina.enVitrina ? '#FFFFFF' : '#17120A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d={vitrina.enVitrina ? 'M5 12.5l4.5 4.5L19 7.5' : 'M12 5v14M5 12h14'} />
-                  </svg>
-                </span>
-                {vitrina.enVitrina ? 'En tu vitrina' : 'Llevar a mi vitrina'}
-              </button>
-            )}
+            {vitrina && <PastillaDeVitrina vitrina={vitrina} />}
           </div>
         </div>
         <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', scrollbarWidth: 'none', padding: '0 18px 18px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, textAlign: 'center' }}>{children}</div>
@@ -114,7 +130,7 @@ export function HojaGrande({ etiqueta, clave, cerrar, vitrina, alta = true, pie,
 }
 
 /** El pie de lo ganado: [Compartir] y [Volver a ver] lado a lado (F2b, F3b) y, si es un logro de viajero que se puede usar de título, «Es tu título» debajo (F5). */
-export function PieDeFicha({ momento, titulo }: { momento: Momento | null; titulo?: { es: boolean; ocupado: boolean; alternar: () => void } | null }): ReactNode {
+export function PieDeFicha({ momento, titulo, oscuro = false }: { momento: Momento | null; titulo?: { es: boolean; ocupado: boolean; alternar: () => void } | null; /** (V82) En la ficha azul (N2): los mismos botones con los mismos nombres, sobre fondo noche. */ oscuro?: boolean }): ReactNode {
   const [repetir, setRepetir] = useState(false)
   return (
     <>
@@ -126,7 +142,7 @@ export function PieDeFicha({ momento, titulo }: { momento: Momento | null; titul
             </svg>
             Compartir
           </button>
-          <button type="button" data-volver-a-ver disabled={!momento} onClick={() => setRepetir(true)} style={{ ...BOTON_CLARO, height: 52, borderRadius: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, font: "700 15px 'Geist'", cursor: 'pointer', opacity: momento ? 1 : 0.5 }}>
+          <button type="button" data-volver-a-ver disabled={!momento} onClick={() => setRepetir(true)} style={{ ...BOTON_CLARO, ...(oscuro ? { background: 'rgba(255,253,248,.08)', border: '1px solid rgba(243,213,154,.4)', color: '#F3D59A', boxShadow: 'none' } : {}), height: 52, borderRadius: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, font: "700 15px 'Geist'", cursor: 'pointer', opacity: momento ? 1 : 0.5 }}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M7 5l12 7-12 7z" />
             </svg>
@@ -134,8 +150,8 @@ export function PieDeFicha({ momento, titulo }: { momento: Momento | null; titul
           </button>
         </div>
         {titulo && (
-          <button type="button" data-es-tu-titulo={titulo.es ? '1' : '0'} disabled={titulo.ocupado} onClick={titulo.alternar} style={{ height: 44, borderRadius: 999, border: titulo.es ? 'none' : '1px solid rgba(28,34,48,.16)', background: titulo.es ? '#1C2230' : '#FFFFFF', color: titulo.es ? '#F3D59A' : '#1C2230', font: "600 13px 'Geist'", cursor: 'pointer' }}>
-            {titulo.es ? '✓ Es tu título' : 'Usar como mi título'}
+          <button type="button" data-es-tu-titulo={titulo.es ? '1' : '0'} disabled={titulo.ocupado} onClick={titulo.alternar} style={{ height: 44, borderRadius: 999, border: titulo.es ? 'none' : oscuro ? '1px solid rgba(255,253,248,.18)' : '1px solid rgba(28,34,48,.16)', background: titulo.es ? (oscuro ? '#F3D59A' : '#1C2230') : oscuro ? 'rgba(255,253,248,.1)' : '#FFFFFF', color: titulo.es ? (oscuro ? '#17120a' : '#F3D59A') : oscuro ? '#FFFDF8' : '#1C2230', font: "600 13px 'Geist'", cursor: 'pointer' }}>
+            {titulo.es ? 'Es tu título ✓' : 'Usar como mi título'}
           </button>
         )}
       </div>
