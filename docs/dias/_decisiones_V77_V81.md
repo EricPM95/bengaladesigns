@@ -44,3 +44,11 @@ Cada una con la pregunta y mi propuesta. Las que dicen «migración» necesitan 
 - **Terminal:** HOY enseña «1» y RESERVAS «T1». *Propuesta:* una función común `etiquetaDeTerminal`.
 - **Arreglo hecho** (comidas del día de vuelta): un día de vuelta sin `meals` de cena no pinta cena nunca, ni con vuelo a las 21:00 o más.
 - El probador usa la zona por defecto de Lanzarote y no pone alojamiento ni reservas.
+
+## Batería completa (finde): 355 pruebas corridas, 271 bien y 84 mal (no se ha arreglado ninguna; lista completa en `docs/dias/_bateria_365.md`)
+Faltan 8 de las 363 sin apuntar (no terminaron o se repitieron). Mi lectura, sin haber abierto cada una:
+- **Desfasadas por decisiones de Eric (lo más probable, ~55):** el contador de RESERVAS «x de 4 listo» (V22/V58: `pruebaV22`, `Tanda10G`, `Tanda6s`, `Tanda6z6a`, `Fase6z6f`), Lanzarote con 35 sitios y Haría partida (`TandaLZ1_B`, `LZ2b1_A/B`), «Deshacer» al borrar reservas (V75/V77: `Fase6y3_reservas`, `Tanda7_reservas`), emoji/trazos en tarjetas (`Fase6y4_iconos`, `Tanda6z3`), V18/V21/V28 (archivos que ya no existen), estudio de sonidos con 29 tarjetas (`V38*`, `V39*`, `V40*`), panel admin (`V33`, `V35A`), `Cuentas3` y `10N_compartir` (sin claves de Supabase en la prueba).
+- **Posibles fallos reales (hay que mirarlos):** al «Quitar la hora» la casilla queda vacía en vez de volver al ejemplo (`10S3_C`, `10S6_O`, `10S9_C`, `10S9b_B`); «null» en el aviso del mirador del atardecer (`10P_hoy`, `HOY2b_E`); el recuadro «Sin tu ubicación» respecto a «Escucha su historia» (`V46`); `V42` (botones flotantes) y `V27` (tarjetas de DÍAS alineadas); `HOY2b_D` (foto de los sitios y [Volver a mi ruta]); `V2Hoy` («avisoDeCerrada is not a function»); `Fase6y2_formulario` (tocar «Ponle nombre»).
+- **Exit raro (marcadas OK pero con salida sospechosa):** `pruebaV38`, `FotosLanzarote`, `10H`, `10I`.
+- Hay 6.615 carpetas viejas `enLaApp-*` en Temp (perfiles de Chrome): bórralas a mano o dime y lo hago.
+*Propuesta:* una tanda de «ponerse al día» que actualice las desfasadas y arregle las 8 posibles reales.

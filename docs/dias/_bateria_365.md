@@ -298,3 +298,62 @@
 | 294 | pruebaTanda10S7c_Y.mjs | ✅ | 36 |  |
 | 295 | pruebaTanda10S9_B.mjs | ✅ | 32 |  |
 | 296 | pruebaV35A2.mjs | ✅ | 38 |  |
+| 297 | pruebaTanda10N6_avisopase.mjs | ✅ | 37 |  |
+| 298 | pruebaV38D.mjs | ❌ | 38 |  FALLO [repetidos] se revisan las 29 tarjetas (32) / 4. En el estudio (1280 x 1000) / FALLO [programado] el estallido se programa en el suspense (4) / FALLO [programado] cada uno una vez por reproducción (estallido 4, golpe 2; en desarrollo React lo monta dos veces seguidas y salen duplicados a la v |
+| 299 | pruebaTanda10S9b_B.mjs | ❌ | 22 |  ✗ [b6] (V49/V50) el ✓ guarda lo elegido (o la hora que ya había); nunca inventa el ejemplo; tocar fuera cierra sin guardar / 2. La hoja de la entrada en la app / ✗ [a9] el ✓ sin mover NO guarda la hora de ejemplo (09:15 → {"vacia":"0","texto":"09:15","color":"rgb(28, 34, 48)","alto":60}) / 19 compr |
+| 300 | pruebaV39_suenos.mjs | ✅ | 37 |  |
+| 301 | pruebaTanda10N4_campana.mjs | ✅ | 36 |  |
+| 302 | pruebaTanda10S7b_V.mjs | ❌ | 29 | 27 comprobaciones, 5 fallos / ✗ [migracion] ninguna migración posterior a la 0070 añade un «localizador» (la 10S7b sigue sin migración propia): 0095_documentos_de_entrada.sql / ✗ [compartido] con pase: y las horas / ✗ [compartido] con pase: quien lo añadió ve su localizador y la dirección (Alojamien |
+| 303 | pruebaV41_edad.mjs | ✅ | 15 |  |
+| 304 | pruebaV38C.mjs | ✅ | 34 |  |
+| 305 | pruebaTanda10J.mjs | ✅ | 4 |  |
+| 306 | pruebaTanda10S3_A.mjs | ✅ | 40 |  |
+| 307 | pruebaV33.mjs | ❌ | 30 | 2. Quien no es administrador ve «Esta página es solo para administradores» / 3. El panel en ordenador: todos los apartados abren / FALLO [menu] el menú, en su orden (inicio, reportes, fotos, destinos, ventas, usuarios, logros, reorganizar) / 4. Las direcciones de siempre llevan a su apartado; el pan |
+| 308 | pruebaV39C.mjs | ❌ | 16 | Peso total de las fotos del mosaico: 163.8 KB (14 fotos) / FALLO [A2] el botón de la hoja es el dorado del diseño / / Prueba V39C: 108 comprobaciones · 1 fallos |
+| 309 | pruebaV29.mjs | ✅ | 32 |  |
+| 310 | pruebaV8.mjs | ✅ | 30 |  |
+| 311 | pruebaTanda10N12_a.mjs | ✅ | 34 |  |
+| 312 | pruebaV11.mjs | ✅ | 22 |  |
+| 313 | pruebaV40B.mjs | ❌ | 36 | FALLO [iphone] tocando a los 1.6 s se programan los 3 sonidos de Eric (0) / FALLO [iphone] los sonidos de la apertura llevan el primer fotograma de la animación en el reloj del audio / / Prueba V40B: 36 comprobaciones · 2 fallos |
+| 314 | pruebaEstabilidad.mjs | ✅ | 32 |  |
+| 315 | pruebaTanda10N8_ficha.mjs | ✅ | 29 |  |
+| 316 | pruebaV24.mjs | ❌ | 31 |  (días a la vista de una vez en un iPhone de 812 px, con los bloques de arriba: 3; título 18px) / FALLO [hecho] estando en el día 2, el día 1 sale en «Hecho» con su ✓ verde () / FALLO [terminado] con el viaje terminado, todos los días en «Hecho» (4) / 3. El código / / Prueba de la Tanda V24: 42 comp |
+| 317 | pruebaRetoquesExplorar.mjs | ❌ | 28 | (Volcanes) {"pines":9,"visibles":7,"chips":["Volcanes 7","César Manrique 8","Playas y charcos 9","Miradores 8","Pueblos 8","Bodegas 3","Excursiones 3","Restaurantes 33"],"enRuta":"4","lista":0} / (Miradores) {"pines":10,"visibles":7,"chips":["Volcanes 7","César Manrique 8","Playas y charcos 9","Mira |
+| 318 | pruebaTanda10N8_paradas.mjs | ✅ | 24 |  |
+| 319 | pruebaV41_viajes.mjs | ✅ | 17 |  |
+| 320 | pruebaTanda10S4_G.mjs | ✅ | 31 |  |
+| 321 | pruebaTanda10N6_cuentas.mjs | ✅ | 23 |  |
+| 322 | pruebaV1b.mjs | ✅ | 28 |  |
+| 323 | pruebaV23.mjs | ✅ | 28 |  |
+| 324 | pruebaV36B.mjs | ✅ | 29 |  |
+| 325 | pruebaTanda10S10_B.mjs | ✅ | 25 |  |
+| 326 | pruebaTanda10S10_A.mjs | ✅ | 27 |  |
+| 327 | pruebaTanda10S10_C.mjs | ✅ | 23 |  |
+| 328 | pruebaTandaLG1_B.mjs | ✅ | 27 |  |
+| 329 | pruebaV37_sello.mjs | ✅ | 27 |  |
+| 330 | pruebaTanda10S6_P.mjs | ❌ | 23 | 1. El código / 2. En la app / ✗ [ap3] (V45) antes: 4 → ahora 5 (el icono del documento junto al lápiz, data-icono-documento; lápiz de arriba, icono, [+ Sube tu entrada], «o escribe los datos a mano», papelera). (10S9, 1-nov) antes: 4 (dos lápices, documento y papelera) → ahora: 3 → (10S10) 4 (lápiz  |
+| 331 | pruebaV35A_usuarios.mjs | ✅ | 26 |  |
+| 332 | pruebaRetoquesReservas.mjs | ✅ | 22 |  |
+| 333 | pruebaV27.mjs | ❌ | 21 |  FALLO [alineado] (V38, decisión de Eric: «las tres rayas de DÍAS otra vez a la izquierda») todas las tarjetas llevan el mismo desplazamiento de 10 px para dejar sitio al asa / FALLO [reservar] en un día «Hecho» no sale «Sin reservar» / 4. En la app (móvil de 375 px) / {"n":4,"izq":[24,24,24,24],"an |
+| 334 | pruebaRetoquesTarjetas.mjs | ❌ | 18 |  FALLO B3: cada trayecto es «vehículo · minutos · km · Rutas»: ["En coche · 10 min · 6 km Rutas","6 min · 2 km Rutas","23 min · 17 km Rutas"] / FALLO B4: el martes enseña «Haría», no el título largo / FALLO B5: se abre la ficha de Jameos del Agua / FALLO B6: la foto de la ficha se puede tocar / FALL |
+| 335 | pruebaTanda10N5_gastos_enLaApp.mjs | ✅ | 20 |  |
+| 336 | pruebaV38_resumen.mjs | ✅ | 20 |  |
+| 337 | pruebaTanda10N7_moneda.mjs | ✅ | 16 |  |
+| 338 | pruebaTanda10S3_E.mjs | ✅ | 16 |  |
+| 339 | pruebaTanda10S5_L2.mjs | ✅ | 18 |  |
+| 340 | pruebaV21.mjs | ❌ | 0 |  at ModuleJob.link (node:internal/modules/esm/module_job:253:17) { / code: 'ERR_MODULE_NOT_FOUND', / url: 'file:///C:/Users/ERIC/Desktop/CLAUDE%20PROYECTS/APP%20RUTAS/src/lib/moneda' / } / / Node.js v24.19.0 |
+| 341 | pruebaTanda10N6_perfil118.mjs | ✅ | 14 |  |
+| 342 | pruebaV39_bola.mjs | ✅ | 14 |  |
+| 343 | pruebaTanda10R_A.mjs | ✅ | 10 |  |
+| 344 | pruebaTanda10S5_M.mjs | ✅ | 7 |  |
+| 345 | pruebaV16.mjs | ✅ | 11 |  |
+| 346 | pruebaV23_entradas.mjs | ❌ | 9 | 3. La pestaña Entradas / FALLO [hora-recomendada] la hora recomendada es un consejo, no un botón / (foto con la red lenta, segunda vez: 454 ms) / / Prueba de la Tanda V23 (Entradas): 16 comprobaciones · 1 fallos |
+| 347 | pruebaV40D.mjs | ❌ | 5 | FALLO [cerrada] el título en letra de titular (Instrument Serif) / / Prueba V40D: 19 comprobaciones · 1 fallos |
+| 348 | pruebaV37_viaje.mjs | ✅ | 8 |  |
+| 349 | pruebaV37b.mjs | ✅ | 5 |  |
+| 350 | pruebaV40.mjs | ✅ | 4 |  |
+| 351 | pruebaV17.mjs | ✅ | 3 |  |
+| 352 | pruebaTanda10N7_presupuesto.mjs | ✅ | 2 |  |
+| 353 | pruebaTanda10R_C.mjs | ✅ | 0 |  |
+| 354 | pruebaTanda10S8_B.mjs | ✅ | 0 |  |
+| 355 | pruebaTanda10N3_cuentas.mjs | ✅ | 4 |  |
