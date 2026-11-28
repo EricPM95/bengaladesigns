@@ -4,10 +4,10 @@
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-Empiezo V82 (zip de Design descomprimido, Temp limpiándose)
+Empezando: leyendo prompt y codigo de logros
 
 ## Qué falta
-V82 a V85
+Todo
 
 ## Procesos abiertos ahora mismo
 - node: 2
