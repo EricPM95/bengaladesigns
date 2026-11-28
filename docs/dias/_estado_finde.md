@@ -1,13 +1,13 @@
 # Estado de la tanda finde
 
-**Última actualización: 28/11/26, 14:33**
+**Última actualización: 28/11/26, 14:37**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-Batería terminada (271 bien, 84 mal); entregables hechos; subiendo a main
+Terminado y subido (1697cd79); api reiniciado
 
 ## Qué falta
-Subir, reiniciar api, mensaje final
+Nada
 
 ## Procesos abiertos ahora mismo
 - node: 2
