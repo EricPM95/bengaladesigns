@@ -1,13 +1,13 @@
 # Estado de la tanda v82
 
-**Última actualización: 28/11/26, 18:42**
+**Última actualización: 28/11/26, 18:50**
 (Se actualiza cada ~30 min mientras Claude está activo y se sube a la rama `estado` de GitHub. Si esta hora es de hace más de 40-50 minutos, Claude no está trabajando.)
 
 ## Qué está haciendo
-pruebaV82 en 0 fallos, capturas hechas; paso las pruebas pedidas y el build
+Todo hecho y probado; subiendo a produccion
 
 ## Qué falta
-REPASO, DECISIONES, puntos, subida
+Comprobar jutrip.app, reiniciar API, cerrar Vite
 
 ## Procesos abiertos ahora mismo
 - node: 3
